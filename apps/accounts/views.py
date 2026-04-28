@@ -20,7 +20,7 @@ def login_view(request):
             messages.error(request, 'Su cuenta está desactivada.')
         else:
             login(request, user)
-            return redirect('credito:evaluacion')
+            return redirect('credito:dashboard')
     return render(request, 'accounts/login.html', {'form': form})
 
 
@@ -68,7 +68,7 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    return redirect('credito:evaluacion')
+    return redirect('credito:dashboard')
 
 
 @login_required

@@ -4,7 +4,8 @@ from . import views
 app_name = 'credito'
 
 urlpatterns = [
-    path('', views.evaluacion, name='evaluacion'),
+    path('', views.dashboard, name='dashboard'),
+    path('nueva/', views.evaluacion, name='evaluacion'),
     path('historico/', views.historico, name='historico'),
     path('detalle/<int:pk>/', views.detalle, name='detalle'),
     path('detalle/<int:pk>/editar/', views.evaluacion_editar, name='evaluacion_editar'),

@@ -4,12 +4,56 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseForbidden
-from django.db.models import Q
+from django.db.models import Q, Count, Sum, Avg
+from django.utils import timezone
 
 from .models import EvaluacionCredito, Configuracion, Modalidad
 from .forms import EvaluacionForm, ConfiguracionForm, ModalidadForm, DecisionComiteForm
 from .scoring import evaluar_credito
 from apps.nomina.models import Empleado
+
+
+@login_required
+def dashboard(request):
+    hoy = timezone.now()
+    inicio_mes = hoy.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    qs_mes = EvaluacionCredito.objects.filter(fecha_evaluacion__gte=inicio_mes)
+    qs_total = EvaluacionCredito.objects.all()
+
+    total_mes = qs_mes.count()
+    aprobadas_mes = qs_mes.filter(decision__icontains='APROBAR').count()
+    rechazadas_mes = qs_mes.filter(decision__icontains='RECHAZAR').count()
+    revisar_mes = qs_mes.filter(decision__icontains='REVISAR').count()
+    monto_aprobado_mes = qs_mes.filter(decision__icontains='APROBAR').aggregate(
+        t=Sum('monto_solicitado'))['t'] or 0
+    score_promedio_mes = qs_mes.aggregate(a=Avg('score_total'))['a'] or 0
+
+    # Totales históricos
+    total_historico = qs_total.count()
+    monto_historico = qs_total.filter(decision__icontains='APROBAR').aggregate(
+        t=Sum('monto_solicitado'))['t'] or 0
+
+    # Distribución por clasificación (todo el historial)
+    por_clasificacion = (qs_total.values('clasificacion')
+                         .annotate(n=Count('id')).order_by('-n'))
+
+    # Últimas 8 evaluaciones
+    recientes = qs_total.select_related('evaluado_por', 'modalidad')[:8]
+
+    return render(request, 'credito/dashboard.html', {
+        'total_mes': total_mes,
+        'aprobadas_mes': aprobadas_mes,
+        'rechazadas_mes': rechazadas_mes,
+        'revisar_mes': revisar_mes,
+        'monto_aprobado_mes': monto_aprobado_mes,
+        'score_promedio_mes': round(score_promedio_mes, 1),
+        'total_historico': total_historico,
+        'monto_historico': monto_historico,
+        'por_clasificacion': list(por_clasificacion),
+        'recientes': recientes,
+        'mes_nombre': hoy.strftime('%B %Y'),
+    })
 
 
 @login_required

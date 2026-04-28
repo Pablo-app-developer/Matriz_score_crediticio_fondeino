@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — FONDEINO{% endblock %}
+{% block nav_dash %}active{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-0 fw-bold">Panel de Control</h4>
+    <small class="text-muted">Resumen de {{ mes_nombre }}</small>
+  </div>
+  <a href="{% url 'credito:evaluacion' %}" class="btn btn-primary">
+    <i class="bi bi-plus-circle me-1"></i>Nueva Evaluación
+  </a>
+</div>
+
+<!-- KPIs del mes -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card shadow-sm h-100 border-0">
+      <div class="card-body text-center py-4">
+        <div class="fs-1 fw-bold text-primary">{{ total_mes }}</div>
+        <div class="text-muted small mt-1">Evaluaciones este mes</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card shadow-sm h-100 border-0 border-start border-4 border-success">
+      <div class="card-body text-center py-4">
+        <div class="fs-1 fw-bold text-success">{{ aprobadas_mes }}</div>
+        <div class="text-muted small mt-1">Aprobadas</div>
+        {% if total_mes %}
+        <div class="badge bg-success-subtle text-success mt-1">
+          {% widthratio aprobadas_mes total_mes 100 %}%
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card shadow-sm h-100 border-0 border-start border-4 border-danger">
+      <div class="card-body text-center py-4">
+        <div class="fs-1 fw-bold text-danger">{{ rechazadas_mes }}</div>
+        <div class="text-muted small mt-1">Rechazadas</div>
+        {% if total_mes %}
+        <div class="badge bg-danger-subtle text-danger mt-1">
+          {% widthratio rechazadas_mes total_mes 100 %}%
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card shadow-sm h-100 border-0 border-start border-4 border-warning">
+      <div class="card-body text-center py-4">
+        <div class="fs-1 fw-bold text-warning">{{ score_promedio_mes }}</div>
+        <div class="text-muted small mt-1">Score promedio</div>
+        <div class="badge bg-warning-subtle text-warning mt-1">/ 100 pts</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Monto aprobado y totales históricos -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0 bg-primary text-white h-100">
+      <div class="card-body py-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="small opacity-75 mb-1">Monto aprobado este mes</div>
+            <div class="fs-4 fw-bold">${{ monto_aprobado_mes|floatformat:0 }}</div>
+          </div>
+          <i class="bi bi-cash-stack fs-2 opacity-50"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0 bg-dark text-white h-100">
+      <div class="card-body py-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="small opacity-75 mb-1">Total histórico evaluaciones</div>
+            <div class="fs-4 fw-bold">{{ total_historico }}</div>
+          </div>
+          <i class="bi bi-archive fs-2 opacity-50"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0 bg-success text-white h-100">
+      <div class="card-body py-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="small opacity-75 mb-1">Monto total aprobado histórico</div>
+            <div class="fs-4 fw-bold">${{ monto_historico|floatformat:0 }}</div>
+          </div>
+          <i class="bi bi-graph-up-arrow fs-2 opacity-50"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Distribución por clasificación -->
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-header border-0 bg-transparent pt-3 pb-0">
+        <h6 class="fw-bold mb-0"><i class="bi bi-pie-chart me-2 text-primary"></i>Por Clasificación (histórico)</h6>
+      </div>
+      <div class="card-body">
+        {% for item in por_clasificacion %}
+        {% if item.clasificacion == 'EXCELENTE' %}{% with color='success' %}
+        {% elif item.clasificacion == 'BUENO' %}{% with color='primary' %}
+        {% elif item.clasificacion == 'REGULAR' %}{% with color='warning' %}
+        {% else %}{% with color='danger' %}
+        {% endif %}
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="small fw-semibold">{{ item.clasificacion }}</span>
+            <span class="badge bg-{{ color }}">{{ item.n }}</span>
+          </div>
+          {% if total_historico %}
+          <div class="progress" style="height:6px">
+            <div class="progress-bar bg-{{ color }}" style="width:{% widthratio item.n total_historico 100 %}%"></div>
+          </div>
+          {% endif %}
+        </div>
+        {% endwith %}
+        {% empty %}
+        <p class="text-muted small text-center py-3">Sin datos aún</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Evaluaciones recientes -->
+  <div class="col-md-8">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-header border-0 bg-transparent pt-3 pb-0 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Últimas Evaluaciones</h6>
+        <a href="{% url 'credito:historico' %}" class="btn btn-sm btn-outline-primary">Ver todas</a>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover table-sm mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-3">Nombre</th>
+                <th class="text-end">Monto</th>
+                <th class="text-center">Score</th>
+                <th class="text-center">Decisión</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ev in recientes %}
+              <tr style="cursor:pointer" onclick="location.href='{% url 'credito:detalle' ev.pk %}'">
+                <td class="ps-3">
+                  <div class="fw-semibold small">{{ ev.nombre_completo }}</div>
+                  <div class="text-muted" style="font-size:0.75rem">{{ ev.fecha_evaluacion|date:"d/m/Y" }} · {{ ev.modalidad.nombre }}</div>
+                </td>
+                <td class="text-end small">${{ ev.monto_solicitado|floatformat:0 }}</td>
+                <td class="text-center">
+                  <span class="fw-bold">{{ ev.score_total }}</span>
+                </td>
+                <td class="text-center">
+                  <span class="badge bg-{{ ev.decision_color }}">
+                    {% if 'APROBAR' in ev.decision %}APROBAR
+                    {% elif 'RECHAZAR' in ev.decision %}RECHAZAR
+                    {% else %}REVISAR{% endif %}
+                  </span>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" class="text-center text-muted py-4">Sin evaluaciones aún</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
