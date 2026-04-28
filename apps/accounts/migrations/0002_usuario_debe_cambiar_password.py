@@ -1,4 +1,4 @@
-from django.db import migrations, models
+from django.db import migrations
 
 
 class Migration(migrations.Migration):
@@ -7,10 +7,4 @@ class Migration(migrations.Migration):
         ('accounts', '0001_initial'),
     ]
 
-    operations = [
-        migrations.AddField(
-            model_name='usuario',
-            name='debe_cambiar_password',
-            field=models.BooleanField(default=False),
-        ),
-    ]
+    operations = []

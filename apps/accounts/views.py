@@ -88,7 +88,6 @@ def usuario_crear(request):
     if request.method == 'POST' and form.is_valid():
         password_plano = form.cleaned_data.get('password1', '')
         usuario = form.save(commit=False)
-        usuario.debe_cambiar_password = True
         usuario.save()
         # Enviar credenciales por correo si hay email configurado
         if getattr(settings, 'EMAIL_CONFIGURADO', False) and usuario.email:
@@ -144,7 +143,6 @@ def usuario_cambiar_password(request, pk):
     form = CambiarPasswordForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
         usuario.set_password(form.cleaned_data['password1'])
-        usuario.debe_cambiar_password = False
         usuario.save()
         messages.success(request, 'Contraseña actualizada.')
         return redirect('accounts:usuarios_lista')
@@ -155,15 +153,13 @@ def usuario_cambiar_password(request, pk):
 def cambiar_mi_password(request):
     """El usuario cambia su propia contraseña (obligatorio en primer ingreso)."""
     form = CambiarPasswordForm(request.POST or None)
-    obligatorio = request.user.debe_cambiar_password
     if request.method == 'POST' and form.is_valid():
         request.user.set_password(form.cleaned_data['password1'])
-        request.user.debe_cambiar_password = False
         request.user.save()
         update_session_auth_hash(request, request.user)
-        messages.success(request, 'Contraseña actualizada correctamente. Ya puedes usar el sistema.')
+        messages.success(request, 'Contraseña actualizada correctamente.')
         return redirect('credito:dashboard')
-    return render(request, 'accounts/cambiar_mi_password.html', {'form': form, 'obligatorio': obligatorio})
+    return render(request, 'accounts/cambiar_mi_password.html', {'form': form})
 
 
 def manual_usuario(request):

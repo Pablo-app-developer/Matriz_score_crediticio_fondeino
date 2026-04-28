@@ -14,7 +14,6 @@ class Usuario(AbstractUser):
     telefono = models.CharField(max_length=20, blank=True)
     activo = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    debe_cambiar_password = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Usuario'
