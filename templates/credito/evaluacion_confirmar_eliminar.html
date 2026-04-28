@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load credito_tags %}
 {% block title %}Eliminar Evaluación — FONDEINO{% endblock %}
 
 {% block content %}
@@ -14,7 +15,7 @@
           <strong>{{ ev.nombre_completo }}</strong><br>
           <span class="text-muted small">
             Cédula: {{ ev.cedula }} |
-            Monto: ${{ ev.monto_solicitado|floatformat:0 }} |
+            Monto: ${{ ev.monto_solicitado|cop }} |
             {{ ev.fecha_evaluacion|date:"d/m/Y" }}
           </span><br>
           <span class="badge bg-{{ ev.decision_color }} mt-1">{{ ev.decision }}</span>

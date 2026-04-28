@@ -2,6 +2,7 @@
 {% load credito_tags %}
 {% block title %}Evaluación #{{ ev.pk }} — FONDEINO{% endblock %}
 {% block nav_hist %}active{% endblock %}
+{% block nav_hist %}active{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -62,12 +63,12 @@
       <div class="card-header bg-primary text-white py-2"><strong>Análisis de Ingresos y Mínimo Vital</strong></div>
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
-          <tr><td class="bg-light">Salario Bruto</td><td class="text-end fw-bold">${{ ev.salario_bruto|floatformat:0 }}</td></tr>
-          <tr><td class="bg-light">(-) Salud 4%</td><td class="text-end">${{ ev.salario_bruto|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light">Salario Bruto</td><td class="text-end fw-bold">${{ ev.salario_bruto|cop }}</td></tr>
+          <tr><td class="bg-light">(-) Salud 4%</td><td class="text-end">${{ ev.salario_bruto|cop }}</td></tr>
           <tr><td class="bg-light">(-) Pensión 4%</td><td class="text-end">&nbsp;</td></tr>
-          <tr class="table-success"><td><strong>Salario Neto</strong></td><td class="text-end fw-bold">${{ ev.salario_neto|floatformat:0 }}</td></tr>
+          <tr class="table-success"><td><strong>Salario Neto</strong></td><td class="text-end fw-bold">${{ ev.salario_neto|cop }}</td></tr>
           <tr><td class="bg-light">% Mínimo Vital</td><td class="text-end">50%</td></tr>
-          <tr class="table-info"><td><strong>Mínimo Vital en $</strong></td><td class="text-end fw-bold">${{ ev.minimo_vital|floatformat:0 }}</td></tr>
+          <tr class="table-info"><td><strong>Mínimo Vital en $</strong></td><td class="text-end fw-bold">${{ ev.minimo_vital|cop }}</td></tr>
         </table>
       </div>
     </div>
@@ -77,12 +78,12 @@
       <div class="card-header bg-warning text-dark py-2"><strong>Obligaciones Mensuales</strong></div>
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
-          <tr><td class="bg-light">Cuotas Otras Entidades</td><td class="text-end">${{ ev.cuotas_otras_entidades|floatformat:0 }}</td></tr>
-          <tr><td class="bg-light">Cuotas FONDEINO Actuales</td><td class="text-end">${{ ev.cuota_aporte|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light">Cuotas Otras Entidades</td><td class="text-end">${{ ev.cuotas_otras_entidades|cop }}</td></tr>
+          <tr><td class="bg-light">Cuotas FONDEINO Actuales</td><td class="text-end">${{ ev.cuota_aporte|cop }}</td></tr>
           <tr><td class="bg-light">Cuota Nueva Estimada ({{ ev.modalidad.nombre }})</td>
-              <td class="text-end">${{ ev.total_cuotas|floatformat:0 }}</td>
+              <td class="text-end">${{ ev.total_cuotas|cop }}</td>
           </tr>
-          <tr class="table-warning"><td><strong>Total Cuotas</strong></td><td class="text-end fw-bold">${{ ev.total_cuotas|floatformat:0 }}</td></tr>
+          <tr class="table-warning"><td><strong>Total Cuotas</strong></td><td class="text-end fw-bold">${{ ev.total_cuotas|cop }}</td></tr>
         </table>
       </div>
     </div>
@@ -97,7 +98,7 @@
           <tr>
             <td class="bg-light">Disponible Final</td>
             <td class="text-end fw-bold {% if ev.disponible_final >= 0 %}text-success{% else %}text-danger{% endif %}">
-              ${{ ev.disponible_final|floatformat:0 }}
+              ${{ ev.disponible_final|cop }}
             </td>
           </tr>
           <tr>
@@ -128,7 +129,7 @@
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
           <tr><td class="bg-light">Modalidad</td><td class="text-end">{{ ev.modalidad.nombre }}</td></tr>
-          <tr><td class="bg-light">Monto Solicitado</td><td class="text-end fw-bold">${{ ev.monto_solicitado|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light">Monto Solicitado</td><td class="text-end fw-bold">${{ ev.monto_solicitado|cop }}</td></tr>
           <tr><td class="bg-light">Número de Cuotas</td><td class="text-end">{{ ev.n_cuotas }}</td></tr>
           <tr><td class="bg-light">Tasa Nominal Anual</td><td class="text-end">{{ ev.modalidad.tasa_nominal_anual|floatformat:1 }}%</td></tr>
           <tr><td class="bg-light">Fecha Desembolso</td><td class="text-end">{{ ev.fecha_desembolso|date:"d/m/Y" }}</td></tr>
@@ -257,23 +258,23 @@
           <td>{{ c.numero }}</td>
           <td>{{ c.fecha_pago|date:"d/m/Y" }}</td>
           <td class="text-center">{{ c.dias }}</td>
-          <td class="text-end">${{ c.saldo_inicial|floatformat:0 }}</td>
-          <td class="text-end">${{ c.interes|floatformat:0 }}</td>
-          <td class="text-end">${{ c.capital|floatformat:0 }}</td>
-          <td class="text-end">${{ c.saldo_final|floatformat:0 }}</td>
-          <td class="text-end">${{ c.seguro|floatformat:0 }}</td>
-          <td class="text-end fw-bold">${{ c.cuota_total|floatformat:0 }}</td>
+          <td class="text-end">${{ c.saldo_inicial|cop }}</td>
+          <td class="text-end">${{ c.interes|cop }}</td>
+          <td class="text-end">${{ c.capital|cop }}</td>
+          <td class="text-end">${{ c.saldo_final|cop }}</td>
+          <td class="text-end">${{ c.seguro|cop }}</td>
+          <td class="text-end fw-bold">${{ c.cuota_total|cop }}</td>
         </tr>
         {% endfor %}
       </tbody>
       <tfoot class="table-secondary fw-bold">
         <tr>
           <td colspan="4">TOTALES</td>
-          <td class="text-end">${{ plan|sum_field:"interes"|floatformat:0 }}</td>
-          <td class="text-end">${{ plan|sum_field:"capital"|floatformat:0 }}</td>
+          <td class="text-end">${{ plan|sum_field:"interes"|cop }}</td>
+          <td class="text-end">${{ plan|sum_field:"capital"|cop }}</td>
           <td></td>
-          <td class="text-end">${{ plan|sum_field:"seguro"|floatformat:0 }}</td>
-          <td class="text-end">${{ plan|sum_field:"cuota_total"|floatformat:0 }}</td>
+          <td class="text-end">${{ plan|sum_field:"seguro"|cop }}</td>
+          <td class="text-end">${{ plan|sum_field:"cuota_total"|cop }}</td>
         </tr>
       </tfoot>
     </table>

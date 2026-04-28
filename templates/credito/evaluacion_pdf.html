@@ -113,7 +113,7 @@
       <h2>{{ ev.nombre_completo }}</h2>
       <div class="sub">{{ ev.tipo_documento }}: {{ ev.cedula }} &nbsp;|&nbsp; {{ ev.cargo }}{% if ev.area %} · {{ ev.area }}{% endif %}</div>
       <div class="sub" style="margin-top:4px">Modalidad: <strong>{{ ev.modalidad.nombre }}</strong> &nbsp;·&nbsp;
-        Monto: <strong>${{ ev.monto_solicitado|floatformat:0 }}</strong> &nbsp;·&nbsp;
+        Monto: <strong>${{ ev.monto_solicitado|cop }}</strong> &nbsp;·&nbsp;
         {{ ev.n_cuotas }} cuotas &nbsp;·&nbsp; Desembolso: {{ ev.fecha_desembolso|date:"d/m/Y" }}</div>
     </div>
     <div class="banner-score">
@@ -142,10 +142,10 @@
       <div class="card" style="margin-bottom:8px">
         <div class="card-header hdr-blue">Análisis de Ingresos y Mínimo Vital</div>
         <table>
-          <tr><td class="bg-light">Salario Bruto</td><td class="text-right fw-bold">${{ ev.salario_bruto|floatformat:0 }}</td></tr>
-          <tr><td class="bg-light">Salario Neto (92%)</td><td class="text-right fw-bold">${{ ev.salario_neto|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light">Salario Bruto</td><td class="text-right fw-bold">${{ ev.salario_bruto|cop }}</td></tr>
+          <tr><td class="bg-light">Salario Neto (92%)</td><td class="text-right fw-bold">${{ ev.salario_neto|cop }}</td></tr>
           <tr><td class="bg-light">% Mínimo Vital</td><td class="text-right">50%</td></tr>
-          <tr><td class="bg-light"><strong>Mínimo Vital</strong></td><td class="text-right fw-bold">${{ ev.minimo_vital|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light"><strong>Mínimo Vital</strong></td><td class="text-right fw-bold">${{ ev.minimo_vital|cop }}</td></tr>
         </table>
       </div>
 
@@ -153,10 +153,10 @@
       <div class="card" style="margin-bottom:8px">
         <div class="card-header hdr-amber">Obligaciones Mensuales</div>
         <table>
-          <tr><td class="bg-light">Cuotas Otras Entidades</td><td class="text-right">${{ ev.cuotas_otras_entidades|floatformat:0 }}</td></tr>
-          <tr><td class="bg-light">Cuota Aporte FONDEINO</td><td class="text-right">${{ ev.cuota_aporte|floatformat:0 }}</td></tr>
-          <tr><td class="bg-light">Cuota Ahorro FONDEINO</td><td class="text-right">${{ ev.cuota_ahorro|floatformat:0 }}</td></tr>
-          <tr><td class="bg-light"><strong>Total Cuotas</strong></td><td class="text-right fw-bold">${{ ev.total_cuotas|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light">Cuotas Otras Entidades</td><td class="text-right">${{ ev.cuotas_otras_entidades|cop }}</td></tr>
+          <tr><td class="bg-light">Cuota Aporte FONDEINO</td><td class="text-right">${{ ev.cuota_aporte|cop }}</td></tr>
+          <tr><td class="bg-light">Cuota Ahorro FONDEINO</td><td class="text-right">${{ ev.cuota_ahorro|cop }}</td></tr>
+          <tr><td class="bg-light"><strong>Total Cuotas</strong></td><td class="text-right fw-bold">${{ ev.total_cuotas|cop }}</td></tr>
         </table>
       </div>
 
@@ -167,7 +167,7 @@
           <tr>
             <td class="bg-light">Disponible Final</td>
             <td class="text-right fw-bold {% if ev.disponible_final >= 0 %}text-green{% else %}text-red{% endif %}">
-              ${{ ev.disponible_final|floatformat:0 }}
+              ${{ ev.disponible_final|cop }}
             </td>
           </tr>
           <tr><td class="bg-light">Cumple Mínimo Vital</td>
@@ -185,7 +185,7 @@
         <div class="card-header hdr-dark">Condiciones del Crédito</div>
         <table>
           <tr><td class="bg-light">Modalidad</td><td class="text-right">{{ ev.modalidad.nombre }}</td></tr>
-          <tr><td class="bg-light">Monto Solicitado</td><td class="text-right fw-bold">${{ ev.monto_solicitado|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light">Monto Solicitado</td><td class="text-right fw-bold">${{ ev.monto_solicitado|cop }}</td></tr>
           <tr><td class="bg-light">Número de Cuotas</td><td class="text-right">{{ ev.n_cuotas }}</td></tr>
           <tr><td class="bg-light">Tasa Nominal Anual</td><td class="text-right">{{ ev.modalidad.tasa_nominal_anual|floatformat:1 }}%</td></tr>
           <tr><td class="bg-light">Fecha Desembolso</td><td class="text-right">{{ ev.fecha_desembolso|date:"d/m/Y" }}</td></tr>
@@ -286,23 +286,23 @@
             <td>{{ c.numero }}</td>
             <td>{{ c.fecha_pago|date:"d/m/Y" }}</td>
             <td class="text-center">{{ c.dias }}</td>
-            <td class="text-right">${{ c.saldo_inicial|floatformat:0 }}</td>
-            <td class="text-right">${{ c.interes|floatformat:0 }}</td>
-            <td class="text-right">${{ c.capital|floatformat:0 }}</td>
-            <td class="text-right">${{ c.saldo_final|floatformat:0 }}</td>
-            <td class="text-right">${{ c.seguro|floatformat:0 }}</td>
-            <td class="text-right fw-bold">${{ c.cuota_total|floatformat:0 }}</td>
+            <td class="text-right">${{ c.saldo_inicial|cop }}</td>
+            <td class="text-right">${{ c.interes|cop }}</td>
+            <td class="text-right">${{ c.capital|cop }}</td>
+            <td class="text-right">${{ c.saldo_final|cop }}</td>
+            <td class="text-right">${{ c.seguro|cop }}</td>
+            <td class="text-right fw-bold">${{ c.cuota_total|cop }}</td>
           </tr>
           {% endfor %}
         </tbody>
         <tfoot>
           <tr>
             <td colspan="4" class="fw-bold">TOTALES</td>
-            <td class="text-right">${{ plan|sum_field:"interes"|floatformat:0 }}</td>
-            <td class="text-right">${{ plan|sum_field:"capital"|floatformat:0 }}</td>
+            <td class="text-right">${{ plan|sum_field:"interes"|cop }}</td>
+            <td class="text-right">${{ plan|sum_field:"capital"|cop }}</td>
             <td></td>
-            <td class="text-right">${{ plan|sum_field:"seguro"|floatformat:0 }}</td>
-            <td class="text-right fw-bold">${{ plan|sum_field:"cuota_total"|floatformat:0 }}</td>
+            <td class="text-right">${{ plan|sum_field:"seguro"|cop }}</td>
+            <td class="text-right fw-bold">${{ plan|sum_field:"cuota_total"|cop }}</td>
           </tr>
         </tfoot>
       </table>

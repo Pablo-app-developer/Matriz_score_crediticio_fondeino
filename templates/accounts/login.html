@@ -1,33 +1,167 @@
-{% extends 'base.html' %}
-{% block title %}Iniciar Sesión — FONDEINO{% endblock %}
-{% block content %}
-<div class="row justify-content-center mt-5">
-  <div class="col-md-4 col-sm-8">
-    <div class="card shadow">
-      <div class="card-body p-4">
-        <div class="text-center mb-4">
-          <i class="bi bi-shield-check text-primary" style="font-size:3rem"></i>
-          <h4 class="fw-bold mt-2">FONDEINO</h4>
-          <p class="text-muted small">Sistema de Evaluación Crediticia</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión — FONDEINO</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    :root { --accent: #6366f1; --accent-dark: #4f46e5; }
+    body {
+      min-height: 100vh; margin: 0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      display: flex;
+    }
+
+    /* Left panel */
+    .login-panel {
+      flex: 0 0 420px;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      background: #fff;
+      padding: 48px 40px;
+      z-index: 1;
+    }
+    .login-logo {
+      width: 52px; height: 52px;
+      background: var(--accent);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; color: #fff;
+      margin-bottom: 16px;
+    }
+    .login-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; letter-spacing: -.3px; }
+    .login-sub   { font-size: 0.84rem; color: #64748b; margin-bottom: 32px; }
+
+    .login-panel .form-label  { font-size: 0.8rem; font-weight: 600; color: #374151; }
+    .login-panel .form-control {
+      border-radius: 8px; border: 1.5px solid #e2e8f0;
+      padding: 10px 14px; font-size: 0.9rem;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .login-panel .form-control:focus {
+      border-color: var(--accent); outline: none;
+      box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+    }
+    .btn-login {
+      background: var(--accent); color: #fff;
+      border: none; border-radius: 8px;
+      padding: 11px; font-size: 0.9rem; font-weight: 600;
+      width: 100%; cursor: pointer;
+      transition: background .15s;
+      margin-top: 8px;
+    }
+    .btn-login:hover { background: var(--accent-dark); }
+
+    /* Right decorative panel */
+    .login-deco {
+      flex: 1;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 48px;
+      position: relative; overflow: hidden;
+    }
+    .login-deco::before {
+      content: '';
+      position: absolute; top: -80px; right: -80px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: rgba(99,102,241,.2);
+    }
+    .login-deco::after {
+      content: '';
+      position: absolute; bottom: -100px; left: -60px;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: rgba(99,102,241,.12);
+    }
+    .deco-content { position: relative; z-index: 1; text-align: center; }
+    .deco-icon { font-size: 4rem; color: rgba(165,180,252,.8); margin-bottom: 20px; display: block; }
+    .deco-title { font-size: 1.6rem; font-weight: 700; color: #f1f5f9; margin-bottom: 10px; }
+    .deco-text  { font-size: 0.9rem; color: #94a3b8; max-width: 320px; line-height: 1.6; }
+
+    .deco-stats {
+      display: flex; gap: 24px; margin-top: 40px;
+      justify-content: center;
+    }
+    .deco-stat { text-align: center; }
+    .deco-stat-val { font-size: 1.4rem; font-weight: 800; color: #a5b4fc; }
+    .deco-stat-lbl { font-size: 0.72rem; color: #64748b; margin-top: 2px; }
+
+    @media (max-width: 768px) {
+      .login-deco { display: none; }
+      .login-panel { flex: 1; padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Form panel -->
+  <div class="login-panel">
+    <div class="login-logo"><i class="bi bi-shield-check"></i></div>
+    <div class="login-title">FONDEINO</div>
+    <p class="login-sub">Sistema de Evaluación Crediticia</p>
+
+    <form method="post" style="width:100%">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+        <div style="font-size:0.78rem;color:#ef4444;margin-top:4px">{{ field.errors }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+      {% if form.non_field_errors %}
+      <div style="background:#fef2f2;border-left:3px solid #ef4444;border-radius:6px;
+                  padding:10px 14px;font-size:0.84rem;color:#991b1b;margin-bottom:12px">
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+      {% for msg in messages %}
+      <div style="background:#fef2f2;border-left:3px solid #ef4444;border-radius:6px;
+                  padding:10px 14px;font-size:0.84rem;color:#991b1b;margin-bottom:12px">
+        {{ msg }}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn-login">
+        <i class="bi bi-box-arrow-in-right me-1"></i> Ingresar
+      </button>
+    </form>
+
+    <p style="font-size:0.72rem;color:#94a3b8;margin-top:28px;text-align:center">
+      FONDEINO &copy; 2026 — Solo personal autorizado
+    </p>
+  </div>
+
+  <!-- Decorative panel -->
+  <div class="login-deco">
+    <div class="deco-content">
+      <i class="bi bi-graph-up-arrow deco-icon"></i>
+      <h2 class="deco-title">Matriz de Riesgo Crediticio</h2>
+      <p class="deco-text">
+        Evalúa solicitudes de crédito con precisión, aplicando scoring automático
+        basado en capacidad de pago, historial y garantías.
+      </p>
+      <div class="deco-stats">
+        <div class="deco-stat">
+          <div class="deco-stat-val">100</div>
+          <div class="deco-stat-lbl">Puntos máximos</div>
         </div>
-        <form method="post">
-          {% csrf_token %}
-          {% for field in form %}
-          <div class="mb-3">
-            <label class="form-label">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
-          </div>
-          {% endfor %}
-          {% if form.non_field_errors %}
-          <div class="alert alert-danger">{{ form.non_field_errors }}</div>
-          {% endif %}
-          <button type="submit" class="btn btn-primary w-100 mt-2">
-            <i class="bi bi-box-arrow-in-right me-1"></i>Ingresar
-          </button>
-        </form>
+        <div class="deco-stat">
+          <div class="deco-stat-val">6</div>
+          <div class="deco-stat-lbl">Factores de riesgo</div>
+        </div>
+        <div class="deco-stat">
+          <div class="deco-stat-val">100%</div>
+          <div class="deco-stat-lbl">Automatizado</div>
+        </div>
       </div>
     </div>
   </div>
-</div>
-{% endblock %}
+
+</body>
+</html>
