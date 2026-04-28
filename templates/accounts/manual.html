@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Manual de Usuario — FONDEINO{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-0 fw-bold"><i class="bi bi-book me-2 text-primary"></i>Manual de Usuario</h4>
+    <small class="text-muted">Sistema de Evaluación Crediticia FONDEINO — v1.0</small>
+  </div>
+  <button onclick="window.print()" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-printer me-1"></i>Imprimir
+  </button>
+</div>
+
+<!-- Índice -->
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-header bg-primary text-white"><i class="bi bi-list-ul me-2"></i>Tabla de Contenidos</div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <ol class="mb-0" style="font-size:.88rem">
+          <li><a href="#s1" class="text-decoration-none">Acceso al sistema</a></li>
+          <li><a href="#s2" class="text-decoration-none">Panel de control (Dashboard)</a></li>
+          <li><a href="#s3" class="text-decoration-none">Nueva evaluación de crédito</a></li>
+          <li><a href="#s4" class="text-decoration-none">Búsqueda de empleado por nombre</a></li>
+          <li><a href="#s5" class="text-decoration-none">Entendiendo el resultado</a></li>
+          <li><a href="#s6" class="text-decoration-none">Plan de pagos</a></li>
+          <li><a href="#s7" class="text-decoration-none">Exportar evaluación a PDF</a></li>
+          <li><a href="#s8" class="text-decoration-none">Historial de evaluaciones</a></li>
+        </ol>
+      </div>
+      <div class="col-md-6">
+        <ol start="9" class="mb-0" style="font-size:.88rem">
+          <li><a href="#s9" class="text-decoration-none">Editar y eliminar evaluaciones</a></li>
+          <li><a href="#s10" class="text-decoration-none">Decisión del comité</a></li>
+          <li><a href="#s11" class="text-decoration-none">Carga de nómina</a></li>
+          <li><a href="#s12" class="text-decoration-none">Gestión de usuarios</a></li>
+          <li><a href="#s13" class="text-decoration-none">Configuración del scoring</a></li>
+          <li><a href="#s14" class="text-decoration-none">Gestión de modalidades</a></li>
+          <li><a href="#s15" class="text-decoration-none">Cómo se calcula el score</a></li>
+          <li><a href="#s16" class="text-decoration-none">Preguntas frecuentes</a></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include "accounts/manual_contenido.html" %}
+
+<div class="text-center text-muted small mt-4 mb-2">
+  Manual de Usuario FONDEINO — Sistema de Evaluación Crediticia — Versión 1.0 — Abril 2026
+</div>
+{% endblock %}

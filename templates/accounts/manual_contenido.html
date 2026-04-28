@@ -1,0 +1,473 @@
+<style>
+.manual-section { scroll-margin-top: 70px; }
+.manual-section h5 { color: #0d6efd; border-bottom: 2px solid #e9ecef; padding-bottom: 6px; margin-bottom: 14px; }
+.manual-section h6 { color: #495057; margin-top: 16px; margin-bottom: 8px; }
+.manual-table th { background: #f8f9fa; font-size: .8rem; }
+.manual-table td { font-size: .85rem; }
+.tip-box { background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 4px; padding: 10px 14px; font-size: .85rem; margin: 10px 0; }
+.warn-box { background: #fff7ed; border-left: 4px solid #f59e0b; border-radius: 4px; padding: 10px 14px; font-size: .85rem; margin: 10px 0; }
+.step { display: flex; gap: 12px; margin-bottom: 8px; font-size: .88rem; }
+.step-num { background: #0d6efd; color: #fff; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: .82rem; color: #e83e8c; }
+@media print { .card { break-inside: avoid; } }
+</style>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 1 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s1">
+  <div class="card-header bg-primary text-white fw-bold">1. Acceso al sistema</div>
+  <div class="card-body">
+    <h6>1.1 Iniciar sesión</h6>
+    <div class="step"><div class="step-num">1</div><div>Abra su navegador (Chrome, Edge o Firefox).</div></div>
+    <div class="step"><div class="step-num">2</div><div>Ingrese la dirección del sistema proporcionada por el administrador.</div></div>
+    <div class="step"><div class="step-num">3</div><div>Digite su <strong>usuario</strong> y <strong>contraseña</strong>. Use el ícono 👁 para ver la contraseña mientras la escribe.</div></div>
+    <div class="step"><div class="step-num">4</div><div>Haga clic en <strong>Ingresar</strong>.</div></div>
+    <div class="tip-box"><i class="bi bi-info-circle me-1"></i>Si es su primer ingreso, el sistema le pedirá cambiar la contraseña antes de continuar.</div>
+
+    <h6>1.2 Roles de usuario</h6>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Rol</th><th>Permisos</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Administrador</strong></td><td>Acceso total: evaluar, ver historial, gestionar usuarios, cargar nómina, configurar scoring, registrar decisión del comité, editar/eliminar cualquier evaluación.</td></tr>
+        <tr><td><strong>Comité</strong></td><td>Crear evaluaciones, ver historial propio, editar/eliminar sus propias evaluaciones.</td></tr>
+      </tbody>
+    </table>
+
+    <h6>1.3 Cambio de contraseña</h6>
+    <p style="font-size:.88rem">En el menú superior, haga clic en su nombre de usuario y seleccione <strong>Cambiar contraseña</strong> en cualquier momento. Al crear una cuenta nueva, el administrador asigna una contraseña temporal que debe cambiarse en el primer ingreso.</p>
+
+    <h6>1.4 Cerrar sesión</h6>
+    <p style="font-size:.88rem">Haga clic en su nombre en la esquina superior derecha → <strong>Cerrar sesión</strong>.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 2 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s2">
+  <div class="card-header bg-primary text-white fw-bold">2. Panel de control (Dashboard)</div>
+  <div class="card-body">
+    <p style="font-size:.88rem">Es la página de inicio. Muestra estadísticas del mes en curso y las últimas evaluaciones.</p>
+
+    <h6>2.1 Indicadores del mes (KPIs)</h6>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Tarjeta</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>🔵 <strong>Total evaluaciones</strong></td><td>Número de evaluaciones realizadas en el mes actual.</td></tr>
+        <tr><td>🟢 <strong>Aprobadas</strong></td><td>Evaluaciones con decisión APROBAR y su porcentaje del total.</td></tr>
+        <tr><td>🔴 <strong>Rechazadas</strong></td><td>Evaluaciones con decisión RECHAZAR y su porcentaje.</td></tr>
+        <tr><td>🩵 <strong>En revisión</strong></td><td>Evaluaciones que requieren revisión o codeudor.</td></tr>
+        <tr><td>🟡 <strong>Score promedio</strong></td><td>Promedio del puntaje crediticio de las evaluaciones del mes.</td></tr>
+      </tbody>
+    </table>
+
+    <h6>2.2 Resumen histórico</h6>
+    <p style="font-size:.88rem">Tres tarjetas muestran el monto aprobado en el mes, el total histórico de evaluaciones y el monto total aprobado desde el inicio del sistema.</p>
+    <div class="tip-box"><i class="bi bi-info-circle me-1"></i>Los montos se muestran en formato colombiano: <code>$1.250.000</code> (punto como separador de miles).</div>
+
+    <h6>2.3 Últimas evaluaciones</h6>
+    <p style="font-size:.88rem">Tabla con las 8 evaluaciones más recientes. Haga clic en cualquier fila para ir al detalle.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 3 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s3">
+  <div class="card-header bg-primary text-white fw-bold">3. Nueva evaluación de crédito</div>
+  <div class="card-body">
+    <p style="font-size:.88rem">Haga clic en <strong>Nueva Evaluación</strong> en el menú superior o en el botón azul del dashboard.</p>
+
+    <h6>3.1 Datos del solicitante</h6>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Campo</th><th>Descripción</th><th>Req.</th></tr></thead>
+      <tbody>
+        <tr><td>Tipo de documento</td><td>C.C., C.E. o Pasaporte</td><td>✓</td></tr>
+        <tr><td>Buscar empleado</td><td>Autocompletado por nombre o cédula desde la nómina</td><td></td></tr>
+        <tr><td>Cédula</td><td>Número de documento</td><td>✓</td></tr>
+        <tr><td>Nombre completo</td><td>Nombre y apellidos</td><td>✓</td></tr>
+        <tr><td>Área / Cargo</td><td>Dependencia y cargo en la empresa</td><td></td></tr>
+        <tr><td>Tipo de vinculación</td><td>Indefinido / A término fijo / Prestación de servicios</td><td>✓</td></tr>
+        <tr><td>Antigüedad (meses)</td><td>Tiempo de vinculación con la empresa</td><td>✓</td></tr>
+        <tr><td>Salario bruto</td><td>Salario mensual antes de deducciones</td><td>✓</td></tr>
+      </tbody>
+    </table>
+
+    <h6>3.2 Centrales de riesgo</h6>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Campo</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>Puntaje DataCrédito</td><td>Score de central de riesgo (150 a 950)</td></tr>
+        <tr><td>¿Crédito activo en FONDEINO?</td><td>Si tiene un crédito vigente actualmente</td></tr>
+        <tr><td>% Capital pagado</td><td>Porcentaje ya pagado del crédito activo (0.00 a 1.00)</td></tr>
+        <tr><td>Cuotas otras entidades</td><td>Valor mensual de cuotas con bancos u otras entidades</td></tr>
+      </tbody>
+    </table>
+
+    <h6>3.3 Descuentos y garantías FONDEINO</h6>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Campo</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>Cuota aporte mensual</td><td>Descuento mensual por aportes al fondo</td></tr>
+        <tr><td>Cuota ahorro mensual</td><td>Descuento mensual por ahorros en el fondo</td></tr>
+        <tr><td>Saldo aportes acumulados</td><td>Total de aportes acumulados del asociado</td></tr>
+        <tr><td>Saldo ahorros acumulados</td><td>Total de ahorros acumulados del asociado</td></tr>
+      </tbody>
+    </table>
+
+    <h6>3.4 Condiciones del crédito</h6>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Campo</th><th>Descripción</th><th>Req.</th></tr></thead>
+      <tbody>
+        <tr><td>Modalidad</td><td>Tipo de crédito (define la tasa de interés). Al seleccionarla se muestra la tasa.</td><td>✓</td></tr>
+        <tr><td>Fecha de desembolso</td><td>Fecha en que se entregaría el dinero</td><td>✓</td></tr>
+        <tr><td>Número de cuotas</td><td>Plazo del crédito (1 a 48 cuotas)</td><td>✓</td></tr>
+        <tr><td>Monto solicitado</td><td>Valor del crédito en pesos</td><td>✓</td></tr>
+        <tr><td>Motivo</td><td>Destino del crédito</td><td></td></tr>
+      </tbody>
+    </table>
+
+    <h6>3.5 Vista previa en tiempo real</h6>
+    <p style="font-size:.88rem">El panel <em>"Vista Previa del Análisis"</em> se actualiza en tiempo real mientras llena el formulario, mostrando: salario neto, mínimo vital, cuota estimada, disponible final, % endeudamiento y score estimado. Es una <strong>estimación</strong> — el resultado oficial lo calcula el servidor.</p>
+
+    <div class="tip-box"><i class="bi bi-check-circle me-1"></i>Una vez completados los campos obligatorios, haga clic en <strong>Evaluar y Guardar</strong> para obtener el resultado final.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 4 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s4">
+  <div class="card-header bg-primary text-white fw-bold">4. Búsqueda de empleado por nombre</div>
+  <div class="card-body">
+    <p style="font-size:.88rem">Si la nómina está cargada, puede completar los datos del empleado automáticamente sin digitarlos.</p>
+
+    <h6>4.1 Autocompletado por nombre o cédula</h6>
+    <div class="step"><div class="step-num">1</div><div>En el formulario, localice el campo <strong>"Buscar empleado por nombre o cédula"</strong>.</div></div>
+    <div class="step"><div class="step-num">2</div><div>Escriba mínimo 2 caracteres del nombre o cédula.</div></div>
+    <div class="step"><div class="step-num">3</div><div>Aparecerá una lista desplegable con los empleados que coinciden.</div></div>
+    <div class="step"><div class="step-num">4</div><div>Haga clic en el empleado correcto — todos los campos se completan automáticamente.</div></div>
+
+    <h6>4.2 Búsqueda por cédula (botón lupa)</h6>
+    <div class="step"><div class="step-num">1</div><div>Ingrese el número de cédula en el campo <strong>Cédula</strong>.</div></div>
+    <div class="step"><div class="step-num">2</div><div>Haga clic en el botón 🔍 al lado del campo.</div></div>
+    <div class="step"><div class="step-num">3</div><div>Si el empleado está en nómina, los datos se completan. Si no, ingrese los datos manualmente.</div></div>
+
+    <div class="warn-box"><i class="bi bi-exclamation-triangle me-1"></i>Para que funcione, el administrador debe haber cargado previamente la nómina vigente (ver sección 11).</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 5 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s5">
+  <div class="card-header bg-primary text-white fw-bold">5. Entendiendo el resultado de la evaluación</div>
+  <div class="card-body">
+    <h6>5.1 Colores de la decisión</h6>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Color</th><th>Decisión</th><th>Significado</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge bg-success">VERDE</span></td><td>APROBAR</td><td>Cumple todos los requisitos.</td></tr>
+        <tr><td><span class="badge bg-warning text-dark">AMARILLO</span></td><td>REVISAR / CODEUDOR</td><td>Score entre 40-59. Requiere análisis adicional o garantías extras.</td></tr>
+        <tr><td><span class="badge bg-danger">ROJO</span></td><td>RECHAZAR</td><td>Score menor a 40 o no cumple el mínimo vital.</td></tr>
+      </tbody>
+    </table>
+
+    <h6>5.2 Análisis de ingresos</h6>
+    <p style="font-size:.88rem"><strong>Salario Neto</strong> = Salario Bruto × 92% (se descuenta 4% salud + 4% pensión)<br>
+    <strong>Mínimo Vital</strong> = Salario Neto × 50% (límite máximo de endeudamiento mensual)</p>
+
+    <h6>5.3 Validación del mínimo vital</h6>
+    <p style="font-size:.88rem"><strong>Disponible Final</strong> = Mínimo Vital − Total de cuotas. Si es negativo → el crédito se rechaza automáticamente sin importar el score.</p>
+
+    <h6>5.4 Scoring detallado</h6>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Factor</th><th>Máximo</th></tr></thead>
+      <tbody>
+        <tr><td>Puntaje DataCrédito (150–950)</td><td class="text-center">25 pts</td></tr>
+        <tr><td>Antigüedad en la empresa</td><td class="text-center">15 pts</td></tr>
+        <tr><td>Tipo de vinculación laboral</td><td class="text-center">10 pts</td></tr>
+        <tr><td>Capacidad de pago (% endeudamiento)</td><td class="text-center">25 pts</td></tr>
+        <tr><td>Garantías acumuladas (aportes + ahorros)</td><td class="text-center">15 pts</td></tr>
+        <tr><td>Historial crédito activo FONDEINO</td><td class="text-center">10 pts</td></tr>
+        <tr class="table-dark"><td><strong>TOTAL</strong></td><td class="text-center fw-bold">100 pts</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 6 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s6">
+  <div class="card-header bg-primary text-white fw-bold">6. Plan de pagos</div>
+  <div class="card-body">
+    <p style="font-size:.88rem">Al final del detalle de cada evaluación aparece la tabla completa de amortización.</p>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Columna</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>#</td><td>Número de cuota</td></tr>
+        <tr><td>Fecha Pago</td><td>Fecha de vencimiento de cada cuota</td></tr>
+        <tr><td>Días</td><td>Días del período calculados con método DAYS360</td></tr>
+        <tr><td>Saldo Inicial</td><td>Capital pendiente al inicio del período</td></tr>
+        <tr><td>Interés</td><td>Valor del interés de la cuota</td></tr>
+        <tr><td>Capital</td><td>Abono al capital en esa cuota</td></tr>
+        <tr><td>Saldo Final</td><td>Capital pendiente después del pago</td></tr>
+        <tr><td>Seguro</td><td>Seguro de vida (0.25% del saldo inicial)</td></tr>
+        <tr><td>Cuota Total</td><td>Valor total a pagar (interés + capital + seguro)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 7 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s7">
+  <div class="card-header bg-primary text-white fw-bold">7. Exportar evaluación a PDF</div>
+  <div class="card-body">
+    <div class="step"><div class="step-num">1</div><div>Abra el detalle de la evaluación.</div></div>
+    <div class="step"><div class="step-num">2</div><div>Haga clic en <strong>"Exportar PDF"</strong> (esquina superior derecha).</div></div>
+    <div class="step"><div class="step-num">3</div><div>Se abre una nueva pestaña con la versión de impresión y el diálogo de impresión del navegador.</div></div>
+    <div class="step"><div class="step-num">4</div><div>Seleccione <strong>"Guardar como PDF"</strong>, verifique que el tamaño sea A4 y haga clic en Guardar.</div></div>
+    <div class="tip-box"><i class="bi bi-file-pdf me-1"></i>El PDF incluye: encabezado, banner de decisión, análisis de ingresos, scoring detallado y plan de pagos completo.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 8 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s8">
+  <div class="card-header bg-primary text-white fw-bold">8. Historial de evaluaciones</div>
+  <div class="card-body">
+    <p style="font-size:.88rem">Haga clic en <strong>Historial</strong> en el menú. Muestra hasta 200 evaluaciones con filtros de búsqueda:</p>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Filtro</th><th>Cómo usar</th></tr></thead>
+      <tbody>
+        <tr><td>Buscar</td><td>Digite parte del nombre o número de cédula</td></tr>
+        <tr><td>Decisión</td><td>Filtre por Todas / Aprobar / Revisar / Rechazar</td></tr>
+        <tr><td>Desde / Hasta</td><td>Rango de fechas de la evaluación</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.88rem">Use el botón <strong>X</strong> para limpiar todos los filtros. Haga clic en el ícono 👁 para ver el detalle de cualquier evaluación.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 9 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s9">
+  <div class="card-header bg-primary text-white fw-bold">9. Editar y eliminar evaluaciones</div>
+  <div class="card-body">
+    <h6>9.1 Editar</h6>
+    <div class="step"><div class="step-num">1</div><div>En el historial o detalle, haga clic en el botón <strong>Editar</strong> (lápiz amarillo).</div></div>
+    <div class="step"><div class="step-num">2</div><div>Modifique los campos necesarios y haga clic en <strong>Recalcular y Guardar</strong>.</div></div>
+    <div class="step"><div class="step-num">3</div><div>El sistema recalculará el score y la decisión con los nuevos datos.</div></div>
+    <div class="tip-box"><i class="bi bi-info-circle me-1"></i>Los usuarios Comité solo pueden editar sus propias evaluaciones. Los administradores pueden editar cualquiera.</div>
+
+    <h6>9.2 Eliminar</h6>
+    <div class="step"><div class="step-num">1</div><div>Haga clic en el botón <strong>Eliminar</strong> (papelera roja).</div></div>
+    <div class="step"><div class="step-num">2</div><div>Confirme en la pantalla de confirmación haciendo clic en <strong>Sí, eliminar</strong>.</div></div>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle me-1"></i>Esta acción no se puede deshacer. Verifique que es la evaluación correcta antes de confirmar.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 10 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s10">
+  <div class="card-header bg-primary text-white fw-bold">10. Decisión del comité</div>
+  <div class="card-body">
+    <p style="font-size:.88rem">Los administradores pueden registrar la decisión formal del comité de crédito en cada evaluación.</p>
+    <div class="step"><div class="step-num">1</div><div>Abra el detalle de la evaluación.</div></div>
+    <div class="step"><div class="step-num">2</div><div>En la sección <strong>"Decisión del Comité"</strong> (visible solo para administradores), llene los campos de decisión y observaciones.</div></div>
+    <div class="step"><div class="step-num">3</div><div>Haga clic en <strong>Registrar Decisión</strong>. Quedará visible en el encabezado y en el PDF.</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 11 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s11">
+  <div class="card-header bg-primary text-white fw-bold">11. Carga de nómina</div>
+  <div class="card-body">
+    <h6>11.1 Formato del archivo Excel</h6>
+    <p style="font-size:.88rem">El archivo debe ser <code>.xlsx</code> con las siguientes columnas:</p>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Columna</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td><code>cedula</code></td><td>Número de cédula</td></tr>
+        <tr><td><code>nombre</code></td><td>Nombre completo</td></tr>
+        <tr><td><code>salario</code></td><td>Salario bruto mensual</td></tr>
+        <tr><td><code>area</code></td><td>Área o dependencia</td></tr>
+        <tr><td><code>cargo</code></td><td>Cargo del empleado</td></tr>
+        <tr><td><code>tipo_vinculacion</code></td><td><code>Indefinido</code>, <code>A termino fijo</code> o <code>Servicios</code></td></tr>
+        <tr><td><code>fecha_ingreso</code></td><td>Fecha de ingreso (YYYY-MM-DD o DD/MM/YYYY)</td></tr>
+      </tbody>
+    </table>
+
+    <h6>11.2 Pasos para cargar</h6>
+    <div class="step"><div class="step-num">1</div><div>Vaya a <strong>Administración → Cargar Nómina</strong>.</div></div>
+    <div class="step"><div class="step-num">2</div><div>Haga clic en <strong>Seleccionar archivo</strong> y elija el Excel de nómina.</div></div>
+    <div class="step"><div class="step-num">3</div><div>Haga clic en <strong>Cargar Nómina</strong>. El sistema muestra el número de registros procesados.</div></div>
+    <div class="tip-box"><i class="bi bi-info-circle me-1"></i>Cada carga actualiza los registros existentes (por cédula) o crea nuevos. No elimina empleados anteriores.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 12 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s12">
+  <div class="card-header bg-primary text-white fw-bold">12. Gestión de usuarios</div>
+  <div class="card-body">
+    <p style="font-size:.88rem">Solo los administradores pueden crear y gestionar usuarios. Vaya a <strong>Administración → Usuarios</strong>.</p>
+
+    <h6>12.1 Crear usuario</h6>
+    <div class="step"><div class="step-num">1</div><div>Haga clic en <strong>Nuevo Usuario</strong>.</div></div>
+    <div class="step"><div class="step-num">2</div><div>Complete los campos: usuario, nombre, email, teléfono, rol y contraseña temporal.</div></div>
+    <div class="step"><div class="step-num">3</div><div>Haga clic en <strong>Guardar</strong>.</div></div>
+    <div class="tip-box"><i class="bi bi-envelope me-1"></i>Si el sistema de correo está configurado, el usuario recibirá sus credenciales al email registrado. En su primer ingreso deberá cambiar la contraseña.</div>
+
+    <h6>12.2 Editar usuario / Cambiar contraseña</h6>
+    <p style="font-size:.88rem">Use los botones <strong>Editar</strong> o <strong>Contraseña</strong> en la lista de usuarios para actualizar datos o restablecer la contraseña de un usuario.</p>
+
+    <h6>12.3 Activar / Desactivar</h6>
+    <p style="font-size:.88rem">En la pantalla de edición, desactive la casilla <strong>Activo</strong> para bloquear el acceso de un usuario sin eliminarlo.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 13 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s13">
+  <div class="card-header bg-primary text-white fw-bold">13. Configuración del scoring</div>
+  <div class="card-body">
+    <p style="font-size:.88rem">Vaya a <strong>Administración → Config. Scoring</strong> para ajustar todos los parámetros del motor de evaluación.</p>
+    <p style="font-size:.88rem">Los parámetros configurables incluyen: umbrales y puntajes de DataCrédito, niveles de antigüedad, puntajes por tipo de vinculación, umbrales de capacidad de pago, cobertura de garantías, porcentaje de mínimo vital, scores mínimos para aprobar/revisar, tasas de descuento de salud y pensión, y porcentaje del seguro de vida.</p>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle me-1"></i>Los cambios en la configuración aplican solo a nuevas evaluaciones. Las evaluaciones ya guardadas mantienen sus valores originales.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 14 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s14">
+  <div class="card-header bg-primary text-white fw-bold">14. Gestión de modalidades</div>
+  <div class="card-body">
+    <p style="font-size:.88rem">Las modalidades definen los tipos de crédito y sus tasas. Vaya a <strong>Administración → Modalidades</strong>.</p>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Campo</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>Nombre</td><td>Nombre descriptivo del tipo de crédito</td></tr>
+        <tr><td>Tasa mensual</td><td>Tasa de interés mensual en decimal (ej: <code>0.015</code> = 1.5% mensual)</td></tr>
+        <tr><td>PD Base</td><td>Probabilidad de incumplimiento base (parámetro de riesgo)</td></tr>
+        <tr><td>Activa</td><td>Si está marcada, estará disponible en nuevas evaluaciones</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 15 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s15">
+  <div class="card-header bg-primary text-white fw-bold">15. Cómo se calcula el score</div>
+  <div class="card-body">
+    <h6>Fórmulas principales</h6>
+    <table class="table table-sm table-bordered manual-table mb-3">
+      <tbody>
+        <tr><td>Salario Neto</td><td><code>Salario Bruto × 92%</code></td></tr>
+        <tr><td>Mínimo Vital</td><td><code>Salario Neto × 50%</code></td></tr>
+        <tr><td>Cuota (PMT)</td><td><code>Monto × Tasa / (1 − (1 + Tasa)^(−N))</code></td></tr>
+        <tr><td>Seguro vida</td><td><code>Saldo período × 0.25%</code></td></tr>
+        <tr><td>Disponible Final</td><td><code>Mínimo Vital − Total cuotas</code></td></tr>
+      </tbody>
+    </table>
+
+    <h6>Puntajes por factor</h6>
+    <div class="row">
+      <div class="col-md-6">
+        <p class="fw-semibold mb-1" style="font-size:.82rem">DataCrédito (25 pts máx.)</p>
+        <table class="table table-sm table-bordered manual-table mb-3">
+          <tbody>
+            <tr><td>≥ 700</td><td class="text-end">25 pts</td></tr>
+            <tr><td>≥ 500</td><td class="text-end">15 pts</td></tr>
+            <tr><td>≥ 300</td><td class="text-end">8 pts</td></tr>
+            <tr><td>&lt; 300</td><td class="text-end">0 pts</td></tr>
+          </tbody>
+        </table>
+        <p class="fw-semibold mb-1" style="font-size:.82rem">Antigüedad (15 pts máx.)</p>
+        <table class="table table-sm table-bordered manual-table mb-3">
+          <tbody>
+            <tr><td>≥ 24 meses</td><td class="text-end">15 pts</td></tr>
+            <tr><td>≥ 12 meses</td><td class="text-end">12 pts</td></tr>
+            <tr><td>≥ 6 meses</td><td class="text-end">8 pts</td></tr>
+            <tr><td>≥ 3 meses</td><td class="text-end">4 pts</td></tr>
+            <tr><td>&lt; 3 meses</td><td class="text-end">0 pts</td></tr>
+          </tbody>
+        </table>
+        <p class="fw-semibold mb-1" style="font-size:.82rem">Vinculación (10 pts máx.)</p>
+        <table class="table table-sm table-bordered manual-table mb-3">
+          <tbody>
+            <tr><td>Indefinido</td><td class="text-end">10 pts</td></tr>
+            <tr><td>A término fijo</td><td class="text-end">7 pts</td></tr>
+            <tr><td>Prestación servicios</td><td class="text-end">4 pts</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-6">
+        <p class="fw-semibold mb-1" style="font-size:.82rem">Capacidad de pago (25 pts máx.)</p>
+        <table class="table table-sm table-bordered manual-table mb-3">
+          <tbody>
+            <tr><td>Endeudam. ≤ 30%</td><td class="text-end">25 pts</td></tr>
+            <tr><td>Endeudam. ≤ 50%</td><td class="text-end">15 pts</td></tr>
+            <tr><td>Endeudam. &gt; 50%</td><td class="text-end">5 pts</td></tr>
+            <tr><td>Disponible &lt; 0</td><td class="text-end">0 pts</td></tr>
+          </tbody>
+        </table>
+        <p class="fw-semibold mb-1" style="font-size:.82rem">Garantías (15 pts máx.)</p>
+        <table class="table table-sm table-bordered manual-table mb-3">
+          <tbody>
+            <tr><td>Cobertura ≥ 100%</td><td class="text-end">15 pts</td></tr>
+            <tr><td>Cobertura ≥ 50%</td><td class="text-end">10 pts</td></tr>
+            <tr><td>Cobertura ≥ 25%</td><td class="text-end">5 pts</td></tr>
+            <tr><td>Cobertura &lt; 25%</td><td class="text-end">0 pts</td></tr>
+          </tbody>
+        </table>
+        <p class="fw-semibold mb-1" style="font-size:.82rem">Historial crédito (10 pts máx.)</p>
+        <table class="table table-sm table-bordered manual-table mb-3">
+          <tbody>
+            <tr><td>Sin crédito activo</td><td class="text-end">10 pts</td></tr>
+            <tr><td>Activo + pagado ≥ 30%</td><td class="text-end">7 pts</td></tr>
+            <tr><td>Activo + pagado &lt; 30%</td><td class="text-end">3 pts</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h6>Clasificación y decisión</h6>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Score</th><th>Clasificación</th><th>Decisión</th></tr></thead>
+      <tbody>
+        <tr><td>80 – 100</td><td><span class="badge bg-success">EXCELENTE</span></td><td>APROBAR</td></tr>
+        <tr><td>60 – 79</td><td><span class="badge bg-primary">BUENO</span></td><td>APROBAR</td></tr>
+        <tr><td>40 – 59</td><td><span class="badge bg-warning text-dark">REGULAR</span></td><td>REVISAR / CODEUDOR</td></tr>
+        <tr><td>0 – 39</td><td><span class="badge bg-danger">ALTO RIESGO</span></td><td>RECHAZAR</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 16 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s16">
+  <div class="card-header bg-primary text-white fw-bold">16. Preguntas frecuentes</div>
+  <div class="card-body" style="font-size:.88rem">
+    <p><strong>¿Puedo cambiar la decisión que da el sistema?</strong><br>
+    El sistema genera una decisión automática basada en el score. El administrador puede registrar una <em>Decisión del Comité</em> diferente, que queda documentada junto al resultado automático.</p>
+
+    <p><strong>¿Qué pasa si el empleado no está en la nómina?</strong><br>
+    Puede ingresar los datos manualmente. La búsqueda es una ayuda para agilizar el proceso, no un requisito.</p>
+
+    <p><strong>¿Los cambios en la configuración del scoring afectan evaluaciones anteriores?</strong><br>
+    No. Las evaluaciones ya guardadas mantienen sus valores originales. Solo las nuevas evaluaciones usan la configuración actualizada.</p>
+
+    <p><strong>¿Puedo evaluar a alguien que ya tiene un crédito activo?</strong><br>
+    Sí. Seleccione "Sí" en el campo de crédito activo e indique el porcentaje del capital pagado.</p>
+
+    <p><strong>¿Por qué la cuota estimada del formulario difiere del plan de pagos?</strong><br>
+    La vista previa usa una aproximación en JavaScript. El plan de pagos usa el algoritmo exacto con DAYS360 que considera los días reales de cada período.</p>
+
+    <p><strong>¿El correo de bienvenida llega siempre al crear un usuario?</strong><br>
+    Solo si el administrador configuró las variables de correo (EMAIL_HOST_USER y EMAIL_HOST_PASSWORD) en el servidor. Si no están configuradas, las credenciales deben entregarse manualmente.</p>
+
+    <p><strong>¿El sistema funciona en el celular?</strong><br>
+    Sí, es responsive. Se recomienda computador de escritorio para mayor comodidad en el formulario de evaluación.</p>
+  </div>
+</div>

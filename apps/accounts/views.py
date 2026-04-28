@@ -1,10 +1,11 @@
 import os
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.conf import settings
+from django.core.mail import send_mail
 
 from .models import Usuario
 from .forms import LoginForm, UsuarioCrearForm, UsuarioEditarForm, CambiarPasswordForm
@@ -85,8 +86,39 @@ def usuario_crear(request):
         return HttpResponseForbidden()
     form = UsuarioCrearForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
-        form.save()
-        messages.success(request, 'Usuario creado exitosamente.')
+        password_plano = form.cleaned_data.get('password1', '')
+        usuario = form.save(commit=False)
+        usuario.debe_cambiar_password = True
+        usuario.save()
+        # Enviar credenciales por correo si hay email configurado
+        if getattr(settings, 'EMAIL_CONFIGURADO', False) and usuario.email:
+            try:
+                send_mail(
+                    subject='Tus credenciales de acceso — FONDEINO',
+                    message=(
+                        f'Hola {usuario.get_full_name() or usuario.username},\n\n'
+                        f'El administrador ha creado tu cuenta en el Sistema de Evaluación Crediticia de FONDEINO.\n\n'
+                        f'Tus credenciales de acceso son:\n'
+                        f'  Usuario:     {usuario.username}\n'
+                        f'  Contraseña:  {password_plano}\n\n'
+                        f'Al ingresar por primera vez, el sistema te pedirá que cambies tu contraseña.\n\n'
+                        f'Accede en: {request.build_absolute_uri("/")}\n\n'
+                        f'— FONDEINO, Sistema de Evaluación Crediticia'
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[usuario.email],
+                    fail_silently=True,
+                )
+                messages.success(request, f'Usuario creado. Se enviaron las credenciales a {usuario.email}.')
+            except Exception:
+                messages.success(request, 'Usuario creado. No se pudo enviar el correo (verifique configuración de email).')
+        else:
+            msg = 'Usuario creado exitosamente.'
+            if not usuario.email:
+                msg += ' (sin email registrado, no se envió notificación)'
+            elif not getattr(settings, 'EMAIL_CONFIGURADO', False):
+                msg += ' (correo no configurado en el sistema)'
+            messages.success(request, msg)
         return redirect('accounts:usuarios_lista')
     return render(request, 'accounts/usuario_form.html', {'form': form, 'titulo': 'Crear Usuario'})
 
@@ -112,7 +144,28 @@ def usuario_cambiar_password(request, pk):
     form = CambiarPasswordForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
         usuario.set_password(form.cleaned_data['password1'])
+        usuario.debe_cambiar_password = False
         usuario.save()
         messages.success(request, 'Contraseña actualizada.')
         return redirect('accounts:usuarios_lista')
     return render(request, 'accounts/cambiar_password.html', {'form': form, 'usuario': usuario})
+
+
+@login_required
+def cambiar_mi_password(request):
+    """El usuario cambia su propia contraseña (obligatorio en primer ingreso)."""
+    form = CambiarPasswordForm(request.POST or None)
+    obligatorio = request.user.debe_cambiar_password
+    if request.method == 'POST' and form.is_valid():
+        request.user.set_password(form.cleaned_data['password1'])
+        request.user.debe_cambiar_password = False
+        request.user.save()
+        update_session_auth_hash(request, request.user)
+        messages.success(request, 'Contraseña actualizada correctamente. Ya puedes usar el sistema.')
+        return redirect('credito:dashboard')
+    return render(request, 'accounts/cambiar_mi_password.html', {'form': form, 'obligatorio': obligatorio})
+
+
+def manual_usuario(request):
+    """Manual de usuario visible para cualquier persona autenticada."""
+    return render(request, 'accounts/manual.html')
