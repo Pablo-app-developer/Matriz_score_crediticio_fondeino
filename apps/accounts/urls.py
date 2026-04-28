@@ -14,4 +14,5 @@ urlpatterns = [
     path('usuarios/<int:pk>/password/', views.usuario_cambiar_password, name='usuario_password'),
     path('mi-password/', views.cambiar_mi_password, name='cambiar_mi_password'),
     path('manual/', views.manual_usuario, name='manual'),
+    path('protocolo-comite/', views.protocolo_comite, name='protocolo_comite'),
 ]

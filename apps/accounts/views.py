@@ -165,3 +165,9 @@ def cambiar_mi_password(request):
 def manual_usuario(request):
     """Manual de usuario visible para cualquier persona autenticada."""
     return render(request, 'accounts/manual.html')
+
+
+@login_required
+def protocolo_comite(request):
+    """Presentación del protocolo del Comité de Crédito."""
+    return render(request, 'accounts/protocolo_comite.html')
