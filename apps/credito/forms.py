@@ -28,7 +28,7 @@ class EvaluacionForm(forms.Form):
     antiguedad_meses = forms.IntegerField(min_value=0, initial=0,
                                           widget=forms.NumberInput(attrs={'class': INPUT, 'id': 'id_antiguedad_meses'}))
     salario_bruto = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0,
-                                       widget=forms.NumberInput(attrs={'class': INPUT, 'step': '1000',
+                                       widget=forms.NumberInput(attrs={'class': INPUT, 'step': 'any',
                                                                        'id': 'id_salario_bruto'}))
 
     # Centrales de riesgo
@@ -41,29 +41,29 @@ class EvaluacionForm(forms.Form):
     pct_capital_pagado = forms.DecimalField(max_digits=5, decimal_places=4, min_value=0, max_value=1,
                                             initial=0, required=False,
                                             widget=forms.NumberInput(
-                                                attrs={'class': INPUT, 'step': '0.01',
+                                                attrs={'class': INPUT, 'step': 'any',
                                                        'placeholder': '0.00 a 1.00',
                                                        'id': 'id_pct_capital_pagado'}))
     cuotas_otras_entidades = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0,
                                                 initial=0, required=False,
                                                 widget=forms.NumberInput(attrs={'class': INPUT,
-                                                                                'step': '1000',
+                                                                                'step': 'any',
                                                                                 'id': 'id_cuotas_otras_entidades'}))
 
     # Descuentos FONDEINO
     cuota_aporte = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0, initial=0, required=False,
-                                      widget=forms.NumberInput(attrs={'class': INPUT, 'step': '1000',
+                                      widget=forms.NumberInput(attrs={'class': INPUT, 'step': 'any',
                                                                       'id': 'id_cuota_aporte'}))
     cuota_ahorro = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0, initial=0, required=False,
-                                      widget=forms.NumberInput(attrs={'class': INPUT, 'step': '1000',
+                                      widget=forms.NumberInput(attrs={'class': INPUT, 'step': 'any',
                                                                       'id': 'id_cuota_ahorro'}))
 
     # Garantías acumuladas
     saldo_aportes = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0, initial=0, required=False,
-                                       widget=forms.NumberInput(attrs={'class': INPUT, 'step': '1000',
+                                       widget=forms.NumberInput(attrs={'class': INPUT, 'step': 'any',
                                                                        'id': 'id_saldo_aportes'}))
     saldo_ahorros = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0, initial=0, required=False,
-                                       widget=forms.NumberInput(attrs={'class': INPUT, 'step': '1000',
+                                       widget=forms.NumberInput(attrs={'class': INPUT, 'step': 'any',
                                                                        'id': 'id_saldo_ahorros'}))
 
     # Condiciones del crédito
@@ -73,7 +73,7 @@ class EvaluacionForm(forms.Form):
                                        widget=forms.DateInput(attrs={'class': INPUT, 'type': 'date',
                                                                      'id': 'id_fecha_desembolso'}))
     monto_solicitado = forms.DecimalField(max_digits=14, decimal_places=2, min_value=1,
-                                          widget=forms.NumberInput(attrs={'class': INPUT, 'step': '1000',
+                                          widget=forms.NumberInput(attrs={'class': INPUT, 'step': 'any',
                                                                           'id': 'id_monto_solicitado'}))
     n_cuotas = forms.IntegerField(min_value=1, max_value=48, initial=12,
                                   widget=forms.NumberInput(attrs={'class': INPUT, 'id': 'id_n_cuotas'}))
