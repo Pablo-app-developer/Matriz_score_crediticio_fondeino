@@ -167,7 +167,6 @@ def manual_usuario(request):
     return render(request, 'accounts/manual.html')
 
 
-@login_required
 def protocolo_comite(request):
-    """Presentación del protocolo del Comité de Crédito."""
+    """Presentación del protocolo del Comité de Crédito (pública, sin login)."""
     return render(request, 'accounts/protocolo_comite.html')
