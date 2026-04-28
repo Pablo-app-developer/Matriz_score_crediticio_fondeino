@@ -25,25 +25,39 @@ def login_view(request):
 
 
 def debug_db(request):
-    """Vista temporal para verificar conexión a BD — solo visible en DEBUG o con ?key=fondeino."""
-    if not (settings.DEBUG or request.GET.get('key') == 'fondeino2026'):
+    """Vista temporal para verificar conexión a BD."""
+    if request.GET.get('key') != 'fondeino2026':
         from django.http import Http404
         raise Http404
     try:
         count = Usuario.objects.count()
         engine = settings.DATABASES['default']['ENGINE']
-        db_name = settings.DATABASES['default'].get('NAME', '?')
+        db_name = str(settings.DATABASES['default'].get('NAME', '?'))[:60]
     except Exception as e:
         count = f'ERROR: {e}'
         engine = 'error'
         db_name = 'error'
-    has_db_url = bool(os.environ.get('DATABASE_URL'))
-    return render(request, 'debug_db.html', {
-        'engine': engine,
-        'user_count': count,
-        'has_db_url': has_db_url,
-        'db_name': str(db_name)[:50],
-    })
+
+    # Mostrar variables de entorno clave para diagnóstico
+    db_url = os.environ.get('DATABASE_URL', '')
+    env_info = {
+        'DATABASE_URL': db_url[:40] + '...' if len(db_url) > 40 else (db_url or 'NO DEFINIDA'),
+        'SECRET_KEY': 'OK' if os.environ.get('SECRET_KEY') else 'NO DEFINIDA',
+        'DEBUG': os.environ.get('DEBUG', 'NO DEFINIDA'),
+        'VERCEL': os.environ.get('VERCEL', 'NO (no es Vercel)'),
+        'VERCEL_ENV': os.environ.get('VERCEL_ENV', 'NO DEFINIDA'),
+    }
+    from django.http import HttpResponse
+    html = f"""
+    <h2>Diagnóstico Vercel</h2>
+    <h3>Base de Datos</h3>
+    <p><b>Motor:</b> {engine}</p>
+    <p><b>Nombre BD:</b> {db_name}</p>
+    <p><b>Usuarios:</b> {count}</p>
+    <h3>Variables de Entorno</h3>
+    {''.join(f'<p><b>{k}:</b> {v}</p>' for k, v in env_info.items())}
+    """
+    return HttpResponse(html)
 
 
 @login_required
