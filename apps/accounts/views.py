@@ -1,8 +1,10 @@
+import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseForbidden
+from django.conf import settings
 
 from .models import Usuario
 from .forms import LoginForm, UsuarioCrearForm, UsuarioEditarForm, CambiarPasswordForm
@@ -20,6 +22,28 @@ def login_view(request):
             login(request, user)
             return redirect('credito:evaluacion')
     return render(request, 'accounts/login.html', {'form': form})
+
+
+def debug_db(request):
+    """Vista temporal para verificar conexión a BD — solo visible en DEBUG o con ?key=fondeino."""
+    if not (settings.DEBUG or request.GET.get('key') == 'fondeino2026'):
+        from django.http import Http404
+        raise Http404
+    try:
+        count = Usuario.objects.count()
+        engine = settings.DATABASES['default']['ENGINE']
+        db_name = settings.DATABASES['default'].get('NAME', '?')
+    except Exception as e:
+        count = f'ERROR: {e}'
+        engine = 'error'
+        db_name = 'error'
+    has_db_url = bool(os.environ.get('DATABASE_URL'))
+    return render(request, 'debug_db.html', {
+        'engine': engine,
+        'user_count': count,
+        'has_db_url': has_db_url,
+        'db_name': str(db_name)[:50],
+    })
 
 
 @login_required
