@@ -14,5 +14,16 @@
       "src": "/(.*)",
       "dest": "fondeino_web/wsgi.py"
     }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-src 'self' https://gamma.app;"
+        }
+      ]
+    }
   ]
 }
