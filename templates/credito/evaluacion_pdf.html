@@ -1,0 +1,327 @@
+{% load credito_tags %}<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Evaluación #{{ ev.pk }} — FONDEINO</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 11px; color: #111; background: #fff; }
+  .page { width: 210mm; margin: 0 auto; padding: 12mm 14mm; }
+
+  /* Header */
+  .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #1a56db; padding-bottom: 8px; margin-bottom: 12px; }
+  .header-logo { font-size: 22px; font-weight: 900; color: #1a56db; letter-spacing: -0.5px; }
+  .header-logo span { color: #f59e0b; }
+  .header-info { text-align: right; color: #555; font-size: 10px; }
+  .header-info strong { display: block; font-size: 14px; color: #111; }
+
+  /* Decision banner */
+  .banner { display: flex; gap: 12px; margin-bottom: 12px; border-radius: 6px; overflow: hidden; border: 1px solid #ddd; }
+  .banner-main { flex: 2; padding: 10px 14px; }
+  .banner-score { flex: 1; text-align: center; padding: 10px; background: #f8fafc; border-left: 1px solid #ddd; }
+  .banner-decision { flex: 1; text-align: center; padding: 10px; border-left: 1px solid #ddd; }
+  .banner h2 { font-size: 14px; margin-bottom: 3px; }
+  .banner .sub { color: #666; font-size: 10px; }
+  .score-num { font-size: 36px; font-weight: 900; line-height: 1; }
+  .decision-badge { display: inline-block; padding: 6px 14px; border-radius: 4px; font-weight: 700; font-size: 13px; color: #fff; margin-top: 4px; }
+  .bg-success { background: #16a34a; }
+  .bg-danger  { background: #dc2626; }
+  .bg-warning { background: #d97706; }
+  .bg-primary { background: #1a56db; }
+  .bg-secondary { background: #6b7280; }
+
+  /* Grid */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+
+  /* Cards */
+  .card { border: 1px solid #e5e7eb; border-radius: 5px; overflow: hidden; break-inside: avoid; }
+  .card-header { padding: 5px 10px; font-weight: 700; font-size: 10.5px; color: #fff; }
+  .hdr-blue   { background: #1a56db; }
+  .hdr-amber  { background: #d97706; color: #fff; }
+  .hdr-green  { background: #16a34a; }
+  .hdr-red    { background: #dc2626; }
+  .hdr-dark   { background: #111827; }
+  .hdr-gray   { background: #6b7280; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+  td, th { padding: 3px 8px; border-bottom: 1px solid #f1f1f1; }
+  th { background: #f3f4f6; font-weight: 700; text-align: left; }
+  .text-right { text-align: right; }
+  .text-center { text-align: center; }
+  .fw-bold { font-weight: 700; }
+  .bg-light { background: #f9fafb; }
+  .text-green { color: #16a34a; }
+  .text-red   { color: #dc2626; }
+
+  /* Progress bar */
+  .progress-wrap { padding: 8px 10px; }
+  .progress { height: 14px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 999px; font-size: 9px; color: #fff; display: flex; align-items: center; padding-left: 6px; }
+
+  /* Scoring summary */
+  tfoot td, tfoot th { background: #111827; color: #fff; font-weight: 700; }
+
+  /* Plan de pagos */
+  .plan-section { margin-top: 10px; break-inside: avoid; }
+
+  /* Footer */
+  .footer { margin-top: 14px; border-top: 1px solid #e5e7eb; padding-top: 6px; display: flex; justify-content: space-between; color: #888; font-size: 9.5px; }
+
+  /* Observations */
+  .obs-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 4px; padding: 8px 10px; margin-bottom: 10px; font-size: 10.5px; }
+
+  @media print {
+    body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .no-print { display: none !important; }
+    .page { padding: 6mm 10mm; }
+    @page { margin: 0; size: A4; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- PRINT BUTTON (hidden on print) -->
+  <div class="no-print" style="text-align:right;margin-bottom:10px">
+    <button onclick="window.print()"
+      style="background:#1a56db;color:#fff;border:none;padding:8px 20px;border-radius:5px;cursor:pointer;font-size:13px;font-weight:600">
+      ⬇ Imprimir / Guardar PDF
+    </button>
+    <button onclick="window.close()"
+      style="background:#6b7280;color:#fff;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;font-size:13px;margin-left:8px">
+      Cerrar
+    </button>
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="header-logo">FONDE<span>INO</span></div>
+      <div style="color:#555;font-size:10px;margin-top:2px">Fondo de Empleados · Evaluación Crediticia</div>
+    </div>
+    <div class="header-info">
+      <strong>Evaluación #{{ ev.pk }}</strong>
+      Generado: {{ hoy }}<br>
+      Por: {{ ev.evaluado_por.get_full_name }}
+    </div>
+  </div>
+
+  <!-- DECISION BANNER -->
+  <div class="banner">
+    <div class="banner-main">
+      <h2>{{ ev.nombre_completo }}</h2>
+      <div class="sub">{{ ev.tipo_documento }}: {{ ev.cedula }} &nbsp;|&nbsp; {{ ev.cargo }}{% if ev.area %} · {{ ev.area }}{% endif %}</div>
+      <div class="sub" style="margin-top:4px">Modalidad: <strong>{{ ev.modalidad.nombre }}</strong> &nbsp;·&nbsp;
+        Monto: <strong>${{ ev.monto_solicitado|floatformat:0 }}</strong> &nbsp;·&nbsp;
+        {{ ev.n_cuotas }} cuotas &nbsp;·&nbsp; Desembolso: {{ ev.fecha_desembolso|date:"d/m/Y" }}</div>
+    </div>
+    <div class="banner-score">
+      <div style="font-size:10px;color:#666;margin-bottom:2px">Score Total</div>
+      <div class="score-num">{{ ev.score_total }}</div>
+      <div style="font-size:10px;color:#666">/ 100</div>
+      <div style="margin-top:4px">
+        <span class="decision-badge bg-{{ ev.clasificacion_color }}" style="font-size:10px;padding:3px 10px">{{ ev.clasificacion }}</span>
+      </div>
+    </div>
+    <div class="banner-decision">
+      <div style="font-size:10px;color:#666;margin-bottom:6px">DECISIÓN</div>
+      <span class="decision-badge bg-{{ ev.decision_color }}">{{ ev.decision }}</span>
+      {% if ev.decision_comite %}
+      <div style="font-size:9.5px;margin-top:6px;color:#555"><strong>Comité:</strong> {{ ev.decision_comite }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="grid2">
+
+    <!-- IZQUIERDA -->
+    <div>
+      <!-- Ingresos y mínimo vital -->
+      <div class="card" style="margin-bottom:8px">
+        <div class="card-header hdr-blue">Análisis de Ingresos y Mínimo Vital</div>
+        <table>
+          <tr><td class="bg-light">Salario Bruto</td><td class="text-right fw-bold">${{ ev.salario_bruto|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light">Salario Neto (92%)</td><td class="text-right fw-bold">${{ ev.salario_neto|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light">% Mínimo Vital</td><td class="text-right">50%</td></tr>
+          <tr><td class="bg-light"><strong>Mínimo Vital</strong></td><td class="text-right fw-bold">${{ ev.minimo_vital|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+
+      <!-- Obligaciones -->
+      <div class="card" style="margin-bottom:8px">
+        <div class="card-header hdr-amber">Obligaciones Mensuales</div>
+        <table>
+          <tr><td class="bg-light">Cuotas Otras Entidades</td><td class="text-right">${{ ev.cuotas_otras_entidades|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light">Cuota Aporte FONDEINO</td><td class="text-right">${{ ev.cuota_aporte|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light">Cuota Ahorro FONDEINO</td><td class="text-right">${{ ev.cuota_ahorro|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light"><strong>Total Cuotas</strong></td><td class="text-right fw-bold">${{ ev.total_cuotas|floatformat:0 }}</td></tr>
+        </table>
+      </div>
+
+      <!-- Mínimo vital -->
+      <div class="card" style="margin-bottom:8px">
+        <div class="card-header {% if ev.disponible_final >= 0 %}hdr-green{% else %}hdr-red{% endif %}">Validación Mínimo Vital</div>
+        <table>
+          <tr>
+            <td class="bg-light">Disponible Final</td>
+            <td class="text-right fw-bold {% if ev.disponible_final >= 0 %}text-green{% else %}text-red{% endif %}">
+              ${{ ev.disponible_final|floatformat:0 }}
+            </td>
+          </tr>
+          <tr><td class="bg-light">Cumple Mínimo Vital</td>
+            <td class="text-right fw-bold {% if ev.disponible_final >= 0 %}text-green{% else %}text-red{% endif %}">
+              {% if ev.disponible_final >= 0 %}SI{% else %}NO{% endif %}
+            </td>
+          </tr>
+          <tr><td class="bg-light">% Endeudamiento</td><td class="text-right">{% widthratio ev.pct_endeudamiento 1 100 %}%</td></tr>
+          <tr><td class="bg-light">Estado</td><td class="text-right fw-bold">{{ ev.estado_mv }}</td></tr>
+        </table>
+      </div>
+
+      <!-- Condiciones crédito -->
+      <div class="card">
+        <div class="card-header hdr-dark">Condiciones del Crédito</div>
+        <table>
+          <tr><td class="bg-light">Modalidad</td><td class="text-right">{{ ev.modalidad.nombre }}</td></tr>
+          <tr><td class="bg-light">Monto Solicitado</td><td class="text-right fw-bold">${{ ev.monto_solicitado|floatformat:0 }}</td></tr>
+          <tr><td class="bg-light">Número de Cuotas</td><td class="text-right">{{ ev.n_cuotas }}</td></tr>
+          <tr><td class="bg-light">Tasa Nominal Anual</td><td class="text-right">{{ ev.modalidad.tasa_nominal_anual|floatformat:1 }}%</td></tr>
+          <tr><td class="bg-light">Fecha Desembolso</td><td class="text-right">{{ ev.fecha_desembolso|date:"d/m/Y" }}</td></tr>
+          {% if ev.motivo %}<tr><td class="bg-light">Motivo</td><td class="text-right">{{ ev.motivo }}</td></tr>{% endif %}
+        </table>
+      </div>
+    </div>
+
+    <!-- DERECHA: Scoring -->
+    <div>
+      <div class="card">
+        <div class="card-header hdr-blue">Scoring Crediticio — Detalle</div>
+        <table>
+          <thead>
+            <tr><th>Factor</th><th class="text-center">Pts</th><th class="text-center">Máx</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Puntaje DataCrédito ({{ ev.puntaje_datacredito }})</td>
+              <td class="text-center fw-bold">{{ ev.score_datacredito }}</td>
+              <td class="text-center" style="color:#888">25</td>
+            </tr>
+            <tr>
+              <td>Antigüedad Empresa ({{ ev.antiguedad_meses }} meses)</td>
+              <td class="text-center fw-bold">{{ ev.score_antiguedad }}</td>
+              <td class="text-center" style="color:#888">15</td>
+            </tr>
+            <tr>
+              <td>Tipo Vinculación ({{ ev.tipo_vinculacion }})</td>
+              <td class="text-center fw-bold">{{ ev.score_vinculacion }}</td>
+              <td class="text-center" style="color:#888">10</td>
+            </tr>
+            <tr>
+              <td>Capacidad de Pago ({% widthratio ev.pct_endeudamiento 1 100 %}% endeudam.)</td>
+              <td class="text-center fw-bold">{{ ev.score_capacidad_pago }}</td>
+              <td class="text-center" style="color:#888">25</td>
+            </tr>
+            <tr>
+              <td>Garantías Acumuladas</td>
+              <td class="text-center fw-bold">{{ ev.score_garantias }}</td>
+              <td class="text-center" style="color:#888">15</td>
+            </tr>
+            <tr>
+              <td>Historial Crédito Activo</td>
+              <td class="text-center fw-bold">{{ ev.score_credito_activo }}</td>
+              <td class="text-center" style="color:#888">10</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="fw-bold">SCORE TOTAL</td>
+              <td class="text-center fw-bold" style="font-size:14px">{{ ev.score_total }}</td>
+              <td class="text-center">100</td>
+            </tr>
+          </tfoot>
+        </table>
+        <div class="progress-wrap">
+          <div class="progress">
+            <div class="progress-bar bg-{{ ev.clasificacion_color }}" style="width:{{ ev.score_total }}%">
+              {{ ev.score_total }} pts
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% if ev.observaciones %}
+      <div class="obs-box" style="margin-top:8px">
+        <strong>Observaciones:</strong> {{ ev.observaciones }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- PLAN DE PAGOS -->
+  <div class="plan-section">
+    <div class="card">
+      <div class="card-header hdr-gray" style="display:flex;justify-content:space-between">
+        <span>Plan de Pagos</span>
+        <span>{{ ev.n_cuotas }} cuotas</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Fecha Pago</th>
+            <th class="text-center">Días</th>
+            <th class="text-right">Saldo Inicial</th>
+            <th class="text-right">Interés</th>
+            <th class="text-right">Capital</th>
+            <th class="text-right">Saldo Final</th>
+            <th class="text-right">Seguro</th>
+            <th class="text-right">Cuota Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in plan %}
+          <tr>
+            <td>{{ c.numero }}</td>
+            <td>{{ c.fecha_pago|date:"d/m/Y" }}</td>
+            <td class="text-center">{{ c.dias }}</td>
+            <td class="text-right">${{ c.saldo_inicial|floatformat:0 }}</td>
+            <td class="text-right">${{ c.interes|floatformat:0 }}</td>
+            <td class="text-right">${{ c.capital|floatformat:0 }}</td>
+            <td class="text-right">${{ c.saldo_final|floatformat:0 }}</td>
+            <td class="text-right">${{ c.seguro|floatformat:0 }}</td>
+            <td class="text-right fw-bold">${{ c.cuota_total|floatformat:0 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" class="fw-bold">TOTALES</td>
+            <td class="text-right">${{ plan|sum_field:"interes"|floatformat:0 }}</td>
+            <td class="text-right">${{ plan|sum_field:"capital"|floatformat:0 }}</td>
+            <td></td>
+            <td class="text-right">${{ plan|sum_field:"seguro"|floatformat:0 }}</td>
+            <td class="text-right fw-bold">${{ plan|sum_field:"cuota_total"|floatformat:0 }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>FONDEINO · Fondo de Empleados · Evaluación Crediticia</div>
+    <div>Documento generado el {{ hoy }} · Solo para uso interno</div>
+  </div>
+
+</div>
+<script>
+  // Auto-trigger print dialog after page loads
+  window.addEventListener('load', function() {
+    // Small delay so styles apply fully
+    setTimeout(function() { window.print(); }, 400);
+  });
+</script>
+</body>
+</html>

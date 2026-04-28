@@ -156,6 +156,30 @@ def buscar_empleado(request):
 
 
 @login_required
+def buscar_empleado_nombre(request):
+    """API AJAX: autocompletado de empleados por nombre o cédula."""
+    q = request.GET.get('q', '').strip()
+    if len(q) < 2:
+        return JsonResponse({'results': []})
+    empleados = Empleado.objects.filter(
+        Q(nombre__icontains=q) | Q(cedula__icontains=q)
+    )[:10]
+    results = [
+        {
+            'cedula': emp.cedula,
+            'nombre': emp.nombre,
+            'area': emp.area,
+            'cargo': emp.cargo,
+            'tipo_vinculacion': emp.tipo_vinculacion,
+            'antiguedad_meses': emp.antiguedad_meses,
+            'salario_bruto': float(emp.salario),
+        }
+        for emp in empleados
+    ]
+    return JsonResponse({'results': results})
+
+
+@login_required
 def get_modalidad_tasa(request):
     """API AJAX: devuelve tasa mensual de una modalidad."""
     pk = request.GET.get('pk')
@@ -164,6 +188,27 @@ def get_modalidad_tasa(request):
         return JsonResponse({'tasa_mensual': float(m.tasa_mensual), 'tasa_anual': float(m.tasa_mensual) * 12})
     except Modalidad.DoesNotExist:
         return JsonResponse({'error': 'not found'}, status=404)
+
+
+@login_required
+def evaluacion_pdf(request, pk):
+    """Página de impresión / exportación PDF de una evaluación."""
+    ev = get_object_or_404(EvaluacionCredito, pk=pk)
+    from .scoring import generar_plan_pagos, calcular_seguro
+    from django.utils.timezone import localdate
+    seguro = calcular_seguro(float(ev.monto_solicitado))
+    plan = generar_plan_pagos(
+        float(ev.monto_solicitado),
+        float(ev.modalidad.tasa_mensual),
+        ev.n_cuotas,
+        ev.fecha_desembolso,
+        seguro,
+    )
+    return render(request, 'credito/evaluacion_pdf.html', {
+        'ev': ev,
+        'plan': plan,
+        'hoy': localdate().strftime('%d/%m/%Y'),
+    })
 
 
 @login_required

@@ -24,6 +24,20 @@
       </div>
       <div class="card-body">
         <div class="row g-2">
+          <!-- Búsqueda por nombre con autocompletado -->
+          <div class="col-12">
+            <label class="form-label small fw-semibold">
+              <i class="bi bi-search me-1"></i>Buscar empleado por nombre o cédula
+            </label>
+            <div class="position-relative">
+              <input type="text" id="buscarNombre" class="form-control"
+                     placeholder="Escriba nombre o número de cédula..."
+                     autocomplete="off">
+              <ul id="autocompleteList" class="list-group shadow position-absolute w-100 z-3"
+                  style="top:100%;display:none;max-height:220px;overflow-y:auto;z-index:1050"></ul>
+            </div>
+            <div id="buscarEstado" class="form-text"></div>
+          </div>
           <div class="col-4">
             <label class="form-label small fw-semibold">Tipo Documento</label>
             {{ form.tipo_documento }}
@@ -32,11 +46,10 @@
             <label class="form-label small fw-semibold">Cédula <span class="text-danger">*</span></label>
             <div class="input-group">
               {{ form.cedula }}
-              <button type="button" class="btn btn-outline-primary" id="btnBuscar" title="Buscar en nómina">
+              <button type="button" class="btn btn-outline-primary" id="btnBuscar" title="Buscar en nómina por cédula">
                 <i class="bi bi-search"></i>
               </button>
             </div>
-            <div id="buscarEstado" class="form-text"></div>
           </div>
           <div class="col-12">
             <label class="form-label small fw-semibold">Nombre Completo <span class="text-danger">*</span></label>
@@ -271,9 +284,64 @@
 {% block scripts %}
 <script>
 const API_EMPLEADO = "{% url 'credito:api_empleado' %}";
+const API_EMPLEADO_NOMBRE = "{% url 'credito:api_empleado_nombre' %}";
 const API_MODALIDAD = "{% url 'credito:api_modalidad' %}";
 
-// ── Buscar empleado en nómina ──
+// ── Función reutilizable: rellenar campos con datos del empleado ──
+function llenarEmpleado(d) {
+  document.getElementById('id_cedula').value = d.cedula;
+  document.getElementById('id_nombre_completo').value = d.nombre;
+  document.getElementById('id_area').value = d.area;
+  document.getElementById('id_cargo').value = d.cargo;
+  document.getElementById('id_tipo_vinculacion').value = d.tipo_vinculacion;
+  document.getElementById('id_antiguedad_meses').value = d.antiguedad_meses;
+  document.getElementById('id_salario_bruto').value = d.salario_bruto;
+  document.getElementById('buscarEstado').innerHTML =
+    '<span class="text-success"><i class="bi bi-check-circle"></i> Empleado encontrado en nómina</span>';
+  calcularPreview();
+}
+
+// ── Autocompletado por nombre ──
+(function() {
+  const input = document.getElementById('buscarNombre');
+  const list = document.getElementById('autocompleteList');
+  let timer;
+
+  input.addEventListener('input', function() {
+    clearTimeout(timer);
+    const q = this.value.trim();
+    if (q.length < 2) { list.style.display = 'none'; return; }
+    timer = setTimeout(() => {
+      fetch(`${API_EMPLEADO_NOMBRE}?q=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(data => {
+          list.innerHTML = '';
+          if (!data.results.length) { list.style.display = 'none'; return; }
+          data.results.forEach(emp => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item list-group-item-action py-2 px-3';
+            li.style.cursor = 'pointer';
+            li.innerHTML = `<div class="fw-semibold small">${emp.nombre}</div>
+              <div class="text-muted" style="font-size:0.75rem">CC ${emp.cedula} · ${emp.cargo || emp.area || ''}</div>`;
+            li.addEventListener('click', () => {
+              llenarEmpleado(emp);
+              input.value = emp.nombre;
+              list.style.display = 'none';
+            });
+            list.appendChild(li);
+          });
+          list.style.display = 'block';
+        });
+    }, 250);
+  });
+
+  // Cerrar lista al hacer clic fuera
+  document.addEventListener('click', e => {
+    if (!input.contains(e.target) && !list.contains(e.target)) list.style.display = 'none';
+  });
+})();
+
+// ── Buscar empleado en nómina por cédula ──
 document.getElementById('btnBuscar').addEventListener('click', () => {
   const cedula = document.getElementById('id_cedula').value.trim();
   if (!cedula) return;
@@ -283,14 +351,7 @@ document.getElementById('btnBuscar').addEventListener('click', () => {
     .then(r => r.json())
     .then(d => {
       if (d.found) {
-        document.getElementById('id_nombre_completo').value = d.nombre;
-        document.getElementById('id_area').value = d.area;
-        document.getElementById('id_cargo').value = d.cargo;
-        document.getElementById('id_tipo_vinculacion').value = d.tipo_vinculacion;
-        document.getElementById('id_antiguedad_meses').value = d.antiguedad_meses;
-        document.getElementById('id_salario_bruto').value = d.salario_bruto;
-        st.innerHTML = '<span class="text-success"><i class="bi bi-check-circle"></i> Empleado encontrado en nómina</span>';
-        calcularPreview();
+        llenarEmpleado({...d, cedula: cedula});
       } else {
         st.innerHTML = '<span class="text-warning"><i class="bi bi-exclamation-circle"></i> No encontrado — ingrese datos manualmente</span>';
       }
