@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Cargar Nómina — FONDEINO{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-upload me-2"></i>Carga Mensual de Nómina</h5>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info">
+          <strong><i class="bi bi-info-circle me-1"></i>Instrucciones:</strong>
+          <ul class="mb-0 mt-2">
+            <li>Suba el archivo Excel de nómina mensual (<strong>.xlsx</strong>)</li>
+            <li>Debe tener las columnas: <code>Empleado, Nombre del empleado, Descripcion ccosto, Descripcion del cargo, Fecha ingreso, Fecha contrato hasta, Salario</code></li>
+            <li>Al cargar una nueva nómina, la base de datos se reemplaza automáticamente</li>
+            <li>La nueva nómina actualizará los datos de salario, cargo, área y antigüedad para todas las evaluaciones nuevas</li>
+          </ul>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+            {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+          </div>
+          {% endfor %}
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-cloud-upload me-1"></i>Cargar Nómina
+            </button>
+            <a href="{% url 'nomina:lista' %}" class="btn btn-outline-secondary">Ver Historial</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+Django>=4.2,<5.0
+gunicorn
+whitenoise
+dj-database-url
+psycopg2-binary
+openpyxl
+pandas
+python-dotenv
+python-dateutil
+Pillow

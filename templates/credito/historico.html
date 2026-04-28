@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}Historial — FONDEINO{% endblock %}
+{% block nav_hist %}active{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0"><i class="bi bi-clock-history me-2"></i>Historial de Evaluaciones</h4>
+  <a href="{% url 'credito:evaluacion' %}" class="btn btn-primary btn-sm">
+    <i class="bi bi-plus-circle me-1"></i>Nueva Evaluación
+  </a>
+</div>
+
+<!-- Filtros -->
+<div class="card shadow-sm mb-3">
+  <div class="card-body py-2">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label small">Buscar (cédula / nombre)</label>
+        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="...">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small">Decisión</label>
+        <select name="decision" class="form-select form-select-sm">
+          <option value="">Todas</option>
+          <option value="APROBAR" {% if decision == 'APROBAR' %}selected{% endif %}>Aprobar</option>
+          <option value="REVISAR" {% if decision == 'REVISAR' %}selected{% endif %}>Revisar</option>
+          <option value="RECHAZAR" {% if decision == 'RECHAZAR' %}selected{% endif %}>Rechazar</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small">Desde</label>
+        <input type="date" name="fecha_desde" value="{{ fecha_desde }}" class="form-control form-control-sm">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small">Hasta</label>
+        <input type="date" name="fecha_hasta" value="{{ fecha_hasta }}" class="form-control form-control-sm">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary btn-sm w-100">
+          <i class="bi bi-search me-1"></i>Filtrar
+        </button>
+      </div>
+      <div class="col-md-1">
+        <a href="{% url 'credito:historico' %}" class="btn btn-outline-secondary btn-sm w-100">
+          <i class="bi bi-x"></i>
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover table-sm mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>Fecha</th>
+          <th>Cédula</th>
+          <th>Nombre</th>
+          <th>Modalidad</th>
+          <th class="text-end">Monto</th>
+          <th class="text-center">Score</th>
+          <th class="text-center">Clasificación</th>
+          <th class="text-center">Decisión</th>
+          <th>Evaluador</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ev in evaluaciones %}
+        <tr>
+          <td class="small">{{ ev.fecha_evaluacion|date:"d/m/Y H:i" }}</td>
+          <td><code>{{ ev.cedula }}</code></td>
+          <td>{{ ev.nombre_completo }}</td>
+          <td class="small">{{ ev.modalidad.nombre }}</td>
+          <td class="text-end">${{ ev.monto_solicitado|floatformat:0 }}</td>
+          <td class="text-center fw-bold">{{ ev.score_total }}</td>
+          <td class="text-center">
+            <span class="badge bg-{{ ev.clasificacion_color }}">{{ ev.clasificacion }}</span>
+          </td>
+          <td class="text-center">
+            <span class="badge bg-{{ ev.decision_color }}">
+              {% if 'APROBAR' in ev.decision %}APROBAR
+              {% elif 'RECHAZAR' in ev.decision %}RECHAZAR
+              {% else %}REVISAR{% endif %}
+            </span>
+          </td>
+          <td class="small">{{ ev.evaluado_por.get_full_name|default:ev.evaluado_por.username }}</td>
+          <td>
+            <a href="{% url 'credito:detalle' ev.pk %}" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-eye"></i>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="10" class="text-center text-muted py-4">
+          <i class="bi bi-inbox fs-3 d-block mb-2"></i>No hay evaluaciones registradas.
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

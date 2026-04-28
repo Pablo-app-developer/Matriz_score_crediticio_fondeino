@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block title %}Configuración Scoring — FONDEINO{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0"><i class="bi bi-sliders me-2"></i>Configuración del Scoring</h4>
+</div>
+<div class="alert alert-info">
+  <i class="bi bi-info-circle me-1"></i>
+  Los cambios aquí afectan los cálculos de <strong>todas las evaluaciones nuevas</strong>.
+  Las evaluaciones ya guardadas no se modifican.
+</div>
+
+<form method="post">
+{% csrf_token %}
+<div class="row g-3">
+
+  <!-- Mínimo Vital -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-info text-white"><strong>Mínimo Vital</strong></div>
+      <div class="card-body">
+        <label class="form-label">% del Salario Neto como Mínimo Vital</label>
+        {{ form.porcentaje_minimo_vital }}
+        <div class="form-text">Ej: 0.50 = 50%. Por defecto 50%.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DataCrédito -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-warning text-dark"><strong>Score DataCrédito (Max 25)</strong></div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small">Umbral Excelente</label>{{ form.t_dc_excelente }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje Excelente</label>{{ form.s_dc_excelente }}</div>
+          <div class="col-6"><label class="form-label small">Umbral Bueno</label>{{ form.t_dc_bueno }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje Bueno</label>{{ form.s_dc_bueno }}</div>
+          <div class="col-6"><label class="form-label small">Umbral Regular</label>{{ form.t_dc_regular }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje Regular</label>{{ form.s_dc_regular }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje Malo</label>{{ form.s_dc_malo }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Antigüedad -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-secondary text-white"><strong>Score Antigüedad (Max 15)</strong></div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small">Umbral ≥ N meses (nivel 1)</label>{{ form.t_ant_1 }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje</label>{{ form.s_ant_1 }}</div>
+          <div class="col-6"><label class="form-label small">Umbral nivel 2</label>{{ form.t_ant_2 }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje</label>{{ form.s_ant_2 }}</div>
+          <div class="col-6"><label class="form-label small">Umbral nivel 3</label>{{ form.t_ant_3 }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje</label>{{ form.s_ant_3 }}</div>
+          <div class="col-6"><label class="form-label small">Umbral nivel 4</label>{{ form.t_ant_4 }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje</label>{{ form.s_ant_4 }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje < nivel 4</label>{{ form.s_ant_5 }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vinculación -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white"><strong>Score Vinculación (Max 10)</strong></div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-12"><label class="form-label small">Contrato Indefinido</label>{{ form.s_vinc_indefinido }}</div>
+          <div class="col-12"><label class="form-label small">A Término Fijo</label>{{ form.s_vinc_fijo }}</div>
+          <div class="col-12"><label class="form-label small">Servicios</label>{{ form.s_vinc_servicios }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Capacidad de Pago -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white"><strong>Score Capacidad de Pago (Max 25)</strong></div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small">Umbral Bueno (% endeudam.)</label>{{ form.t_cap_bueno }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje (< umbral bueno)</label>{{ form.s_cap_excelente }}</div>
+          <div class="col-6"><label class="form-label small">Umbral Regular</label>{{ form.t_cap_regular }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje (entre umbrales)</label>{{ form.s_cap_regular }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje (> umbral regular)</label>{{ form.s_cap_malo }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje (bloqueado)</label>{{ form.s_cap_bloqueado }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Garantías -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-dark text-white"><strong>Score Garantías (Max 15)</strong></div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small">Cobertura alta (≥ %)</label>{{ form.t_gar_alta }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje</label>{{ form.s_gar_alta }}</div>
+          <div class="col-6"><label class="form-label small">Cobertura media (≥ %)</label>{{ form.t_gar_media }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje</label>{{ form.s_gar_media }}</div>
+          <div class="col-6"><label class="form-label small">Cobertura baja (≥ %)</label>{{ form.t_gar_baja }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje</label>{{ form.s_gar_baja }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje nula</label>{{ form.s_gar_nula }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historial Crédito -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-warning text-dark"><strong>Score Crédito Activo (Max 10)</strong></div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small">% capital pagado umbral</label>{{ form.t_hist_bueno }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje sin crédito</label>{{ form.s_hist_sin }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje (≥ umbral)</label>{{ form.s_hist_bueno }}</div>
+          <div class="col-6"><label class="form-label small">Puntaje (< umbral)</label>{{ form.s_hist_malo }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clasificación -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-info text-white"><strong>Umbrales de Clasificación</strong></div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-12"><label class="form-label small">Score mínimo EXCELENTE</label>{{ form.t_cls_excelente }}</div>
+          <div class="col-12"><label class="form-label small">Score mínimo BUENO</label>{{ form.t_cls_bueno }}</div>
+          <div class="col-12"><label class="form-label small">Score mínimo REGULAR</label>{{ form.t_cls_regular }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /row -->
+
+<div class="mt-3 d-flex gap-2">
+  <button type="submit" class="btn btn-success btn-lg">
+    <i class="bi bi-save me-2"></i>Guardar Configuración
+  </button>
+  <a href="{% url 'credito:evaluacion' %}" class="btn btn-outline-secondary btn-lg">Cancelar</a>
+</div>
+
+</form>
+{% endblock %}
