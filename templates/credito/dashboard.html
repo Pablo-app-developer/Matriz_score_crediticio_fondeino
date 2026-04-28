@@ -113,23 +113,33 @@
       </div>
       <div class="card-body">
         {% for item in por_clasificacion %}
-        {% if item.clasificacion == 'EXCELENTE' %}{% with color='success' %}
-        {% elif item.clasificacion == 'BUENO' %}{% with color='primary' %}
-        {% elif item.clasificacion == 'REGULAR' %}{% with color='warning' %}
-        {% else %}{% with color='danger' %}
-        {% endif %}
         <div class="mb-3">
           <div class="d-flex justify-content-between mb-1">
             <span class="small fw-semibold">{{ item.clasificacion }}</span>
-            <span class="badge bg-{{ color }}">{{ item.n }}</span>
+            {% if item.clasificacion == 'EXCELENTE' %}
+              <span class="badge bg-success">{{ item.n }}</span>
+            {% elif item.clasificacion == 'BUENO' %}
+              <span class="badge bg-primary">{{ item.n }}</span>
+            {% elif item.clasificacion == 'REGULAR' %}
+              <span class="badge bg-warning text-dark">{{ item.n }}</span>
+            {% else %}
+              <span class="badge bg-danger">{{ item.n }}</span>
+            {% endif %}
           </div>
           {% if total_historico %}
           <div class="progress" style="height:6px">
-            <div class="progress-bar bg-{{ color }}" style="width:{% widthratio item.n total_historico 100 %}%"></div>
+            {% if item.clasificacion == 'EXCELENTE' %}
+              <div class="progress-bar bg-success" style="width:{% widthratio item.n total_historico 100 %}%"></div>
+            {% elif item.clasificacion == 'BUENO' %}
+              <div class="progress-bar bg-primary" style="width:{% widthratio item.n total_historico 100 %}%"></div>
+            {% elif item.clasificacion == 'REGULAR' %}
+              <div class="progress-bar bg-warning" style="width:{% widthratio item.n total_historico 100 %}%"></div>
+            {% else %}
+              <div class="progress-bar bg-danger" style="width:{% widthratio item.n total_historico 100 %}%"></div>
+            {% endif %}
           </div>
           {% endif %}
         </div>
-        {% endwith %}
         {% empty %}
         <p class="text-muted small text-center py-3">Sin datos aún</p>
         {% endfor %}

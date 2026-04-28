@@ -39,7 +39,7 @@ def dashboard(request):
                          .annotate(n=Count('id')).order_by('-n'))
 
     # Últimas 8 evaluaciones
-    recientes = qs_total.select_related('evaluado_por', 'modalidad')[:8]
+    recientes = qs_total.select_related('evaluado_por', 'modalidad').order_by('-fecha_evaluacion')[:8]
 
     return render(request, 'credito/dashboard.html', {
         'total_mes': total_mes,
