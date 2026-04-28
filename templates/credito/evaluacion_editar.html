@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}Editar Evaluación #{{ ev.pk }} — FONDEINO{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Editar Evaluación #{{ ev.pk }} — {{ ev.nombre_completo }}</h4>
+  <a href="{% url 'credito:detalle' ev.pk %}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i>Cancelar
+  </a>
+</div>
+
+<div class="alert alert-warning">
+  <i class="bi bi-exclamation-triangle me-1"></i>
+  Al guardar, el scoring se <strong>recalculará</strong> automáticamente con los nuevos datos.
+</div>
+
+<form method="post" id="formEvaluacion">
+{% csrf_token %}
+<div class="row g-3">
+
+  <div class="col-lg-6">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header bg-primary text-white py-2"><strong>Datos del Solicitante</strong></div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-4"><label class="form-label small fw-semibold">Tipo Documento</label>{{ form.tipo_documento }}</div>
+          <div class="col-8"><label class="form-label small fw-semibold">Cédula</label>{{ form.cedula }}</div>
+          <div class="col-12"><label class="form-label small fw-semibold">Nombre Completo</label>{{ form.nombre_completo }}</div>
+          <div class="col-6"><label class="form-label small fw-semibold">Área</label>{{ form.area }}</div>
+          <div class="col-6"><label class="form-label small fw-semibold">Cargo</label>{{ form.cargo }}</div>
+          <div class="col-6"><label class="form-label small fw-semibold">Tipo Vinculación</label>{{ form.tipo_vinculacion }}</div>
+          <div class="col-6"><label class="form-label small fw-semibold">Antigüedad (meses)</label>{{ form.antiguedad_meses }}</div>
+          <div class="col-12"><label class="form-label small fw-semibold">Salario Bruto</label>
+            <div class="input-group"><span class="input-group-text">$</span>{{ form.salario_bruto }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header bg-warning text-dark py-2"><strong>Centrales de Riesgo</strong></div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-12"><label class="form-label small fw-semibold">Puntaje DataCrédito</label>{{ form.puntaje_datacredito }}</div>
+          <div class="col-6"><label class="form-label small fw-semibold">¿Crédito Activo?</label>{{ form.tiene_credito_activo }}</div>
+          <div class="col-6"><label class="form-label small fw-semibold">% Capital Pagado</label>{{ form.pct_capital_pagado }}</div>
+          <div class="col-12"><label class="form-label small fw-semibold">Cuotas Otras Entidades</label>
+            <div class="input-group"><span class="input-group-text">$</span>{{ form.cuotas_otras_entidades }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header bg-info text-white py-2"><strong>Descuentos Mensuales FONDEINO</strong></div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small fw-semibold">Cuota Aporte</label>
+            <div class="input-group"><span class="input-group-text">$</span>{{ form.cuota_aporte }}</div>
+          </div>
+          <div class="col-6"><label class="form-label small fw-semibold">Cuota Ahorro</label>
+            <div class="input-group"><span class="input-group-text">$</span>{{ form.cuota_ahorro }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+      <div class="card-header bg-secondary text-white py-2"><strong>Garantías Acumuladas</strong></div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-6"><label class="form-label small fw-semibold">Saldo Aportes</label>
+            <div class="input-group"><span class="input-group-text">$</span>{{ form.saldo_aportes }}</div>
+          </div>
+          <div class="col-6"><label class="form-label small fw-semibold">Saldo Ahorros</label>
+            <div class="input-group"><span class="input-group-text">$</span>{{ form.saldo_ahorros }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header bg-dark text-white py-2"><strong>Condiciones del Crédito</strong></div>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-12"><label class="form-label small fw-semibold">Modalidad</label>{{ form.modalidad }}</div>
+          <div class="col-6"><label class="form-label small fw-semibold">Fecha Desembolso</label>{{ form.fecha_desembolso }}</div>
+          <div class="col-6"><label class="form-label small fw-semibold">Número de Cuotas</label>{{ form.n_cuotas }}</div>
+          <div class="col-12"><label class="form-label small fw-semibold">Monto Solicitado</label>
+            <div class="input-group"><span class="input-group-text">$</span>{{ form.monto_solicitado }}</div>
+          </div>
+          <div class="col-12"><label class="form-label small fw-semibold">Motivo</label>{{ form.motivo }}</div>
+        </div>
+      </div>
+    </div>
+
+    {% if form.errors %}
+    <div class="alert alert-danger">
+      {% for field, errors in form.errors.items %}
+        {% for error in errors %}<div>• {{ field }}: {{ error }}</div>{% endfor %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="d-grid gap-2">
+      <button type="submit" class="btn btn-warning btn-lg">
+        <i class="bi bi-arrow-clockwise me-2"></i>Guardar y Recalcular
+      </button>
+      <a href="{% url 'credito:detalle' ev.pk %}" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+  </div>
+
+</div>
+</form>
+{% endblock %}

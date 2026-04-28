@@ -230,3 +230,127 @@ def modalidad_editar(request, pk):
         messages.success(request, 'Modalidad actualizada.')
         return redirect('credito:modalidades')
     return render(request, 'admin_extra/modalidad_form.html', {'form': form, 'titulo': 'Editar Modalidad', 'm': m})
+
+
+# ─────────────────────────────────────────────
+# Editar / Eliminar evaluaciones
+# ─────────────────────────────────────────────
+
+def _puede_modificar(user, ev):
+    """Admin puede modificar cualquiera; comité solo las propias."""
+    return user.es_admin or ev.evaluado_por == user
+
+
+@login_required
+def evaluacion_editar(request, pk):
+    ev = get_object_or_404(EvaluacionCredito, pk=pk)
+    if not _puede_modificar(request.user, ev):
+        return HttpResponseForbidden()
+
+    form = EvaluacionForm(request.POST or None, initial={
+        'tipo_documento': ev.tipo_documento,
+        'cedula': ev.cedula,
+        'nombre_completo': ev.nombre_completo,
+        'area': ev.area,
+        'cargo': ev.cargo,
+        'tipo_vinculacion': ev.tipo_vinculacion,
+        'antiguedad_meses': ev.antiguedad_meses,
+        'salario_bruto': ev.salario_bruto,
+        'puntaje_datacredito': ev.puntaje_datacredito,
+        'tiene_credito_activo': 'SI' if ev.tiene_credito_activo else 'NO',
+        'pct_capital_pagado': ev.pct_capital_pagado,
+        'cuotas_otras_entidades': ev.cuotas_otras_entidades,
+        'cuota_aporte': ev.cuota_aporte,
+        'cuota_ahorro': ev.cuota_ahorro,
+        'saldo_aportes': ev.saldo_aportes,
+        'saldo_ahorros': ev.saldo_ahorros,
+        'modalidad': ev.modalidad,
+        'fecha_desembolso': ev.fecha_desembolso,
+        'monto_solicitado': ev.monto_solicitado,
+        'n_cuotas': ev.n_cuotas,
+        'motivo': ev.motivo,
+    })
+
+    if request.method == 'POST' and form.is_valid():
+        cd = form.cleaned_data
+        cfg = Configuracion.get_config().as_dict()
+        modalidad = cd['modalidad']
+
+        datos = {
+            'salario_bruto': cd['salario_bruto'],
+            'puntaje_datacredito': cd['puntaje_datacredito'],
+            'antiguedad_meses': cd['antiguedad_meses'],
+            'tipo_vinculacion': cd['tipo_vinculacion'],
+            'tiene_credito_activo': cd['tiene_credito_activo'] == 'SI',
+            'pct_capital_pagado': float(cd.get('pct_capital_pagado') or 0),
+            'cuotas_otras_entidades': float(cd.get('cuotas_otras_entidades') or 0),
+            'cuota_aporte': float(cd.get('cuota_aporte') or 0),
+            'cuota_ahorro': float(cd.get('cuota_ahorro') or 0),
+            'saldo_aportes': float(cd.get('saldo_aportes') or 0),
+            'saldo_ahorros': float(cd.get('saldo_ahorros') or 0),
+            'monto_solicitado': cd['monto_solicitado'],
+            'n_cuotas': cd['n_cuotas'],
+            'tasa_mensual': float(modalidad.tasa_mensual),
+            'pd_base': float(modalidad.pd_base),
+            'fecha_desembolso': cd['fecha_desembolso'],
+        }
+        resultado = evaluar_credito(datos, cfg)
+
+        # Actualizar todos los campos de la evaluación existente
+        ev.tipo_documento = cd['tipo_documento']
+        ev.cedula = cd['cedula']
+        ev.nombre_completo = cd['nombre_completo']
+        ev.area = cd.get('area', '')
+        ev.cargo = cd.get('cargo', '')
+        ev.tipo_vinculacion = cd['tipo_vinculacion']
+        ev.antiguedad_meses = cd['antiguedad_meses']
+        ev.salario_bruto = cd['salario_bruto']
+        ev.puntaje_datacredito = cd['puntaje_datacredito']
+        ev.tiene_credito_activo = (cd['tiene_credito_activo'] == 'SI')
+        ev.pct_capital_pagado = float(cd.get('pct_capital_pagado') or 0)
+        ev.cuotas_otras_entidades = float(cd.get('cuotas_otras_entidades') or 0)
+        ev.cuota_aporte = float(cd.get('cuota_aporte') or 0)
+        ev.cuota_ahorro = float(cd.get('cuota_ahorro') or 0)
+        ev.saldo_aportes = float(cd.get('saldo_aportes') or 0)
+        ev.saldo_ahorros = float(cd.get('saldo_ahorros') or 0)
+        ev.modalidad = modalidad
+        ev.fecha_desembolso = cd['fecha_desembolso']
+        ev.monto_solicitado = cd['monto_solicitado']
+        ev.n_cuotas = cd['n_cuotas']
+        ev.motivo = cd.get('motivo', '')
+        ev.salario_neto = resultado['salario_neto']
+        ev.minimo_vital = resultado['minimo_vital']
+        ev.total_cuotas = resultado['total_cuotas']
+        ev.disponible_final = resultado['disponible_final']
+        ev.estado_mv = resultado['estado_mv']
+        ev.pct_endeudamiento = resultado['pct_endeudamiento']
+        ev.score_datacredito = resultado['score_datacredito']
+        ev.score_antiguedad = resultado['score_antiguedad']
+        ev.score_vinculacion = resultado['score_vinculacion']
+        ev.score_capacidad_pago = resultado['score_capacidad_pago']
+        ev.score_garantias = resultado['score_garantias']
+        ev.score_credito_activo = resultado['score_credito_activo']
+        ev.score_total = resultado['score_total']
+        ev.clasificacion = resultado['clasificacion']
+        ev.decision = resultado['decision']
+        ev.save()
+
+        messages.success(request, 'Evaluación actualizada y recalculada correctamente.')
+        return redirect('credito:detalle', pk=ev.pk)
+
+    return render(request, 'credito/evaluacion_editar.html', {'form': form, 'ev': ev})
+
+
+@login_required
+def evaluacion_eliminar(request, pk):
+    ev = get_object_or_404(EvaluacionCredito, pk=pk)
+    if not _puede_modificar(request.user, ev):
+        return HttpResponseForbidden()
+
+    if request.method == 'POST':
+        nombre = ev.nombre_completo
+        ev.delete()
+        messages.success(request, f'Evaluación de {nombre} eliminada.')
+        return redirect('credito:historico')
+
+    return render(request, 'credito/evaluacion_confirmar_eliminar.html', {'ev': ev})

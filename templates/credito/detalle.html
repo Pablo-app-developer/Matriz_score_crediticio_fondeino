@@ -10,6 +10,14 @@
     <a href="{% url 'credito:historico' %}" class="btn btn-outline-secondary btn-sm">
       <i class="bi bi-arrow-left me-1"></i>Historial
     </a>
+    {% if user.es_admin or ev.evaluado_por == user %}
+    <a href="{% url 'credito:evaluacion_editar' ev.pk %}" class="btn btn-warning btn-sm">
+      <i class="bi bi-pencil me-1"></i>Editar
+    </a>
+    <a href="{% url 'credito:evaluacion_eliminar' ev.pk %}" class="btn btn-danger btn-sm">
+      <i class="bi bi-trash me-1"></i>Eliminar
+    </a>
+    {% endif %}
     <a href="{% url 'credito:evaluacion' %}" class="btn btn-primary btn-sm">
       <i class="bi bi-plus-circle me-1"></i>Nueva Evaluación
     </a>

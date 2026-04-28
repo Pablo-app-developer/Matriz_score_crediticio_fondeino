@@ -7,6 +7,8 @@ urlpatterns = [
     path('', views.evaluacion, name='evaluacion'),
     path('historico/', views.historico, name='historico'),
     path('detalle/<int:pk>/', views.detalle, name='detalle'),
+    path('detalle/<int:pk>/editar/', views.evaluacion_editar, name='evaluacion_editar'),
+    path('detalle/<int:pk>/eliminar/', views.evaluacion_eliminar, name='evaluacion_eliminar'),
     # API AJAX
     path('api/empleado/', views.buscar_empleado, name='api_empleado'),
     path('api/modalidad/', views.get_modalidad_tasa, name='api_modalidad'),
