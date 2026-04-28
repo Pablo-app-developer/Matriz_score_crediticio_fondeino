@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% load credito_tags %}
-{% block title %}Panel de Control — FONDEINO{% endblock %}
+{% block title %}Dashboard — FONDEINO{% endblock %}
 {% block nav_dash %}active{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
-    <h5 class="mb-0 fw-bold">Panel de Control</h5>
-    <div class="text-muted" style="font-size:.78rem">{{ mes_nombre }}</div>
+    <h4 class="mb-0 fw-bold">Panel de Control</h4>
+    <small class="text-muted">Resumen de {{ mes_nombre }}</small>
   </div>
-  <a href="{% url 'credito:evaluacion' %}" class="btn btn-primary btn-sm">
+  <a href="{% url 'credito:evaluacion' %}" class="btn btn-primary">
     <i class="bi bi-plus-circle me-1"></i>Nueva Evaluación
   </a>
 </div>
@@ -17,63 +17,89 @@
 <!-- KPIs del mes -->
 <div class="row g-3 mb-4">
   <div class="col-6 col-md-3">
-    <div class="kpi-card kpi-primary">
-      <div class="kpi-value text-primary">{{ total_mes }}</div>
-      <div class="kpi-label">Evaluaciones este mes</div>
-    </div>
-  </div>
-  <div class="col-6 col-md-3">
-    <div class="kpi-card kpi-success">
-      <div class="kpi-value" style="color:var(--success)">{{ aprobadas_mes }}</div>
-      <div class="kpi-label">Aprobadas</div>
-      {% if total_mes %}
-      <div class="kpi-badge">
-        <span class="badge bg-success">{% widthratio aprobadas_mes total_mes 100 %}%</span>
+    <div class="card shadow-sm h-100 border-0">
+      <div class="card-body text-center py-4">
+        <div class="fs-1 fw-bold text-primary">{{ total_mes }}</div>
+        <div class="text-muted small mt-1">Evaluaciones este mes</div>
       </div>
-      {% endif %}
     </div>
   </div>
   <div class="col-6 col-md-3">
-    <div class="kpi-card kpi-danger">
-      <div class="kpi-value" style="color:var(--danger)">{{ rechazadas_mes }}</div>
-      <div class="kpi-label">Rechazadas</div>
-      {% if total_mes %}
-      <div class="kpi-badge">
-        <span class="badge bg-danger">{% widthratio rechazadas_mes total_mes 100 %}%</span>
+    <div class="card shadow-sm h-100 border-0 border-start border-4 border-success">
+      <div class="card-body text-center py-4">
+        <div class="fs-1 fw-bold text-success">{{ aprobadas_mes }}</div>
+        <div class="text-muted small mt-1">Aprobadas</div>
+        {% if total_mes %}
+        <div class="badge bg-success-subtle text-success mt-1">
+          {% widthratio aprobadas_mes total_mes 100 %}%
+        </div>
+        {% endif %}
       </div>
-      {% endif %}
     </div>
   </div>
   <div class="col-6 col-md-3">
-    <div class="kpi-card kpi-warning">
-      <div class="kpi-value" style="color:var(--warning)">{{ score_promedio_mes }}</div>
-      <div class="kpi-label">Score promedio del mes</div>
-      <div class="kpi-badge"><span class="badge bg-warning text-dark">/ 100 pts</span></div>
+    <div class="card shadow-sm h-100 border-0 border-start border-4 border-danger">
+      <div class="card-body text-center py-4">
+        <div class="fs-1 fw-bold text-danger">{{ rechazadas_mes }}</div>
+        <div class="text-muted small mt-1">Rechazadas</div>
+        {% if total_mes %}
+        <div class="badge bg-danger-subtle text-danger mt-1">
+          {% widthratio rechazadas_mes total_mes 100 %}%
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card shadow-sm h-100 border-0 border-start border-4 border-warning">
+      <div class="card-body text-center py-4">
+        <div class="fs-1 fw-bold text-warning">{{ score_promedio_mes }}</div>
+        <div class="text-muted small mt-1">Score promedio</div>
+        <div class="badge bg-warning-subtle text-warning mt-1">/ 100 pts</div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Montos y totales históricos -->
+<!-- Monto aprobado y totales históricos -->
 <div class="row g-3 mb-4">
   <div class="col-md-4">
-    <div class="banner-card" style="background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff">
-      <i class="bi bi-cash-stack banner-icon"></i>
-      <div class="banner-label">Monto aprobado este mes</div>
-      <div class="banner-value">${{ monto_aprobado_mes|cop }}</div>
+    <div class="card shadow-sm border-0 bg-primary text-white h-100">
+      <div class="card-body py-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="small opacity-75 mb-1">Monto aprobado este mes</div>
+            <div class="fs-4 fw-bold">${{ monto_aprobado_mes|cop }}</div>
+          </div>
+          <i class="bi bi-cash-stack fs-2 opacity-50"></i>
+        </div>
+      </div>
     </div>
   </div>
   <div class="col-md-4">
-    <div class="banner-card" style="background:linear-gradient(135deg,#1e293b,#0f172a);color:#fff">
-      <i class="bi bi-archive banner-icon"></i>
-      <div class="banner-label">Total histórico evaluaciones</div>
-      <div class="banner-value">{{ total_historico }}</div>
+    <div class="card shadow-sm border-0 bg-dark text-white h-100">
+      <div class="card-body py-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="small opacity-75 mb-1">Total histórico evaluaciones</div>
+            <div class="fs-4 fw-bold">{{ total_historico }}</div>
+          </div>
+          <i class="bi bi-archive fs-2 opacity-50"></i>
+        </div>
+      </div>
     </div>
   </div>
   <div class="col-md-4">
-    <div class="banner-card" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff">
-      <i class="bi bi-graph-up-arrow banner-icon"></i>
-      <div class="banner-label">Monto total aprobado histórico</div>
-      <div class="banner-value">${{ monto_historico|cop }}</div>
+    <div class="card shadow-sm border-0 bg-success text-white h-100">
+      <div class="card-body py-4">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="small opacity-75 mb-1">Monto total aprobado histórico</div>
+            <div class="fs-4 fw-bold">${{ monto_historico|cop }}</div>
+          </div>
+          <i class="bi bi-graph-up-arrow fs-2 opacity-50"></i>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -81,9 +107,9 @@
 <div class="row g-3">
   <!-- Distribución por clasificación -->
   <div class="col-md-4">
-    <div class="card h-100">
-      <div class="card-header">
-        <i class="bi bi-pie-chart me-2" style="color:var(--accent)"></i>Por Clasificación (histórico)
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-header border-0 bg-transparent pt-3 pb-0">
+        <h6 class="fw-bold mb-0"><i class="bi bi-pie-chart me-2 text-primary"></i>Por Clasificación (histórico)</h6>
       </div>
       <div class="card-body">
         {% for item in por_clasificacion %}
@@ -94,18 +120,18 @@
         {% endif %}
         <div class="mb-3">
           <div class="d-flex justify-content-between mb-1">
-            <span style="font-size:.8rem;font-weight:600">{{ item.clasificacion }}</span>
+            <span class="small fw-semibold">{{ item.clasificacion }}</span>
             <span class="badge bg-{{ color }}">{{ item.n }}</span>
           </div>
           {% if total_historico %}
-          <div class="progress" style="height:5px">
+          <div class="progress" style="height:6px">
             <div class="progress-bar bg-{{ color }}" style="width:{% widthratio item.n total_historico 100 %}%"></div>
           </div>
           {% endif %}
         </div>
         {% endwith %}
         {% empty %}
-        <p class="text-muted text-center py-3" style="font-size:.8rem">Sin datos aún</p>
+        <p class="text-muted small text-center py-3">Sin datos aún</p>
         {% endfor %}
       </div>
     </div>
@@ -113,15 +139,15 @@
 
   <!-- Evaluaciones recientes -->
   <div class="col-md-8">
-    <div class="card h-100">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-clock-history me-2" style="color:var(--accent)"></i>Últimas Evaluaciones</span>
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-header border-0 bg-transparent pt-3 pb-0 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Últimas Evaluaciones</h6>
         <a href="{% url 'credito:historico' %}" class="btn btn-sm btn-outline-primary">Ver todas</a>
       </div>
       <div class="card-body p-0">
         <div class="table-responsive">
-          <table class="table table-hover mb-0">
-            <thead>
+          <table class="table table-hover table-sm mb-0">
+            <thead class="table-light">
               <tr>
                 <th class="ps-3">Nombre</th>
                 <th class="text-end">Monto</th>
@@ -133,11 +159,13 @@
               {% for ev in recientes %}
               <tr style="cursor:pointer" onclick="location.href='{% url 'credito:detalle' ev.pk %}'">
                 <td class="ps-3">
-                  <div class="fw-semibold" style="font-size:.84rem">{{ ev.nombre_completo }}</div>
-                  <div class="text-muted" style="font-size:.73rem">{{ ev.fecha_evaluacion|date:"d/m/Y" }} · {{ ev.modalidad.nombre }}</div>
+                  <div class="fw-semibold small">{{ ev.nombre_completo }}</div>
+                  <div class="text-muted" style="font-size:0.75rem">{{ ev.fecha_evaluacion|date:"d/m/Y" }} · {{ ev.modalidad.nombre }}</div>
                 </td>
-                <td class="text-end" style="font-size:.84rem">${{ ev.monto_solicitado|cop }}</td>
-                <td class="text-center fw-bold">{{ ev.score_total }}</td>
+                <td class="text-end small">${{ ev.monto_solicitado|cop }}</td>
+                <td class="text-center">
+                  <span class="fw-bold">{{ ev.score_total }}</span>
+                </td>
                 <td class="text-center">
                   <span class="badge bg-{{ ev.decision_color }}">
                     {% if 'APROBAR' in ev.decision %}APROBAR
