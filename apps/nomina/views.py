@@ -61,8 +61,9 @@ def upload_nomina(request):
             # Borrar empleados de cargas viejas (mantenemos solo la última)
             Empleado.objects.all().delete()
 
+            # No guardar el archivo en disco (Vercel tiene filesystem de solo lectura)
+            # Solo registrar metadata de la carga
             carga = CargaNomina.objects.create(
-                archivo=archivo,
                 periodo=periodo,
                 cargado_por=request.user,
             )

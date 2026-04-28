@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 
 class CargaNomina(models.Model):
     """Registro de cada carga mensual de nómina."""
-    archivo = models.FileField(upload_to='nomina/')
+    archivo = models.FileField(upload_to='nomina/', null=True, blank=True)
     periodo = models.CharField(max_length=20, help_text="Ej: 2026-04")
     fecha_carga = models.DateTimeField(auto_now_add=True)
     cargado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
