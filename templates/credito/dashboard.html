@@ -16,7 +16,7 @@
 
 <!-- KPIs del mes -->
 <div class="row g-3 mb-4">
-  <div class="col-6 col-md-3">
+  <div class="col-6 col-md">
     <div class="card shadow-sm h-100 border-0">
       <div class="card-body text-center py-4">
         <div class="fs-1 fw-bold text-primary">{{ total_mes }}</div>
@@ -24,7 +24,7 @@
       </div>
     </div>
   </div>
-  <div class="col-6 col-md-3">
+  <div class="col-6 col-md">
     <div class="card shadow-sm h-100 border-0 border-start border-4 border-success">
       <div class="card-body text-center py-4">
         <div class="fs-1 fw-bold text-success">{{ aprobadas_mes }}</div>
@@ -37,7 +37,7 @@
       </div>
     </div>
   </div>
-  <div class="col-6 col-md-3">
+  <div class="col-6 col-md">
     <div class="card shadow-sm h-100 border-0 border-start border-4 border-danger">
       <div class="card-body text-center py-4">
         <div class="fs-1 fw-bold text-danger">{{ rechazadas_mes }}</div>
@@ -50,7 +50,20 @@
       </div>
     </div>
   </div>
-  <div class="col-6 col-md-3">
+  <div class="col-6 col-md">
+    <div class="card shadow-sm h-100 border-0 border-start border-4 border-info">
+      <div class="card-body text-center py-4">
+        <div class="fs-1 fw-bold text-info">{{ revisar_mes }}</div>
+        <div class="text-muted small mt-1">En revisión</div>
+        {% if total_mes %}
+        <div class="badge bg-info-subtle text-info mt-1">
+          {% widthratio revisar_mes total_mes 100 %}%
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md">
     <div class="card shadow-sm h-100 border-0 border-start border-4 border-warning">
       <div class="card-body text-center py-4">
         <div class="fs-1 fw-bold text-warning">{{ score_promedio_mes }}</div>
