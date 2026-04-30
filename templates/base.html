@@ -37,11 +37,6 @@
             <i class="bi bi-clock-history me-1"></i>Historial
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link {% block nav_aprobados %}{% endblock %}" href="{% url 'credito:aprobados' %}">
-            <i class="bi bi-journal-check me-1"></i>Aprobados
-          </a>
-        </li>
         {% if user.es_admin %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">

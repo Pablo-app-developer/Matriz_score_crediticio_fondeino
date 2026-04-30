@@ -5,10 +5,17 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h4 class="mb-0"><i class="bi bi-clock-history me-2"></i>Historial de Evaluaciones</h4>
-  <a href="{% url 'credito:evaluacion' %}" class="btn btn-primary btn-sm">
-    <i class="bi bi-plus-circle me-1"></i>Nueva Evaluación
-  </a>
+  <h4 class="mb-0"><i class="bi bi-clock-history me-2"></i>Historial de Créditos</h4>
+  <div class="d-flex gap-2">
+    {% if user.es_admin %}
+    <a href="{% url 'credito:cargar_aprobados' %}" class="btn btn-outline-success btn-sm">
+      <i class="bi bi-file-earmark-arrow-up me-1"></i>Cargar Histórico
+    </a>
+    {% endif %}
+    <a href="{% url 'credito:evaluacion' %}" class="btn btn-primary btn-sm">
+      <i class="bi bi-plus-circle me-1"></i>Nueva Evaluación
+    </a>
+  </div>
 </div>
 
 <!-- Filtros -->
@@ -23,9 +30,9 @@
         <label class="form-label small">Decisión</label>
         <select name="decision" class="form-select form-select-sm">
           <option value="">Todas</option>
-          <option value="APROBAR" {% if decision == 'APROBAR' %}selected{% endif %}>Aprobar</option>
+          <option value="APROBAR" {% if decision == 'APROBAR' %}selected{% endif %}>Aprobado</option>
           <option value="REVISAR" {% if decision == 'REVISAR' %}selected{% endif %}>Revisar</option>
-          <option value="RECHAZAR" {% if decision == 'RECHAZAR' %}selected{% endif %}>Rechazar</option>
+          <option value="RECHAZAR" {% if decision == 'RECHAZAR' %}selected{% endif %}>Rechazado</option>
         </select>
       </div>
       <div class="col-md-2">
@@ -58,56 +65,70 @@
           <th>Fecha</th>
           <th>Cédula</th>
           <th>Nombre</th>
-          <th>Modalidad</th>
+          <th>Modalidad / Tipo</th>
+          <th>Proceso / Área</th>
           <th class="text-end">Monto</th>
           <th class="text-center">Score</th>
           <th class="text-center">Clasificación</th>
           <th class="text-center">Decisión</th>
-          <th>Evaluador</th>
+          <th>Usuario</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        {% for ev in evaluaciones %}
-        <tr>
-          <td class="small">{{ ev.fecha_evaluacion|date:"d/m/Y H:i" }}</td>
-          <td><code>{{ ev.cedula }}</code></td>
-          <td>{{ ev.nombre_completo }}</td>
-          <td class="small">{{ ev.modalidad.nombre }}</td>
-          <td class="text-end">${{ ev.monto_solicitado|cop }}</td>
-          <td class="text-center fw-bold">{{ ev.score_total }}</td>
-          <td class="text-center">
-            <span class="badge bg-{{ ev.clasificacion_color }}">{{ ev.clasificacion }}</span>
+        {% for fila in filas %}
+        <tr {% if fila.es_historico %}class="table-light"{% endif %}>
+          <td class="small text-nowrap">{{ fila.fecha|date:"d/m/Y" }}</td>
+          <td><code>{{ fila.cedula }}</code></td>
+          <td>{{ fila.nombre_completo }}</td>
+          <td class="small">{{ fila.modalidad }}</td>
+          <td class="small">{{ fila.proceso }}</td>
+          <td class="text-end">${{ fila.monto|cop }}</td>
+          <td class="text-center fw-bold">
+            {% if fila.score is not None %}{{ fila.score }}{% else %}<span class="text-muted">—</span>{% endif %}
           </td>
           <td class="text-center">
-            <span class="badge bg-{{ ev.decision_color }}">
-              {% if 'APROBAR' in ev.decision %}APROBAR
-              {% elif 'RECHAZAR' in ev.decision %}RECHAZAR
+            {% if fila.clasificacion %}
+            <span class="badge bg-{{ fila.clasificacion_color }}">{{ fila.clasificacion }}</span>
+            {% else %}
+            <span class="text-muted small">—</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <span class="badge bg-{{ fila.decision_color }}">
+              {% if 'APROBAR' in fila.decision or fila.decision == 'APROBADO' %}APROBADO
+              {% elif 'RECHAZAR' in fila.decision %}RECHAZADO
               {% else %}REVISAR{% endif %}
             </span>
           </td>
-          <td class="small">{{ ev.evaluado_por.get_full_name|default:ev.evaluado_por.username }}</td>
+          <td class="small">{{ fila.usuario }}</td>
           <td class="text-nowrap">
-            <a href="{% url 'credito:detalle' ev.pk %}" class="btn btn-sm btn-outline-primary" title="Ver detalle">
+            {% if fila.pk %}
+            <a href="{% url 'credito:detalle' fila.pk %}" class="btn btn-sm btn-outline-primary" title="Ver detalle">
               <i class="bi bi-eye"></i>
             </a>
-            {% if user.es_admin or ev.evaluado_por == user %}
-            <a href="{% url 'credito:evaluacion_editar' ev.pk %}" class="btn btn-sm btn-outline-warning" title="Editar">
+            {% if user.es_admin %}
+            <a href="{% url 'credito:evaluacion_editar' fila.pk %}" class="btn btn-sm btn-outline-warning" title="Editar">
               <i class="bi bi-pencil"></i>
             </a>
-            <a href="{% url 'credito:evaluacion_eliminar' ev.pk %}" class="btn btn-sm btn-outline-danger" title="Eliminar">
+            <a href="{% url 'credito:evaluacion_eliminar' fila.pk %}" class="btn btn-sm btn-outline-danger" title="Eliminar">
               <i class="bi bi-trash"></i>
             </a>
+            {% endif %}
             {% endif %}
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="10" class="text-center text-muted py-4">
-          <i class="bi bi-inbox fs-3 d-block mb-2"></i>No hay evaluaciones registradas.
+        <tr><td colspan="11" class="text-center text-muted py-4">
+          <i class="bi bi-inbox fs-3 d-block mb-2"></i>No hay registros.
         </td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
+</div>
+<div class="text-muted small mt-2">
+  {{ filas|length }} registro(s) mostrados.
+  {% if filas %}<span class="ms-2 text-info"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Fondo gris = cargado masivamente desde Excel</span>{% endif %}
 </div>
 {% endblock %}

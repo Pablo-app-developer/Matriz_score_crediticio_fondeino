@@ -25,16 +25,25 @@ def dashboard(request):
     aprobadas_mes = qs_mes.filter(decision__icontains='APROBAR').count()
     rechazadas_mes = qs_mes.filter(decision__icontains='RECHAZAR').count()
     revisar_mes = qs_mes.filter(decision__icontains='REVISAR').count()
-    monto_aprobado_mes = qs_mes.filter(decision__icontains='APROBAR').aggregate(
+
+    # Monto aprobado del mes: evaluaciones + históricos del mes
+    monto_aprobado_mes_ev = qs_mes.filter(decision__icontains='APROBAR').aggregate(
         t=Sum('monto_solicitado'))['t'] or 0
+    monto_aprobado_mes_hist = PrestamoHistorico.objects.filter(
+        fecha__gte=inicio_mes.date()).aggregate(t=Sum('monto'))['t'] or 0
+    monto_aprobado_mes = monto_aprobado_mes_ev + monto_aprobado_mes_hist
+
+    # Score promedio solo de evaluaciones formales (excluye históricos importados)
     score_promedio_mes = qs_mes.aggregate(a=Avg('score_total'))['a'] or 0
 
-    # Totales históricos
-    total_historico = qs_total.count()
-    monto_historico = qs_total.filter(decision__icontains='APROBAR').aggregate(
+    # Totales históricos: evaluaciones + todos los históricos importados
+    total_historico = qs_total.count() + PrestamoHistorico.objects.count()
+    monto_historico_ev = qs_total.filter(decision__icontains='APROBAR').aggregate(
         t=Sum('monto_solicitado'))['t'] or 0
+    monto_historico_hist = PrestamoHistorico.objects.aggregate(t=Sum('monto'))['t'] or 0
+    monto_historico = monto_historico_ev + monto_historico_hist
 
-    # Distribución por clasificación (todo el historial)
+    # Distribución por clasificación (solo evaluaciones formales)
     por_clasificacion = (qs_total.values('clasificacion')
                          .annotate(n=Count('id')).order_by('-n'))
 
@@ -242,26 +251,76 @@ def detalle(request, pk):
 
 @login_required
 def historico(request):
-    """Lista de todas las evaluaciones."""
-    qs = EvaluacionCredito.objects.select_related('evaluado_por', 'modalidad')
-
-    # Filtros
-    q = request.GET.get('q', '')
+    """Lista unificada: evaluaciones formales + préstamos históricos importados."""
+    q = request.GET.get('q', '').strip()
     decision = request.GET.get('decision', '')
     fecha_desde = request.GET.get('fecha_desde', '')
     fecha_hasta = request.GET.get('fecha_hasta', '')
 
+    # ── Evaluaciones formales ──────────────────────────────────────────────
+    qs_ev = EvaluacionCredito.objects.select_related('evaluado_por', 'modalidad')
     if q:
-        qs = qs.filter(Q(cedula__icontains=q) | Q(nombre_completo__icontains=q))
+        qs_ev = qs_ev.filter(Q(cedula__icontains=q) | Q(nombre_completo__icontains=q))
     if decision:
-        qs = qs.filter(decision__icontains=decision)
+        qs_ev = qs_ev.filter(decision__icontains=decision)
     if fecha_desde:
-        qs = qs.filter(fecha_evaluacion__date__gte=fecha_desde)
+        qs_ev = qs_ev.filter(fecha_evaluacion__date__gte=fecha_desde)
     if fecha_hasta:
-        qs = qs.filter(fecha_evaluacion__date__lte=fecha_hasta)
+        qs_ev = qs_ev.filter(fecha_evaluacion__date__lte=fecha_hasta)
+
+    filas = []
+    for ev in qs_ev:
+        filas.append({
+            'fecha': ev.fecha_evaluacion.date(),
+            'cedula': ev.cedula,
+            'nombre_completo': ev.nombre_completo,
+            'modalidad': ev.modalidad.nombre,
+            'proceso': ev.area,
+            'monto': ev.monto_solicitado,
+            'score': ev.score_total,
+            'clasificacion': ev.clasificacion,
+            'clasificacion_color': ev.clasificacion_color,
+            'decision': ev.decision,
+            'decision_color': ev.decision_color,
+            'usuario': ev.evaluado_por.get_full_name() or ev.evaluado_por.username,
+            'pk': ev.pk,
+            'es_historico': False,
+        })
+
+    # ── Préstamos históricos importados (solo si no se filtra por RECHAZAR/REVISAR) ──
+    incluir_historicos = not decision or 'APROBAR' in decision.upper()
+    if incluir_historicos:
+        qs_hist = PrestamoHistorico.objects.all()
+        if q:
+            qs_hist = qs_hist.filter(Q(cedula__icontains=q) | Q(nombre_completo__icontains=q))
+        if fecha_desde:
+            qs_hist = qs_hist.filter(fecha__gte=fecha_desde)
+        if fecha_hasta:
+            qs_hist = qs_hist.filter(fecha__lte=fecha_hasta)
+
+        for p in qs_hist:
+            filas.append({
+                'fecha': p.fecha,
+                'cedula': p.cedula,
+                'nombre_completo': p.nombre_completo,
+                'modalidad': p.concepto_prestamo,
+                'proceso': p.proceso,
+                'monto': p.monto,
+                'score': None,
+                'clasificacion': None,
+                'clasificacion_color': None,
+                'decision': 'APROBADO',
+                'decision_color': 'success',
+                'usuario': 'Administrador',
+                'pk': None,
+                'es_historico': True,
+            })
+
+    # Ordenar por fecha descendente y limitar
+    filas.sort(key=lambda x: x['fecha'], reverse=True)
 
     return render(request, 'credito/historico.html', {
-        'evaluaciones': qs[:200],
+        'filas': filas[:300],
         'q': q,
         'decision': decision,
         'fecha_desde': fecha_desde,
