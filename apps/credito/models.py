@@ -213,3 +213,28 @@ class EvaluacionCredito(models.Model):
     @property
     def score_pct(self):
         return self.score_total
+
+
+class PrestamoHistorico(models.Model):
+    """Registro de créditos aprobados cargados desde Excel histórico."""
+
+    fecha = models.DateField()
+    cedula = models.CharField(max_length=20)
+    nombre_completo = models.CharField(max_length=200)
+    cargo = models.CharField(max_length=150, blank=True)
+    proceso = models.CharField(max_length=150, blank=True)
+    concepto_prestamo = models.CharField(max_length=200, blank=True)
+    monto = models.DecimalField(max_digits=14, decimal_places=2)
+    fecha_carga = models.DateTimeField(auto_now_add=True)
+    cargado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True,
+        on_delete=models.SET_NULL, related_name='prestamos_historicos'
+    )
+
+    class Meta:
+        verbose_name = 'Préstamo Histórico'
+        verbose_name_plural = 'Préstamos Históricos'
+        ordering = ['-fecha', 'nombre_completo']
+
+    def __str__(self):
+        return f"{self.nombre_completo} — ${self.monto:,.0f} — {self.fecha:%d/%m/%Y}"

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Cargar Préstamos Históricos — FONDEINO{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white">
+        <h5 class="mb-0"><i class="bi bi-file-earmark-arrow-up me-2"></i>Cargar Préstamos Históricos</h5>
+      </div>
+      <div class="card-body">
+
+        <div class="alert alert-info small mb-4">
+          <strong>Formato esperado del Excel:</strong><br>
+          Los datos deben comenzar en la <strong>fila 6</strong> con los encabezados:
+          <code>Fecha | Cédula | Nombre Completo | Cargo | Proceso | Concepto de Prestamo | Monto del Crédito</code>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Archivo Excel <span class="text-danger">*</span></label>
+            <input type="file" name="archivo" accept=".xlsx,.xls" class="form-control" required>
+            <div class="form-text">Formatos aceptados: .xlsx, .xls</div>
+          </div>
+
+          <div class="mb-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="reemplazar" value="1" id="chkReemplazar">
+              <label class="form-check-label text-danger" for="chkReemplazar">
+                <strong>Reemplazar todos los registros existentes</strong>
+                <div class="small text-muted">Si está marcado, se eliminarán los registros anteriores antes de cargar.</div>
+              </label>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-upload me-1"></i>Cargar
+            </button>
+            <a href="{% url 'credito:aprobados' %}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

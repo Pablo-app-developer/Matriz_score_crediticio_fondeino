@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load credito_tags %}
+{% block title %}Préstamos Aprobados — FONDEINO{% endblock %}
+{% block nav_aprobados %}active{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0"><i class="bi bi-journal-check me-2"></i>Préstamos Aprobados</h4>
+  {% if user.es_admin %}
+  <a href="{% url 'credito:cargar_aprobados' %}" class="btn btn-success btn-sm">
+    <i class="bi bi-file-earmark-arrow-up me-1"></i>Cargar Excel
+  </a>
+  {% endif %}
+</div>
+
+<!-- Filtros -->
+<div class="card shadow-sm mb-3">
+  <div class="card-body py-2">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label small">Buscar (cédula / nombre)</label>
+        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="...">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small">Concepto</label>
+        <select name="concepto" class="form-select form-select-sm">
+          <option value="">Todos</option>
+          {% for c in conceptos %}
+          <option value="{{ c }}" {% if c == concepto %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small">Desde</label>
+        <input type="date" name="fecha_desde" value="{{ fecha_desde }}" class="form-control form-control-sm">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small">Hasta</label>
+        <input type="date" name="fecha_hasta" value="{{ fecha_hasta }}" class="form-control form-control-sm">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary btn-sm w-100">
+          <i class="bi bi-search me-1"></i>Filtrar
+        </button>
+      </div>
+      <div class="col-md-1">
+        <a href="{% url 'credito:aprobados' %}" class="btn btn-outline-secondary btn-sm w-100">
+          <i class="bi bi-x"></i>
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Totales -->
+<div class="row g-2 mb-3">
+  <div class="col-auto">
+    <div class="card border-0 bg-primary text-white shadow-sm px-3 py-2">
+      <div class="small opacity-75">Registros</div>
+      <div class="fw-bold fs-5">{{ total_registros }}</div>
+    </div>
+  </div>
+  <div class="col-auto">
+    <div class="card border-0 bg-success text-white shadow-sm px-3 py-2">
+      <div class="small opacity-75">Monto Total</div>
+      <div class="fw-bold fs-5">${{ total_monto|cop }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover table-sm mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>Fecha</th>
+          <th>Cédula</th>
+          <th>Nombre Completo</th>
+          <th>Cargo</th>
+          <th>Proceso</th>
+          <th>Concepto</th>
+          <th class="text-end">Monto</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in prestamos %}
+        <tr>
+          <td class="small text-nowrap">{{ p.fecha|date:"d/m/Y" }}</td>
+          <td><code>{{ p.cedula }}</code></td>
+          <td>{{ p.nombre_completo }}</td>
+          <td class="small">{{ p.cargo }}</td>
+          <td class="small">{{ p.proceso }}</td>
+          <td>
+            <span class="badge bg-info text-dark">{{ p.concepto_prestamo }}</span>
+          </td>
+          <td class="text-end fw-semibold">${{ p.monto|cop }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center text-muted py-4">
+            <i class="bi bi-inbox fs-3 d-block mb-2"></i>No hay préstamos registrados.
+            {% if user.es_admin %}
+            <div class="mt-2">
+              <a href="{% url 'credito:cargar_aprobados' %}" class="btn btn-success btn-sm">
+                <i class="bi bi-file-earmark-arrow-up me-1"></i>Cargar Excel
+              </a>
+            </div>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

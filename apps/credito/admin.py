@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import EvaluacionCredito, Modalidad, Configuracion
+from .models import EvaluacionCredito, Modalidad, Configuracion, PrestamoHistorico
 
 
 @admin.register(Modalidad)
@@ -21,3 +21,11 @@ class EvaluacionAdmin(admin.ModelAdmin):
     search_fields = ['cedula', 'nombre_completo']
     readonly_fields = [f.name for f in EvaluacionCredito._meta.fields
                        if f.name not in ('decision_comite', 'observaciones')]
+
+
+@admin.register(PrestamoHistorico)
+class PrestamoHistoricoAdmin(admin.ModelAdmin):
+    list_display = ['fecha', 'cedula', 'nombre_completo', 'cargo', 'proceso', 'concepto_prestamo', 'monto']
+    list_filter = ['concepto_prestamo', 'proceso']
+    search_fields = ['cedula', 'nombre_completo']
+    date_hierarchy = 'fecha'

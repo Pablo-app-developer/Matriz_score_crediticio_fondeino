@@ -15,6 +15,9 @@ urlpatterns = [
     path('api/empleado/', views.buscar_empleado, name='api_empleado'),
     path('api/empleado/nombre/', views.buscar_empleado_nombre, name='api_empleado_nombre'),
     path('api/modalidad/', views.get_modalidad_tasa, name='api_modalidad'),
+    # Histórico préstamos aprobados
+    path('aprobados/', views.historico_aprobados, name='aprobados'),
+    path('aprobados/cargar/', views.cargar_historico_aprobados, name='cargar_aprobados'),
     # Admin
     path('configuracion/', views.configuracion, name='configuracion'),
     path('modalidades/', views.modalidades_lista, name='modalidades'),

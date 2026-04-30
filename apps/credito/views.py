@@ -7,7 +7,7 @@ from django.http import JsonResponse, HttpResponseForbidden
 from django.db.models import Q, Count, Sum, Avg
 from django.utils import timezone
 
-from .models import EvaluacionCredito, Configuracion, Modalidad
+from .models import EvaluacionCredito, Configuracion, Modalidad, PrestamoHistorico
 from .forms import EvaluacionForm, ConfiguracionForm, ModalidadForm, DecisionComiteForm
 from .scoring import evaluar_credito
 from apps.nomina.models import Empleado
@@ -443,3 +443,118 @@ def evaluacion_eliminar(request, pk):
         return redirect('credito:historico')
 
     return render(request, 'credito/evaluacion_confirmar_eliminar.html', {'ev': ev})
+
+
+# ─── Histórico de Préstamos Aprobados ────────────────────────────────────────
+
+@login_required
+def historico_aprobados(request):
+    """Lista de préstamos aprobados cargados desde Excel."""
+    qs = PrestamoHistorico.objects.all()
+
+    q = request.GET.get('q', '').strip()
+    fecha_desde = request.GET.get('fecha_desde', '')
+    fecha_hasta = request.GET.get('fecha_hasta', '')
+    concepto = request.GET.get('concepto', '').strip()
+
+    if q:
+        qs = qs.filter(Q(cedula__icontains=q) | Q(nombre_completo__icontains=q))
+    if fecha_desde:
+        qs = qs.filter(fecha__gte=fecha_desde)
+    if fecha_hasta:
+        qs = qs.filter(fecha__lte=fecha_hasta)
+    if concepto:
+        qs = qs.filter(concepto_prestamo__icontains=concepto)
+
+    total_registros = qs.count()
+    total_monto = qs.aggregate(t=Sum('monto'))['t'] or 0
+    conceptos = PrestamoHistorico.objects.values_list('concepto_prestamo', flat=True).distinct().order_by('concepto_prestamo')
+
+    return render(request, 'credito/historico_aprobados.html', {
+        'prestamos': qs,
+        'q': q,
+        'fecha_desde': fecha_desde,
+        'fecha_hasta': fecha_hasta,
+        'concepto': concepto,
+        'total_registros': total_registros,
+        'total_monto': total_monto,
+        'conceptos': conceptos,
+    })
+
+
+@login_required
+def cargar_historico_aprobados(request):
+    """Carga masiva de préstamos aprobados desde un archivo Excel."""
+    if not request.user.es_admin:
+        return HttpResponseForbidden()
+
+    if request.method == 'POST':
+        archivo = request.FILES.get('archivo')
+        reemplazar = request.POST.get('reemplazar') == '1'
+
+        if not archivo:
+            messages.error(request, 'Debe seleccionar un archivo Excel.')
+            return render(request, 'credito/cargar_historico.html')
+
+        try:
+            import pandas as pd
+            from datetime import datetime as dt
+
+            df = pd.read_excel(archivo, header=5)  # fila 6 = índice 5
+            df.columns = [str(c).strip() for c in df.columns]
+
+            # Limpiar sufijos _x0000_ que Excel agrega por bytes nulos
+            def limpiar(val):
+                if pd.isna(val):
+                    return ''
+                return str(val).replace('_x0000_', '').strip()
+
+            def parse_fecha(val):
+                if pd.isna(val):
+                    return None
+                if isinstance(val, dt):
+                    return val.date()
+                try:
+                    return pd.to_datetime(val, dayfirst=True).date()
+                except Exception:
+                    return None
+
+            if reemplazar:
+                PrestamoHistorico.objects.all().delete()
+
+            registros = []
+            errores = 0
+            for _, row in df.iterrows():
+                fecha = parse_fecha(row.get('Fecha'))
+                cedula = limpiar(row.get('Cédula') or row.get('Cedula') or row.get('C\u00e9dula'))
+                monto_raw = row.get('Monto del Crédito') or row.get('Monto del Credito') or 0
+                if not cedula or not fecha:
+                    errores += 1
+                    continue
+                try:
+                    monto = float(monto_raw) if not pd.isna(monto_raw) else 0
+                except (TypeError, ValueError):
+                    monto = 0
+
+                registros.append(PrestamoHistorico(
+                    fecha=fecha,
+                    cedula=cedula,
+                    nombre_completo=limpiar(row.get('Nombre Completo')),
+                    cargo=limpiar(row.get('Cargo')),
+                    proceso=limpiar(row.get('Proceso')),
+                    concepto_prestamo=limpiar(row.get('Concepto de Prestamo') or row.get('Concepto de Préstamo')),
+                    monto=monto,
+                    cargado_por=request.user,
+                ))
+
+            PrestamoHistorico.objects.bulk_create(registros, batch_size=500)
+            msg = f'{len(registros)} préstamos cargados exitosamente.'
+            if errores:
+                msg += f' ({errores} filas omitidas por datos incompletos)'
+            messages.success(request, msg)
+            return redirect('credito:aprobados')
+
+        except Exception as e:
+            messages.error(request, f'Error al procesar el archivo: {e}')
+
+    return render(request, 'credito/cargar_historico.html')
