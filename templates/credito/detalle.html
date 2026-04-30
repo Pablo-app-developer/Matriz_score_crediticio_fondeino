@@ -80,7 +80,7 @@
           <tr><td class="bg-light">Cuotas Otras Entidades</td><td class="text-end">${{ ev.cuotas_otras_entidades|cop }}</td></tr>
           <tr><td class="bg-light">Cuotas FONDEINO Actuales</td><td class="text-end">${{ ev.cuota_aporte|cop }}</td></tr>
           <tr><td class="bg-light">Cuota Nueva Estimada ({{ ev.modalidad.nombre }})</td>
-              <td class="text-end">${{ ev.total_cuotas|cop }}</td>
+              <td class="text-end">${{ cuota_nueva|cop }}</td>
           </tr>
           <tr class="table-warning"><td><strong>Total Cuotas</strong></td><td class="text-end fw-bold">${{ ev.total_cuotas|cop }}</td></tr>
         </table>

@@ -231,21 +231,19 @@ def detalle(request, pk):
         return redirect('credito:detalle', pk=pk)
 
     # Regenerar plan de pagos para mostrar
-    from .scoring import generar_plan_pagos, calcular_seguro
-    seguro = calcular_seguro(float(ev.monto_solicitado))
-    plan = generar_plan_pagos(
-        float(ev.monto_solicitado),
-        float(ev.modalidad.tasa_mensual),
-        ev.n_cuotas,
-        ev.fecha_desembolso,
-        seguro,
-    )
+    from .scoring import generar_plan_pagos, calcular_seguro, calcular_pmt
+    monto = float(ev.monto_solicitado)
+    tasa = float(ev.modalidad.tasa_mensual)
+    seguro = calcular_seguro(monto)
+    cuota_nueva = calcular_pmt(monto, tasa, ev.n_cuotas) + seguro
+    plan = generar_plan_pagos(monto, tasa, ev.n_cuotas, ev.fecha_desembolso, seguro)
 
     return render(request, 'credito/detalle.html', {
         'ev': ev,
         'plan': plan,
         'form_comite': form_comite,
         'seguro': seguro,
+        'cuota_nueva': cuota_nueva,
     })
 
 
