@@ -1,0 +1,276 @@
+{% load credito_tags %}<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Acta N° {{ no_acta }} — Comité de Crédito FONDEINO</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 11px; color: #111; background: #fff; }
+  .page { width: 210mm; margin: 0 auto; padding: 12mm 16mm; }
+
+  /* Header institucional */
+  .inst-header { display: flex; align-items: center; border: 2px solid #1a56db; border-radius: 4px; margin-bottom: 10px; overflow: hidden; }
+  .inst-logo { background: #1a56db; color: #fff; padding: 10px 16px; font-size: 20px; font-weight: 900; letter-spacing: -0.5px; min-width: 130px; text-align: center; }
+  .inst-logo span { color: #f59e0b; }
+  .inst-info { padding: 6px 14px; flex: 1; }
+  .inst-info .title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: #1a56db; }
+  .inst-info .sub { font-size: 10px; color: #555; margin-top: 2px; }
+  .inst-meta { padding: 6px 14px; text-align: right; border-left: 1px solid #ddd; min-width: 160px; }
+  .inst-meta .acta-no { font-size: 18px; font-weight: 900; color: #1a56db; }
+  .inst-meta .acta-label { font-size: 9px; color: #888; text-transform: uppercase; }
+
+  /* Tipo de reunión */
+  .tipo-reunion { border: 1px solid #ddd; border-radius: 4px; padding: 6px 12px; margin-bottom: 10px; font-size: 10px; }
+  .tipo-reunion .label { font-weight: 700; color: #555; margin-right: 8px; }
+  .tipo-reunion .tipos { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+  .tipo-item { display: flex; align-items: center; gap: 4px; }
+  .box { width: 12px; height: 12px; border: 1px solid #555; display: inline-block; background: #fff; }
+  .box.checked { background: #1a56db; }
+  .fecha-acta { display: flex; justify-content: space-between; margin-top: 4px; font-weight: 600; }
+
+  /* Secciones */
+  .section { margin-bottom: 10px; }
+  .section-title { background: #1a56db; color: #fff; padding: 4px 10px; font-weight: 700; font-size: 10.5px; border-radius: 3px 3px 0 0; text-transform: uppercase; letter-spacing: .4px; }
+  .section-body { border: 1px solid #ddd; border-top: none; padding: 8px 10px; border-radius: 0 0 3px 3px; }
+
+  /* Objetivo */
+  .objetivo { font-size: 10.5px; }
+
+  /* Tablas */
+  table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+  th { background: #e8edf5; padding: 4px 8px; border: 1px solid #ccc; font-weight: 700; text-align: left; }
+  td { padding: 4px 8px; border: 1px solid #ccc; vertical-align: top; }
+  .firma-col { width: 160px; }
+  .no-asistio { color: #888; font-style: italic; }
+
+  /* Créditos */
+  .credito-bloque { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #ddd; break-inside: avoid; }
+  .credito-bloque:last-child { border-bottom: none; }
+  .credito-nombre { font-weight: 700; font-size: 11px; text-transform: uppercase; color: #1a56db; margin-bottom: 3px; }
+  .credito-datos { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px 10px; font-size: 10px; }
+  .credito-dato label { color: #666; font-size: 9.5px; display: block; }
+  .credito-dato span { font-weight: 600; }
+  .credito-decision { margin-top: 4px; font-size: 10px; }
+  .decision-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-weight: 700; font-size: 9.5px; }
+  .dec-aprobado   { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+  .dec-rechazado  { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+  .dec-revisar    { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+  .dec-pendiente  { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+  /* Compromisos */
+  .compromisos-table td { height: 22px; }
+
+  /* Firmas */
+  .firmas { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 14px; }
+  .firma-box { text-align: center; }
+  .firma-line { border-top: 1px solid #111; margin-bottom: 4px; margin-top: 30px; }
+  .firma-name { font-weight: 700; font-size: 10.5px; }
+  .firma-role { color: #555; font-size: 9.5px; }
+
+  /* Pie */
+  .footer { margin-top: 14px; border-top: 1px solid #ddd; padding-top: 6px; font-size: 9px; color: #888; display: flex; justify-content: space-between; }
+
+  /* Botón imprimir */
+  .no-print { text-align: right; margin-bottom: 12px; }
+  .no-print button { background: #1a56db; color: #fff; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: 600; margin-left: 8px; }
+  .no-print button.secondary { background: #6b7280; }
+
+  @media print {
+    .no-print { display: none !important; }
+    .page { padding: 6mm 12mm; }
+    @page { margin: 0; size: A4; }
+    body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- BOTONES (ocultos al imprimir) -->
+  <div class="no-print">
+    <button onclick="window.print()">⬇ Imprimir / Guardar PDF</button>
+    <button class="secondary" onclick="window.close()">Cerrar</button>
+  </div>
+
+  <!-- ENCABEZADO INSTITUCIONAL -->
+  <div class="inst-header">
+    <div class="inst-logo">FONDE<span>INO</span></div>
+    <div class="inst-info">
+      <div class="title">Fondo de Empleados FONDEINO</div>
+      <div class="sub">NIT 901.959.243-8 &nbsp;·&nbsp; Acta del Comité de Crédito</div>
+    </div>
+    <div class="inst-meta">
+      <div class="acta-label">Acta N°</div>
+      <div class="acta-no">{{ no_acta }}</div>
+    </div>
+  </div>
+
+  <!-- TIPO DE REUNIÓN Y FECHA -->
+  <div class="tipo-reunion">
+    <div class="tipos">
+      <div class="tipo-item"><span class="box"></span> Revisión por Revisor Fiscal</div>
+      <div class="tipo-item"><span class="box"></span> Comité de Bienestar Social</div>
+      <div class="tipo-item"><span class="box"></span> Comité de Control Social</div>
+      <div class="tipo-item"><span class="box checked"></span> <strong>Comité de Crédito</strong></div>
+      <div class="tipo-item"><span class="box"></span> Asamblea General</div>
+      <div class="tipo-item"><span class="box"></span> Junta Directiva</div>
+    </div>
+    <div class="fecha-acta" style="margin-top:6px">
+      <span>FECHA: &nbsp;<strong>{{ fecha_fmt }}</strong></span>
+    </div>
+  </div>
+
+  <!-- OBJETIVO -->
+  <div class="section">
+    <div class="section-title">Objetivo</div>
+    <div class="section-body objetivo">
+      El propósito de la reunión fue la revisión y aprobación de las solicitudes de crédito presentadas por los asociados.
+    </div>
+  </div>
+
+  <!-- PARTICIPANTES -->
+  <div class="section">
+    <div class="section-title">Participantes</div>
+    <div class="section-body" style="padding:0">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Cargo en el Comité</th>
+            <th class="firma-col">Firma</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in participantes %}
+          <tr>
+            <td {% if not p.asistio %}class="no-asistio"{% endif %}>
+              {{ p.nombre }}{% if not p.asistio %} &nbsp;— <em>No asistió</em>{% endif %}
+            </td>
+            <td>{{ p.cargo }}</td>
+            <td class="firma-col">&nbsp;</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TEMAS TRATADOS -->
+  <div class="section">
+    <div class="section-title">Temas Tratados</div>
+    <div class="section-body objetivo">
+      Revisión y aprobación de solicitudes de crédito.
+    </div>
+  </div>
+
+  <!-- DESARROLLO DE LA REUNIÓN -->
+  <div class="section">
+    <div class="section-title">Desarrollo de la Reunión</div>
+    <div class="section-body">
+      <p style="font-size:10px;margin-bottom:8px">
+        <strong>Apertura:</strong> La reunión fue convocada por la analista de crédito y se procedió a la revisión y aprobación de las solicitudes presentadas.
+      </p>
+      <p style="font-size:10.5px;font-weight:700;margin-bottom:6px">Revisión y aprobación de solicitudes presentadas:</p>
+
+      {% if evaluaciones %}
+        {% for ev in evaluaciones %}
+        <div class="credito-bloque">
+          <div class="credito-nombre">{{ ev.nombre_completo }}</div>
+          <div class="credito-datos">
+            <div class="credito-dato">
+              <label>Tipo de Crédito</label>
+              <span>{{ ev.modalidad.nombre }}</span>
+            </div>
+            <div class="credito-dato">
+              <label>Monto</label>
+              <span>${{ ev.monto_solicitado|cop }}=</span>
+            </div>
+            <div class="credito-dato">
+              <label>Plazo</label>
+              <span>{{ ev.n_cuotas }} cuota{% if ev.n_cuotas != 1 %}s{% endif %}</span>
+            </div>
+            <div class="credito-dato">
+              <label>Motivo</label>
+              <span>{{ ev.motivo|default:"Personal" }}</span>
+            </div>
+          </div>
+          <div class="credito-decision">
+            {% if ev.decision_comite %}
+              {% if 'No aprobado' in ev.decision_comite or 'Rechaz' in ev.decision_comite %}
+                <span class="decision-badge dec-rechazado">{{ ev.decision_comite }}</span>
+              {% elif 'estudio' in ev.decision_comite or 'Pendiente' in ev.decision_comite or 'corrección' in ev.decision_comite %}
+                <span class="decision-badge dec-pendiente">{{ ev.decision_comite }}</span>
+              {% elif 'Revisar' in ev.decision_comite or 'fiador' in ev.decision_comite %}
+                <span class="decision-badge dec-revisar">{{ ev.decision_comite }}</span>
+              {% else %}
+                <span class="decision-badge dec-aprobado">{{ ev.decision_comite }}</span>
+              {% endif %}
+              {% if ev.observaciones %}
+                <span style="font-size:9.5px;color:#555;margin-left:8px">{{ ev.observaciones }}</span>
+              {% endif %}
+            {% else %}
+              {% if 'APROBAR' in ev.decision %}
+                <span class="decision-badge dec-aprobado">Aprobado</span>
+              {% elif 'RECHAZAR' in ev.decision %}
+                <span class="decision-badge dec-rechazado">{{ ev.decision }}</span>
+              {% else %}
+                <span class="decision-badge dec-revisar">{{ ev.decision }}</span>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p style="color:#888;font-style:italic">No hay evaluaciones registradas en el rango de fechas seleccionado.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- COMPROMISOS -->
+  <div class="section">
+    <div class="section-title">Compromisos</div>
+    <div class="section-body" style="padding:0">
+      <table class="compromisos-table">
+        <thead>
+          <tr>
+            <th>Descripción del Compromiso</th>
+            <th style="width:140px">Responsable</th>
+            <th style="width:110px">Fecha Proyectada</th>
+            <th class="firma-col">Firma</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FIRMAS -->
+  <div class="firmas">
+    <div class="firma-box">
+      <div class="firma-line"></div>
+      <div class="firma-name">{{ presidente.nombre|default:"________________________" }}</div>
+      <div class="firma-role">Presidente del Comité de Crédito</div>
+    </div>
+    <div class="firma-box">
+      <div class="firma-line"></div>
+      <div class="firma-name">{{ secretaria.nombre|default:"________________________" }}</div>
+      <div class="firma-role">Secretaria del Comité de Crédito</div>
+    </div>
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <div class="footer">
+    <div>FONDEINO · Fondo de Empleados · Comité de Crédito</div>
+    <div>Elaborado: {{ hoy }} &nbsp;·&nbsp; Solo para uso interno</div>
+  </div>
+
+</div>
+<script>
+  window.addEventListener('load', function() { setTimeout(function() { window.print(); }, 400); });
+</script>
+</body>
+</html>

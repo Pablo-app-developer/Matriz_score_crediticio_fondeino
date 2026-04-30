@@ -645,3 +645,81 @@ def cargar_historico_aprobados(request):
             messages.error(request, f'Error al procesar el archivo: {e}')
 
     return render(request, 'credito/cargar_historico.html')
+
+
+# ─── Generador de Actas ───────────────────────────────────────────────────────
+
+ROLES_COMITE = {
+    'PabloR':      ('Pablo Andrés Ramírez Meneses',      'Presidente'),
+    'AlejandraM':  ('Mayra Alejandra Montenegro Mateus', 'Secretaria'),
+    'LilibethM':   ('Lilibeth Mora Toncel',              'Miembro'),
+    'MayraO':      ('Mayra Alejandra Ortiz Pinilla',     'Miembro'),
+    'FernandoS':   ('Luis Fernando Santos Serrano',      'Miembro'),
+    'EileenV':     ('Eileen Yelipsa Vega Silva',         'Miembro'),
+}
+
+
+@login_required
+def acta_form(request):
+    if not request.user.es_admin:
+        return HttpResponseForbidden()
+    from apps.accounts.models import Usuario
+    miembros = []
+    for uname, (nombre, cargo) in ROLES_COMITE.items():
+        try:
+            u = Usuario.objects.get(username=uname)
+            uid = u.id
+        except Usuario.DoesNotExist:
+            uid = uname
+        miembros.append({'id': uid, 'nombre': nombre, 'cargo': cargo})
+    return render(request, 'credito/acta_form.html', {'miembros': miembros})
+
+
+@login_required
+def acta_imprimir(request):
+    if not request.user.es_admin:
+        return HttpResponseForbidden()
+    if request.method != 'POST':
+        return redirect('credito:acta_form')
+    from apps.accounts.models import Usuario
+    from django.utils.timezone import localdate
+    from datetime import datetime as _dt
+
+    no_acta       = request.POST.get('no_acta', '').strip()
+    fecha_reunion = request.POST.get('fecha_reunion', '')
+    fecha_desde   = request.POST.get('fecha_desde', '')
+    fecha_hasta   = request.POST.get('fecha_hasta', '')
+    asistentes    = set(request.POST.getlist('asistentes'))
+
+    qs = EvaluacionCredito.objects.select_related('modalidad').order_by('nombre_completo')
+    if fecha_desde:
+        qs = qs.filter(fecha_evaluacion__date__gte=fecha_desde)
+    if fecha_hasta:
+        qs = qs.filter(fecha_evaluacion__date__lte=fecha_hasta)
+
+    MESES = ['enero','febrero','marzo','abril','mayo','junio',
+             'julio','agosto','septiembre','octubre','noviembre','diciembre']
+    try:
+        d = _dt.strptime(fecha_reunion, '%Y-%m-%d')
+        fecha_fmt = f"{d.day} de {MESES[d.month-1]} de {d.year}"
+    except Exception:
+        fecha_fmt = fecha_reunion
+
+    participantes = []
+    for uname, (nombre, cargo) in ROLES_COMITE.items():
+        try:
+            u = Usuario.objects.get(username=uname)
+            uid = str(u.id)
+        except Usuario.DoesNotExist:
+            uid = uname
+        participantes.append({'nombre': nombre, 'cargo': cargo, 'asistio': uid in asistentes})
+
+    return render(request, 'credito/acta_impresion.html', {
+        'no_acta':      no_acta,
+        'fecha_fmt':    fecha_fmt,
+        'evaluaciones': qs,
+        'participantes': participantes,
+        'hoy':          localdate().strftime('%d/%m/%Y'),
+        'presidente':   next((p for p in participantes if p['cargo'] == 'Presidente'), None),
+        'secretaria':   next((p for p in participantes if p['cargo'] == 'Secretaria'), None),
+    })
