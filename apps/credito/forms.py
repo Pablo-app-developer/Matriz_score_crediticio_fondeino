@@ -44,11 +44,7 @@ class EvaluacionForm(forms.Form):
                                                 attrs={'class': INPUT, 'step': 'any',
                                                        'placeholder': '0.00 a 1.00',
                                                        'id': 'id_pct_capital_pagado'}))
-    cuotas_otras_entidades = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0,
-                                                initial=0, required=False,
-                                                widget=forms.NumberInput(attrs={'class': INPUT,
-                                                                                'step': 'any',
-                                                                                'id': 'id_cuotas_otras_entidades'}))
+    # cuotas_otras_entidades se calcula en la vista desde las filas dinámicas
 
     # Descuentos FONDEINO
     cuota_aporte = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0, initial=0, required=False,
@@ -82,7 +78,6 @@ class EvaluacionForm(forms.Form):
 
     def clean(self):
         cd = super().clean()
-        cd.setdefault('cuotas_otras_entidades', 0)
         cd.setdefault('cuota_aporte', 0)
         cd.setdefault('cuota_ahorro', 0)
         cd.setdefault('saldo_aportes', 0)

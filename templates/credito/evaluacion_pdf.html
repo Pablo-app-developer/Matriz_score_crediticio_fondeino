@@ -153,7 +153,20 @@
       <div class="card" style="margin-bottom:8px">
         <div class="card-header hdr-amber">Obligaciones Mensuales</div>
         <table>
+          {% if ev.otras_obligaciones %}
+            {% for o in ev.otras_obligaciones %}
+            <tr>
+              <td class="bg-light" style="padding-left:16px;font-size:10px">
+                {{ o.entidad|default:"Otra entidad" }}{% if o.tipo %} — {{ o.tipo }}{% endif %}
+              </td>
+              <td class="text-right">${{ o.cuota|floatformat:0 }}</td>
+            </tr>
+            {% endfor %}
+            <tr><td class="bg-light fw-bold" style="font-size:10px">Subtotal otras entidades</td>
+                <td class="text-right fw-bold">${{ ev.cuotas_otras_entidades|cop }}</td></tr>
+          {% else %}
           <tr><td class="bg-light">Cuotas Otras Entidades</td><td class="text-right">${{ ev.cuotas_otras_entidades|cop }}</td></tr>
+          {% endif %}
           <tr><td class="bg-light">Cuota Aporte FONDEINO</td><td class="text-right">${{ ev.cuota_aporte|cop }}</td></tr>
           <tr><td class="bg-light">Cuota Ahorro FONDEINO</td><td class="text-right">${{ ev.cuota_ahorro|cop }}</td></tr>
           <tr><td class="bg-light">Cuota Nueva Estimada ({{ ev.modalidad.nombre }})</td><td class="text-right fw-bold">${{ cuota_nueva|cop }}</td></tr>

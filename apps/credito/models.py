@@ -152,6 +152,8 @@ class EvaluacionCredito(models.Model):
     tiene_credito_activo = models.BooleanField(default=False)
     pct_capital_pagado = models.DecimalField(max_digits=5, decimal_places=4, default=0)
     cuotas_otras_entidades = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    # Desglose de obligaciones con otras entidades [{entidad, tipo, cuota}]
+    otras_obligaciones = models.JSONField(default=list, blank=True)
 
     # Descuentos FONDEINO
     cuota_aporte = models.DecimalField(max_digits=14, decimal_places=2, default=0)

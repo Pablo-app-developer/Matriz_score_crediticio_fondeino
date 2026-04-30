@@ -77,7 +77,23 @@
       <div class="card-header bg-warning text-dark py-2"><strong>Obligaciones Mensuales</strong></div>
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
+          {% if ev.otras_obligaciones %}
+            {% for o in ev.otras_obligaciones %}
+            <tr>
+              <td class="bg-light ps-3 small">
+                <i class="bi bi-building me-1 text-muted"></i>
+                {{ o.entidad|default:"Otra entidad" }}{% if o.tipo %} · <span class="text-muted">{{ o.tipo }}</span>{% endif %}
+              </td>
+              <td class="text-end">${{ o.cuota|floatformat:0|stringformat:"s"|default:"0" }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="table-light">
+              <td class="bg-light fw-semibold small">Subtotal otras entidades</td>
+              <td class="text-end fw-semibold">${{ ev.cuotas_otras_entidades|cop }}</td>
+            </tr>
+          {% else %}
           <tr><td class="bg-light">Cuotas Otras Entidades</td><td class="text-end">${{ ev.cuotas_otras_entidades|cop }}</td></tr>
+          {% endif %}
           <tr><td class="bg-light">Cuotas FONDEINO Actuales</td><td class="text-end">${{ ev.cuota_aporte|cop }}</td></tr>
           <tr><td class="bg-light">Cuota Nueva Estimada ({{ ev.modalidad.nombre }})</td>
               <td class="text-end">${{ cuota_nueva|cop }}</td>

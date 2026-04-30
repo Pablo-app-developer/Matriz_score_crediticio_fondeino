@@ -102,11 +102,25 @@
             {{ form.pct_capital_pagado }}
             <div class="form-text">0.00 = 0%, 1.00 = 100%</div>
           </div>
+          <!-- TABLA DINÁMICA OTRAS OBLIGACIONES -->
           <div class="col-12">
-            <label class="form-label small fw-semibold">Cuotas Otras Entidades (mensual)</label>
-            <div class="input-group">
-              <span class="input-group-text">$</span>
-              {{ form.cuotas_otras_entidades }}
+            <label class="form-label small fw-semibold">Obligaciones con Otras Entidades</label>
+            <table class="table table-sm table-bordered mb-1" id="tablaObligaciones">
+              <thead class="table-secondary">
+                <tr>
+                  <th class="small">Entidad</th>
+                  <th class="small">Tipo de Crédito</th>
+                  <th class="small" style="width:130px">Cuota Mensual</th>
+                  <th style="width:36px"></th>
+                </tr>
+              </thead>
+              <tbody id="filasObligaciones"></tbody>
+            </table>
+            <div class="d-flex justify-content-between align-items-center">
+              <button type="button" class="btn btn-outline-secondary btn-sm" onclick="agregarFila()">
+                <i class="bi bi-plus-circle me-1"></i>Agregar entidad
+              </button>
+              <span class="small text-muted">Total: <strong id="totalOtras">$ 0</strong></span>
             </div>
           </div>
         </div>
@@ -410,7 +424,7 @@ function calcularPreview() {
   const seguro = monto * 0.0025;
   const cuotaBase = (monto > 0 && ncuotas > 0 && tasa > 0) ? pmt(monto, tasa, ncuotas) + seguro : 0;
 
-  const otras = parseFloat(document.getElementById('id_cuotas_otras_entidades').value) || 0;
+  const otras = totalOtrasEntidades();
   const aporte = parseFloat(document.getElementById('id_cuota_aporte').value) || 0;
   const ahorro = parseFloat(document.getElementById('id_cuota_ahorro').value) || 0;
   const totalCuotas = otras + aporte + ahorro + cuotaBase;
@@ -464,10 +478,54 @@ function calcularPreview() {
   decEl.className = 'badge fs-6 mt-1 ' + (sb ? decClass : 'bg-secondary');
 }
 
+// ── Tabla dinámica de otras obligaciones ──
+let numFilas = 0;
+
+function totalOtrasEntidades() {
+  let t = 0;
+  document.querySelectorAll('.cuota-otra').forEach(el => {
+    t += parseFloat(el.value) || 0;
+  });
+  return t;
+}
+
+function actualizarTotalOtras() {
+  document.getElementById('totalOtras').textContent = '$ ' + fmt(totalOtrasEntidades());
+  calcularPreview();
+}
+
+function agregarFila(entidad='', tipo='', cuota='') {
+  numFilas++;
+  const n = numFilas;
+  const tbody = document.getElementById('filasObligaciones');
+  const tr = document.createElement('tr');
+  tr.id = `fila_otra_${n}`;
+  tr.innerHTML = `
+    <td><input type="text" name="entidad_otra_${n}" value="${entidad}"
+         class="form-control form-control-sm" placeholder="Ej: Bancolombia"></td>
+    <td><input type="text" name="tipo_otra_${n}" value="${tipo}"
+         class="form-control form-control-sm" placeholder="Ej: Libre inversión"></td>
+    <td><div class="input-group input-group-sm">
+         <span class="input-group-text">$</span>
+         <input type="number" name="cuota_otra_${n}" value="${cuota}" min="0" step="any"
+                class="form-control cuota-otra" placeholder="0" oninput="actualizarTotalOtras()">
+        </div></td>
+    <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarFila(${n})">
+         <i class="bi bi-trash"></i></button></td>`;
+  tbody.appendChild(tr);
+  actualizarTotalOtras();
+}
+
+function eliminarFila(n) {
+  const tr = document.getElementById(`fila_otra_${n}`);
+  if (tr) tr.remove();
+  actualizarTotalOtras();
+}
+
 // Bind all inputs to recalculate
 const inputs = ['id_salario_bruto','id_monto_solicitado','id_n_cuotas','id_puntaje_datacredito',
   'id_antiguedad_meses','id_tipo_vinculacion','id_tiene_credito_activo','id_pct_capital_pagado',
-  'id_cuotas_otras_entidades','id_cuota_aporte','id_cuota_ahorro','id_saldo_aportes','id_saldo_ahorros'];
+  'id_cuota_aporte','id_cuota_ahorro','id_saldo_aportes','id_saldo_ahorros'];
 inputs.forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('input', calcularPreview);

@@ -65,6 +65,26 @@ def dashboard(request):
     })
 
 
+def _parsear_otras_obligaciones(post):
+    """Extrae las filas dinámicas de otras obligaciones del POST.
+    Retorna (lista, total) donde lista = [{entidad, tipo, cuota}, ...]"""
+    lista = []
+    total = 0.0
+    i = 1
+    while f'cuota_otra_{i}' in post:
+        try:
+            cuota = float(post.get(f'cuota_otra_{i}') or 0)
+        except ValueError:
+            cuota = 0.0
+        entidad = post.get(f'entidad_otra_{i}', '').strip()
+        tipo = post.get(f'tipo_otra_{i}', '').strip()
+        if cuota > 0 or entidad:
+            lista.append({'entidad': entidad, 'tipo': tipo, 'cuota': cuota})
+            total += cuota
+        i += 1
+    return lista, total
+
+
 @login_required
 def evaluacion(request):
     """Formulario principal de evaluación de crédito."""
@@ -96,6 +116,10 @@ def evaluacion(request):
             'fecha_desembolso': cd['fecha_desembolso'],
         }
 
+        # Parsear filas dinámicas de obligaciones con otras entidades
+        otras_lista, total_otras = _parsear_otras_obligaciones(request.POST)
+        datos['cuotas_otras_entidades'] = total_otras
+
         resultado = evaluar_credito(datos, cfg)
 
         # Guardar en historial
@@ -112,7 +136,8 @@ def evaluacion(request):
             puntaje_datacredito=cd['puntaje_datacredito'],
             tiene_credito_activo=(cd['tiene_credito_activo'] == 'SI'),
             pct_capital_pagado=float(cd.get('pct_capital_pagado') or 0),
-            cuotas_otras_entidades=float(cd.get('cuotas_otras_entidades') or 0),
+            cuotas_otras_entidades=total_otras,
+            otras_obligaciones=otras_lista,
             cuota_aporte=float(cd.get('cuota_aporte') or 0),
             cuota_ahorro=float(cd.get('cuota_ahorro') or 0),
             saldo_aportes=float(cd.get('saldo_aportes') or 0),
@@ -420,6 +445,7 @@ def evaluacion_editar(request, pk):
         cfg = Configuracion.get_config().as_dict()
         modalidad = cd['modalidad']
 
+        otras_lista, total_otras = _parsear_otras_obligaciones(request.POST)
         datos = {
             'salario_bruto': cd['salario_bruto'],
             'puntaje_datacredito': cd['puntaje_datacredito'],
@@ -427,7 +453,7 @@ def evaluacion_editar(request, pk):
             'tipo_vinculacion': cd['tipo_vinculacion'],
             'tiene_credito_activo': cd['tiene_credito_activo'] == 'SI',
             'pct_capital_pagado': float(cd.get('pct_capital_pagado') or 0),
-            'cuotas_otras_entidades': float(cd.get('cuotas_otras_entidades') or 0),
+            'cuotas_otras_entidades': total_otras,
             'cuota_aporte': float(cd.get('cuota_aporte') or 0),
             'cuota_ahorro': float(cd.get('cuota_ahorro') or 0),
             'saldo_aportes': float(cd.get('saldo_aportes') or 0),
@@ -452,7 +478,8 @@ def evaluacion_editar(request, pk):
         ev.puntaje_datacredito = cd['puntaje_datacredito']
         ev.tiene_credito_activo = (cd['tiene_credito_activo'] == 'SI')
         ev.pct_capital_pagado = float(cd.get('pct_capital_pagado') or 0)
-        ev.cuotas_otras_entidades = float(cd.get('cuotas_otras_entidades') or 0)
+        ev.cuotas_otras_entidades = total_otras
+        ev.otras_obligaciones = otras_lista
         ev.cuota_aporte = float(cd.get('cuota_aporte') or 0)
         ev.cuota_ahorro = float(cd.get('cuota_ahorro') or 0)
         ev.saldo_aportes = float(cd.get('saldo_aportes') or 0)
@@ -482,7 +509,12 @@ def evaluacion_editar(request, pk):
         messages.success(request, 'Evaluación actualizada y recalculada correctamente.')
         return redirect('credito:detalle', pk=ev.pk)
 
-    return render(request, 'credito/evaluacion_editar.html', {'form': form, 'ev': ev})
+    import json as _json
+    return render(request, 'credito/evaluacion_editar.html', {
+        'form': form,
+        'ev': ev,
+        'otras_obligaciones_json': _json.dumps(ev.otras_obligaciones or []),
+    })
 
 
 @login_required
