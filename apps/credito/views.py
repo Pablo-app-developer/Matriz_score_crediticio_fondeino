@@ -203,19 +203,17 @@ def get_modalidad_tasa(request):
 def evaluacion_pdf(request, pk):
     """Página de impresión / exportación PDF de una evaluación."""
     ev = get_object_or_404(EvaluacionCredito, pk=pk)
-    from .scoring import generar_plan_pagos, calcular_seguro
+    from .scoring import generar_plan_pagos, calcular_seguro, calcular_pmt
     from django.utils.timezone import localdate
-    seguro = calcular_seguro(float(ev.monto_solicitado))
-    plan = generar_plan_pagos(
-        float(ev.monto_solicitado),
-        float(ev.modalidad.tasa_mensual),
-        ev.n_cuotas,
-        ev.fecha_desembolso,
-        seguro,
-    )
+    monto_pdf = float(ev.monto_solicitado)
+    tasa_pdf = float(ev.modalidad.tasa_mensual)
+    seguro = calcular_seguro(monto_pdf)
+    cuota_nueva = calcular_pmt(monto_pdf, tasa_pdf, ev.n_cuotas) + seguro
+    plan = generar_plan_pagos(monto_pdf, tasa_pdf, ev.n_cuotas, ev.fecha_desembolso, seguro)
     return render(request, 'credito/evaluacion_pdf.html', {
         'ev': ev,
         'plan': plan,
+        'cuota_nueva': cuota_nueva,
         'hoy': localdate().strftime('%d/%m/%Y'),
     })
 

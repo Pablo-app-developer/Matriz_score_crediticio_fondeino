@@ -130,7 +130,8 @@
           <tr><td class="bg-light">Modalidad</td><td class="text-end">{{ ev.modalidad.nombre }}</td></tr>
           <tr><td class="bg-light">Monto Solicitado</td><td class="text-end fw-bold">${{ ev.monto_solicitado|cop }}</td></tr>
           <tr><td class="bg-light">Número de Cuotas</td><td class="text-end">{{ ev.n_cuotas }}</td></tr>
-          <tr><td class="bg-light">Tasa Nominal Anual</td><td class="text-end">{{ ev.modalidad.tasa_nominal_anual|floatformat:1 }}%</td></tr>
+          <tr><td class="bg-light">Tasa Mensual</td><td class="text-end fw-semibold">{{ ev.modalidad.tasa_mensual|floatformat:2 }}%</td></tr>
+          <tr><td class="bg-light">Tasa Nominal Anual</td><td class="text-end fw-semibold">{{ ev.modalidad.tasa_nominal_anual|floatformat:1 }}%</td></tr>
           <tr><td class="bg-light">Fecha Desembolso</td><td class="text-end">{{ ev.fecha_desembolso|date:"d/m/Y" }}</td></tr>
           {% if ev.motivo %}<tr><td class="bg-light">Motivo</td><td class="text-end">{{ ev.motivo }}</td></tr>{% endif %}
         </table>
