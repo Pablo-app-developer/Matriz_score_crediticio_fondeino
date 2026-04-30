@@ -114,11 +114,34 @@ class ModalidadForm(forms.ModelForm):
         self.fields['activa'].widget.attrs['class'] = 'form-check-input'
 
 
+DECISION_COMITE_CHOICES = [
+    ('', '— Seleccione decisión del comité —'),
+    # Aprobaciones
+    ('Aprobado',                            'Aprobado'),
+    ('Aprobado con fiador / codeudor',      'Aprobado con fiador / codeudor'),
+    ('Aprobado con monto reducido',         'Aprobado con monto reducido'),
+    ('Aprobado condicionado - mínimo vital','Aprobado condicionado - mínimo vital'),
+    # No aprobaciones
+    ('No aprobado - Score insuficiente',    'No aprobado - Score insuficiente'),
+    ('No aprobado - Capacidad de pago',     'No aprobado - Capacidad de pago'),
+    ('No aprobado - Historial crediticio',  'No aprobado - Historial crediticio'),
+    ('No aprobado - Antigüedad insuficiente','No aprobado - Antigüedad insuficiente'),
+    ('No aprobado - Endeudamiento excesivo','No aprobado - Endeudamiento excesivo'),
+    ('No aprobado - Documentación incompleta','No aprobado - Documentación incompleta'),
+    # Otros
+    ('En estudio / Pendiente',              'En estudio / Pendiente'),
+    ('Devuelto para corrección',            'Devuelto para corrección'),
+]
+
+
 class DecisionComiteForm(forms.ModelForm):
     class Meta:
         model = EvaluacionCredito
         fields = ['decision_comite', 'observaciones']
         widgets = {
-            'decision_comite': forms.TextInput(attrs={'class': 'form-control'}),
+            'decision_comite': forms.Select(
+                choices=DECISION_COMITE_CHOICES,
+                attrs={'class': 'form-select'}
+            ),
             'observaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
