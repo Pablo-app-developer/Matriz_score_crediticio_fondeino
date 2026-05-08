@@ -240,7 +240,7 @@ def evaluacion_pdf(request, pk):
         'ev': ev,
         'plan': plan,
         'cuota_nueva': cuota_nueva,
-        'hoy': localdate().strftime('%d/%m/%Y'),
+        'hoy': timezone.localtime().strftime('%d/%m/%Y %H:%M'),
         'total_garantias': total_garantias,
     })
 
