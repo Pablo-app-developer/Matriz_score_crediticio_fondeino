@@ -121,6 +121,7 @@
     <table class="table table-hover table-sm mb-0">
       <thead class="table-dark">
         <tr>
+          <th class="text-center">#</th>
           <th>Fecha</th>
           <th>Cédula</th>
           <th>Nombre</th>
@@ -137,6 +138,9 @@
       <tbody>
         {% for fila in filas %}
         <tr {% if fila.es_historico %}class="table-light"{% endif %}>
+          <td class="text-center small fw-bold">
+            {% if fila.pk %}<span class="text-primary">#{{ fila.pk }}</span>{% else %}<span class="text-muted">—</span>{% endif %}
+          </td>
           <td class="small text-nowrap">{{ fila.fecha|date:"d/m/Y" }}</td>
           <td><code>{{ fila.cedula }}</code></td>
           <td>{{ fila.nombre_completo }}</td>
