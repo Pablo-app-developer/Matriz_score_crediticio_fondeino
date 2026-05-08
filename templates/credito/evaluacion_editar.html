@@ -43,7 +43,11 @@
         <div class="row g-2">
           <div class="col-12"><label class="form-label small fw-semibold">Puntaje DataCrédito</label>{{ form.puntaje_datacredito }}</div>
           <div class="col-6"><label class="form-label small fw-semibold">¿Crédito Activo?</label>{{ form.tiene_credito_activo }}</div>
-          <div class="col-6"><label class="form-label small fw-semibold">% Capital Pagado</label>{{ form.pct_capital_pagado }}</div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">% Capital Pagado</label>
+            {{ form.pct_capital_pagado }}
+            <div class="form-text">Ej: 0 = 0% &nbsp;·&nbsp; <strong>0.50 = 50%</strong> &nbsp;·&nbsp; 1.00 = 100%</div>
+          </div>
           <!-- TABLA DINÁMICA OTRAS OBLIGACIONES -->
           <div class="col-12">
             <label class="form-label small fw-semibold">Obligaciones con Otras Entidades</label>

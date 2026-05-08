@@ -235,11 +235,13 @@ def evaluacion_pdf(request, pk):
     seguro = calcular_seguro(monto_pdf)
     cuota_nueva = calcular_pmt(monto_pdf, tasa_pdf, ev.n_cuotas) + seguro
     plan = generar_plan_pagos(monto_pdf, tasa_pdf, ev.n_cuotas, ev.fecha_desembolso, seguro)
+    total_garantias = float(ev.saldo_aportes) + float(ev.saldo_ahorros)
     return render(request, 'credito/evaluacion_pdf.html', {
         'ev': ev,
         'plan': plan,
         'cuota_nueva': cuota_nueva,
         'hoy': localdate().strftime('%d/%m/%Y'),
+        'total_garantias': total_garantias,
     })
 
 
