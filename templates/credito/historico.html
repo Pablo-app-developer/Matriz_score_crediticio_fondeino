@@ -18,6 +18,65 @@
   </div>
 </div>
 
+<!-- Imprimir en lote -->
+<div class="card shadow-sm mb-3 border-warning">
+  <div class="card-header bg-warning text-dark py-2" style="cursor:pointer" data-bs-toggle="collapse" data-bs-target="#panelLote">
+    <i class="bi bi-printer me-2"></i><strong>Imprimir en Lote</strong>
+    <span class="float-end small fw-normal">Haz clic para expandir</span>
+  </div>
+  <div class="collapse" id="panelLote">
+    <div class="card-body py-3">
+      <div class="row g-3">
+
+        <!-- Por número de evaluación -->
+        <div class="col-md-6">
+          <div class="border rounded p-3 h-100">
+            <p class="fw-semibold small mb-2"><i class="bi bi-hash me-1"></i>Por número de evaluación</p>
+            <form action="{% url 'credito:pdf_lote' %}" method="get" target="_blank" class="row g-2">
+              <div class="col-5">
+                <label class="form-label small">Desde #</label>
+                <input type="number" name="desde_pk" class="form-control form-control-sm" placeholder="Ej: 15" min="1">
+              </div>
+              <div class="col-5">
+                <label class="form-label small">Hasta #</label>
+                <input type="number" name="hasta_pk" class="form-control form-control-sm" placeholder="Ej: 18" min="1">
+              </div>
+              <div class="col-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-warning btn-sm w-100" title="Imprimir">
+                  <i class="bi bi-printer"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Por rango de fechas -->
+        <div class="col-md-6">
+          <div class="border rounded p-3 h-100">
+            <p class="fw-semibold small mb-2"><i class="bi bi-calendar-range me-1"></i>Por rango de fechas</p>
+            <form action="{% url 'credito:pdf_lote' %}" method="get" target="_blank" class="row g-2">
+              <div class="col-5">
+                <label class="form-label small">Desde</label>
+                <input type="date" name="fecha_desde" class="form-control form-control-sm">
+              </div>
+              <div class="col-5">
+                <label class="form-label small">Hasta</label>
+                <input type="date" name="fecha_hasta" class="form-control form-control-sm">
+              </div>
+              <div class="col-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-warning btn-sm w-100" title="Imprimir">
+                  <i class="bi bi-printer"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Filtros -->
 <div class="card shadow-sm mb-3">
   <div class="card-body py-2">

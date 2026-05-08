@@ -246,6 +246,47 @@ def evaluacion_pdf(request, pk):
 
 
 @login_required
+def evaluacion_pdf_lote(request):
+    """PDF en lote: imprime varias evaluaciones por rango de # o por rango de fechas."""
+    desde_pk   = request.GET.get('desde_pk', '').strip()
+    hasta_pk   = request.GET.get('hasta_pk', '').strip()
+    fecha_desde = request.GET.get('fecha_desde', '').strip()
+    fecha_hasta = request.GET.get('fecha_hasta', '').strip()
+
+    qs = EvaluacionCredito.objects.select_related('modalidad', 'evaluado_por').order_by('pk')
+
+    if desde_pk and hasta_pk:
+        try:
+            qs = qs.filter(pk__gte=int(desde_pk), pk__lte=int(hasta_pk))
+        except ValueError:
+            pass
+    if fecha_desde:
+        qs = qs.filter(fecha_evaluacion__date__gte=fecha_desde)
+    if fecha_hasta:
+        qs = qs.filter(fecha_evaluacion__date__lte=fecha_hasta)
+
+    from .scoring import generar_plan_pagos, calcular_seguro, calcular_pmt
+
+    evaluaciones = []
+    for ev in qs:
+        monto  = float(ev.monto_solicitado)
+        tasa   = float(ev.modalidad.tasa_mensual)
+        seguro = calcular_seguro(monto)
+        evaluaciones.append({
+            'ev': ev,
+            'cuota_nueva': calcular_pmt(monto, tasa, ev.n_cuotas) + seguro,
+            'plan': generar_plan_pagos(monto, tasa, ev.n_cuotas, ev.fecha_desembolso, seguro),
+            'total_garantias': float(ev.saldo_aportes) + float(ev.saldo_ahorros),
+        })
+
+    return render(request, 'credito/evaluacion_pdf_lote.html', {
+        'evaluaciones': evaluaciones,
+        'hoy': timezone.localtime().strftime('%d/%m/%Y %H:%M'),
+        'total': len(evaluaciones),
+    })
+
+
+@login_required
 def detalle(request, pk):
     """Vista de resultado / detalle de una evaluación."""
     ev = get_object_or_404(EvaluacionCredito, pk=pk)
