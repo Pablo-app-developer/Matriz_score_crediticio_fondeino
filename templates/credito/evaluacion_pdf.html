@@ -204,8 +204,12 @@
         </table>
       </div>
 
+    </div>
+
+    <!-- DERECHA: Condiciones + Scoring -->
+    <div>
       <!-- Condiciones crédito -->
-      <div class="card">
+      <div class="card" style="margin-bottom:8px">
         <div class="card-header hdr-dark">Condiciones del Crédito</div>
         <table>
           <tr><td class="bg-light">Modalidad</td><td class="text-right">{{ ev.modalidad.nombre }}</td></tr>
@@ -217,10 +221,7 @@
           {% if ev.motivo %}<tr><td class="bg-light">Motivo</td><td class="text-right">{{ ev.motivo }}</td></tr>{% endif %}
         </table>
       </div>
-    </div>
 
-    <!-- DERECHA: Scoring -->
-    <div>
       <div class="card">
         <div class="card-header hdr-blue">Scoring Crediticio — Detalle</div>
         <table>
