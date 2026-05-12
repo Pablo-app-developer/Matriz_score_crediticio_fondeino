@@ -18,31 +18,89 @@
 {% csrf_token %}
 <div class="row g-3">
 
+  <!-- ════ COLUMNA IZQUIERDA ════ -->
   <div class="col-lg-6">
+
+    <!-- DATOS DEL SOLICITANTE -->
     <div class="card shadow-sm mb-3">
-      <div class="card-header bg-primary text-white py-2"><strong>Datos del Solicitante</strong></div>
+      <div class="card-header bg-primary text-white py-2">
+        <i class="bi bi-person-badge me-2"></i><strong>Datos del Solicitante</strong>
+      </div>
       <div class="card-body">
         <div class="row g-2">
-          <div class="col-4"><label class="form-label small fw-semibold">Tipo Documento</label>{{ form.tipo_documento }}</div>
-          <div class="col-8"><label class="form-label small fw-semibold">Cédula</label>{{ form.cedula }}</div>
-          <div class="col-12"><label class="form-label small fw-semibold">Nombre Completo</label>{{ form.nombre_completo }}</div>
-          <div class="col-6"><label class="form-label small fw-semibold">Área</label>{{ form.area }}</div>
-          <div class="col-6"><label class="form-label small fw-semibold">Cargo</label>{{ form.cargo }}</div>
-          <div class="col-6"><label class="form-label small fw-semibold">Tipo Vinculación</label>{{ form.tipo_vinculacion }}</div>
-          <div class="col-6"><label class="form-label small fw-semibold">Antigüedad (meses)</label>{{ form.antiguedad_meses }}</div>
-          <div class="col-12"><label class="form-label small fw-semibold">Salario Bruto</label>
-            <div class="input-group"><span class="input-group-text">$</span>{{ form.salario_bruto }}</div>
+          <!-- Búsqueda por nombre con autocompletado -->
+          <div class="col-12">
+            <label class="form-label small fw-semibold">
+              <i class="bi bi-search me-1"></i>Buscar empleado por nombre o cédula
+            </label>
+            <div class="position-relative">
+              <input type="text" id="buscarNombre" class="form-control"
+                     placeholder="Escriba nombre o número de cédula..."
+                     autocomplete="off">
+              <ul id="autocompleteList" class="list-group shadow position-absolute w-100"
+                  style="top:100%;display:none;max-height:220px;overflow-y:auto;z-index:1050"></ul>
+            </div>
+            <div id="buscarEstado" class="form-text"></div>
+          </div>
+          <div class="col-4">
+            <label class="form-label small fw-semibold">Tipo Documento</label>
+            {{ form.tipo_documento }}
+          </div>
+          <div class="col-8">
+            <label class="form-label small fw-semibold">Cédula <span class="text-danger">*</span></label>
+            <div class="input-group">
+              {{ form.cedula }}
+              <button type="button" class="btn btn-outline-primary" id="btnBuscar" title="Buscar en nómina por cédula">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Nombre Completo <span class="text-danger">*</span></label>
+            {{ form.nombre_completo }}
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">Área</label>
+            {{ form.area }}
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">Cargo</label>
+            {{ form.cargo }}
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">Tipo Vinculación <span class="text-danger">*</span></label>
+            {{ form.tipo_vinculacion }}
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">Antigüedad (meses) <span class="text-danger">*</span></label>
+            {{ form.antiguedad_meses }}
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Salario Bruto <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              {{ form.salario_bruto }}
+            </div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- CENTRALES DE RIESGO -->
     <div class="card shadow-sm mb-3">
-      <div class="card-header bg-warning text-dark py-2"><strong>Centrales de Riesgo</strong></div>
+      <div class="card-header bg-warning text-dark py-2">
+        <i class="bi bi-graph-up me-2"></i><strong>Centrales de Riesgo</strong>
+      </div>
       <div class="card-body">
         <div class="row g-2">
-          <div class="col-12"><label class="form-label small fw-semibold">Puntaje DataCrédito</label>{{ form.puntaje_datacredito }}</div>
-          <div class="col-6"><label class="form-label small fw-semibold">¿Crédito Activo?</label>{{ form.tiene_credito_activo }}</div>
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Puntaje DataCrédito (150–950) <span class="text-danger">*</span></label>
+            {{ form.puntaje_datacredito }}
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">¿Crédito Activo en FONDEINO?</label>
+            {{ form.tiene_credito_activo }}
+          </div>
           <div class="col-6">
             <label class="form-label small fw-semibold">% Capital Pagado</label>
             {{ form.pct_capital_pagado }}
@@ -73,53 +131,153 @@
       </div>
     </div>
 
+    <!-- DESCUENTOS FONDEINO -->
     <div class="card shadow-sm mb-3">
-      <div class="card-header bg-info text-white py-2"><strong>Descuentos Mensuales FONDEINO</strong></div>
+      <div class="card-header bg-info text-white py-2">
+        <i class="bi bi-bank me-2"></i><strong>Descuentos Mensuales FONDEINO</strong>
+      </div>
       <div class="card-body">
         <div class="row g-2">
-          <div class="col-6"><label class="form-label small fw-semibold">Cuota Aporte</label>
-            <div class="input-group"><span class="input-group-text">$</span>{{ form.cuota_aporte }}</div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">Cuota Aporte Mensual</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>{{ form.cuota_aporte }}
+            </div>
           </div>
-          <div class="col-6"><label class="form-label small fw-semibold">Cuota Ahorro</label>
-            <div class="input-group"><span class="input-group-text">$</span>{{ form.cuota_ahorro }}</div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">Cuota Ahorro Mensual</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>{{ form.cuota_ahorro }}
+            </div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- GARANTÍAS ACUMULADAS -->
     <div class="card shadow-sm mb-3">
-      <div class="card-header bg-secondary text-white py-2"><strong>Garantías Acumuladas</strong></div>
+      <div class="card-header bg-secondary text-white py-2">
+        <i class="bi bi-safe me-2"></i><strong>Garantías Acumuladas (Saldo Total)</strong>
+      </div>
       <div class="card-body">
         <div class="row g-2">
-          <div class="col-6"><label class="form-label small fw-semibold">Saldo Aportes</label>
-            <div class="input-group"><span class="input-group-text">$</span>{{ form.saldo_aportes }}</div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">Saldo Aportes Acumulados</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>{{ form.saldo_aportes }}
+            </div>
           </div>
-          <div class="col-6"><label class="form-label small fw-semibold">Saldo Ahorros</label>
-            <div class="input-group"><span class="input-group-text">$</span>{{ form.saldo_ahorros }}</div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">Saldo Ahorros Acumulados</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>{{ form.saldo_ahorros }}
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="alert alert-light py-2 mb-0">
+              Total Garantías: <strong id="totalGarantias">$ 0</strong>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
+  </div><!-- /col-left -->
+
+  <!-- ════ COLUMNA DERECHA ════ -->
   <div class="col-lg-6">
+
+    <!-- CONDICIONES DEL CRÉDITO -->
     <div class="card shadow-sm mb-3">
-      <div class="card-header bg-dark text-white py-2"><strong>Condiciones del Crédito</strong></div>
+      <div class="card-header bg-dark text-white py-2">
+        <i class="bi bi-file-text me-2"></i><strong>Condiciones del Crédito</strong>
+      </div>
       <div class="card-body">
         <div class="row g-2">
-          <div class="col-12"><label class="form-label small fw-semibold">Modalidad</label>{{ form.modalidad }}</div>
-          <div class="col-6"><label class="form-label small fw-semibold">Fecha Desembolso</label>{{ form.fecha_desembolso }}</div>
-          <div class="col-6"><label class="form-label small fw-semibold">Número de Cuotas</label>{{ form.n_cuotas }}</div>
-          <div class="col-12"><label class="form-label small fw-semibold">Monto Solicitado</label>
-            <div class="input-group"><span class="input-group-text">$</span>{{ form.monto_solicitado }}</div>
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Modalidad <span class="text-danger">*</span></label>
+            {{ form.modalidad }}
+            <div class="form-text" id="tasaInfo"></div>
           </div>
-          <div class="col-12"><label class="form-label small fw-semibold">Motivo</label>{{ form.motivo }}</div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">Fecha Desembolso <span class="text-danger">*</span></label>
+            {{ form.fecha_desembolso }}
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">Número de Cuotas <span class="text-danger">*</span></label>
+            {{ form.n_cuotas }}
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Monto Solicitado <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>{{ form.monto_solicitado }}
+            </div>
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Motivo</label>
+            {{ form.motivo }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREVISUALIZACIÓN -->
+    <div class="card shadow-sm mb-3 border-primary">
+      <div class="card-header bg-primary text-white py-2">
+        <i class="bi bi-eye me-2"></i><strong>Vista Previa del Análisis</strong>
+        <span class="badge bg-warning text-dark ms-2 small">Estimado</span>
+      </div>
+      <div class="card-body" id="preview">
+        <div class="row g-2 text-center">
+          <div class="col-6">
+            <div class="border rounded p-2">
+              <div class="text-muted small">Salario Neto</div>
+              <div class="fw-bold" id="prev_neto">—</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2">
+              <div class="text-muted small">Mínimo Vital (50%)</div>
+              <div class="fw-bold" id="prev_mv">—</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2">
+              <div class="text-muted small">Cuota Estimada</div>
+              <div class="fw-bold" id="prev_cuota">—</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2">
+              <div class="text-muted small">Disponible Final</div>
+              <div class="fw-bold" id="prev_disponible">—</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2">
+              <div class="text-muted small">% Endeudamiento</div>
+              <div class="fw-bold" id="prev_pct">—</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2">
+              <div class="text-muted small">Mínimo Vital</div>
+              <div class="fw-bold" id="prev_cumple">—</div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="text-center mt-2">
+          <div class="text-muted small mb-1">Score Estimado</div>
+          <div class="display-6 fw-bold" id="prev_score">—</div>
+          <div class="badge fs-6 mt-1" id="prev_decision">—</div>
         </div>
       </div>
     </div>
 
     {% if form.errors %}
     <div class="alert alert-danger">
+      <strong>Por favor corrige los siguientes errores:</strong>
       {% for field, errors in form.errors.items %}
         {% for error in errors %}<div>• {{ field }}: {{ error }}</div>{% endfor %}
       {% endfor %}
@@ -130,16 +288,203 @@
       <button type="submit" class="btn btn-warning btn-lg">
         <i class="bi bi-arrow-clockwise me-2"></i>Guardar y Recalcular
       </button>
-      <a href="{% url 'credito:detalle' ev.pk %}" class="btn btn-outline-secondary">Cancelar</a>
+      <a href="{% url 'credito:detalle' ev.pk %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Cancelar
+      </a>
     </div>
-  </div>
 
+  </div><!-- /col-right -->
 </div>
 </form>
 {% endblock %}
 
 {% block scripts %}
 <script>
+const API_EMPLEADO       = "{% url 'credito:api_empleado' %}";
+const API_EMPLEADO_NOMBRE = "{% url 'credito:api_empleado_nombre' %}";
+const API_MODALIDAD      = "{% url 'credito:api_modalidad' %}";
+
+// ── Rellenar campos con datos del empleado ──
+function llenarEmpleado(d) {
+  document.getElementById('id_cedula').value          = d.cedula;
+  document.getElementById('id_nombre_completo').value = d.nombre;
+  document.getElementById('id_area').value            = d.area;
+  document.getElementById('id_cargo').value           = d.cargo;
+  document.getElementById('id_tipo_vinculacion').value = d.tipo_vinculacion;
+  document.getElementById('id_antiguedad_meses').value = d.antiguedad_meses;
+  document.getElementById('id_salario_bruto').value   = d.salario_bruto;
+  document.getElementById('buscarEstado').innerHTML =
+    '<span class="text-success"><i class="bi bi-check-circle"></i> Empleado encontrado en nómina</span>';
+  calcularPreview();
+}
+
+// ── Autocompletado por nombre ──
+(function() {
+  const input = document.getElementById('buscarNombre');
+  const list  = document.getElementById('autocompleteList');
+  let timer;
+  input.addEventListener('input', function() {
+    clearTimeout(timer);
+    const q = this.value.trim();
+    if (q.length < 2) { list.style.display = 'none'; return; }
+    timer = setTimeout(() => {
+      fetch(`${API_EMPLEADO_NOMBRE}?q=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(data => {
+          list.innerHTML = '';
+          if (!data.results.length) { list.style.display = 'none'; return; }
+          data.results.forEach(emp => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item list-group-item-action py-2 px-3';
+            li.style.cursor = 'pointer';
+            li.innerHTML = `<div class="fw-semibold small">${emp.nombre}</div>
+              <div class="text-muted" style="font-size:.75rem">CC ${emp.cedula} · ${emp.cargo || emp.area || ''}</div>`;
+            li.addEventListener('click', () => {
+              llenarEmpleado(emp);
+              input.value = emp.nombre;
+              list.style.display = 'none';
+            });
+            list.appendChild(li);
+          });
+          list.style.display = 'block';
+        });
+    }, 250);
+  });
+  document.addEventListener('click', e => {
+    if (!input.contains(e.target) && !list.contains(e.target)) list.style.display = 'none';
+  });
+})();
+
+// ── Buscar por cédula (botón lupa) ──
+document.getElementById('btnBuscar').addEventListener('click', () => {
+  const cedula = document.getElementById('id_cedula').value.trim();
+  if (!cedula) return;
+  const st = document.getElementById('buscarEstado');
+  st.textContent = 'Buscando...';
+  fetch(`${API_EMPLEADO}?cedula=${cedula}`)
+    .then(r => r.json())
+    .then(d => {
+      if (d.found) {
+        llenarEmpleado({...d, cedula});
+      } else {
+        st.innerHTML = '<span class="text-warning"><i class="bi bi-exclamation-circle"></i> No encontrado — verifique los datos manualmente</span>';
+      }
+    });
+});
+
+// ── Cargar tasa de la modalidad seleccionada ──
+function fetchTasa(pk, callback) {
+  if (!pk) return;
+  fetch(`${API_MODALIDAD}?pk=${pk}`)
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('tasaInfo').textContent =
+        `Tasa: ${(d.tasa_mensual * 100).toFixed(2)}% mensual | ${(d.tasa_anual * 100).toFixed(2)}% nominal anual`;
+      calcularPreview();
+      if (callback) callback();
+    });
+}
+
+document.getElementById('id_modalidad').addEventListener('change', function() {
+  fetchTasa(this.value);
+});
+
+// Cargar tasa al abrir (modalidad ya seleccionada)
+(function() {
+  const sel = document.getElementById('id_modalidad');
+  if (sel && sel.value) fetchTasa(sel.value);
+})();
+
+// ── Total garantías ──
+function fmt(n) {
+  return Math.round(n).toLocaleString('es-CO');
+}
+
+function calcTotalGar() {
+  const a = parseFloat(document.getElementById('id_saldo_aportes').value) || 0;
+  const b = parseFloat(document.getElementById('id_saldo_ahorros').value) || 0;
+  document.getElementById('totalGarantias').textContent = '$ ' + fmt(a + b);
+}
+['id_saldo_aportes', 'id_saldo_ahorros'].forEach(id =>
+  document.getElementById(id).addEventListener('input', calcTotalGar)
+);
+
+// ── Preview en tiempo real ──
+function pmt(monto, tasa, n) {
+  if (n <= 0) return 0;
+  if (tasa === 0) return monto / n;
+  return monto * tasa / (1 - Math.pow(1 + tasa, -n));
+}
+
+function calcularPreview() {
+  const sb = parseFloat(document.getElementById('id_salario_bruto').value) || 0;
+  const neto = sb * 0.92;
+  const mv = neto * 0.5;
+
+  const monto = parseFloat(document.getElementById('id_monto_solicitado').value) || 0;
+  const ncuotas = parseInt(document.getElementById('id_n_cuotas').value) || 0;
+
+  const tasaText = document.getElementById('tasaInfo').textContent;
+  let tasa = 0;
+  const m = tasaText.match(/([\d.]+)% mensual/);
+  if (m) tasa = parseFloat(m[1]) / 100;
+
+  const seguro = monto * 0.0025;
+  const cuotaBase = (monto > 0 && ncuotas > 0 && tasa > 0) ? pmt(monto, tasa, ncuotas) + seguro : 0;
+
+  const otras = totalOtrasEntidades();
+  const aporte = parseFloat(document.getElementById('id_cuota_aporte').value) || 0;
+  const ahorro = parseFloat(document.getElementById('id_cuota_ahorro').value) || 0;
+  const totalCuotas = otras + aporte + ahorro + cuotaBase;
+
+  const disponible = mv - totalCuotas;
+  const pctEnd = neto > 0 ? totalCuotas / neto : 0;
+
+  const dc = parseInt(document.getElementById('id_puntaje_datacredito').value) || 0;
+  const ant = parseInt(document.getElementById('id_antiguedad_meses').value) || 0;
+  const vinc = document.getElementById('id_tipo_vinculacion').value;
+  const tieneCred = document.getElementById('id_tiene_credito_activo').value === 'SI';
+  const pctCap = parseFloat(document.getElementById('id_pct_capital_pagado').value) || 0;
+  const garAp = parseFloat(document.getElementById('id_saldo_aportes').value) || 0;
+  const garAh = parseFloat(document.getElementById('id_saldo_ahorros').value) || 0;
+  const garTotal = garAp + garAh;
+
+  const sDC = dc >= 700 ? 25 : dc >= 500 ? 15 : dc >= 300 ? 8 : 0;
+  const sAnt = ant >= 24 ? 15 : ant >= 12 ? 12 : ant >= 6 ? 8 : ant >= 3 ? 4 : 0;
+  const sVinc = vinc.includes('Indefinido') ? 10 : vinc.includes('fijo') ? 7 : 4;
+  const sCap = disponible < 0 ? 0 : pctEnd > 0.5 ? 5 : pctEnd > 0.3 ? 15 : 25;
+  const cob = monto > 0 ? garTotal / monto : 0;
+  const sGar = cob >= 1 ? 15 : cob >= 0.5 ? 10 : cob >= 0.25 ? 5 : 0;
+  const sHist = !tieneCred ? 10 : pctCap >= 0.3 ? 7 : 3;
+
+  const scoreTotal = sDC + sAnt + sVinc + sCap + sGar + sHist;
+
+  const bloqueado = disponible < 0;
+  let decision, decClass;
+  if (bloqueado) { decision = 'NO APROBADO - CUOTA EXCEDE LÍMITE'; decClass = 'bg-danger'; }
+  else if (pctEnd > 0.5) { decision = 'NO APROBADO - ENDEUDAMIENTO SUPERA EL 50%'; decClass = 'bg-danger'; }
+  else if (tieneCred && pctCap < 0.3) { decision = 'NO APROBADO - PAGO MÍNIMO 30% NO ALCANZADO'; decClass = 'bg-danger'; }
+  else if (scoreTotal >= 60) { decision = 'APROBAR'; decClass = 'bg-success'; }
+  else if (scoreTotal >= 40) { decision = 'REVISAR / CODEUDOR'; decClass = 'bg-warning text-dark'; }
+  else { decision = 'NO APROBADO'; decClass = 'bg-danger'; }
+
+  document.getElementById('prev_neto').textContent = sb ? '$ ' + fmt(neto) : '—';
+  document.getElementById('prev_mv').textContent = sb ? '$ ' + fmt(mv) : '—';
+  document.getElementById('prev_cuota').textContent = cuotaBase ? '$ ' + fmt(cuotaBase) : '—';
+  const dispEl = document.getElementById('prev_disponible');
+  dispEl.textContent = sb ? '$ ' + fmt(disponible) : '—';
+  dispEl.className = 'fw-bold ' + (disponible < 0 ? 'text-danger' : 'text-success');
+  document.getElementById('prev_pct').textContent = sb ? (pctEnd * 100).toFixed(1) + '%' : '—';
+  document.getElementById('prev_cumple').innerHTML = sb
+    ? (disponible >= 0 ? '<span class="text-success">✓ Cumple</span>' : '<span class="text-danger">✗ No cumple</span>')
+    : '—';
+  document.getElementById('prev_score').textContent = sb ? scoreTotal : '—';
+  const decEl = document.getElementById('prev_decision');
+  decEl.textContent = sb ? decision : '—';
+  decEl.className = 'badge fs-6 mt-1 ' + (sb ? decClass : 'bg-secondary');
+}
+
+// ── Tabla dinámica de otras obligaciones ──
 let numFilas = 0;
 
 function totalOtrasEntidades() {
@@ -147,10 +492,12 @@ function totalOtrasEntidades() {
   document.querySelectorAll('.cuota-otra').forEach(el => { t += parseFloat(el.value) || 0; });
   return t;
 }
+
 function actualizarTotalOtras() {
-  const t = totalOtrasEntidades();
-  document.getElementById('totalOtras').textContent = '$ ' + Math.round(t).toLocaleString('es-CO');
+  document.getElementById('totalOtras').textContent = '$ ' + fmt(totalOtrasEntidades());
+  calcularPreview();
 }
+
 function agregarFila(entidad='', tipo='', cuota='') {
   numFilas++;
   const n = numFilas;
@@ -172,6 +519,7 @@ function agregarFila(entidad='', tipo='', cuota='') {
   tbody.appendChild(tr);
   actualizarTotalOtras();
 }
+
 function eliminarFila(n) {
   const tr = document.getElementById(`fila_otra_${n}`);
   if (tr) tr.remove();
@@ -181,5 +529,19 @@ function eliminarFila(n) {
 // Pre-cargar obligaciones existentes
 const existentes = {{ otras_obligaciones_json|safe }};
 existentes.forEach(o => agregarFila(o.entidad || '', o.tipo || '', o.cuota || ''));
+
+// Bind inputs al preview
+const inputs = ['id_salario_bruto','id_monto_solicitado','id_n_cuotas','id_puntaje_datacredito',
+  'id_antiguedad_meses','id_tipo_vinculacion','id_tiene_credito_activo','id_pct_capital_pagado',
+  'id_cuota_aporte','id_cuota_ahorro','id_saldo_aportes','id_saldo_ahorros'];
+inputs.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', calcularPreview);
+  if (el && el.tagName === 'SELECT') el.addEventListener('change', calcularPreview);
+});
+
+// Calcular al abrir con los datos actuales
+calcularPreview();
+calcTotalGar();
 </script>
 {% endblock %}
