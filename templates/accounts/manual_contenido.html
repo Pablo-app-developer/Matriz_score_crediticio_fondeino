@@ -28,8 +28,8 @@ code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: .82
     <table class="table table-sm table-bordered manual-table">
       <thead><tr><th>Rol</th><th>Permisos</th></tr></thead>
       <tbody>
-        <tr><td><strong>Administrador</strong></td><td>Acceso total: evaluar, ver historial, gestionar usuarios, cargar nómina, configurar scoring, registrar decisión del comité, editar/eliminar cualquier evaluación.</td></tr>
-        <tr><td><strong>Comité</strong></td><td>Crear evaluaciones, ver historial propio, editar/eliminar sus propias evaluaciones.</td></tr>
+        <tr><td><strong>Administrador</strong></td><td>Acceso total: evaluar, ver historial, gestionar usuarios, cargar nómina, configurar scoring, registrar decisión del comité, editar/eliminar cualquier evaluación, generar actas, cargar préstamos históricos, imprimir en lote.</td></tr>
+        <tr><td><strong>Comité</strong></td><td>Crear evaluaciones, ver historial, registrar la decisión final del comité en cualquier evaluación, editar/eliminar sus propias evaluaciones.</td></tr>
       </tbody>
     </table>
 
@@ -54,7 +54,7 @@ code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: .82
       <tbody>
         <tr><td>🔵 <strong>Total evaluaciones</strong></td><td>Número de evaluaciones realizadas en el mes actual.</td></tr>
         <tr><td>🟢 <strong>Aprobadas</strong></td><td>Evaluaciones con decisión APROBAR y su porcentaje del total.</td></tr>
-        <tr><td>🔴 <strong>Rechazadas</strong></td><td>Evaluaciones con decisión RECHAZAR y su porcentaje.</td></tr>
+        <tr><td>🔴 <strong>No Aprobadas</strong></td><td>Evaluaciones con decisión NO APROBADO y su porcentaje.</td></tr>
         <tr><td>🩵 <strong>En revisión</strong></td><td>Evaluaciones que requieren revisión o codeudor.</td></tr>
         <tr><td>🟡 <strong>Score promedio</strong></td><td>Promedio del puntaje crediticio de las evaluaciones del mes.</td></tr>
       </tbody>
@@ -165,7 +165,7 @@ code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: .82
       <tbody>
         <tr><td><span class="badge bg-success">VERDE</span></td><td>APROBAR</td><td>Cumple todos los requisitos.</td></tr>
         <tr><td><span class="badge bg-warning text-dark">AMARILLO</span></td><td>REVISAR / CODEUDOR</td><td>Score entre 40-59. Requiere análisis adicional o garantías extras.</td></tr>
-        <tr><td><span class="badge bg-danger">ROJO</span></td><td>RECHAZAR</td><td>Score menor a 40 o no cumple el mínimo vital.</td></tr>
+        <tr><td><span class="badge bg-danger">ROJO</span></td><td>NO APROBADO</td><td>Score menor a 40, endeudamiento &gt;50%, pago crédito activo &lt;30%, o no cumple el mínimo vital.</td></tr>
       </tbody>
     </table>
 
@@ -233,7 +233,7 @@ code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: .82
 <div class="card shadow-sm border-0 mb-3 manual-section" id="s8">
   <div class="card-header bg-primary text-white fw-bold">8. Historial de evaluaciones</div>
   <div class="card-body">
-    <p style="font-size:.88rem">Haga clic en <strong>Historial</strong> en el menú. Muestra hasta 200 evaluaciones con filtros de búsqueda:</p>
+    <p style="font-size:.88rem">Haga clic en <strong>Historial</strong> en el menú. Muestra hasta 300 evaluaciones con filtros de búsqueda:</p>
     <table class="table table-sm table-bordered manual-table">
       <thead><tr><th>Filtro</th><th>Cómo usar</th></tr></thead>
       <tbody>
@@ -243,6 +243,18 @@ code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: .82
       </tbody>
     </table>
     <p style="font-size:.88rem">Use el botón <strong>X</strong> para limpiar todos los filtros. Haga clic en el ícono 👁 para ver el detalle de cualquier evaluación.</p>
+
+    <h6>8.1 Columnas del historial</h6>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Columna</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>#</td><td>Número de evaluación. Las filas en gris claro son registros importados desde Excel.</td></tr>
+        <tr><td>Sug. Herramienta</td><td>Decisión automática calculada por el sistema (APROBADO / REVISAR / NO APROBADO).</td></tr>
+        <tr><td>Dec. Comité</td><td>Decisión final registrada por el comité. Aparece <span class="badge bg-light text-secondary border" style="font-size:.7rem">Pendiente</span> si aún no se ha registrado.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="tip-box"><i class="bi bi-printer me-1"></i>El panel <strong>"Imprimir en Lote"</strong> (arriba de los filtros) permite generar un PDF con varias evaluaciones a la vez. Ver sección 17 para instrucciones detalladas.</div>
   </div>
 </div>
 
@@ -267,12 +279,56 @@ code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: .82
 <!-- ══════════════════════════════════════════ -->
 <!-- SECCIÓN 10 -->
 <div class="card shadow-sm border-0 mb-3 manual-section" id="s10">
-  <div class="card-header bg-primary text-white fw-bold">10. Decisión del comité</div>
+  <div class="card-header bg-primary text-white fw-bold">10. Decisión final del comité</div>
   <div class="card-body">
-    <p style="font-size:.88rem">Los administradores pueden registrar la decisión formal del comité de crédito en cada evaluación.</p>
-    <div class="step"><div class="step-num">1</div><div>Abra el detalle de la evaluación.</div></div>
-    <div class="step"><div class="step-num">2</div><div>En la sección <strong>"Decisión del Comité"</strong> (visible solo para administradores), llene los campos de decisión y observaciones.</div></div>
-    <div class="step"><div class="step-num">3</div><div>Haga clic en <strong>Registrar Decisión</strong>. Quedará visible en el encabezado y en el PDF.</div></div>
+    <p style="font-size:.88rem">El sistema diferencia dos decisiones independientes en cada evaluación:</p>
+    <table class="table table-sm table-bordered manual-table mb-3">
+      <thead><tr><th>Decisión</th><th>Quién la genera</th><th>Qué representa</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Sugerencia de la herramienta</strong></td>
+          <td>El sistema automáticamente</td>
+          <td>Resultado del scoring crediticio (APROBAR / REVISAR / NO APROBADO). No es vinculante.</td>
+        </tr>
+        <tr>
+          <td><strong>Decisión final del comité</strong></td>
+          <td>Cualquier miembro del comité</td>
+          <td>Resolución oficial que toma el comité de crédito después de analizar el caso. Esta es la decisión que rige.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h6>10.1 Cómo registrar la decisión del comité</h6>
+    <div class="step"><div class="step-num">1</div><div>Abra el detalle de la evaluación (haga clic en el ícono 👁 desde el historial o desde el dashboard).</div></div>
+    <div class="step"><div class="step-num">2</div><div>En el encabezado verá dos secciones: <em>"Sugerencia de la herramienta"</em> y <em>"Decisión Final del Comité"</em>. Si el comité aún no ha decidido, aparecerá <span class="badge bg-secondary" style="font-size:.75rem">Pendiente</span>.</div></div>
+    <div class="step"><div class="step-num">3</div><div>Desplácese hasta el panel <strong>"Decisión Final del Comité de Crédito"</strong> (lado derecho, borde amarillo).</div></div>
+    <div class="step"><div class="step-num">4</div><div>Seleccione la decisión en el menú desplegable y agregue observaciones o condiciones si es necesario.</div></div>
+    <div class="step"><div class="step-num">5</div><div>Haga clic en <strong>Registrar Decisión</strong>. El sistema guarda automáticamente la fecha y el usuario que la registró.</div></div>
+
+    <h6>10.2 Opciones de decisión disponibles</h6>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Decisión</th><th>Cuándo usarla</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge bg-success">Aprobado</span></td><td>Crédito aprobado sin condiciones adicionales.</td></tr>
+        <tr><td><span class="badge bg-success">Aprobado con fiador / codeudor</span></td><td>Se aprueba pero exige un codeudor como respaldo.</td></tr>
+        <tr><td><span class="badge bg-success">Aprobado con monto reducido</span></td><td>Se aprueba por un monto menor al solicitado.</td></tr>
+        <tr><td><span class="badge bg-success">Aprobado condicionado - mínimo vital</span></td><td>Aprobado con condición de cumplir el mínimo vital.</td></tr>
+        <tr><td><span class="badge bg-danger">No aprobado - Score insuficiente</span></td><td>El puntaje no alcanza el mínimo requerido.</td></tr>
+        <tr><td><span class="badge bg-danger">No aprobado - Capacidad de pago</span></td><td>La cuota supera el límite de endeudamiento permitido.</td></tr>
+        <tr><td><span class="badge bg-danger">No aprobado - Historial crediticio</span></td><td>Reportes negativos en centrales de riesgo.</td></tr>
+        <tr><td><span class="badge bg-danger">No aprobado - Antigüedad insuficiente</span></td><td>Tiempo de vinculación muy corto.</td></tr>
+        <tr><td><span class="badge bg-danger">No aprobado - Endeudamiento excesivo</span></td><td>Nivel de deuda existente es muy alto.</td></tr>
+        <tr><td><span class="badge bg-danger">No aprobado - Documentación incompleta</span></td><td>Falta documentación necesaria para el trámite.</td></tr>
+        <tr><td><span class="badge bg-warning text-dark">En estudio / Pendiente</span></td><td>El comité requiere más tiempo o información para decidir.</td></tr>
+        <tr><td><span class="badge bg-warning text-dark">Devuelto para corrección</span></td><td>La evaluación tiene errores y debe ser corregida.</td></tr>
+      </tbody>
+    </table>
+
+    <h6>10.3 Modificar una decisión ya registrada</h6>
+    <p style="font-size:.88rem">Si la decisión debe corregirse, simplemente seleccione la nueva opción en el mismo formulario y haga clic en <strong>Actualizar Decisión</strong>. El sistema actualizará la fecha y el usuario con los datos del nuevo registro.</p>
+
+    <div class="tip-box"><i class="bi bi-info-circle me-1"></i>La decisión del comité aparece visible en el encabezado de la evaluación con su badge de color correspondiente, junto con la fecha y nombre de quien la registró.</div>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle me-1"></i>La decisión del comité <strong>no modifica</strong> el score ni la sugerencia automática del sistema. Ambas quedan registradas de forma independiente.</div>
   </div>
 </div>
 
@@ -438,7 +494,7 @@ code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: .82
         <tr><td>80 – 100</td><td><span class="badge bg-success">EXCELENTE</span></td><td>APROBAR</td></tr>
         <tr><td>60 – 79</td><td><span class="badge bg-primary">BUENO</span></td><td>APROBAR</td></tr>
         <tr><td>40 – 59</td><td><span class="badge bg-warning text-dark">REGULAR</span></td><td>REVISAR / CODEUDOR</td></tr>
-        <tr><td>0 – 39</td><td><span class="badge bg-danger">ALTO RIESGO</span></td><td>RECHAZAR</td></tr>
+        <tr><td>0 – 39</td><td><span class="badge bg-danger">ALTO RIESGO</span></td><td>NO APROBADO</td></tr>
       </tbody>
     </table>
   </div>
@@ -450,7 +506,7 @@ code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: .82
   <div class="card-header bg-primary text-white fw-bold">16. Preguntas frecuentes</div>
   <div class="card-body" style="font-size:.88rem">
     <p><strong>¿Puedo cambiar la decisión que da el sistema?</strong><br>
-    El sistema genera una decisión automática basada en el score. El administrador puede registrar una <em>Decisión del Comité</em> diferente, que queda documentada junto al resultado automático.</p>
+    El sistema genera una sugerencia automática basada en el score. Cualquier miembro del comité puede registrar la <em>Decisión Final del Comité</em>, que queda documentada junto al resultado automático. Ambas coexisten y son independientes.</p>
 
     <p><strong>¿Qué pasa si el empleado no está en la nómina?</strong><br>
     Puede ingresar los datos manualmente. La búsqueda es una ayuda para agilizar el proceso, no un requisito.</p>
@@ -469,5 +525,89 @@ code { background: #f1f3f5; padding: 1px 5px; border-radius: 3px; font-size: .82
 
     <p><strong>¿El sistema funciona en el celular?</strong><br>
     Sí, es responsive. Se recomienda computador de escritorio para mayor comodidad en el formulario de evaluación.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 17 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s17">
+  <div class="card-header bg-primary text-white fw-bold">17. Impresión en lote de evaluaciones</div>
+  <div class="card-body">
+    <p style="font-size:.88rem">Permite generar un único PDF con múltiples evaluaciones para presentar en reunión del comité o archivar. Se accede desde el panel <strong>"Imprimir en Lote"</strong> en la parte superior del historial (haga clic en el encabezado amarillo para expandirlo).</p>
+
+    <h6>17.1 Por número de evaluación</h6>
+    <div class="step"><div class="step-num">1</div><div>En el panel "Imprimir en Lote", columna izquierda, ingrese el número <strong>Desde #</strong> y <strong>Hasta #</strong> (el número de evaluación aparece con el prefijo <code>#</code> en la columna del historial).</div></div>
+    <div class="step"><div class="step-num">2</div><div>Haga clic en el botón 🖨 azul. Se abre una nueva pestaña con el PDF listo para imprimir.</div></div>
+
+    <h6>17.2 Por rango de fechas</h6>
+    <div class="step"><div class="step-num">1</div><div>En la columna derecha del panel, seleccione la fecha <strong>Desde</strong> y <strong>Hasta</strong>.</div></div>
+    <div class="step"><div class="step-num">2</div><div>Haga clic en el botón 🖨 amarillo. El PDF incluirá todas las evaluaciones del período seleccionado.</div></div>
+
+    <div class="tip-box"><i class="bi bi-info-circle me-1"></i>Puede combinar los dos métodos: si deja un campo vacío, el sistema toma todos los registros en esa dirección (ej: solo "Desde" filtra todos desde esa fecha hasta hoy).</div>
+    <div class="warn-box"><i class="bi bi-exclamation-triangle me-1"></i>Si el rango incluye muchas evaluaciones el PDF puede tardar algunos segundos en generarse. No cierre la pestaña mientras carga.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 18 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s18">
+  <div class="card-header bg-primary text-white fw-bold">18. Generación de Actas del Comité</div>
+  <div class="card-body">
+    <p style="font-size:.88rem">El sistema genera automáticamente el acta formal de reunión del comité de crédito. Solo disponible para administradores. Acceda desde <strong>Administración → Generar Acta</strong>.</p>
+
+    <h6>18.1 Datos del acta</h6>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Campo</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td>N° de Acta</td><td>Número consecutivo del acta para el archivo oficial</td></tr>
+        <tr><td>Fecha de reunión</td><td>Fecha en que se realizó la reunión del comité</td></tr>
+        <tr><td>Evaluaciones desde / hasta</td><td>Rango de fechas de las evaluaciones a incluir en el acta</td></tr>
+        <tr><td>Asistentes</td><td>Marque los miembros del comité que asistieron a la reunión</td></tr>
+      </tbody>
+    </table>
+
+    <h6>18.2 Generar e imprimir el acta</h6>
+    <div class="step"><div class="step-num">1</div><div>Complete los campos del formulario de acta.</div></div>
+    <div class="step"><div class="step-num">2</div><div>Marque los miembros del comité que asistieron.</div></div>
+    <div class="step"><div class="step-num">3</div><div>Haga clic en <strong>Generar Acta</strong>. Se abre la vista de impresión con el acta formateada.</div></div>
+    <div class="step"><div class="step-num">4</div><div>Use <strong>Ctrl+P</strong> o el botón de impresión del navegador para guardar en PDF o imprimir.</div></div>
+
+    <div class="tip-box"><i class="bi bi-file-earmark-text me-1"></i>El acta incluye: número y fecha, listado de asistentes con sus cargos, tabla de todas las evaluaciones del período con su decisión, y espacio para firmas del presidente y la secretaria.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN 19 -->
+<div class="card shadow-sm border-0 mb-3 manual-section" id="s19">
+  <div class="card-header bg-primary text-white fw-bold">19. Historial de préstamos aprobados</div>
+  <div class="card-body">
+    <p style="font-size:.88rem">Permite cargar y consultar el historial de créditos aprobados antes de que existiera el sistema, importados desde Excel. Solo los administradores pueden cargar archivos. Acceda desde <strong>Historial → Préstamos Aprobados</strong> o desde <strong>Administración → Cargar Histórico</strong>.</p>
+
+    <h6>19.1 Consultar el historial</h6>
+    <p style="font-size:.88rem">La vista de préstamos aprobados muestra los registros cargados con filtros por nombre/cédula, rango de fechas y concepto del préstamo. Al pie aparece el total de registros y el monto total acumulado.</p>
+
+    <h6>19.2 Cargar registros desde Excel</h6>
+    <div class="step"><div class="step-num">1</div><div>Vaya a <strong>Administración → Cargar Histórico</strong>.</div></div>
+    <div class="step"><div class="step-num">2</div><div>Seleccione el archivo <code>.xlsx</code> con el histórico de créditos.</div></div>
+    <div class="step"><div class="step-num">3</div><div>Si desea reemplazar todos los registros anteriores, marque la opción <strong>"Reemplazar registros existentes"</strong>. Si no la marca, los nuevos registros se agregan a los existentes.</div></div>
+    <div class="step"><div class="step-num">4</div><div>Haga clic en <strong>Cargar</strong>. El sistema mostrará cuántos registros fueron importados y cuántos fueron omitidos por datos incompletos.</div></div>
+
+    <h6>19.3 Formato del archivo Excel</h6>
+    <p style="font-size:.88rem">Los datos deben estar a partir de la <strong>fila 7</strong> (la fila 6 se usa como encabezados). Las columnas requeridas son:</p>
+    <table class="table table-sm table-bordered manual-table">
+      <thead><tr><th>Columna</th><th>Descripción</th><th>Req.</th></tr></thead>
+      <tbody>
+        <tr><td><code>Fecha</code></td><td>Fecha del crédito (DD/MM/YYYY o formato Excel)</td><td>✓</td></tr>
+        <tr><td><code>Cédula</code></td><td>Número de documento del asociado</td><td>✓</td></tr>
+        <tr><td><code>Nombre Completo</code></td><td>Nombre del asociado</td><td></td></tr>
+        <tr><td><code>Cargo</code></td><td>Cargo del asociado</td><td></td></tr>
+        <tr><td><code>Proceso</code></td><td>Área o proceso al que pertenece</td><td></td></tr>
+        <tr><td><code>Concepto de Prestamo</code></td><td>Tipo o motivo del crédito</td><td></td></tr>
+        <tr><td><code>Monto del Crédito</code></td><td>Valor del crédito en pesos</td><td>✓</td></tr>
+      </tbody>
+    </table>
+
+    <div class="warn-box"><i class="bi bi-exclamation-triangle me-1"></i>Las filas que no tengan fecha o cédula serán omitidas automáticamente. El sistema reportará cuántas filas fueron saltadas.</div>
+    <div class="tip-box"><i class="bi bi-info-circle me-1"></i>Los registros históricos aparecen en el historial general con fondo gris claro para distinguirlos de las evaluaciones formales del sistema.</div>
   </div>
 </div>
