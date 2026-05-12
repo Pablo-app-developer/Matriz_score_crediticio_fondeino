@@ -313,6 +313,7 @@ def detalle(request, pk):
         'form_comite': form_comite,
         'seguro': seguro,
         'cuota_nueva': cuota_nueva,
+        'puede_modificar': _puede_modificar(request.user, ev),
     })
 
 
@@ -456,8 +457,13 @@ def modalidad_editar(request, pk):
 # ─────────────────────────────────────────────
 
 def _puede_modificar(user, ev):
-    """Admin puede modificar cualquiera; comité solo las propias."""
-    return user.es_admin or ev.evaluado_por == user
+    """Admin puede modificar cualquiera; comité solo las propias del mes en curso."""
+    if user.es_admin:
+        return True
+    hoy = timezone.now()
+    mismo_mes = (ev.fecha_evaluacion.year == hoy.year and
+                 ev.fecha_evaluacion.month == hoy.month)
+    return mismo_mes and ev.evaluado_por == user
 
 
 @login_required

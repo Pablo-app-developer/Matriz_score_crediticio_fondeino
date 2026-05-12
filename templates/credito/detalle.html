@@ -10,7 +10,7 @@
     <a href="{% url 'credito:historico' %}" class="btn btn-outline-secondary btn-sm">
       <i class="bi bi-arrow-left me-1"></i>Historial
     </a>
-    {% if user.es_admin or ev.evaluado_por == user %}
+    {% if puede_modificar %}
     <a href="{% url 'credito:evaluacion_editar' ev.pk %}" class="btn btn-warning btn-sm">
       <i class="bi bi-pencil me-1"></i>Editar
     </a>

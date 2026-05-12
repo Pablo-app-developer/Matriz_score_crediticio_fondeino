@@ -67,7 +67,8 @@ class EvaluacionForm(forms.Form):
                                        widget=forms.Select(attrs={'class': SELECT, 'id': 'id_modalidad'}))
     fecha_desembolso = forms.DateField(initial=date.today,
                                        widget=forms.DateInput(attrs={'class': INPUT, 'type': 'date',
-                                                                     'id': 'id_fecha_desembolso'}))
+                                                                     'id': 'id_fecha_desembolso'},
+                                                              format='%Y-%m-%d'))
     monto_solicitado = forms.DecimalField(max_digits=14, decimal_places=2, min_value=1,
                                           widget=forms.NumberInput(attrs={'class': INPUT, 'step': 'any',
                                                                           'id': 'id_monto_solicitado'}))
@@ -123,6 +124,7 @@ DECISION_COMITE_CHOICES = [
     ('No aprobado - Antigüedad insuficiente','No aprobado - Antigüedad insuficiente'),
     ('No aprobado - Endeudamiento excesivo','No aprobado - Endeudamiento excesivo'),
     ('No aprobado - Documentación incompleta','No aprobado - Documentación incompleta'),
+    ('No aprobado - Se solicita codeudor',  'No aprobado - Se solicita codeudor'),
     # Otros
     ('En estudio / Pendiente',              'En estudio / Pendiente'),
     ('Devuelto para corrección',            'Devuelto para corrección'),
