@@ -91,7 +91,7 @@
           <option value="">Todas</option>
           <option value="APROBAR" {% if decision == 'APROBAR' %}selected{% endif %}>Aprobado</option>
           <option value="REVISAR" {% if decision == 'REVISAR' %}selected{% endif %}>Revisar</option>
-          <option value="RECHAZAR" {% if decision == 'RECHAZAR' %}selected{% endif %}>Rechazado</option>
+          <option value="NO APROBADO" {% if decision == 'NO APROBADO' %}selected{% endif %}>No Aprobado</option>
         </select>
       </div>
       <div class="col-md-2">
@@ -130,7 +130,8 @@
           <th class="text-end">Monto</th>
           <th class="text-center">Score</th>
           <th class="text-center">Clasificación</th>
-          <th class="text-center">Decisión</th>
+          <th class="text-center">Sug. Herramienta</th>
+          <th class="text-center">Dec. Comité</th>
           <th>Usuario</th>
           <th></th>
         </tr>
@@ -160,9 +161,22 @@
           <td class="text-center">
             <span class="badge bg-{{ fila.decision_color }}">
               {% if 'APROBAR' in fila.decision or fila.decision == 'APROBADO' %}APROBADO
-              {% elif 'RECHAZAR' in fila.decision %}RECHAZADO
+              {% elif 'NO APROBADO' in fila.decision %}NO APROBADO
               {% else %}REVISAR{% endif %}
             </span>
+          </td>
+          <td class="text-center">
+            {% if fila.decision_comite %}
+              <span class="badge bg-{{ fila.decision_comite_color }}">
+                {% if fila.decision_comite|slice:":8" == "Aprobado" %}APROBADO
+                {% elif fila.decision_comite|slice:":11" == "No aprobado" %}NO APROBADO
+                {% else %}{{ fila.decision_comite|slice:":12" }}{% endif %}
+              </span>
+            {% elif not fila.es_historico and fila.pk %}
+              <span class="badge bg-light text-secondary border">Pendiente</span>
+            {% else %}
+              <span class="text-muted small">—</span>
+            {% endif %}
           </td>
           <td class="small">{{ fila.usuario }}</td>
           <td class="text-nowrap">
@@ -182,7 +196,7 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="11" class="text-center text-muted py-4">
+        <tr><td colspan="13" class="text-center text-muted py-4">
           <i class="bi bi-inbox fs-3 d-block mb-2"></i>No hay registros.
         </td></tr>
         {% endfor %}

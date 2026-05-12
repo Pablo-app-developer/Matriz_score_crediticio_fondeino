@@ -115,9 +115,8 @@ class Configuracion(models.Model):
 
 DECISION_COLORS = {
     'APROBAR': 'success',
-    'REVISAR / SOLICITAR CODEUDOR': 'warning',
-    'RECHAZAR': 'danger',
-    'RECHAZAR - CUOTA EXCEDE LÍMITE': 'danger',
+    'REVISAR': 'warning',
+    'NO APROBADO': 'danger',
 }
 
 CLASIFICACION_COLORS = {
@@ -189,9 +188,14 @@ class EvaluacionCredito(models.Model):
     clasificacion = models.CharField(max_length=30)
     decision = models.CharField(max_length=60)
 
-    # Decisión del comité (opcional, registrada después)
+    # Decisión del comité (registrada después de la evaluación)
     decision_comite = models.CharField(max_length=100, blank=True)
     observaciones = models.TextField(blank=True)
+    fecha_decision_comite = models.DateTimeField(null=True, blank=True)
+    registrado_por_comite = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True,
+        on_delete=models.SET_NULL, related_name='decisiones_comite'
+    )
 
     class Meta:
         verbose_name = 'Evaluación de Crédito'
@@ -206,6 +210,19 @@ class EvaluacionCredito(models.Model):
         for key, color in DECISION_COLORS.items():
             if key in self.decision:
                 return color
+        return 'secondary'
+
+    @property
+    def decision_comite_color(self):
+        if not self.decision_comite:
+            return 'secondary'
+        dc = self.decision_comite.lower()
+        if dc.startswith('aprobado'):
+            return 'success'
+        if dc.startswith('no aprobado'):
+            return 'danger'
+        if 'estudio' in dc or 'pendiente' in dc or 'devuelto' in dc:
+            return 'warning'
         return 'secondary'
 
     @property

@@ -23,7 +23,7 @@ def dashboard(request):
 
     total_mes = qs_mes.count()
     aprobadas_mes = qs_mes.filter(decision__icontains='APROBAR').count()
-    rechazadas_mes = qs_mes.filter(decision__icontains='RECHAZAR').count()
+    rechazadas_mes = qs_mes.filter(decision__icontains='NO APROBADO').count()
     revisar_mes = qs_mes.filter(decision__icontains='REVISAR').count()
 
     # Monto aprobado del mes: evaluaciones + históricos del mes
@@ -291,8 +291,11 @@ def detalle(request, pk):
     """Vista de resultado / detalle de una evaluación."""
     ev = get_object_or_404(EvaluacionCredito, pk=pk)
     form_comite = DecisionComiteForm(request.POST or None, instance=ev)
-    if request.method == 'POST' and request.user.es_admin and form_comite.is_valid():
-        form_comite.save()
+    if request.method == 'POST' and form_comite.is_valid():
+        obj = form_comite.save(commit=False)
+        obj.fecha_decision_comite = timezone.now()
+        obj.registrado_por_comite = request.user
+        obj.save()
         messages.success(request, 'Decisión del comité registrada.')
         return redirect('credito:detalle', pk=pk)
 
@@ -346,6 +349,8 @@ def historico(request):
             'clasificacion_color': ev.clasificacion_color,
             'decision': ev.decision,
             'decision_color': ev.decision_color,
+            'decision_comite': ev.decision_comite,
+            'decision_comite_color': ev.decision_comite_color,
             'usuario': ev.evaluado_por.get_full_name() or ev.evaluado_por.username,
             'pk': ev.pk,
             'es_historico': False,
@@ -375,6 +380,8 @@ def historico(request):
                 'clasificacion_color': None,
                 'decision': 'APROBADO',
                 'decision_color': 'success',
+                'decision_comite': '',
+                'decision_comite_color': None,
                 'usuario': 'Administrador',
                 'pk': None,
                 'es_historico': True,
