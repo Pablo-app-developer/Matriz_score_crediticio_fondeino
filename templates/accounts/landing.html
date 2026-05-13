@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Bienvenido — FONDEINO{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center" style="margin-top: 80px;">
+  <div class="col-md-6 col-lg-5 text-center">
+
+    <!-- Logo / Identidad -->
+    <div class="mb-5">
+      <i class="bi bi-shield-check text-primary" style="font-size: 4rem;"></i>
+      <h1 class="fw-bold mt-3 mb-1" style="font-size: 2rem; letter-spacing: 2px;">FONDEINO</h1>
+      <p class="text-muted">Fondo de Empleados</p>
+    </div>
+
+    <!-- Tarjeta Asociado -->
+    <a href="{% url 'asociados:solicitud_credito' %}" class="text-decoration-none">
+      <div class="card shadow-sm border-0 mb-4 landing-card"
+           style="border-left: 5px solid #1a4f99 !important; transition: transform .15s, box-shadow .15s;">
+        <div class="card-body py-4 px-4 d-flex align-items-center gap-4">
+          <div class="flex-shrink-0">
+            <span class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                  style="width:60px; height:60px;">
+              <i class="bi bi-file-earmark-text text-primary" style="font-size: 1.7rem;"></i>
+            </span>
+          </div>
+          <div class="text-start">
+            <h5 class="fw-bold mb-1 text-primary">Soy Asociado</h5>
+            <p class="text-muted mb-0 small">Diligenciar solicitud de crédito o anticipo</p>
+          </div>
+          <i class="bi bi-chevron-right text-primary ms-auto fs-5"></i>
+        </div>
+      </div>
+    </a>
+
+    <!-- Tarjeta Empleados FONDEINO -->
+    <a href="{% url 'accounts:login' %}" class="text-decoration-none">
+      <div class="card shadow-sm border-0 landing-card"
+           style="border-left: 5px solid #6c757d !important; transition: transform .15s, box-shadow .15s;">
+        <div class="card-body py-4 px-4 d-flex align-items-center gap-4">
+          <div class="flex-shrink-0">
+            <span class="bg-secondary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                  style="width:60px; height:60px;">
+              <i class="bi bi-lock text-secondary" style="font-size: 1.7rem;"></i>
+            </span>
+          </div>
+          <div class="text-start">
+            <h5 class="fw-bold mb-1 text-secondary">Acceso Empleados FONDEINO</h5>
+            <p class="text-muted mb-0 small">Comité de Crédito · Analistas · Administración</p>
+          </div>
+          <i class="bi bi-chevron-right text-secondary ms-auto fs-5"></i>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+  .landing-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.12) !important;
+  }
+</style>
+{% endblock %}

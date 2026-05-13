@@ -11,6 +11,12 @@ from .models import Usuario
 from .forms import LoginForm, UsuarioCrearForm, UsuarioEditarForm, CambiarPasswordForm
 
 
+def landing(request):
+    if request.user.is_authenticated:
+        return redirect('credito:dashboard')
+    return render(request, 'accounts/landing.html')
+
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('credito:evaluacion')
