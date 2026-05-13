@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitud de Crédito — FONDEINO FN-F-04</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    /* ── PANTALLA ── */
+    body { background: #e8e8e8; font-family: Arial, sans-serif; }
+
+    .toolbar {
+      background: #1a4f99;
+      color: #fff;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .toolbar h1 { font-size: 1.1rem; margin: 0; font-weight: 700; }
+
+    .page-wrap {
+      max-width: 900px;
+      margin: 28px auto 40px;
+      background: #fff;
+      padding: 28px 32px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.18);
+    }
+
+    /* ── FORM TABLES ── */
+    .sc-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 0;
+    }
+    .sc-table td, .sc-table th {
+      border: 1px solid #444;
+      padding: 4px 7px;
+      vertical-align: middle;
+      font-size: 11px;
+    }
+    .sc-table th {
+      background: #d9d9d9;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .section-title {
+      background: #d9d9d9;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 4px 7px;
+      border: 1px solid #444;
+      border-bottom: 0;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+
+    .field-label {
+      font-weight: 700;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .field-input {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid #444;
+      outline: none;
+      font-size: 11px;
+      padding: 1px 2px;
+      background: transparent;
+    }
+    .field-input:focus { background: #fffde7; }
+
+    .check-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 11px; }
+    .check-row label { display: flex; align-items: center; gap: 3px; cursor: pointer; }
+
+    /* Header logo placeholder */
+    .logo-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #1a4f99;
+      border-radius: 4px;
+      padding: 6px 12px;
+      min-height: 56px;
+    }
+    .logo-box .org-name {
+      font-size: 14px;
+      font-weight: 900;
+      color: #1a4f99;
+      letter-spacing: 2px;
+    }
+    .logo-box .org-sub {
+      font-size: 8px;
+      color: #555;
+      text-align: center;
+      letter-spacing: .5px;
+    }
+
+    .doc-title {
+      font-size: 16px;
+      font-weight: 900;
+      text-align: center;
+      color: #1a4f99;
+      letter-spacing: 1px;
+    }
+
+    .meta-cell { font-size: 10px; text-align: center; }
+    .meta-cell b { display: block; font-size: 10px; }
+    .meta-cell span { font-size: 11px; }
+
+    textarea.field-input {
+      border: 1px solid #aaa;
+      resize: vertical;
+      min-height: 54px;
+      display: block;
+    }
+
+    .signature-box {
+      border: 1px solid #444;
+      min-height: 64px;
+      width: 100%;
+      background: #fafafa;
+    }
+
+    .legal-text {
+      font-size: 9.5px;
+      line-height: 1.45;
+      text-align: justify;
+      padding: 6px 7px;
+    }
+
+    .btn-imprimir {
+      background: #fff;
+      color: #1a4f99;
+      border: 2px solid #fff;
+      font-weight: 700;
+      padding: 6px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background .2s;
+    }
+    .btn-imprimir:hover { background: #e3eaff; }
+
+    .nota-instrucciones {
+      font-size: 10.5px;
+      border: 1px solid #444;
+      padding: 5px 10px;
+      margin-bottom: 10px;
+      background: #fffbf0;
+    }
+
+    /* ── IMPRESIÓN ── */
+    @media print {
+      @page { size: letter portrait; margin: 14mm 14mm 12mm 14mm; }
+
+      body { background: #fff !important; }
+      .toolbar, .btn-imprimir, .no-print { display: none !important; }
+      .page-wrap {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+      .field-input { border-bottom: 1px solid #444 !important; background: transparent !important; }
+      .field-input:focus { background: transparent !important; }
+      textarea.field-input { border: 1px solid #aaa !important; }
+      .signature-box { border: 1px solid #444 !important; }
+      .nota-instrucciones { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Barra de herramientas (solo en pantalla) -->
+<div class="toolbar d-print-none">
+  <h1><i class="bi bi-file-earmark-text me-2"></i>Solicitud de Crédito — FONDEINO</h1>
+  <div class="d-flex gap-2">
+    <button class="btn-imprimir" onclick="window.print()">
+      <i class="bi bi-printer me-1"></i>Imprimir / Guardar PDF
+    </button>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- INSTRUCCIÓN -->
+  <div class="nota-instrucciones d-print-none">
+    <i class="bi bi-info-circle me-1"></i>
+    <strong>Instrucciones:</strong> Complete todos los campos del formulario. Al terminar, haga clic en
+    <strong>Imprimir / Guardar PDF</strong> para obtener el documento oficial listo para entregar.
+    Este formulario unifica solicitudes de crédito y anticipos de salario, honorarios, prima u otros conceptos.
+    Debe diligenciarse en su totalidad, sin enmendaduras.
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       ENCABEZADO DEL DOCUMENTO
+  ══════════════════════════════════════════════ -->
+  <table class="sc-table" style="margin-bottom:6px;">
+    <colgroup>
+      <col style="width:22%">
+      <col style="width:40%">
+      <col style="width:20%">
+      <col style="width:18%">
+    </colgroup>
+    <tr>
+      <td rowspan="2" style="text-align:center; padding:6px;">
+        <div class="logo-box">
+          <div class="org-name">FONDEINO</div>
+          <div class="org-sub">FONDO DE EMPLEADOS</div>
+        </div>
+      </td>
+      <td rowspan="2" style="text-align:center; padding:8px;">
+        <div class="doc-title">SOLICITUD DE CRÉDITO</div>
+      </td>
+      <td class="meta-cell">
+        <b>Código</b>
+        <span>FN-F-04</span>
+      </td>
+      <td class="meta-cell">
+        <b>Versión</b>
+        <span>V:02</span>
+      </td>
+    </tr>
+    <tr>
+      <td class="meta-cell">
+        <b>Fecha</b>
+        <span>21-Abril-2026</span>
+      </td>
+      <td class="meta-cell">
+        <b>Uso</b>
+        <span>Formato Único</span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Ciudad / Fecha / Número SC -->
+  <table class="sc-table" style="margin-bottom:10px;">
+    <colgroup>
+      <col style="width:40%">
+      <col style="width:35%">
+      <col style="width:25%">
+    </colgroup>
+    <tr>
+      <td>
+        <span class="field-label">Ciudad: </span>
+        <input type="text" class="field-input" style="width:75%; display:inline-block;" name="ciudad" placeholder="">
+      </td>
+      <td>
+        <span class="field-label">Fecha: </span>
+        <input type="date" class="field-input" style="width:72%; display:inline-block;" name="fecha_solicitud">
+      </td>
+      <td>
+        <span class="field-label">Número SC.: </span>
+        <input type="text" class="field-input" style="width:55%; display:inline-block;" name="numero_sc" placeholder="">
+      </td>
+    </tr>
+  </table>
+
+  <!-- ══════════════════════════════════════════════
+       SECCIÓN 1 — DATOS DEL SOLICITANTE
+  ══════════════════════════════════════════════ -->
+  <div class="section-title">1. DATOS DEL SOLICITANTE</div>
+  <table class="sc-table" style="margin-bottom:10px;">
+    <tr>
+      <td style="width:50%;">
+        <span class="field-label">Nombres: </span>
+        <input type="text" class="field-input" style="width:78%; display:inline-block;" name="nombres">
+      </td>
+      <td style="width:50%;">
+        <span class="field-label">Apellidos: </span>
+        <input type="text" class="field-input" style="width:76%; display:inline-block;" name="apellidos">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <span class="field-label">C.C.: </span>
+        <input type="text" class="field-input" style="width:74%; display:inline-block;" name="cedula">
+      </td>
+      <td>
+        <span class="field-label">Celular: </span>
+        <input type="text" class="field-input" style="width:60%; display:inline-block;" name="celular">
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <span class="field-label">Email: </span>
+        <input type="email" class="field-input" style="width:88%; display:inline-block;" name="email">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <span class="field-label">Tipo de vinculación: </span>
+        <input type="text" class="field-input" style="width:64%; display:inline-block;" name="tipo_vinculacion">
+      </td>
+      <td>
+        <span class="field-label">Dirección: </span>
+        <input type="text" class="field-input" style="width:77%; display:inline-block;" name="direccion">
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <span class="field-label">Empresa / sede de labores: </span>
+        <input type="text" class="field-input" style="width:78%; display:inline-block;" name="empresa">
+      </td>
+    </tr>
+  </table>
+
+  <!-- ══════════════════════════════════════════════
+       SECCIÓN 2 — REFERENCIAS
+  ══════════════════════════════════════════════ -->
+  <div class="section-title">2. REFERENCIAS COMERCIAL / PERSONAL</div>
+  <table class="sc-table" style="margin-bottom:10px;">
+    <thead>
+      <tr>
+        <th style="width:34%;">Nombre</th>
+        <th style="width:38%;">Dirección</th>
+        <th style="width:28%;">Teléfono</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text" class="field-input" name="ref1_nombre"></td>
+        <td><input type="text" class="field-input" name="ref1_direccion"></td>
+        <td><input type="text" class="field-input" name="ref1_telefono"></td>
+      </tr>
+      <tr>
+        <td><input type="text" class="field-input" name="ref2_nombre"></td>
+        <td><input type="text" class="field-input" name="ref2_direccion"></td>
+        <td><input type="text" class="field-input" name="ref2_telefono"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ══════════════════════════════════════════════
+       SECCIÓN 3 — INFORMACIÓN DE LA SOLICITUD
+  ══════════════════════════════════════════════ -->
+  <div class="section-title">3. INFORMACIÓN DE LA SOLICITUD</div>
+  <table class="sc-table" style="margin-bottom:10px;">
+    <!-- Modalidad -->
+    <tr>
+      <td colspan="4">
+        <span class="field-label">Modalidad solicitada: </span>
+        <span class="check-row" style="display:inline-flex; margin-left:8px;">
+          <label><input type="radio" name="modalidad" value="credito"> Crédito</label>
+          <label><input type="radio" name="modalidad" value="anticipo_salario"> Anticipo de salario</label>
+          <label><input type="radio" name="modalidad" value="anticipo_honorarios"> Anticipo de honorarios</label>
+          <label><input type="radio" name="modalidad" value="anticipo_prima"> Anticipo de prima</label>
+          <label><input type="radio" name="modalidad" value="otro"> Otro: </label>
+          <input type="text" class="field-input" name="modalidad_otro" style="width:100px; display:inline-block;">
+        </span>
+      </td>
+    </tr>
+    <!-- Monto / Plazo / Cuota -->
+    <tr>
+      <td style="width:34%;">
+        <span class="field-label">Monto solicitado: </span>
+        <input type="text" class="field-input" name="monto" style="width:55%; display:inline-block;" placeholder="$ 0">
+      </td>
+      <td style="width:22%;">
+        <span class="field-label">Plazo (meses): </span>
+        <input type="number" class="field-input" name="plazo" style="width:45%; display:inline-block;" min="1">
+      </td>
+      <td colspan="2">
+        <span class="field-label">Valor cuota: </span>
+        <input type="text" class="field-input" name="valor_cuota" style="width:60%; display:inline-block;" placeholder="$ 0">
+      </td>
+    </tr>
+    <!-- Descuento -->
+    <tr>
+      <td colspan="4">
+        <span class="field-label">Descuento: </span>
+        <span class="check-row" style="display:inline-flex; margin-left:8px;">
+          <label><input type="radio" name="descuento" value="unico"> Único</label>
+          <label><input type="radio" name="descuento" value="cuotas"> Cuotas</label>
+        </span>
+      </td>
+    </tr>
+    <!-- Fuente descuento -->
+    <tr>
+      <td colspan="4">
+        <span class="field-label">Fuente autorizada de descuento: </span>
+        <span class="check-row" style="display:inline-flex; margin-left:8px;">
+          <label><input type="checkbox" name="fuente_nomina" value="1"> Nómina</label>
+          <label><input type="checkbox" name="fuente_honorarios" value="1"> Honorarios</label>
+          <label><input type="checkbox" name="fuente_prima" value="1"> Prima</label>
+          <label><input type="checkbox" name="fuente_liquidacion" value="1"> Liquidación final</label>
+          <label><input type="checkbox" name="fuente_otra" value="1"> Otra: </label>
+          <input type="text" class="field-input" name="fuente_otra_desc" style="width:100px; display:inline-block;">
+        </span>
+      </td>
+    </tr>
+    <!-- Fecha estimada -->
+    <tr>
+      <td colspan="4">
+        <span class="field-label">Fecha estimada de pago / descuento: </span>
+        <input type="date" class="field-input" name="fecha_pago" style="width:200px; display:inline-block;">
+      </td>
+    </tr>
+    <!-- Cruzar deuda -->
+    <tr>
+      <td colspan="2">
+        <span class="field-label">Cruzar deuda: </span>
+        <span class="check-row" style="display:inline-flex; margin-left:8px;">
+          <label><input type="radio" name="cruzar_deuda" value="si"> Sí</label>
+          <label><input type="radio" name="cruzar_deuda" value="no"> No</label>
+        </span>
+        &nbsp;&nbsp;
+        <span class="field-label">No. obligación: </span>
+        <input type="text" class="field-input" name="no_obligacion" style="width:120px; display:inline-block;">
+      </td>
+      <td colspan="2">
+        <span class="field-label">Asociado al fondo: </span>
+        <span class="check-row" style="display:inline-flex; margin-left:8px;">
+          <label><input type="radio" name="asociado_fondo" value="si"> Sí</label>
+          <label><input type="radio" name="asociado_fondo" value="no"> No</label>
+        </span>
+        &nbsp;&nbsp;
+        <span class="field-label">Concepto: </span>
+        <input type="text" class="field-input" name="concepto" style="width:100px; display:inline-block;">
+      </td>
+    </tr>
+    <!-- Ahorro / Deuda -->
+    <tr>
+      <td colspan="2">
+        <span class="field-label">Ahorro + aporte: </span>
+        <input type="text" class="field-input" name="ahorro_aporte" style="width:60%; display:inline-block;" placeholder="$ 0">
+      </td>
+      <td colspan="2">
+        <span class="field-label">Deuda actual: </span>
+        <input type="text" class="field-input" name="deuda_actual" style="width:60%; display:inline-block;" placeholder="$ 0">
+      </td>
+    </tr>
+    <!-- Observaciones -->
+    <tr>
+      <td colspan="4">
+        <div class="field-label" style="margin-bottom:3px;">Observaciones / soporte del anticipo o crédito:</div>
+        <textarea class="field-input" name="observaciones" rows="3" style="width:100%;"></textarea>
+      </td>
+    </tr>
+  </table>
+
+  <!-- ══════════════════════════════════════════════
+       SECCIÓN 4 — CUENTA PARA DESEMBOLSO
+  ══════════════════════════════════════════════ -->
+  <div class="section-title">4. DATOS DE LA CUENTA PARA DESEMBOLSO</div>
+  <table class="sc-table" style="margin-bottom:10px;">
+    <tr>
+      <td colspan="3">
+        <span class="field-label">Medio: </span>
+        <span class="check-row" style="display:inline-flex; margin-left:8px;">
+          <label><input type="radio" name="medio_pago" value="transferencia"> Transferencia</label>
+          <label><input type="radio" name="medio_pago" value="cheque"> Cheque</label>
+        </span>
+        &nbsp;&nbsp;
+        <span class="field-label">Banco: </span>
+        <input type="text" class="field-input" name="banco" style="width:120px; display:inline-block;">
+        &nbsp;&nbsp;
+        <span class="field-label">Tipo de cuenta: </span>
+        <input type="text" class="field-input" name="tipo_cuenta" style="width:120px; display:inline-block;">
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3">
+        <span class="field-label">Titular: </span>
+        <input type="text" class="field-input" name="titular_cuenta" style="width:85%; display:inline-block;">
+      </td>
+    </tr>
+    <tr>
+      <td style="width:34%;">
+        <span class="field-label">No. cuenta: </span>
+        <input type="text" class="field-input" name="no_cuenta" style="width:65%; display:inline-block;">
+      </td>
+      <td style="width:33%;">
+        <span class="field-label">Valor a consignar / entregar: </span>
+        <input type="text" class="field-input" name="valor_consignar" style="width:45%; display:inline-block;" placeholder="$ 0">
+      </td>
+      <td style="width:33%;">
+        <span class="field-label">No. identificación titular: </span>
+        <input type="text" class="field-input" name="id_titular" style="width:48%; display:inline-block;">
+      </td>
+    </tr>
+  </table>
+
+  <!-- ══════════════════════════════════════════════
+       SECCIÓN 5 — AUTORIZACIÓN
+  ══════════════════════════════════════════════ -->
+  <div class="section-title">5. AUTORIZACIÓN EXPRESA DE DESCUENTOS Y DECLARACIONES</div>
+  <table class="sc-table" style="margin-bottom:10px;">
+    <tr>
+      <td colspan="2">
+        <div class="legal-text">
+          Autorizo expresa, previa e irrevocablemente a mi empleador, contratante, y/o pagador para que, mientras se
+          encuentre vigente la obligación derivada de la presente solicitud de crédito o anticipo, efectúen los descuentos,
+          retenciones, a que haya lugar sobre salarios, honorarios, primas, bonificaciones, cesantías, prestaciones
+          sociales, liquidaciones, indemnizaciones y cualquier suma legal o contractualmente pagadera a mi favor, con
+          destino al pago de capital, intereses corrientes, intereses de mora, seguros, gastos de cobranza judicial o
+          prejudicial y demás conceptos accesorios autorizados. Esta autorización comprende descuentos de pago único o
+          periódico, según la modalidad aquí seleccionada, y se extiende a la aplicación de cualquier saldo a mi favor
+          en caso de terminación del vínculo laboral o contractual, sin perjuicio de mi obligación de pagar directamente
+          el saldo insoluto si los valores descontados resultan insuficientes. Declaro que la información suministrada
+          es veraz, que los recursos o pagos objeto de descuento se encuentran libres de limitaciones incompatibles con
+          la presente autorización y que acepto la aplicación de los artículos 55 y 56 del Decreto 1481 de 1989, la Ley
+          1527 de 2012 y las demás normas que las modifiquen o complementen.
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="width:60%;">
+        <span class="field-label">Nombre del solicitante: </span>
+        <input type="text" class="field-input" name="nombre_solicitante" style="width:68%; display:inline-block;">
+        <br><br>
+        <span class="field-label">Teléfono: </span>
+        <input type="text" class="field-input" name="telefono_solicitante" style="width:75%; display:inline-block;">
+      </td>
+      <td style="width:40%; vertical-align:top;">
+        <div class="field-label" style="margin-bottom:3px;">Firma:</div>
+        <div class="signature-box"></div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="field-label" style="margin-bottom:3px;">Huella Índice derecho:</div>
+        <div class="signature-box" style="min-height:50px; width:80px;"></div>
+      </td>
+      <td></td>
+    </tr>
+    <!-- Recomendación analista -->
+    <tr>
+      <td style="background:#f5f5f5;">
+        <span class="field-label">Recomendación del analista: </span>
+        <span class="check-row" style="display:inline-flex; margin-left:8px;">
+          <label><input type="radio" name="recomendacion" value="aprobado"> <strong>APROBADO</strong></label>
+          <label><input type="radio" name="recomendacion" value="rechazado"> <strong>RECHAZADO</strong></label>
+        </span>
+      </td>
+      <td style="background:#f5f5f5;">
+        <span class="field-label">Observación breve: </span>
+        <input type="text" class="field-input" name="obs_analista" style="width:72%; display:inline-block;">
+      </td>
+    </tr>
+  </table>
+
+  <!-- ══════════════════════════════════════════════
+       VERIFICACIÓN DE FIRMAS Y HUELLAS
+  ══════════════════════════════════════════════ -->
+  <div class="section-title">VERIFICACIÓN DE FIRMAS Y HUELLAS POR PARTE DEL PERSONAL AUTORIZADO</div>
+  <table class="sc-table">
+    <thead>
+      <tr>
+        <th style="width:38%;">Nombre</th>
+        <th style="width:28%;">Cargo</th>
+        <th style="width:34%;">Firma</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="height:40px;">
+        <td><input type="text" class="field-input" name="ver1_nombre"></td>
+        <td><input type="text" class="field-input" name="ver1_cargo"></td>
+        <td></td>
+      </tr>
+      <tr style="height:40px;">
+        <td><input type="text" class="field-input" name="ver2_nombre"></td>
+        <td><input type="text" class="field-input" name="ver2_cargo"></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+</div><!-- /page-wrap -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
