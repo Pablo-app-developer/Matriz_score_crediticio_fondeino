@@ -315,40 +315,25 @@
       padding: 36px 24px 28px;
       text-align: center;
       border: 1px solid var(--gray-mid);
-      position: relative;
-      overflow: hidden;
       transition: box-shadow .28s, transform .28s;
     }
-    .benefit-item::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--blue), var(--cyan));
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform .3s ease;
-    }
-    .benefit-item:hover::before { transform: scaleX(1); }
     .benefit-item:hover { box-shadow: 0 14px 36px rgba(52,52,101,.13); transform: translateY(-5px); }
 
     .benefit-icon-wrap {
-      width: 76px; height: 76px;
-      border-radius: 50%;
-      background: rgba(62,64,149,.07);
-      border: 2px solid rgba(62,64,149,.14);
+      width: 68px; height: 68px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 0 auto 20px;
-      color: var(--blue);
-      transition: background .28s, border-color .28s, color .28s, box-shadow .28s;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(0,175,239,.25);
     }
-    .benefit-item:hover .benefit-icon-wrap {
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      border-color: transparent;
-      color: var(--white);
-      box-shadow: 0 6px 20px rgba(0,175,239,.35);
+    .benefit-icon-wrap svg {
+      display: block;
+      flex-shrink: 0;
+      stroke: #ffffff;
     }
     .benefit-title { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
     .benefit-text  { font-size: 13px; color: var(--text-body); line-height: 1.65; }
@@ -629,7 +614,7 @@
           </svg>
         </div>
         <div class="benefit-title">Comunidad sólida</div>
-        <div class="benefit-text">Más de 500 asociados respaldándonos mutuamente cada día.</div>
+        <div class="benefit-text">Más de 150 asociados respaldándonos mutuamente cada día.</div>
       </div>
 
       <div class="benefit-item">
