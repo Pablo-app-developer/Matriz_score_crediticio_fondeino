@@ -15,7 +15,7 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media/
-staticfiles/
+# staticfiles se commitea para que Vercel/Whitenoise tenga los archivos listos
 
 # Environment
 .env
