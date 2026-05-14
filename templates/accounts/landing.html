@@ -63,9 +63,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 80px;
+      height: 92px;
     }
-    .nav-logo img { height: 64px; object-fit: contain; }
+    .nav-logo img { height: 84px; object-fit: contain; }
     .nav-links { display: flex; gap: 32px; list-style: none; }
     .nav-links a {
       text-decoration: none;
@@ -114,7 +114,7 @@
       inset: 0;
       background-image: url("{% static 'img/manos-juntas.jpg' %}");
       background-size: cover;
-      background-position: center 40%;
+      background-position: 38% center;
       opacity: .22;
       pointer-events: none;
     }
@@ -311,24 +311,47 @@
     }
     .benefit-item {
       background: var(--white);
-      border-radius: 12px;
-      padding: 28px 24px;
+      border-radius: 18px;
+      padding: 36px 24px 28px;
       text-align: center;
       border: 1px solid var(--gray-mid);
-      transition: box-shadow .2s, transform .2s;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow .28s, transform .28s;
     }
-    .benefit-item:hover { box-shadow: 0 8px 24px rgba(52,52,101,.1); transform: translateY(-3px); }
-    .benefit-icon {
-      width: 52px; height: 52px;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      border-radius: 13px;
+    .benefit-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .3s ease;
+    }
+    .benefit-item:hover::before { transform: scaleX(1); }
+    .benefit-item:hover { box-shadow: 0 14px 36px rgba(52,52,101,.13); transform: translateY(-5px); }
+
+    .benefit-icon-wrap {
+      width: 76px; height: 76px;
+      border-radius: 50%;
+      background: rgba(62,64,149,.07);
+      border: 2px solid rgba(62,64,149,.14);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 14px;
+      margin: 0 auto 20px;
+      color: var(--blue);
+      transition: background .28s, border-color .28s, color .28s, box-shadow .28s;
     }
-    .benefit-title { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
-    .benefit-text  { font-size: 13px; color: var(--text-body); line-height: 1.6; }
+    .benefit-item:hover .benefit-icon-wrap {
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      border-color: transparent;
+      color: var(--white);
+      box-shadow: 0 6px 20px rgba(0,175,239,.35);
+    }
+    .benefit-title { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
+    .benefit-text  { font-size: 13px; color: var(--text-body); line-height: 1.65; }
 
     /* ── FOOTER ── */
     footer {
@@ -402,8 +425,8 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
-      nav { padding: 0 20px; height: 70px; }
-      .nav-logo img { height: 52px; }
+      nav { padding: 0 20px; height: 76px; }
+      .nav-logo img { height: 62px; }
       .nav-links { display: none; }
       .hero-content { padding: 52px 24px; }
       .section { padding: 52px 24px; }
@@ -586,40 +609,58 @@
     <div class="benefits-grid">
 
       <div class="benefit-item">
-        <div class="benefit-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div class="benefit-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <polyline points="9 12 11 14 15 10"/>
+          </svg>
         </div>
         <div class="benefit-title">Sin ánimo de lucro</div>
         <div class="benefit-text">Todos los excedentes se reinvierten en beneficios para nuestros asociados.</div>
       </div>
 
       <div class="benefit-item">
-        <div class="benefit-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <div class="benefit-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
         </div>
         <div class="benefit-title">Comunidad sólida</div>
         <div class="benefit-text">Más de 500 asociados respaldándonos mutuamente cada día.</div>
       </div>
 
       <div class="benefit-item">
-        <div class="benefit-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <div class="benefit-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
         </div>
         <div class="benefit-title">Tasas competitivas</div>
         <div class="benefit-text">Créditos con intereses muy por debajo del mercado financiero.</div>
       </div>
 
       <div class="benefit-item">
-        <div class="benefit-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <div class="benefit-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+            <line x1="12" y1="18" x2="12.01" y2="18"/>
+            <path d="M9 7h6M9 11h4"/>
+          </svg>
         </div>
         <div class="benefit-title">Plataforma digital</div>
         <div class="benefit-text">Gestiona tus productos en línea, seguro y disponible 24/7.</div>
       </div>
 
       <div class="benefit-item">
-        <div class="benefit-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <div class="benefit-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <path d="M9 22V12h6v10"/>
+          </svg>
         </div>
         <div class="benefit-title">Bienestar familiar</div>
         <div class="benefit-text">Convenios y beneficios que llegan a toda tu familia.</div>
