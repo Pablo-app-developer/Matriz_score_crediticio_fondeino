@@ -414,6 +414,70 @@
       50%       { box-shadow: 0 0 0 6px rgba(0,175,239,0); }
     }
 
+    /* ── CONTACT ── */
+    .contact { background: var(--white); }
+    .contact-card {
+      max-width: 780px;
+      margin: 0 auto;
+      background: var(--gray-light);
+      border: 1px solid var(--gray-mid);
+      border-radius: 18px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      box-shadow: 0 4px 24px rgba(52,52,101,.10);
+    }
+    .contact-card-header {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+      padding: 22px 36px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .contact-card-header h3 {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .contact-card-header .sede-badge {
+      background: var(--cyan);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    .contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 22px 30px;
+      border-right: 1px solid var(--gray-mid);
+    }
+    .contact-item:nth-child(even) { border-right: none; }
+    .contact-item:nth-last-child(-n+2) { border-bottom: none; }
+    .contact-icon {
+      width: 42px; height: 42px;
+      background: var(--navy);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .contact-info { display: flex; flex-direction: column; gap: 2px; }
+    .contact-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--cyan); }
+    .contact-value { font-size: 14px; font-weight: 600; color: var(--text-dark); line-height: 1.4; }
+    .contact-value a { color: var(--text-dark); text-decoration: none; transition: color .2s; }
+    .contact-value a:hover { color: var(--cyan); }
+    .contact-sub { font-size: 12px; color: var(--text-body); margin-top: 2px; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       nav { padding: 0 20px; height: 76px; }
@@ -429,6 +493,10 @@
       .benefits-grid { grid-template-columns: 1fr; }
       .benefit-item:last-child { max-width: 100%; }
       .benefit-num { font-size: 40px; min-width: 42px; }
+      .contact-card { grid-template-columns: 1fr; }
+      .contact-item { border-right: none; border-bottom: 1px solid var(--gray-mid); }
+      .contact-item:last-child { border-bottom: none; }
+      .contact-card-header { padding: 18px 22px; }
     }
   </style>
 </head>
@@ -436,8 +504,8 @@
 
   <!-- TOP BAR -->
   <div class="topbar">
-    <a href="#">Contáctenos</a>
-    <a href="#">Sede principal</a>
+    <a href="#contacto">Contáctenos</a>
+    <a href="#contacto">Sede principal</a>
     <a href="{% url 'accounts:login' %}" class="topbar-zona">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
@@ -458,7 +526,7 @@
       <li><a href="#beneficios">Beneficios</a></li>
       <li><a href="#">Nosotros</a></li>
       <li><a href="#">Normatividad</a></li>
-      <li><a href="#">Contacto</a></li>
+      <li><a href="#contacto">Contacto</a></li>
     </ul>
     <a href="{% url 'accounts:login' %}" class="nav-cta">Zona Transaccional</a>
   </nav>
@@ -481,9 +549,9 @@
           Conoce nuestros servicios
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
-        <a href="{% url 'accounts:login' %}" class="btn-outline">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Zona Transaccional
+        <a href="{% url 'asociados:solicitud_credito' %}" class="btn-outline">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Solicitar crédito
         </a>
       </div>
     </div>
@@ -532,7 +600,7 @@
           <div class="card-tag">Flexibilidad</div>
           <h3 class="card-title">El impulso que necesitas para lo que quieras.</h3>
           <p class="card-text">¿Remodelar tu hogar, el viaje que siempre soñaste o simplemente organizar tus finanzas? Nuestros préstamos de libre inversión tienen tasas competitivas y plazos que se ajustan a tu bolsillo.</p>
-          <a href="#" class="card-btn">
+          <a href="{% url 'asociados:solicitud_credito' %}" class="card-btn">
             Solicita tu crédito aquí
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
@@ -552,7 +620,7 @@
           <div class="card-tag">Crecimiento</div>
           <h3 class="card-title">Apostamos por tu conocimiento y el de los tuyos.</h3>
           <p class="card-text">Que el costo de la matrícula no sea un obstáculo. Financia estudios técnicos, profesionales o de posgrado con beneficios exclusivos para asociados.</p>
-          <a href="#" class="card-btn">
+          <a href="{% url 'asociados:solicitud_credito' %}" class="card-btn">
             Ver requisitos de estudio
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
@@ -581,6 +649,18 @@
 
     </div>
   </section>
+
+  <!-- CTA BAND -->
+  <div class="zona-band">
+    <div class="zona-band-text">
+      <h2>¿Quieres solicitar un crédito?</h2>
+      <p>Descarga, completa e imprime tu solicitud en segundos. No necesitas usuario ni contraseña.</p>
+    </div>
+    <a href="{% url 'asociados:solicitud_credito' %}" class="zona-band-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Formulario de solicitud de crédito
+    </a>
+  </div>
 
   <!-- BENEFITS -->
   <section class="section benefits" id="beneficios">
@@ -629,12 +709,87 @@
     </div>
   </section>
 
+  <!-- CONTACT -->
+  <section class="section contact" id="contacto">
+    <div class="section-header">
+      <div class="section-tag">Dónde encontrarnos</div>
+      <h2 class="section-title">Nuestra sede</h2>
+      <p class="section-sub">Estamos cerca de ti para atenderte con la calidez que mereces.</p>
+    </div>
+
+    <div class="contact-card">
+      <!-- Header -->
+      <div class="contact-card-header">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <h3>Sede Machado</h3>
+        <span class="sede-badge">Bucaramanga</span>
+      </div>
+
+      <!-- Dirección -->
+      <div class="contact-item">
+        <div class="contact-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div class="contact-info">
+          <span class="contact-label">Dirección</span>
+          <span class="contact-value">Calle 52a # 31 - 137, Segundo piso</span>
+          <span class="contact-sub">Sotomayor, Bucaramanga, Santander</span>
+        </div>
+      </div>
+
+      <!-- Celular -->
+      <div class="contact-item">
+        <div class="contact-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
+        <div class="contact-info">
+          <span class="contact-label">Celular</span>
+          <span class="contact-value"><a href="tel:+573167522664">+57 316 752 2664</a></span>
+          <span class="contact-sub">WhatsApp disponible</span>
+        </div>
+      </div>
+
+      <!-- Teléfono fijo -->
+      <div class="contact-item">
+        <div class="contact-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.54a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <div class="contact-info">
+          <span class="contact-label">Teléfono fijo</span>
+          <span class="contact-value"><a href="tel:6076972473">607 697 2473</a></span>
+          <span class="contact-sub">Ext. 210</span>
+        </div>
+      </div>
+
+      <!-- Ubicación -->
+      <div class="contact-item">
+        <div class="contact-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div class="contact-info">
+          <span class="contact-label">Ciudad</span>
+          <span class="contact-value">Bucaramanga, Santander</span>
+          <span class="contact-sub">Colombia</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- FOOTER -->
   <footer>
     <div class="footer-grid">
       <div class="footer-brand">
         <img src="{% static 'img/logo-blanco.png' %}" alt="Fondeino" />
         <p>Somos el fondo de empleados comprometido con el bienestar y el progreso de nuestros asociados y sus familias. Unidos somos más.</p>
+        <p style="margin-top:14px; font-size:12px; color:rgba(255,255,255,.55); line-height:1.8;">
+          <strong style="color:rgba(255,255,255,.8);">Sede Machado</strong><br>
+          Calle 52a # 31 - 137, 2.° piso — Sotomayor<br>
+          Bucaramanga, Santander, Colombia<br>
+          <a href="tel:+573167522664" style="color:rgba(255,255,255,.55); text-decoration:none;">+57 316 752 2664</a>
+          &nbsp;·&nbsp;
+          <a href="tel:6076972473" style="color:rgba(255,255,255,.55); text-decoration:none;">607 697 2473 ext. 210</a>
+        </p>
       </div>
       <div class="footer-col">
         <h4>Servicios</h4>
@@ -651,7 +806,7 @@
           <li><a href="#">Quiénes somos</a></li>
           <li><a href="#">Normatividad</a></li>
           <li><a href="#">Estatutos</a></li>
-          <li><a href="#">Contáctenos</a></li>
+          <li><a href="#contacto">Contáctenos</a></li>
           <li><a href="{% url 'accounts:login' %}">Zona Transaccional</a></li>
         </ul>
       </div>
