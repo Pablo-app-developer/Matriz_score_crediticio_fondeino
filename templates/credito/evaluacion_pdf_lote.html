@@ -1,4 +1,4 @@
-{% load credito_tags %}<!DOCTYPE html>
+{% load credito_tags %}{% load static %}<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -10,8 +10,7 @@
   .page:last-child { page-break-after: avoid; break-after: avoid; }
 
   .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #1a56db; padding-bottom: 8px; margin-bottom: 12px; }
-  .header-logo { font-size: 22px; font-weight: 900; color: #1a56db; letter-spacing: -0.5px; }
-  .header-logo span { color: #f59e0b; }
+  .header-logo img { height: 52px; object-fit: contain; }
   .header-info { text-align: right; color: #555; font-size: 10px; }
   .header-info strong { display: block; font-size: 14px; color: #111; }
 
@@ -92,7 +91,7 @@
   <!-- HEADER -->
   <div class="header">
     <div>
-      <div class="header-logo">FONDE<span>INO</span></div>
+      <div class="header-logo"><img src="{% static 'img/logo-color.png' %}" alt="Fondeino"></div>
       <div style="color:#555;font-size:10px;margin-top:2px">Fondo de Empleados · Evaluación Crediticia</div>
     </div>
     <div class="header-info">
