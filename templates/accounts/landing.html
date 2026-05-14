@@ -304,39 +304,50 @@
     .benefits { background: var(--gray-light); }
     .benefits-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 24px;
-      max-width: 1100px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      max-width: 960px;
       margin: 0 auto;
     }
     .benefit-item {
       background: var(--white);
-      border-radius: 18px;
-      padding: 36px 24px 28px;
-      text-align: center;
-      border: 1px solid var(--gray-mid);
-      transition: box-shadow .28s, transform .28s;
-    }
-    .benefit-item:hover { box-shadow: 0 14px 36px rgba(52,52,101,.13); transform: translateY(-5px); }
-
-    .benefit-icon-wrap {
-      width: 68px; height: 68px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%);
+      border-radius: 14px;
+      padding: 28px 32px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      flex-shrink: 0;
-      box-shadow: 0 4px 14px rgba(0,175,239,.25);
+      gap: 28px;
+      border: 1px solid var(--gray-mid);
+      box-shadow: 0 2px 8px rgba(52,52,101,.05);
+      transition: box-shadow .25s, transform .25s;
     }
-    .benefit-icon-wrap svg {
-      display: block;
-      flex-shrink: 0;
-      stroke: #ffffff;
+    .benefit-item:last-child {
+      grid-column: 1 / -1;
+      max-width: 460px;
+      margin: 0 auto;
+      width: 100%;
     }
-    .benefit-title { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
-    .benefit-text  { font-size: 13px; color: var(--text-body); line-height: 1.65; }
+    .benefit-item:hover { box-shadow: 0 10px 32px rgba(52,52,101,.12); transform: translateY(-3px); }
+    .benefit-num {
+      font-size: 52px;
+      font-weight: 800;
+      color: var(--cyan);
+      line-height: 1;
+      min-width: 52px;
+      text-align: center;
+      flex-shrink: 0;
+      letter-spacing: -2px;
+      opacity: .9;
+    }
+    .benefit-divider {
+      width: 2px;
+      align-self: stretch;
+      background: var(--gray-mid);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .benefit-info { text-align: left; }
+    .benefit-title { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+    .benefit-text  { font-size: 13px; color: var(--text-body); line-height: 1.65; margin: 0; }
 
     /* ── FOOTER ── */
     footer {
@@ -420,6 +431,9 @@
       .footer-grid { grid-template-columns: 1fr; gap: 32px; }
       .topbar { padding: 7px 20px; }
       .float-zona { bottom: 18px; right: 18px; }
+      .benefits-grid { grid-template-columns: 1fr; }
+      .benefit-item:last-child { max-width: 100%; }
+      .benefit-num { font-size: 40px; min-width: 42px; }
     }
   </style>
 </head>
@@ -594,61 +608,48 @@
     <div class="benefits-grid">
 
       <div class="benefit-item">
-        <div class="benefit-icon-wrap">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <polyline points="9 12 11 14 15 10"/>
-          </svg>
+        <div class="benefit-num">01</div>
+        <div class="benefit-divider"></div>
+        <div class="benefit-info">
+          <div class="benefit-title">Sin ánimo de lucro</div>
+          <p class="benefit-text">Todos los excedentes se reinvierten en beneficios para nuestros asociados.</p>
         </div>
-        <div class="benefit-title">Sin ánimo de lucro</div>
-        <div class="benefit-text">Todos los excedentes se reinvierten en beneficios para nuestros asociados.</div>
       </div>
 
       <div class="benefit-item">
-        <div class="benefit-icon-wrap">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-          </svg>
+        <div class="benefit-num">02</div>
+        <div class="benefit-divider"></div>
+        <div class="benefit-info">
+          <div class="benefit-title">Comunidad sólida</div>
+          <p class="benefit-text">Más de 150 asociados respaldándonos mutuamente cada día.</p>
         </div>
-        <div class="benefit-title">Comunidad sólida</div>
-        <div class="benefit-text">Más de 150 asociados respaldándonos mutuamente cada día.</div>
       </div>
 
       <div class="benefit-item">
-        <div class="benefit-icon-wrap">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="1" x2="12" y2="23"/>
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-          </svg>
+        <div class="benefit-num">03</div>
+        <div class="benefit-divider"></div>
+        <div class="benefit-info">
+          <div class="benefit-title">Tasas competitivas</div>
+          <p class="benefit-text">Créditos con intereses muy por debajo del mercado financiero.</p>
         </div>
-        <div class="benefit-title">Tasas competitivas</div>
-        <div class="benefit-text">Créditos con intereses muy por debajo del mercado financiero.</div>
       </div>
 
       <div class="benefit-item">
-        <div class="benefit-icon-wrap">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
-            <line x1="12" y1="18" x2="12.01" y2="18"/>
-            <path d="M9 7h6M9 11h4"/>
-          </svg>
+        <div class="benefit-num">04</div>
+        <div class="benefit-divider"></div>
+        <div class="benefit-info">
+          <div class="benefit-title">Plataforma digital</div>
+          <p class="benefit-text">Gestiona tus productos en línea, seguro y disponible 24/7.</p>
         </div>
-        <div class="benefit-title">Plataforma digital</div>
-        <div class="benefit-text">Gestiona tus productos en línea, seguro y disponible 24/7.</div>
       </div>
 
       <div class="benefit-item">
-        <div class="benefit-icon-wrap">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-            <path d="M9 22V12h6v10"/>
-          </svg>
+        <div class="benefit-num">05</div>
+        <div class="benefit-divider"></div>
+        <div class="benefit-info">
+          <div class="benefit-title">Bienestar familiar</div>
+          <p class="benefit-text">Convenios y beneficios que llegan a toda tu familia.</p>
         </div>
-        <div class="benefit-title">Bienestar familiar</div>
-        <div class="benefit-text">Convenios y beneficios que llegan a toda tu familia.</div>
       </div>
 
     </div>
