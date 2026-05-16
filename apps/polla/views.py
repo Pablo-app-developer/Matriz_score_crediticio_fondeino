@@ -32,6 +32,7 @@ from .models import (
     Pronostico,
 )
 from .scoring import recalcular_todo
+from apps.nomina.models import Empleado, CargaNomina
 
 
 # ─────────────────────────────────────────────
@@ -43,6 +44,33 @@ def _get_afiliado(user):
         return user.afiliado
     except Exception:
         return None
+
+
+# ─────────────────────────────────────────────
+# API
+# ─────────────────────────────────────────────
+
+@login_required
+def api_empleado_por_cedula(request):
+    """Devuelve datos del empleado en la nómina activa más reciente dado su cédula."""
+    cedula = request.GET.get('cedula', '').strip()
+    if not cedula:
+        return JsonResponse({'encontrado': False})
+    carga_activa = CargaNomina.objects.filter(activa=True).order_by('-fecha_carga').first()
+    if not carga_activa:
+        return JsonResponse({'encontrado': False})
+    try:
+        emp = Empleado.objects.filter(carga=carga_activa, cedula=cedula).first()
+        if not emp:
+            return JsonResponse({'encontrado': False})
+        return JsonResponse({
+            'encontrado': True,
+            'nombre': emp.nombre,
+            'area': emp.area or '',
+            'telefono': '',
+        })
+    except Exception:
+        return JsonResponse({'encontrado': False})
 
 
 def _procesar_excel_afiliados(df):

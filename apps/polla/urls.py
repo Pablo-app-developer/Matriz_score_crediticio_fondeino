@@ -17,6 +17,9 @@ urlpatterns = [
     path('mis-pronosticos/', views.mis_pronosticos, name='mis_pronosticos'),
     path('perfil/<int:afiliado_id>/', views.perfil_afiliado, name='perfil_afiliado'),
 
+    # API
+    path('api/empleado/', views.api_empleado_por_cedula, name='api_empleado_por_cedula'),
+
     # Admin
     path('admin/afiliados/', views.admin_afiliados, name='admin_afiliados'),
     path('admin/afiliados/nuevo/', views.admin_afiliado_nuevo, name='admin_afiliado_nuevo'),

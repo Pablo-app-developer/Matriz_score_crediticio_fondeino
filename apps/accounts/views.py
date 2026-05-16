@@ -13,13 +13,13 @@ from .forms import LoginForm, UsuarioCrearForm, UsuarioEditarForm, CambiarPasswo
 
 def landing(request):
     if request.user.is_authenticated:
-        return redirect('credito:dashboard')
+        return redirect('accounts:panel_selector')
     return render(request, 'accounts/landing.html')
 
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('credito:evaluacion')
+        return redirect('accounts:panel_selector')
     form = LoginForm(request, data=request.POST or None)
     if request.method == 'POST' and form.is_valid():
         user = form.get_user()
@@ -27,8 +27,13 @@ def login_view(request):
             messages.error(request, 'Su cuenta está desactivada.')
         else:
             login(request, user)
-            return redirect('credito:dashboard')
+            return redirect('accounts:panel_selector')
     return render(request, 'accounts/login.html', {'form': form})
+
+
+@login_required
+def panel_selector(request):
+    return render(request, 'accounts/panel_selector.html')
 
 
 def debug_db(request):
@@ -75,7 +80,7 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    return redirect('credito:dashboard')
+    return redirect('accounts:panel_selector')
 
 
 @login_required

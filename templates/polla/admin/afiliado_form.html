@@ -1,5 +1,44 @@
 {% extends "polla/base_polla.html" %}
 
+{% block polla_scripts %}
+<script>
+(function () {
+  const cedulaInput = document.getElementById('id_cedula');
+  const nombreInput = document.getElementById('id_nombre_completo');
+  const areaInput   = document.getElementById('id_area');
+  if (!cedulaInput) return;
+
+  let timer;
+  const badge = document.createElement('div');
+  badge.className = 'form-text';
+  cedulaInput.closest('.mb-3').appendChild(badge);
+
+  cedulaInput.addEventListener('input', function () {
+    clearTimeout(timer);
+    const cedula = this.value.trim();
+    if (cedula.length < 5) { badge.textContent = ''; return; }
+    timer = setTimeout(() => buscarEmpleado(cedula), 500);
+  });
+
+  function buscarEmpleado(cedula) {
+    badge.textContent = 'Buscando en nómina...';
+    fetch(`{% url 'polla:api_empleado_por_cedula' %}?cedula=${encodeURIComponent(cedula)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.encontrado) {
+          badge.innerHTML = '<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Empleado encontrado en nómina. Datos precargados.</span>';
+          if (nombreInput && !nombreInput.value) nombreInput.value = data.nombre;
+          if (areaInput   && !areaInput.value)   areaInput.value   = data.area;
+        } else {
+          badge.innerHTML = '<span class="text-muted"><i class="bi bi-info-circle me-1"></i>Cédula no encontrada en la nómina activa.</span>';
+        }
+      })
+      .catch(() => { badge.textContent = ''; });
+  }
+})();
+</script>
+{% endblock polla_scripts %}
+
 {% block polla_content %}
 <div class="container" style="max-width:600px;">
   <div class="card shadow mt-2">
