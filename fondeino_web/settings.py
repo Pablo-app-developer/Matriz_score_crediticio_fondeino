@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.credito',
     'apps.nomina',
+    'apps.polla',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +57,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.polla.context_processors.polla_context',
             ],
         },
     },

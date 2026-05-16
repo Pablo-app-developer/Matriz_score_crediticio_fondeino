@@ -1,0 +1,136 @@
+{% extends "polla/base_polla.html" %}
+
+{% block polla_content %}
+<div class="container-fluid px-3">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="mb-0"><i class="bi bi-graph-up text-primary me-2"></i>Dashboard Admin — {{ config.nombre_torneo }}</h5>
+    <div class="d-flex gap-2">
+      <a href="{% url 'polla:admin_cargar_resultados' %}" class="btn btn-sm btn-success">
+        <i class="bi bi-check2-circle me-1"></i>Cargar resultados
+      </a>
+      {% if not config.polla_cerrada %}
+      <a href="{% url 'polla:admin_cerrar_polla' %}" class="btn btn-sm btn-danger">
+        <i class="bi bi-lock-fill me-1"></i>Cerrar polla
+      </a>
+      {% else %}
+      <span class="badge bg-danger fs-6 align-self-center">POLLA CERRADA</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-2 mb-4">
+    {% for label, val, color in stats.items|dictsort:0 %}
+    {% endfor %}
+    <div class="col-6 col-md-2"><div class="card text-center border-primary py-2">
+      <div class="fs-3 fw-bold text-primary">{{ stats.afiliados }}</div>
+      <div class="small">Afiliados</div>
+    </div></div>
+    <div class="col-6 col-md-2"><div class="card text-center border-warning py-2">
+      <div class="fs-3 fw-bold text-warning">{{ stats.doble_polla }}</div>
+      <div class="small">Doble polla</div>
+    </div></div>
+    <div class="col-6 col-md-2"><div class="card text-center border-info py-2">
+      <div class="fs-3 fw-bold text-info">{{ stats.vinculados }}</div>
+      <div class="small">Con cuenta</div>
+    </div></div>
+    <div class="col-6 col-md-2"><div class="card text-center border-success py-2">
+      <div class="fs-3 fw-bold text-success">{{ stats.inscripciones }}</div>
+      <div class="small">Inscripciones</div>
+    </div></div>
+    <div class="col-6 col-md-2"><div class="card text-center border-secondary py-2">
+      <div class="fs-3 fw-bold text-secondary">{{ stats.pronosticos }}</div>
+      <div class="small">Pronósticos</div>
+    </div></div>
+    <div class="col-6 col-md-2"><div class="card text-center border-dark py-2">
+      <div class="fs-3 fw-bold">{{ stats.partidos_jugados }}/{{ stats.partidos_total }}</div>
+      <div class="small">Partidos</div>
+    </div></div>
+  </div>
+
+  <div class="row g-3">
+    <!-- Top 5 General -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-success text-white py-2 fw-bold small">
+          🏅 Top 5 General
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm mb-0">
+            <thead class="table-secondary"><tr><th>#</th><th>Afiliado</th><th class="text-center">Pts</th></tr></thead>
+            <tbody>
+              {% for insc in top5_general %}
+              <tr {% if forloop.counter <= 3 %}class="fw-bold"{% endif %}>
+                <td>{% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ forloop.counter }}{% endif %}</td>
+                <td class="small">{{ insc.afiliado.nombre_completo }}
+                  {% if insc.afiliado.cantidad_pollas == 2 %}<span class="badge bg-dark">{{ insc.label }}</span>{% endif %}
+                </td>
+                <td class="text-center text-success fw-bold">{{ insc.puntos_totales }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="3" class="text-muted text-center py-2">Sin datos</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 5 Grupos -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-primary text-white py-2 fw-bold small">
+          📊 Top 5 Fase de Grupos
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm mb-0">
+            <thead class="table-secondary"><tr><th>#</th><th>Afiliado</th><th class="text-center">Pts</th></tr></thead>
+            <tbody>
+              {% for insc in top5_grupos %}
+              <tr {% if forloop.counter <= 3 %}class="fw-bold"{% endif %}>
+                <td>{% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ forloop.counter }}{% endif %}</td>
+                <td class="small">{{ insc.afiliado.nombre_completo }}
+                  {% if insc.afiliado.cantidad_pollas == 2 %}<span class="badge bg-dark">{{ insc.label }}</span>{% endif %}
+                </td>
+                <td class="text-center fw-bold">{{ insc.puntos_grupos|default:0 }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="3" class="text-muted text-center py-2">Sin datos</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pronósticos campeón -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark py-2 fw-bold small">
+          🎽 Pronósticos de Campeón ({{ pronosticos_campeon|length }} total)
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm mb-0">
+            <thead class="table-secondary">
+              <tr><th>Equipo</th><th>Afiliado</th><th class="text-center">Acertó</th></tr>
+            </thead>
+            <tbody>
+              {% for pc in pronosticos_campeon %}
+              <tr>
+                <td class="small">{{ pc.equipo.bandera_emoji }} {{ pc.equipo.nombre }}</td>
+                <td class="small">{{ pc.inscripcion.afiliado.nombre_completo }}
+                  {% if pc.inscripcion.afiliado.cantidad_pollas == 2 %}<span class="badge bg-dark">Polla {{ pc.inscripcion.label }}</span>{% endif %}
+                </td>
+                <td class="text-center">{% if pc.acerto %}✅{% else %}—{% endif %}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="3" class="text-muted text-center py-2">Nadie ha elegido campeón todavía.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

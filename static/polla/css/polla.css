@@ -1,0 +1,91 @@
+/* ── Polla Mundialista FONDEINO 2026 ── */
+
+/* Hero section */
+.polla-hero {
+  background: linear-gradient(135deg, #1a472a 0%, #2d6a4f 50%, #1a3a2a 100%);
+  border: 2px solid #ffd700;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* Partido row hover */
+.partido-row {
+  transition: background-color 0.15s ease;
+}
+.partido-row:hover {
+  background-color: rgba(0,100,0,0.05) !important;
+}
+
+/* Ranking - zona de premios */
+.table tbody tr.border-start {
+  border-left-width: 4px !important;
+}
+
+/* Inputs de pronóstico */
+.polla-goles-local,
+.polla-goles-visitante {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Feedback inline AJAX */
+.polla-feedback {
+  font-size: 1rem;
+  line-height: 1;
+  min-width: 20px;
+  display: inline-block;
+}
+
+/* Badges de motivo doble polla */
+.badge-nuevo {
+  background-color: #198754;
+}
+.badge-aumento {
+  background-color: #0d6efd;
+}
+
+/* Navbar polla sub-nav */
+.navbar.navbar-light.bg-white.border-bottom {
+  z-index: 100;
+}
+
+/* Mobile adjustments */
+@media (max-width: 576px) {
+  .polla-hero h1 {
+    font-size: 1.5rem;
+  }
+  .polla-hero .lead {
+    font-size: 0.9rem;
+  }
+  .partido-row .small {
+    font-size: 0.75rem;
+  }
+}
+
+/* Top 3 highlight en ranking */
+.table tbody tr:first-child td {
+  background-color: rgba(255, 215, 0, 0.15);
+}
+.table tbody tr:nth-child(2) td {
+  background-color: rgba(192, 192, 192, 0.1);
+}
+.table tbody tr:nth-child(3) td {
+  background-color: rgba(205, 127, 50, 0.1);
+}
+
+/* Countdown / próximos partidos */
+.partido-countdown {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+/* Estados del pronóstico en la grilla */
+.polla-status-done::after {
+  content: ' ✓';
+  color: #198754;
+  font-weight: bold;
+}
+.polla-status-missing::after {
+  content: ' !';
+  color: #dc3545;
+  font-weight: bold;
+}

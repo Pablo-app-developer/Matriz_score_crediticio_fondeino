@@ -456,10 +456,12 @@ function calcularPreview() {
   const cls = scoreTotal >= 80 ? 'EXCELENTE' : scoreTotal >= 60 ? 'BUENO' : scoreTotal >= 40 ? 'REGULAR' : 'ALTO RIESGO';
   const bloqueado = disponible < 0;
   let decision, decClass;
-  if (bloqueado) { decision = 'RECHAZAR - CUOTA EXCEDE LÍMITE'; decClass = 'bg-danger'; }
+  if (bloqueado) { decision = 'NO APROBADO - CUOTA EXCEDE LÍMITE'; decClass = 'bg-danger'; }
+  else if (pctEnd > 0.5) { decision = 'NO APROBADO - ENDEUDAMIENTO SUPERA EL 50%'; decClass = 'bg-danger'; }
+  else if (tieneCred && pctCap < 0.3) { decision = 'NO APROBADO - PAGO MÍNIMO 30% NO ALCANZADO'; decClass = 'bg-danger'; }
   else if (scoreTotal >= 60) { decision = 'APROBAR'; decClass = 'bg-success'; }
   else if (scoreTotal >= 40) { decision = 'REVISAR / CODEUDOR'; decClass = 'bg-warning text-dark'; }
-  else { decision = 'RECHAZAR'; decClass = 'bg-danger'; }
+  else { decision = 'NO APROBADO'; decClass = 'bg-danger'; }
 
   // Actualizar UI
   document.getElementById('prev_neto').textContent = sb ? '$ ' + fmt(neto) : '—';

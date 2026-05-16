@@ -1,0 +1,154 @@
+{% extends "polla/base_polla.html" %}
+{% block nav_pronosticos %}active{% endblock %}
+
+{% block polla_content %}
+<div class="container-fluid px-3">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="mb-0"><i class="bi bi-pencil-square text-primary me-2"></i>Mis Pronósticos</h5>
+    {% if inscripciones|length > 1 %}
+    <div class="btn-group">
+      {% for insc in inscripciones %}
+      <a href="?polla={{ insc.numero_polla }}"
+         class="btn btn-sm {% if insc.numero_polla == polla_sel %}btn-dark{% else %}btn-outline-dark{% endif %}">
+        ⚽ Polla {{ insc.label }}
+        {% if insc.numero_polla == polla_sel %}<i class="bi bi-check ms-1"></i>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  {% if config.polla_cerrada %}
+  <div class="alert alert-danger">
+    <i class="bi bi-lock-fill me-2"></i><strong>La polla está cerrada.</strong> Ya no se pueden modificar pronósticos.
+  </div>
+  {% endif %}
+
+  {% if not partidos_por_fecha %}
+  <div class="alert alert-info">
+    <i class="bi bi-info-circle me-2"></i>No hay partidos cargados todavía. El administrador los configurará pronto.
+  </div>
+  {% endif %}
+
+  {% for fecha, partidos in partidos_por_fecha.items %}
+  <div class="card shadow-sm mb-3">
+    <div class="card-header bg-dark text-white py-2 fw-bold small">
+      <i class="bi bi-calendar3 me-1"></i>{{ fecha|date:"l d \d\e F \d\e Y" }}
+    </div>
+    <div class="card-body p-0">
+      {% for item in partidos %}
+      <div class="partido-row border-bottom px-3 py-2
+                  {% if item.cerrado %}bg-light{% endif %}
+                  {% if item.partido.finalizado %}bg-success-subtle{% endif %}">
+        <div class="row align-items-center g-2">
+          <!-- Local -->
+          <div class="col-4 text-end small fw-bold">
+            {{ item.partido.equipo_local.bandera_emoji }}
+            <span class="d-none d-md-inline">{{ item.partido.equipo_local.nombre }}</span>
+            <span class="d-inline d-md-none">{{ item.partido.equipo_local.codigo_fifa }}</span>
+          </div>
+
+          <!-- Score inputs -->
+          <div class="col-4 text-center">
+            {% if item.partido.finalizado %}
+              <div class="fw-bold text-success">
+                {{ item.partido.goles_local }} – {{ item.partido.goles_visitante }}
+              </div>
+              <div class="small text-muted">Final</div>
+              {% if item.pronostico %}
+              <div class="small text-muted">
+                Mi pron.: {{ item.pronostico.goles_local }}-{{ item.pronostico.goles_visitante }}
+                {% if item.pronostico.acerto_marcador %}🎯{% elif item.pronostico.acerto_resultado %}✅{% else %}❌{% endif %}
+                <span class="badge bg-{% if item.pronostico.puntos_obtenidos > 0 %}success{% else %}secondary{% endif %}">
+                  {{ item.pronostico.puntos_obtenidos }}pts
+                </span>
+              </div>
+              {% endif %}
+            {% elif item.cerrado %}
+              <div class="text-warning fw-bold small">
+                <i class="bi bi-lock-fill me-1"></i>Cerrado
+              </div>
+              {% if item.pronostico %}
+              <div class="small text-muted">
+                {{ item.pronostico.goles_local }}-{{ item.pronostico.goles_visitante }}
+              </div>
+              {% else %}
+              <div class="small text-danger">Sin pronóstico</div>
+              {% endif %}
+            {% else %}
+              <div class="d-flex align-items-center justify-content-center gap-1"
+                   data-partido-id="{{ item.partido.pk }}"
+                   data-polla-num="{{ polla_sel }}">
+                <input type="number" class="form-control form-control-sm text-center polla-goles-local"
+                       min="0" max="20"
+                       value="{% if item.pronostico %}{{ item.pronostico.goles_local }}{% else %}{% endif %}"
+                       placeholder="0" style="width:52px;">
+                <span class="fw-bold">–</span>
+                <input type="number" class="form-control form-control-sm text-center polla-goles-visitante"
+                       min="0" max="20"
+                       value="{% if item.pronostico %}{{ item.pronostico.goles_visitante }}{% else %}{% endif %}"
+                       placeholder="0" style="width:52px;">
+                <button class="btn btn-sm btn-outline-success polla-guardar-btn" title="Guardar">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <span class="polla-feedback small ms-1" style="min-width:30px;"></span>
+              </div>
+              <div class="small text-muted mt-1" style="font-size:0.7rem;">
+                {{ item.partido.fecha_hora|date:"H:i" }} COL
+                {% if item.pronostico %}<span class="text-success">✓ guardado</span>{% endif %}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Visitante -->
+          <div class="col-4 text-start small fw-bold">
+            <span class="d-none d-md-inline">{{ item.partido.equipo_visitante.nombre }}</span>
+            <span class="d-inline d-md-none">{{ item.partido.equipo_visitante.codigo_fifa }}</span>
+            {{ item.partido.equipo_visitante.bandera_emoji }}
+          </div>
+        </div>
+        <div class="text-center small text-muted" style="font-size:0.7rem;">
+          {{ item.partido.get_fase_display }}{% if item.partido.estadio %} · {{ item.partido.ciudad }}{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% block polla_scripts %}
+<script>
+const CSRF = '{{ csrf_token }}';
+document.querySelectorAll('[data-partido-id]').forEach(container => {
+  const btn = container.querySelector('.polla-guardar-btn');
+  const fb = container.querySelector('.polla-feedback');
+  btn.addEventListener('click', () => {
+    const gl = parseInt(container.querySelector('.polla-goles-local').value);
+    const gv = parseInt(container.querySelector('.polla-goles-visitante').value);
+    if (isNaN(gl) || isNaN(gv)) { fb.textContent = '?'; return; }
+    btn.disabled = true;
+    fb.textContent = '…';
+    fetch('/polla/pronosticos/guardar/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-CSRFToken': CSRF},
+      body: JSON.stringify({
+        partido_id: parseInt(container.dataset.partidoId),
+        polla_num: parseInt(container.dataset.pollaNum),
+        goles_local: gl,
+        goles_visitante: gv,
+      })
+    }).then(r => r.json()).then(data => {
+      if (data.ok) {
+        fb.innerHTML = '<span class="text-success">✓</span>';
+      } else {
+        fb.innerHTML = `<span class="text-danger" title="${data.error}">✗</span>`;
+      }
+      setTimeout(() => { fb.textContent = ''; }, 3000);
+    }).catch(() => { fb.innerHTML = '<span class="text-danger">!</span>'; })
+      .finally(() => { btn.disabled = false; });
+  });
+});
+</script>
+{% endblock %}
+{% endblock %}

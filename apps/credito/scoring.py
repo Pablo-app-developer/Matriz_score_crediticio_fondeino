@@ -195,15 +195,20 @@ def clasificar_score(score: int, cfg: dict) -> str:
         return 'ALTO RIESGO'
 
 
-def calcular_decision(score: int, estado_mv: str, cfg: dict) -> str:
+def calcular_decision(score: int, estado_mv: str, pct_endeudamiento: float,
+                      tiene_credito: bool, pct_capital: float, cfg: dict) -> str:
     if 'BLOQUEADO' in estado_mv:
-        return 'RECHAZAR - CUOTA EXCEDE LÍMITE'
-    elif score >= cfg.get('t_cls_bueno', 60) and estado_mv == 'OK':
+        return 'NO APROBADO - CUOTA EXCEDE LÍMITE'
+    if pct_endeudamiento > 0.5:
+        return 'NO APROBADO - ENDEUDAMIENTO SUPERA EL 50%'
+    if tiene_credito and pct_capital < cfg.get('t_hist_bueno', 0.30):
+        return 'NO APROBADO - PAGO MÍNIMO DEL 30% NO ALCANZADO'
+    if score >= cfg.get('t_cls_bueno', 60) and estado_mv == 'OK':
         return 'APROBAR'
     elif score >= cfg.get('t_cls_regular', 40):
         return 'REVISAR / SOLICITAR CODEUDOR'
     else:
-        return 'RECHAZAR'
+        return 'NO APROBADO'
 
 
 # ─────────────────────────────────────────────
@@ -349,7 +354,9 @@ def evaluar_credito(datos: dict, cfg: dict) -> dict:
 
     score_total = s_dc + s_ant + s_vinc + s_cap + s_gar + s_hist
     clasificacion = clasificar_score(score_total, cfg)
-    decision = calcular_decision(score_total, validacion['estado'], cfg)
+    decision = calcular_decision(score_total, validacion['estado'],
+                                 validacion['pct_endeudamiento'],
+                                 tiene_credito, pct_capital, cfg)
 
     # Métricas de riesgo
     pd_base = float(datos.get('pd_base', 0.015))

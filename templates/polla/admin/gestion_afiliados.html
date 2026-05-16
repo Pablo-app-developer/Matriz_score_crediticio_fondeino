@@ -1,0 +1,150 @@
+{% extends "polla/base_polla.html" %}
+
+{% block polla_content %}
+<div class="container-fluid px-3">
+
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="mb-0"><i class="bi bi-people-fill text-primary me-2"></i>Gestión de Afiliados</h5>
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="{% url 'polla:admin_cargar_afiliados' %}" class="btn btn-success btn-sm">
+        <i class="bi bi-file-earmark-excel me-1"></i>Cargar Excel
+      </a>
+      <a href="{% url 'polla:admin_afiliado_nuevo' %}" class="btn btn-primary btn-sm">
+        <i class="bi bi-person-plus me-1"></i>Nuevo afiliado
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-2 mb-3">
+    <div class="col-6 col-md-2">
+      <div class="card text-center border-primary">
+        <div class="card-body py-2">
+          <div class="fs-4 fw-bold text-primary">{{ stats.total }}</div>
+          <div class="small text-muted">Afiliados activos</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card text-center border-warning">
+        <div class="card-body py-2">
+          <div class="fs-4 fw-bold text-warning">{{ stats.doble_polla }}</div>
+          <div class="small text-muted">Doble polla</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card text-center border-success">
+        <div class="card-body py-2">
+          <div class="fs-4 fw-bold text-success">{{ stats.nuevos }}</div>
+          <div class="small text-muted">Nuevos asoc.</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card text-center border-info">
+        <div class="card-body py-2">
+          <div class="fs-4 fw-bold text-info">{{ stats.aumento }}</div>
+          <div class="small text-muted">Aumentó aportes</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card text-center border-secondary">
+        <div class="card-body py-2">
+          <div class="fs-4 fw-bold text-secondary">{{ stats.vinculados }}</div>
+          <div class="small text-muted">Con cuenta</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buscador -->
+  <form method="get" class="mb-3 d-flex gap-2">
+    <input type="text" name="q" value="{{ q }}" placeholder="Buscar por cédula, nombre o área..."
+           class="form-control form-control-sm">
+    <button class="btn btn-outline-secondary btn-sm" type="submit">
+      <i class="bi bi-search"></i>
+    </button>
+    {% if q %}<a href="{% url 'polla:admin_afiliados' %}" class="btn btn-outline-danger btn-sm">✕</a>{% endif %}
+  </form>
+
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>Cédula</th>
+            <th>Nombre</th>
+            <th class="d-none d-md-table-cell">Área</th>
+            <th class="text-center">Pollas</th>
+            <th class="text-center d-none d-sm-table-cell">Cuenta</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for afl in afiliados %}
+          <tr class="{% if not afl.activo %}table-secondary{% endif %}">
+            <td class="small font-monospace">{{ afl.cedula }}</td>
+            <td class="small">
+              {{ afl.nombre_completo }}
+              {% if afl.correo %}
+                <div class="text-muted" style="font-size:0.7rem;">{{ afl.correo }}</div>
+              {% endif %}
+            </td>
+            <td class="small text-muted d-none d-md-table-cell">{{ afl.area }}</td>
+            <td class="text-center">
+              {% if afl.cantidad_pollas == 2 %}
+                <span class="badge bg-warning text-dark">⭐⭐ Polla A+B</span>
+                {% if afl.motivo_doble_polla == 'NUEVO' %}
+                  <div class="badge bg-success d-none d-md-inline">Nuevo</div>
+                {% elif afl.motivo_doble_polla == 'AUMENTO' %}
+                  <div class="badge bg-primary d-none d-md-inline">Aumento</div>
+                {% endif %}
+              {% else %}
+                <span class="badge bg-secondary">Polla A</span>
+              {% endif %}
+            </td>
+            <td class="text-center d-none d-sm-table-cell">
+              {% if afl.user %}
+                <span class="text-success" title="{{ afl.user.username }}"><i class="bi bi-check-circle-fill"></i></span>
+              {% else %}
+                <span class="text-muted"><i class="bi bi-dash-circle"></i></span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              {% if afl.activo %}
+                <span class="badge bg-success">Activo</span>
+              {% else %}
+                <span class="badge bg-danger">Inactivo</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <div class="btn-group btn-group-sm">
+                <a href="{% url 'polla:admin_afiliado_editar' afl.pk %}"
+                   class="btn btn-outline-secondary btn-sm" title="Editar">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                {% if afl.activo and afl.cantidad_pollas == 1 %}
+                <a href="{% url 'polla:admin_asignar_doble_polla' afl.pk %}"
+                   class="btn btn-outline-warning btn-sm" title="Doble polla">
+                  ⭐
+                </a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-muted text-center py-4">
+              {% if q %}No se encontraron afiliados con "{{ q }}".{% else %}No hay afiliados cargados.{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

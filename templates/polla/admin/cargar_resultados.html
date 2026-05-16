@@ -1,0 +1,112 @@
+{% extends "polla/base_polla.html" %}
+
+{% block polla_content %}
+<div class="container-fluid px-3">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="mb-0"><i class="bi bi-check2-circle text-success me-2"></i>Cargar Resultados</h5>
+    <a href="{% url 'polla:admin_reporte' %}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-graph-up me-1"></i>Ver reporte
+    </a>
+  </div>
+
+  {% if partidos %}
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white py-2 fw-bold small">
+      Partidos pendientes de resultado ({{ partidos|length }})
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0 align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th class="text-center">#</th>
+              <th>Partido</th>
+              <th class="text-center d-none d-md-table-cell">Fase</th>
+              <th class="text-center d-none d-md-table-cell">Fecha</th>
+              <th class="text-center">Resultado</th>
+              <th class="text-center">Finalizado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for partido in partidos %}
+            <tr>
+              <td class="text-center small">{{ partido.numero }}</td>
+              <td class="small fw-bold">
+                {{ partido.equipo_local.bandera_emoji }} {{ partido.equipo_local.nombre }}
+                vs
+                {{ partido.equipo_visitante.nombre }} {{ partido.equipo_visitante.bandera_emoji }}
+              </td>
+              <td class="text-center small d-none d-md-table-cell">{{ partido.get_fase_display }}</td>
+              <td class="text-center small d-none d-md-table-cell">{{ partido.fecha_hora|date:"d/m H:i" }}</td>
+              <td class="text-center">
+                <div class="d-flex justify-content-center align-items-center gap-1">
+                  <input type="number" name="goles_local_{{ partido.pk }}"
+                         value="{% if partido.goles_local is not None %}{{ partido.goles_local }}{% endif %}"
+                         min="0" max="20" placeholder="0"
+                         class="form-control form-control-sm text-center" style="width:55px;">
+                  <span class="fw-bold">–</span>
+                  <input type="number" name="goles_visitante_{{ partido.pk }}"
+                         value="{% if partido.goles_visitante is not None %}{{ partido.goles_visitante }}{% endif %}"
+                         min="0" max="20" placeholder="0"
+                         class="form-control form-control-sm text-center" style="width:55px;">
+                </div>
+              </td>
+              <td class="text-center">
+                <input type="checkbox" name="finalizado_{{ partido.pk }}"
+                       class="form-check-input"
+                       {% if partido.finalizado %}checked{% endif %}>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer d-flex justify-content-end py-2">
+        <button type="submit" class="btn btn-success fw-bold">
+          <i class="bi bi-check-all me-2"></i>Guardar resultados y recalcular puntos
+        </button>
+      </div>
+    </form>
+  </div>
+  {% else %}
+  <div class="alert alert-success">
+    <i class="bi bi-check-circle-fill me-2"></i>Todos los partidos tienen resultado cargado.
+  </div>
+  {% endif %}
+
+  {% if partidos_fin %}
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white py-2 fw-bold small">
+      Últimos 20 resultados cargados
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm table-striped mb-0 align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Partido</th>
+            <th class="text-center">Resultado</th>
+            <th class="text-center">Fase</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for partido in partidos_fin %}
+          <tr>
+            <td class="small">{{ partido.numero }}</td>
+            <td class="small">
+              {{ partido.equipo_local.bandera_emoji }} {{ partido.equipo_local.nombre }}
+              vs
+              {{ partido.equipo_visitante.nombre }} {{ partido.equipo_visitante.bandera_emoji }}
+            </td>
+            <td class="text-center fw-bold">{{ partido.goles_local }} – {{ partido.goles_visitante }}</td>
+            <td class="text-center small">{{ partido.get_fase_display }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

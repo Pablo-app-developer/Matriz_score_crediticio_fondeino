@@ -1,0 +1,149 @@
+{% extends "polla/base_polla.html" %}
+{% block nav_ranking %}active{% endblock %}
+
+{% block polla_content %}
+<div class="container-fluid px-3">
+
+  <!-- Tabs de tipo de ranking -->
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="mb-0"><i class="bi bi-bar-chart-fill text-success me-2"></i>{{ titulo }}</h5>
+    <div class="btn-group btn-group-sm">
+      <a href="?tipo=general" class="btn {% if tipo == 'general' %}btn-dark{% else %}btn-outline-dark{% endif %}">
+        🏅 General
+      </a>
+      <a href="?tipo=grupos" class="btn {% if tipo == 'grupos' %}btn-dark{% else %}btn-outline-dark{% endif %}">
+        📊 Fase de grupos
+      </a>
+      <a href="?tipo=campeon" class="btn {% if tipo == 'campeon' %}btn-dark{% else %}btn-outline-dark{% endif %}">
+        🎽 Campeón
+      </a>
+    </div>
+  </div>
+
+  {% if tipo == 'campeon' %}
+    <!-- Ranking campeón -->
+    <div class="card shadow-sm">
+      <div class="card-header bg-warning text-dark fw-bold small">
+        <i class="bi bi-star-fill me-1"></i>Pronósticos de campeón por equipo
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>Equipo</th>
+              <th class="text-center">Votos</th>
+              <th>Afiliados</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% regroup pronosticos_campeon by equipo as por_equipo %}
+            {% for grupo in por_equipo %}
+            <tr>
+              <td class="fw-bold">
+                {{ grupo.grouper.bandera_emoji }} {{ grupo.grouper.nombre }}
+              </td>
+              <td class="text-center">{{ grupo.list|length }}</td>
+              <td class="small text-muted">
+                {% for pc in grupo.list %}
+                  {{ pc.inscripcion.afiliado.nombre_completo }}
+                  {% if pc.inscripcion.afiliado.cantidad_pollas == 2 %}(Polla {{ pc.inscripcion.label }}){% endif %}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="text-muted text-center py-3">Nadie ha elegido campeón todavía.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  {% else %}
+    <!-- Ranking general o grupos -->
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-sm table-striped mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th class="text-center">#</th>
+              <th>Afiliado</th>
+              <th class="d-none d-md-table-cell">Área</th>
+              <th class="text-center">
+                {% if tipo == 'grupos' %}Pts grupos{% else %}Puntos{% endif %}
+              </th>
+              <th class="text-center d-none d-sm-table-cell">Exactos</th>
+              <th class="text-center d-none d-md-table-cell">Resultados</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for insc in ranking %}
+            {% with pos=forloop.counter|add:offset %}
+            <tr class="
+              {% if pos == 1 %}table-warning fw-bold{% elif pos == 2 or pos == 3 %}table-light fw-bold{% endif %}
+              {% if pos <= 5 %}border-start border-3 border-success{% endif %}
+              {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}table-primary{% endif %}
+            ">
+              <td class="text-center fw-bold">
+                {% if pos == 1 %}🥇
+                {% elif pos == 2 %}🥈
+                {% elif pos == 3 %}🥉
+                {% else %}{{ pos }}{% endif %}
+              </td>
+              <td>
+                <a href="{% url 'polla:perfil_afiliado' insc.afiliado.pk %}" class="text-decoration-none">
+                  {{ insc.afiliado.nombre_completo }}
+                </a>
+                {% if insc.afiliado.cantidad_pollas == 2 %}
+                  <span class="badge bg-dark ms-1">Polla {{ insc.label }}</span>
+                  {% if insc.afiliado.motivo_doble_polla == 'NUEVO' %}
+                    <span class="badge bg-success ms-1 d-none d-md-inline">NUEVO ASOCIADO</span>
+                  {% elif insc.afiliado.motivo_doble_polla == 'AUMENTO' %}
+                    <span class="badge bg-primary ms-1 d-none d-md-inline">AUMENTÓ APORTES</span>
+                  {% endif %}
+                {% endif %}
+                {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}
+                  <span class="badge bg-info ms-1 small">Tú</span>
+                {% endif %}
+              </td>
+              <td class="d-none d-md-table-cell text-muted small">{{ insc.afiliado.area }}</td>
+              <td class="text-center fw-bold text-success fs-6">
+                {% if tipo == 'grupos' %}{{ insc.puntos_fase|default:0 }}{% else %}{{ insc.puntos_totales }}{% endif %}
+              </td>
+              <td class="text-center d-none d-sm-table-cell">{{ insc.aciertos_marcador }}</td>
+              <td class="text-center d-none d-md-table-cell">{{ insc.aciertos_resultado }}</td>
+            </tr>
+            {% endwith %}
+            {% empty %}
+            <tr>
+              <td colspan="6" class="text-muted text-center py-4">
+                El ranking estará disponible cuando los partidos comiencen.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if total_paginas > 1 %}
+      <div class="card-footer d-flex justify-content-between align-items-center small py-2">
+        <span class="text-muted">{{ total }} inscripciones</span>
+        <div class="btn-group btn-group-sm">
+          {% if pagina > 1 %}
+            <a href="?tipo={{ tipo }}&pagina={{ pagina|add:-1 }}" class="btn btn-outline-secondary">
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          {% endif %}
+          <span class="btn btn-outline-secondary disabled">{{ pagina }} / {{ total_paginas }}</span>
+          {% if pagina < total_paginas %}
+            <a href="?tipo={{ tipo }}&pagina={{ pagina|add:1 }}" class="btn btn-outline-secondary">
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

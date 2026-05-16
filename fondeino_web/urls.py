@@ -9,4 +9,5 @@ urlpatterns = [
     path('credito/', include('apps.credito.urls')),
     path('nomina/', include('apps.nomina.urls')),
     path('asociados/', include('apps.asociados.urls')),
+    path('polla/', include('apps.polla.urls', namespace='polla')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

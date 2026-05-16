@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ block.super }} | Polla Mundialista 2026{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm mb-3 py-1">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-success me-3" href="{% url 'polla:index' %}">
+      <i class="bi bi-trophy-fill text-warning me-1"></i>Polla Mundialista 2026
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#pollaNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="pollaNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link {% block nav_ranking %}{% endblock %}" href="{% url 'polla:ranking' %}">
+            <i class="bi bi-bar-chart-fill me-1"></i>Ranking
+          </a>
+        </li>
+        {% if request.user.is_authenticated %}
+          {% if afiliado_nav %}
+            <li class="nav-item">
+              <a class="nav-link {% block nav_pronosticos %}{% endblock %}" href="{% url 'polla:pronosticos' %}">
+                <i class="bi bi-pencil-square me-1"></i>Mis pronósticos
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% block nav_campeon %}{% endblock %}" href="{% url 'polla:campeon' %}">
+                <i class="bi bi-star-fill me-1"></i>Campeón
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% block nav_mis_pronosticos %}{% endblock %}" href="{% url 'polla:mis_pronosticos' %}">
+                <i class="bi bi-list-check me-1"></i>Historial
+              </a>
+            </li>
+          {% endif %}
+          {% if request.user.es_admin %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                <i class="bi bi-gear-fill me-1"></i>Admin Polla
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'polla:admin_afiliados' %}">
+                  <i class="bi bi-people me-1"></i>Afiliados
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'polla:admin_cargar_afiliados' %}">
+                  <i class="bi bi-file-earmark-excel me-1"></i>Cargar Excel
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'polla:admin_cargar_resultados' %}">
+                  <i class="bi bi-check2-circle me-1"></i>Resultados
+                </a></li>
+                <li><a class="dropdown-item" href="{% url 'polla:admin_reporte' %}">
+                  <i class="bi bi-graph-up me-1"></i>Reporte
+                </a></li>
+              </ul>
+            </li>
+          {% endif %}
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link {% block nav_reglamento %}{% endblock %}" href="{% url 'polla:reglamento' %}">
+            <i class="bi bi-book me-1"></i>Reglamento
+          </a>
+        </li>
+      </ul>
+      {% if request.user.is_authenticated and afiliado_nav %}
+        <span class="navbar-text small text-muted me-2">
+          <i class="bi bi-person-check-fill text-success me-1"></i>
+          {{ afiliado_nav.nombre_completo }}
+          {% if afiliado_nav.cantidad_pollas == 2 %}
+            <span class="badge bg-warning text-dark ms-1">⭐×2</span>
+          {% endif %}
+        </span>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+{% block polla_content %}{% endblock %}
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'polla/css/polla.css' %}">
+<script src="{% static 'polla/js/polla.js' %}"></script>
+{% block polla_scripts %}{% endblock %}
+{% endblock %}

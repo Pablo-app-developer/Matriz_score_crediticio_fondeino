@@ -1,0 +1,61 @@
+{% extends "polla/base_polla.html" %}
+
+{% block polla_content %}
+<div class="container" style="max-width:600px;">
+  <div class="card shadow border-danger mt-2">
+    <div class="card-header bg-danger text-white fw-bold">
+      <i class="bi bi-lock-fill me-2"></i>Cerrar Polla Mundialista
+    </div>
+    <div class="card-body">
+      <div class="alert alert-danger">
+        <strong>⚠ ACCIÓN IRREVERSIBLE</strong><br>
+        Al cerrar la polla:
+        <ul class="mb-0 mt-1">
+          <li>Se recalculan los puntos finales.</li>
+          <li>Se genera el sorteo del campeón.</li>
+          <li>Nadie podrá hacer más cambios.</li>
+        </ul>
+      </div>
+
+      <div class="row g-2 mb-3">
+        <div class="col-6">
+          <div class="card text-center border-secondary py-2">
+            <div class="fs-3 fw-bold">{{ total_inscripciones }}</div>
+            <div class="small">Inscripciones activas</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card text-center {% if partidos_sin_resultado > 0 %}border-warning{% else %}border-success{% endif %} py-2">
+            <div class="fs-3 fw-bold {% if partidos_sin_resultado > 0 %}text-warning{% else %}text-success{% endif %}">
+              {{ partidos_sin_resultado }}
+            </div>
+            <div class="small">Partidos sin resultado</div>
+          </div>
+        </div>
+      </div>
+
+      {% if partidos_sin_resultado > 0 %}
+      <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        Hay <strong>{{ partidos_sin_resultado }} partidos sin resultado</strong>.
+        Se recomienda cargar todos los resultados antes de cerrar.
+      </div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <p class="fw-bold text-danger text-center">
+          Escribe <strong>SI_CERRAR</strong> para confirmar:
+        </p>
+        <input type="hidden" name="confirmar" value="SI_CERRAR">
+        <div class="d-flex gap-2 justify-content-center">
+          <button type="submit" class="btn btn-danger fw-bold">
+            <i class="bi bi-lock-fill me-2"></i>Cerrar definitivamente
+          </button>
+          <a href="{% url 'polla:admin_reporte' %}" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

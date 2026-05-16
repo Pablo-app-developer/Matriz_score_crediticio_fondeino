@@ -1,0 +1,76 @@
+{% extends "polla/base_polla.html" %}
+{% block nav_campeon %}active{% endblock %}
+
+{% block polla_content %}
+<div class="container" style="max-width:600px;">
+  <div class="card shadow mt-2">
+    <div class="card-header bg-warning text-dark fw-bold">
+      <i class="bi bi-star-fill me-2"></i>Pronóstico del Campeón
+      {% if inscripciones|length > 1 %}
+        <div class="btn-group btn-group-sm float-end">
+          {% for insc in inscripciones %}
+          <a href="?polla={{ insc.numero_polla }}"
+             class="btn btn-sm {% if insc.numero_polla == polla_sel %}btn-dark{% else %}btn-outline-dark{% endif %}">
+            Polla {{ insc.label }}
+          </a>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="card-body">
+      <div class="alert alert-light border mb-3">
+        <p class="mb-1 small">
+          <i class="bi bi-info-circle me-1 text-primary"></i>
+          Este pronóstico <strong>NO suma puntos al ranking</strong>. Entre todos los que acierten al campeón,
+          se realizará un <strong>sorteo</strong> para definir al ganador del premio:
+        </p>
+        <p class="mb-0 fw-bold text-success text-center">🎽 {{ config.premio_campeon_sorteo }}</p>
+      </div>
+
+      {% if cerrado %}
+        <div class="alert alert-warning text-center fw-bold">
+          <i class="bi bi-lock-fill me-2"></i>El plazo para elegir al campeón ya cerró.
+        </div>
+        {% if pronostico_campeon %}
+        <div class="text-center">
+          <p class="small text-muted">Tu pronóstico guardado (Polla {{ inscripcion.label }}):</p>
+          <h4>{{ pronostico_campeon.equipo.bandera_emoji }} {{ pronostico_campeon.equipo.nombre }}</h4>
+        </div>
+        {% endif %}
+      {% else %}
+        {% if pronostico_campeon %}
+        <div class="alert alert-success text-center mb-3">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          Tu selección actual: <strong>{{ pronostico_campeon.equipo.bandera_emoji }} {{ pronostico_campeon.equipo.nombre }}</strong>
+          <br><small class="text-muted">Puedes cambiarla hasta el cierre.</small>
+        </div>
+        {% endif %}
+
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label fw-bold">Selecciona el equipo campeón (Polla {{ inscripcion.label }})</label>
+            {{ form.equipo }}
+            {% if form.equipo.errors %}
+              <div class="invalid-feedback d-block">{{ form.equipo.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-warning fw-bold btn-lg">
+              <i class="bi bi-check-circle me-2"></i>
+              {% if pronostico_campeon %}Actualizar selección{% else %}Guardar selección{% endif %}
+            </button>
+          </div>
+        </form>
+
+        {% if config.fecha_cierre_pronostico_campeon %}
+        <div class="text-center text-muted small mt-2">
+          <i class="bi bi-clock me-1"></i>
+          Cierra el {{ config.fecha_cierre_pronostico_campeon|date:"d/m/Y H:i" }} (hora Colombia)
+        </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

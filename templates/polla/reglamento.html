@@ -1,0 +1,134 @@
+{% extends "polla/base_polla.html" %}
+{% block nav_reglamento %}active{% endblock %}
+
+{% block polla_content %}
+<div class="container" style="max-width:800px;">
+  <div class="card shadow-sm mt-2">
+    <div class="card-header bg-dark text-white fw-bold">
+      <i class="bi bi-book me-2"></i>Reglamento — Polla Mundialista FONDEINO 2026
+    </div>
+    <div class="card-body">
+
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">¿Qué es la Polla Mundialista?</h6>
+      <p>Es una actividad recreativa <strong>exclusiva para los asociados activos de FONDEINO</strong>.
+      No tiene costo y es organizada como un beneficio de bienestar por el fondo de empleados.
+      No constituye un juego de azar con apuesta.</p>
+
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">Polla simple vs Polla doble</h6>
+      <ul>
+        <li>Cada afiliado tiene <strong>1 polla por defecto</strong>.</li>
+        <li>Los <strong>nuevos asociados</strong> y los que <strong>aumenten sus aportes</strong>
+            durante la campaña reciben una <strong>segunda polla (Polla B)</strong>.</li>
+        <li>Cada polla es un set independiente de pronósticos. Las pollas <strong>no se suman</strong>:
+            cada una compite por separado en el ranking.</li>
+        <li>Tener 2 pollas = 2 oportunidades de ganar, NO más puntos combinados.</li>
+      </ul>
+
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">Sistema de puntuación</h6>
+      <div class="table-responsive mb-3">
+        <table class="table table-bordered table-sm">
+          <thead class="table-dark">
+            <tr>
+              <th>Acierto</th>
+              <th class="text-center">Fase de grupos</th>
+              <th class="text-center">Eliminatorias</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Acertar resultado (G/E/P)</td>
+              <td class="text-center fw-bold">+{{ config.pts_resultado_grupos }} pt</td>
+              <td class="text-center fw-bold">+{{ config.pts_resultado_eliminatoria }} pts</td>
+            </tr>
+            <tr>
+              <td>Acertar marcador exacto <em>(incluye punto de resultado)</em></td>
+              <td class="text-center fw-bold text-success">+{{ config.pts_marcador_grupos }} pts adicionales (total 3)</td>
+              <td class="text-center fw-bold text-success">+{{ config.pts_marcador_eliminatoria }} pts adicionales (total 6)</td>
+            </tr>
+            <tr>
+              <td>No acertar</td>
+              <td class="text-center text-muted">0</td>
+              <td class="text-center text-muted">0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert alert-light border mb-3">
+        <strong>Ejemplos:</strong>
+        <ul class="mb-0 small mt-1">
+          <li>Colombia 2–1 Argentina. Pronóstico 2–1 → 1 pt resultado + 2 pts marcador = <strong>3 pts</strong> (grupos)</li>
+          <li>Colombia 2–1 Argentina. Pronóstico 1–0 → 1 pt (acertaste que ganaba Colombia, marcador falla)</li>
+          <li>Colombia 2–1 Argentina. Pronóstico 0–2 → <strong>0 pts</strong> (fallaste resultado y marcador)</li>
+          <li>Eliminatoria acertada exacta → <strong>6 pts</strong> (2 resultado + 4 marcador)</li>
+        </ul>
+      </div>
+
+      <div class="alert alert-warning small">
+        <i class="bi bi-info-circle me-1"></i>
+        <strong>Eliminatorias:</strong> Se puntúa con el resultado a los <strong>90 minutos reglamentarios</strong>.
+        Los tiempos extra y penales no se tienen en cuenta para el pronóstico.
+      </div>
+
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">Desempate</h6>
+      <ol>
+        <li>Mayor cantidad de puntos totales</li>
+        <li>Mayor cantidad de marcadores exactos acertados</li>
+        <li>Mayor cantidad de resultados acertados</li>
+        <li>Orden alfabético del nombre</li>
+      </ol>
+
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">🏆 Premios</h6>
+
+      <div class="card border-warning mb-2">
+        <div class="card-header bg-warning text-dark fw-bold small py-2">
+          🎽 Premio A — Sorteo del Campeón
+        </div>
+        <div class="card-body small">
+          Antes del inicio del Mundial, cada polla inscrita puede elegir al equipo campeón.
+          Entre todos los que acierten se realiza un <strong>sorteo transparente y auditable</strong>.
+          <br><strong>Premio:</strong> {{ config.premio_campeon_sorteo }}
+          <br><em>Si nadie acierta, el premio queda desierto o se redefine según criterio del administrador.</em>
+        </div>
+      </div>
+
+      <div class="card border-primary mb-2">
+        <div class="card-header bg-primary text-white fw-bold small py-2">
+          📊 Premio B — Top 5 Fase de Grupos
+        </div>
+        <div class="card-body small">
+          Las 5 inscripciones con más puntos acumulados <strong>solo en la fase de grupos</strong>.
+          <br><strong>Premios:</strong> {{ config.premios_top5_grupos }}
+        </div>
+      </div>
+
+      <div class="card border-success mb-3">
+        <div class="card-header bg-success text-white fw-bold small py-2">
+          🏅 Premio C — Top 5 General
+        </div>
+        <div class="card-body small">
+          Las 5 inscripciones con más puntos en todas las fases (incluyendo la final).
+          <br><strong>Premios:</strong> {{ config.premios_top5_general }}
+        </div>
+      </div>
+
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">Bloqueo de pronósticos</h6>
+      <p class="small">Los pronósticos se bloquean automáticamente en el momento en que inicia el partido.
+      No se pueden crear ni modificar pronósticos de partidos que ya comenzaron.</p>
+
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">Tratamiento de datos personales</h6>
+      <p class="small">Los datos personales (cédula, nombre, correo) son recopilados exclusivamente para
+      la gestión de la Polla Mundialista FONDEINO 2026, de conformidad con la
+      <strong>Ley 1581 de 2012</strong> y el Decreto 1377 de 2013 (Colombia).
+      La participación es voluntaria.</p>
+
+      <div class="alert alert-light border small mb-0">
+        <i class="bi bi-building me-1"></i>
+        <em>Actividad recreativa interna organizada por FONDEINO, Fondo de Empleados, sin costo para el asociado,
+        como beneficio de bienestar. No aplica regulación de Coljuegos.</em>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

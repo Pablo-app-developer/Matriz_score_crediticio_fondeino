@@ -211,7 +211,7 @@
             {% else %}
               {% if 'APROBAR' in ev.decision %}
                 <span class="decision-badge dec-aprobado">Aprobado</span>
-              {% elif 'RECHAZAR' in ev.decision %}
+              {% elif 'NO APROBADO' in ev.decision %}
                 <span class="decision-badge dec-rechazado">{{ ev.decision }}</span>
               {% else %}
                 <span class="decision-badge dec-revisar">{{ ev.decision }}</span>

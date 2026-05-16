@@ -1,0 +1,93 @@
+{% extends "polla/base_polla.html" %}
+{% block nav_mis_pronosticos %}active{% endblock %}
+
+{% block polla_content %}
+<div class="container-fluid px-3">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="mb-0">
+      <i class="bi bi-list-check text-primary me-2"></i>Mi historial — Polla {{ inscripcion.label }}
+    </h5>
+    {% if inscripciones|length > 1 %}
+    <div class="btn-group btn-group-sm">
+      {% for insc in inscripciones %}
+      <a href="?polla={{ insc.numero_polla }}"
+         class="btn {% if insc.numero_polla == polla_sel %}btn-dark{% else %}btn-outline-dark{% endif %}">
+        Polla {{ insc.label }} — {{ insc.puntos_totales }} pts
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2 small">
+      <span>
+        Total: <strong>{{ inscripcion.puntos_totales }} pts</strong>
+        · {{ inscripcion.aciertos_marcador }} marcadores exactos
+        · {{ inscripcion.aciertos_resultado }} resultados
+      </span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-secondary">
+          <tr>
+            <th>Partido</th>
+            <th class="text-center">Fase</th>
+            <th class="text-center">Mi pronóstico</th>
+            <th class="text-center">Resultado real</th>
+            <th class="text-center">Resultado</th>
+            <th class="text-center">Puntos</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pron in pronosticos %}
+          <tr class="
+            {% if pron.acerto_marcador %}table-success
+            {% elif pron.acerto_resultado %}table-warning
+            {% elif pron.partido.finalizado %}table-danger-subtle
+            {% endif %}
+          ">
+            <td class="small">
+              {{ pron.partido.equipo_local.bandera_emoji }}{{ pron.partido.equipo_local.codigo_fifa }}
+              vs
+              {{ pron.partido.equipo_visitante.bandera_emoji }}{{ pron.partido.equipo_visitante.codigo_fifa }}
+              <div class="text-muted" style="font-size:0.7rem;">{{ pron.partido.fecha_hora|date:"d/m H:i" }}</div>
+            </td>
+            <td class="text-center small">{{ pron.partido.get_fase_display }}</td>
+            <td class="text-center fw-bold">{{ pron.goles_local }} – {{ pron.goles_visitante }}</td>
+            <td class="text-center fw-bold">
+              {% if pron.partido.finalizado %}
+                {{ pron.partido.goles_local }} – {{ pron.partido.goles_visitante }}
+              {% else %}
+                <span class="text-muted small">Pendiente</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              {% if pron.partido.finalizado %}
+                {% if pron.acerto_marcador %}🎯 Exacto
+                {% elif pron.acerto_resultado %}✅ Resultado
+                {% else %}❌
+                {% endif %}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td class="text-center fw-bold
+              {% if pron.puntos_obtenidos > 0 %}text-success{% else %}text-muted{% endif %}">
+              {% if pron.partido.finalizado %}{{ pron.puntos_obtenidos }}{% else %}—{% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-muted text-center py-4">
+              Aún no has hecho ningún pronóstico.
+              <a href="{% url 'polla:pronosticos' %}">¡Empieza ahora!</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
