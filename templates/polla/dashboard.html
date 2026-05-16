@@ -41,9 +41,7 @@
       <div class="card text-center shadow-sm h-100 {% if inscripciones|length == 1 %}border-primary{% endif %}">
         <div class="card-header bg-dark text-white py-2 small fw-bold">
           Polla {{ insc.label }}
-          — Posición #{{ posiciones|default_if_none:'' }}
-          {% with posiciones|default_if_none:'' as p %}
-          {% endwith %}
+          {% for k, v in posiciones.items %}{% if k == insc.pk %}— Posición #{{ v }}{% endif %}{% endfor %}
         </div>
         <div class="card-body py-2">
           <div class="display-5 fw-bold text-success">{{ insc.puntos_totales }}</div>
@@ -53,8 +51,7 @@
             🎯 {{ insc.aciertos_marcador }} exactos
           </div>
           <div class="mt-1 text-primary fw-bold small">
-            Posición #{{ posiciones|default_if_none:'' }}
-            {% for k, v in posiciones.items %}{% if k == insc.pk %} #{{ v }}{% endif %}{% endfor %}
+            {% for k, v in posiciones.items %}{% if k == insc.pk %}Posición #{{ v }}{% endif %}{% endfor %}
           </div>
         </div>
       </div>
