@@ -1,4 +1,5 @@
 import os
+import secrets
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -6,6 +7,7 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden, JsonResponse
 from django.conf import settings
 from django.core.mail import send_mail
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from .models import Usuario
@@ -166,14 +168,40 @@ def usuario_cambiar_password(request, pk):
 @login_required
 def cambiar_mi_password(request):
     """El usuario cambia su propia contraseña (obligatorio en primer ingreso)."""
+    obligatorio = getattr(request.user, 'debe_cambiar_password', False)
     form = CambiarPasswordForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
-        request.user.set_password(form.cleaned_data['password1'])
-        request.user.save()
-        update_session_auth_hash(request, request.user)
+        user = request.user
+        user.set_password(form.cleaned_data['password1'])
+        user.debe_cambiar_password = False
+        user.save()
+        update_session_auth_hash(request, user)
         messages.success(request, 'Contraseña actualizada correctamente.')
+        if user.es_solo_polla:
+            return redirect('polla:index')
         return redirect('credito:dashboard')
-    return render(request, 'accounts/cambiar_mi_password.html', {'form': form})
+    return render(request, 'accounts/cambiar_mi_password.html', {
+        'form': form,
+        'obligatorio': obligatorio,
+    })
+
+
+@login_required
+@require_POST
+def resetear_password_polla(request, pk):
+    if not request.user.es_admin:
+        return HttpResponseForbidden()
+    usuario = get_object_or_404(Usuario, pk=pk, rol=Usuario.ROL_POLLA)
+    temp_pwd = secrets.token_urlsafe(6)
+    usuario.set_password(temp_pwd)
+    usuario.debe_cambiar_password = True
+    usuario.save()
+    messages.warning(
+        request,
+        f'Contraseña de «{usuario.get_full_name() or usuario.username}» reseteada. '
+        f'Contraseña temporal: {temp_pwd} — Cópiela ahora, no se mostrará de nuevo.'
+    )
+    return redirect(reverse('accounts:admin_panel') + '?tab=polla')
 
 
 def manual_usuario(request):

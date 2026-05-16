@@ -19,4 +19,5 @@ urlpatterns = [
     path('protocolo-comite/', views.protocolo_comite, name='protocolo_comite'),
     path('admin-panel/', views.admin_panel, name='admin_panel'),
     path('usuarios/<int:pk>/toggle/', views.toggle_permiso, name='toggle_permiso'),
+    path('usuarios/<int:pk>/reset-password/', views.resetear_password_polla, name='resetear_password_polla'),
 ]

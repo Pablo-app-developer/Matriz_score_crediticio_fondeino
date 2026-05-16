@@ -452,14 +452,22 @@ def pronosticos(request):
             'cerrado': partido.cerrado_para_pronosticos,
         })
 
+    partidos_por_fecha_ord = dict(sorted(partidos_por_fecha.items()))
+    pendientes = sum(
+        1 for items in partidos_por_fecha_ord.values()
+        for item in items
+        if not item['cerrado'] and not item['partido'].finalizado and not item['pronostico']
+    )
+
     return render(request, 'polla/pronosticos.html', {
         'afiliado': afiliado,
         'inscripciones': inscripciones,
         'inscripcion_activa': inscripcion_activa,
         'polla_sel': polla_sel,
-        'partidos_por_fecha': dict(sorted(partidos_por_fecha.items())),
+        'partidos_por_fecha': partidos_por_fecha_ord,
         'config': config,
         'ahora': ahora,
+        'pendientes': pendientes,
     })
 
 

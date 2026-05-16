@@ -21,6 +21,10 @@ class Usuario(AbstractUser):
         verbose_name='Admin Polla Mundialista',
         help_text='Permite gestionar afiliados y cargar resultados en la Polla Mundialista.',
     )
+    debe_cambiar_password = models.BooleanField(
+        default=False,
+        verbose_name='Debe cambiar contraseña',
+    )
 
     class Meta:
         verbose_name = 'Usuario'

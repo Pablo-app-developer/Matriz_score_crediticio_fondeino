@@ -22,6 +22,19 @@
   <div class="alert alert-danger">
     <i class="bi bi-lock-fill me-2"></i><strong>La polla está cerrada.</strong> Ya no se pueden modificar pronósticos.
   </div>
+  {% elif pendientes > 0 %}
+  <div class="alert alert-warning d-flex align-items-center gap-2">
+    <i class="bi bi-exclamation-triangle-fill fs-5 flex-shrink-0"></i>
+    <div>
+      Te faltan <strong>{{ pendientes }} partido{% if pendientes != 1 %}s{% endif %}</strong> por pronosticar.
+      <span class="text-muted small">Los pronósticos cierran automáticamente cuando inicia cada partido.</span>
+    </div>
+  </div>
+  {% elif partidos_por_fecha %}
+  <div class="alert alert-success d-flex align-items-center gap-2">
+    <i class="bi bi-check-circle-fill fs-5 flex-shrink-0"></i>
+    <div>¡Todos los partidos disponibles están pronosticados! Revisa cuando se abran nuevos partidos.</div>
+  </div>
   {% endif %}
 
   {% if not partidos_por_fecha %}

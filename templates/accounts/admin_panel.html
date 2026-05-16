@@ -175,6 +175,7 @@
               <th>Cédula (usuario)</th>
               <th class="text-center">Afiliado vinculado</th>
               <th class="text-center">Estado</th>
+              <th class="text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -197,9 +198,18 @@
                   {% if u.activo %}Activo{% else %}Inactivo{% endif %}
                 </button>
               </td>
+              <td class="text-center">
+                <form method="post" action="{% url 'accounts:resetear_password_polla' u.pk %}"
+                      onsubmit="return confirm('¿Resetear la contraseña de {{ u.get_full_name|default:u.username }}? Se generará una contraseña temporal.')">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-warning" title="Resetear contraseña">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>Reset pwd
+                  </button>
+                </form>
+              </td>
             </tr>
             {% empty %}
-            <tr><td colspan="4" class="text-center text-muted py-3">No hay participantes registrados aún.</td></tr>
+            <tr><td colspan="5" class="text-center text-muted py-3">No hay participantes registrados aún.</td></tr>
             {% endfor %}
           </tbody>
         </table>
@@ -214,6 +224,12 @@
 {% block scripts %}
 {{ block.super }}
 <script>
+// Activar tab según query param ?tab=polla
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('tab') === 'polla') {
+  document.getElementById('tab-polla').click();
+}
+
 const TOGGLE_URL = '{% url "accounts:toggle_permiso" 0 %}';
 const CSRF = '{{ csrf_token }}';
 
