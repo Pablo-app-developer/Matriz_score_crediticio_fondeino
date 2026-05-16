@@ -6,6 +6,7 @@ app_name = 'polla'
 urlpatterns = [
     # Públicas
     path('', views.index, name='index'),
+    path('registro/', views.registro_polla, name='registro'),
     path('ranking/', views.ranking, name='ranking'),
     path('reglamento/', views.reglamento, name='reglamento'),
 

@@ -4,6 +4,7 @@ from collections import defaultdict
 
 import pandas as pd
 from django.contrib import messages
+from django.contrib.auth import get_user_model, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Q, Sum
@@ -20,6 +21,7 @@ from .forms import (
     CampeonForm,
     CargarAfiliadosForm,
     PronosticoForm,
+    RegistroPollaForm,
     ResultadoPartidoForm,
 )
 from .models import (
@@ -71,6 +73,61 @@ def api_empleado_por_cedula(request):
         })
     except Exception:
         return JsonResponse({'encontrado': False})
+
+
+def registro_polla(request):
+    """Auto-registro para participantes de la polla que no tienen cuenta Django."""
+    if request.user.is_authenticated:
+        return redirect('polla:index')
+
+    config = ConfiguracionPolla.get()
+    form = RegistroPollaForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        cedula = form.cleaned_data['cedula'].strip()
+        password = form.cleaned_data['password1']
+        Usuario = get_user_model()
+
+        try:
+            afiliado = Afiliado.objects.get(cedula=cedula, activo=True)
+        except Afiliado.DoesNotExist:
+            messages.error(
+                request,
+                f'La cédula {cedula} no está registrada en la lista de afiliados de FONDEINO. '
+                'Si crees que es un error, contacta al administrador.'
+            )
+            return render(request, 'polla/registro.html', {'form': form, 'config': config})
+
+        if afiliado.user is not None:
+            messages.warning(
+                request,
+                'Esa cédula ya tiene una cuenta registrada. '
+                'Si olvidaste tu contraseña, contacta al administrador.'
+            )
+            return render(request, 'polla/registro.html', {'form': form, 'config': config})
+
+        if Usuario.objects.filter(username=cedula).exists():
+            messages.error(request, 'Ya existe una cuenta con ese número de cédula.')
+            return render(request, 'polla/registro.html', {'form': form, 'config': config})
+
+        user = Usuario.objects.create_user(
+            username=cedula,
+            password=password,
+            first_name=afiliado.nombre_completo.split()[0] if afiliado.nombre_completo else '',
+            last_name=' '.join(afiliado.nombre_completo.split()[1:]) if afiliado.nombre_completo else '',
+            rol=Usuario.ROL_POLLA,
+        )
+        afiliado.user = user
+        afiliado.save()
+        InscripcionPolla.objects.get_or_create(afiliado=afiliado, numero_polla=1)
+        if afiliado.cantidad_pollas == 2:
+            InscripcionPolla.objects.get_or_create(afiliado=afiliado, numero_polla=2)
+
+        auth_login(request, user)
+        messages.success(request, f'¡Bienvenido, {afiliado.nombre_completo}! Tu cuenta esta lista.')
+        return redirect('polla:index')
+
+    return render(request, 'polla/registro.html', {'form': form, 'config': config})
 
 
 def _procesar_excel_afiliados(df):

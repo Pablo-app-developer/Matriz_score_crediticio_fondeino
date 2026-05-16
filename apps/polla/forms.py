@@ -1,5 +1,46 @@
 from django import forms
+from django.contrib.auth.password_validation import validate_password
 from .models import Afiliado, Pronostico, PronosticoCampeon, Equipo
+
+
+class RegistroPollaForm(forms.Form):
+    cedula = forms.CharField(
+        max_length=20,
+        label='Número de cédula',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Ej: 1098765432',
+            'autofocus': True,
+        }),
+    )
+    password1 = forms.CharField(
+        label='Contraseña',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Crea una contraseña',
+        }),
+    )
+    password2 = forms.CharField(
+        label='Confirmar contraseña',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Repite la contraseña',
+        }),
+    )
+
+    def clean_password1(self):
+        pwd = self.cleaned_data.get('password1')
+        if pwd:
+            validate_password(pwd)
+        return pwd
+
+    def clean(self):
+        cleaned = super().clean()
+        p1 = cleaned.get('password1')
+        p2 = cleaned.get('password2')
+        if p1 and p2 and p1 != p2:
+            raise forms.ValidationError('Las contraseñas no coinciden.')
+        return cleaned
 
 
 class ActivarCuentaForm(forms.Form):

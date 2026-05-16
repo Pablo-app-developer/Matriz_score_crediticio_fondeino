@@ -33,6 +33,8 @@ def login_view(request):
 
 @login_required
 def panel_selector(request):
+    if request.user.es_solo_polla:
+        return redirect('polla:index')
     return render(request, 'accounts/panel_selector.html')
 
 

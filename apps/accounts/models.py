@@ -5,9 +5,11 @@ from django.db import models
 class Usuario(AbstractUser):
     ROL_ADMIN = 'admin'
     ROL_COMITE = 'comite'
+    ROL_POLLA = 'polla'
     ROLES = [
         (ROL_ADMIN, 'Administrador'),
         (ROL_COMITE, 'Comité de Crédito'),
+        (ROL_POLLA, 'Participante Polla'),
     ]
 
     rol = models.CharField(max_length=10, choices=ROLES, default=ROL_COMITE)
@@ -25,3 +27,7 @@ class Usuario(AbstractUser):
     @property
     def es_admin(self):
         return self.rol == self.ROL_ADMIN or self.is_superuser
+
+    @property
+    def es_solo_polla(self):
+        return self.rol == self.ROL_POLLA and not self.is_superuser
