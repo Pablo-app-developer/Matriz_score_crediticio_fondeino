@@ -95,16 +95,21 @@
             </td>
             <td class="small text-muted d-none d-md-table-cell">{{ afl.area }}</td>
             <td class="text-center">
-              {% if afl.cantidad_pollas == 2 %}
-                <span class="badge bg-warning text-dark">⭐⭐ Polla A+B</span>
-                {% if afl.motivo_doble_polla == 'NUEVO' %}
-                  <div class="badge bg-success d-none d-md-inline">Nuevo</div>
-                {% elif afl.motivo_doble_polla == 'AUMENTO' %}
-                  <div class="badge bg-primary d-none d-md-inline">Aumento</div>
+              {% for insc in afl.inscripciones.all %}
+                {% if insc.numero_polla == 2 %}
+                  <span class="badge bg-warning text-dark me-1">Polla B</span>
+                {% else %}
+                  <span class="badge bg-secondary me-1">Polla A</span>
                 {% endif %}
-              {% else %}
-                <span class="badge bg-secondary">Polla A</span>
-              {% endif %}
+                <form method="post" action="{% url 'polla:admin_inscripcion_eliminar' insc.pk %}"
+                      class="d-inline"
+                      onsubmit="return confirm('¿Eliminar Polla {% if insc.numero_polla == 2 %}B{% else %}A{% endif %} de {{ afl.nombre_completo }}? Esta acción no se puede deshacer.');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-link btn-sm text-danger p-0 ms-1" title="Eliminar esta polla" style="font-size:0.75rem;">
+                    <i class="bi bi-x-circle"></i>
+                  </button>
+                </form>
+              {% endfor %}
             </td>
             <td class="text-center d-none d-sm-table-cell">
               {% if afl.user %}

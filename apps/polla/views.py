@@ -678,6 +678,35 @@ def admin_afiliado_editar(request, afiliado_id):
 
 @admin_polla_required
 @require_POST
+def admin_inscripcion_eliminar(request, inscripcion_id):
+    inscripcion = get_object_or_404(InscripcionPolla, pk=inscripcion_id)
+    afiliado = inscripcion.afiliado
+    numero = inscripcion.numero_polla
+
+    tiene_pronosticos = Pronostico.objects.filter(inscripcion=inscripcion).exists()
+    if tiene_pronosticos:
+        messages.warning(
+            request,
+            f'No se puede eliminar la Polla {"A" if numero == 1 else "B"} de {afiliado.nombre_completo} '
+            'porque ya tiene pronósticos registrados.'
+        )
+        return redirect('polla:admin_afiliados')
+
+    inscripcion.delete()
+    # Actualizar cantidad_pollas si se eliminó la polla B
+    if numero == 2:
+        afiliado.cantidad_pollas = 1
+        afiliado.motivo_doble_polla = None
+        afiliado.save(update_fields=['cantidad_pollas', 'motivo_doble_polla'])
+    messages.success(
+        request,
+        f'Polla {"A" if numero == 1 else "B"} de {afiliado.nombre_completo} eliminada.'
+    )
+    return redirect('polla:admin_afiliados')
+
+
+@admin_polla_required
+@require_POST
 def admin_afiliado_eliminar(request, afiliado_id):
     afiliado = get_object_or_404(Afiliado, pk=afiliado_id)
     nombre = afiliado.nombre_completo

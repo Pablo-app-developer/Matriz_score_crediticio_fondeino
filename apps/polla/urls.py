@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/afiliados/nuevo/', views.admin_afiliado_nuevo, name='admin_afiliado_nuevo'),
     path('admin/afiliados/<int:afiliado_id>/editar/', views.admin_afiliado_editar, name='admin_afiliado_editar'),
     path('admin/afiliados/<int:afiliado_id>/eliminar/', views.admin_afiliado_eliminar, name='admin_afiliado_eliminar'),
+    path('admin/inscripcion/<int:inscripcion_id>/eliminar/', views.admin_inscripcion_eliminar, name='admin_inscripcion_eliminar'),
     path('admin/afiliados/<int:afiliado_id>/doble-polla/', views.admin_asignar_doble_polla, name='admin_asignar_doble_polla'),
     path('admin/afiliados/cargar/', views.admin_cargar_afiliados, name='admin_cargar_afiliados'),
     path('admin/resultados/', views.admin_cargar_resultados, name='admin_cargar_resultados'),
