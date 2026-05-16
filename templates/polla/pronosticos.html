@@ -95,12 +95,12 @@
                 <input type="number" class="form-control form-control-sm text-center polla-goles-local"
                        min="0" max="20"
                        value="{% if item.pronostico %}{{ item.pronostico.goles_local }}{% else %}{% endif %}"
-                       placeholder="0" style="width:52px;">
+                       placeholder="-" style="width:52px;">
                 <span class="fw-bold">–</span>
                 <input type="number" class="form-control form-control-sm text-center polla-goles-visitante"
                        min="0" max="20"
                        value="{% if item.pronostico %}{{ item.pronostico.goles_visitante }}{% else %}{% endif %}"
-                       placeholder="0" style="width:52px;">
+                       placeholder="-" style="width:52px;">
                 <button class="btn btn-sm btn-outline-success polla-guardar-btn" title="Guardar">
                   <i class="bi bi-check-lg"></i>
                 </button>
@@ -137,9 +137,11 @@ document.querySelectorAll('[data-partido-id]').forEach(container => {
   const btn = container.querySelector('.polla-guardar-btn');
   const fb = container.querySelector('.polla-feedback');
   btn.addEventListener('click', () => {
-    const gl = parseInt(container.querySelector('.polla-goles-local').value);
-    const gv = parseInt(container.querySelector('.polla-goles-visitante').value);
-    if (isNaN(gl) || isNaN(gv)) { fb.textContent = '?'; return; }
+    const glRaw = container.querySelector('.polla-goles-local').value.trim();
+    const gvRaw = container.querySelector('.polla-goles-visitante').value.trim();
+    const gl = glRaw === '' ? 0 : parseInt(glRaw);
+    const gv = gvRaw === '' ? 0 : parseInt(gvRaw);
+    if (isNaN(gl) || isNaN(gv) || gl < 0 || gv < 0) { fb.textContent = '?'; return; }
     btn.disabled = true;
     fb.textContent = '…';
     fetch('/polla/pronosticos/guardar/', {
