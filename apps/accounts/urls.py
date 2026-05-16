@@ -17,4 +17,6 @@ urlpatterns = [
     path('mi-password/', views.cambiar_mi_password, name='cambiar_mi_password'),
     path('manual/', views.manual_usuario, name='manual'),
     path('protocolo-comite/', views.protocolo_comite, name='protocolo_comite'),
+    path('admin-panel/', views.admin_panel, name='admin_panel'),
+    path('usuarios/<int:pk>/toggle/', views.toggle_permiso, name='toggle_permiso'),
 ]

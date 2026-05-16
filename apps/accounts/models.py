@@ -16,6 +16,11 @@ class Usuario(AbstractUser):
     telefono = models.CharField(max_length=20, blank=True)
     activo = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
+    es_admin_polla = models.BooleanField(
+        default=False,
+        verbose_name='Admin Polla Mundialista',
+        help_text='Permite gestionar afiliados y cargar resultados en la Polla Mundialista.',
+    )
 
     class Meta:
         verbose_name = 'Usuario'

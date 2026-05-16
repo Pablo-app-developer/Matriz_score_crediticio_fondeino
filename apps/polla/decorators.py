@@ -26,7 +26,7 @@ def admin_polla_required(func):
     def inner(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect(f'{settings.LOGIN_URL}?next={request.path}')
-        if not request.user.es_admin:
+        if not (request.user.es_admin or request.user.es_admin_polla):
             messages.error(request, 'No tienes permiso para acceder a esta sección.')
             return redirect('polla:index')
         return func(request, *args, **kwargs)

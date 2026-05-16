@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% block title %}Panel de Administración — FONDEINO{% endblock %}
+{% block nav_admin %}active{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Panel de Administración</h4>
+  <a href="{% url 'accounts:usuario_crear' %}" class="btn btn-primary btn-sm">
+    <i class="bi bi-person-plus me-1"></i>Nuevo Usuario
+  </a>
+</div>
+
+{% if messages %}
+  {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }} alert-dismissible">{{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+  {% endfor %}
+{% endif %}
+
+<!-- TABS -->
+<ul class="nav nav-tabs mb-4" id="adminTabs">
+  <li class="nav-item">
+    <a class="nav-link active" id="tab-credito" data-bs-toggle="tab" href="#credito">
+      <i class="bi bi-file-earmark-bar-graph me-1"></i>Comité de Crédito
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="tab-polla" data-bs-toggle="tab" href="#polla">
+      <i class="bi bi-trophy me-1"></i>Polla Mundialista
+    </a>
+  </li>
+</ul>
+
+<div class="tab-content">
+
+  <!-- ── COMITÉ DE CRÉDITO ── -->
+  <div class="tab-pane fade show active" id="credito">
+    <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-bold"><i class="bi bi-people me-2"></i>Miembros del Comité de Crédito</span>
+        <span class="text-muted small">{{ usuarios_credito.count }} usuario{{ usuarios_credito.count|pluralize }}</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>Nombre</th>
+              <th>Usuario</th>
+              <th>Email</th>
+              <th class="text-center">Admin Crédito</th>
+              <th class="text-center">Admin Polla</th>
+              <th class="text-center">Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in usuarios_credito %}
+            <tr id="row-{{ u.pk }}">
+              <td>
+                <span class="fw-semibold">{{ u.get_full_name|default:u.username }}</span>
+                {% if u == request.user %}<span class="badge bg-secondary ms-1">Tú</span>{% endif %}
+              </td>
+              <td><code>{{ u.username }}</code></td>
+              <td class="text-muted small">{{ u.email|default:"—" }}</td>
+              <td class="text-center">
+                {% if u == request.user %}
+                  <span class="badge bg-danger">Admin</span>
+                {% else %}
+                  <button class="btn btn-sm {% if u.es_admin %}btn-danger{% else %}btn-outline-secondary{% endif %} toggle-btn"
+                    data-pk="{{ u.pk }}" data-campo="rol_admin"
+                    title="{% if u.es_admin %}Quitar admin crédito{% else %}Dar admin crédito{% endif %}">
+                    {% if u.es_admin %}<i class="bi bi-shield-fill-check"></i> Admin{% else %}<i class="bi bi-shield"></i> Comité{% endif %}
+                  </button>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm {% if u.es_admin_polla %}btn-warning{% else %}btn-outline-secondary{% endif %} toggle-btn"
+                  data-pk="{{ u.pk }}" data-campo="es_admin_polla"
+                  title="{% if u.es_admin_polla %}Quitar admin polla{% else %}Dar admin polla{% endif %}">
+                  {% if u.es_admin_polla %}<i class="bi bi-trophy-fill"></i> Admin{% else %}<i class="bi bi-trophy"></i> No{% endif %}
+                </button>
+              </td>
+              <td class="text-center">
+                {% if u == request.user %}
+                  <span class="badge bg-success">Activo</span>
+                {% else %}
+                  <button class="btn btn-sm {% if u.activo %}btn-success{% else %}btn-outline-danger{% endif %} toggle-btn"
+                    data-pk="{{ u.pk }}" data-campo="activo">
+                    {% if u.activo %}Activo{% else %}Inactivo{% endif %}
+                  </button>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <a href="{% url 'accounts:usuario_editar' u.pk %}" class="btn btn-sm btn-outline-primary" title="Editar">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <a href="{% url 'accounts:usuario_password' u.pk %}" class="btn btn-sm btn-outline-warning" title="Cambiar contraseña">
+                  <i class="bi bi-key"></i>
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted py-3">No hay usuarios del comité registrados.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── POLLA MUNDIALISTA ── -->
+  <div class="tab-pane fade" id="polla">
+
+    <!-- Usuarios con permisos de admin polla -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-bold"><i class="bi bi-person-gear me-2"></i>Administradores de la Polla</span>
+        <span class="text-muted small">Miembros del comité con acceso admin a la polla</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>Nombre</th>
+              <th>Usuario</th>
+              <th>Rol en crédito</th>
+              <th class="text-center">Admin Polla</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in usuarios_polla %}
+            <tr>
+              <td class="fw-semibold">{{ u.get_full_name|default:u.username }}</td>
+              <td><code>{{ u.username }}</code></td>
+              <td>
+                <span class="badge {% if u.es_admin %}bg-danger{% else %}bg-primary{% endif %}">
+                  {{ u.get_rol_display }}
+                </span>
+              </td>
+              <td class="text-center">
+                {% if u == request.user %}
+                  <span class="badge bg-warning text-dark"><i class="bi bi-trophy-fill me-1"></i>Admin</span>
+                {% else %}
+                  <button class="btn btn-sm {% if u.es_admin_polla %}btn-warning{% else %}btn-outline-secondary{% endif %} toggle-btn"
+                    data-pk="{{ u.pk }}" data-campo="es_admin_polla">
+                    {% if u.es_admin_polla %}<i class="bi bi-trophy-fill"></i> Sí{% else %}<i class="bi bi-trophy"></i> No{% endif %}
+                  </button>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <a href="{% url 'polla:admin_afiliados' %}" class="btn btn-sm btn-outline-success" title="Ir a gestión de polla">
+                  <i class="bi bi-arrow-right-circle"></i>
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-3">No hay usuarios.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Participantes polla (solo polla) -->
+    <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-bold"><i class="bi bi-people me-2"></i>Participantes registrados</span>
+        <span class="text-muted small">{{ participantes_polla.count }} participante{{ participantes_polla.count|pluralize }}</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Cédula (usuario)</th>
+              <th class="text-center">Afiliado vinculado</th>
+              <th class="text-center">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in participantes_polla %}
+            <tr>
+              <td class="fw-semibold">{{ u.get_full_name|default:u.username }}</td>
+              <td><code>{{ u.username }}</code></td>
+              <td class="text-center">
+                {% if u.afiliado %}
+                  <a href="{% url 'polla:admin_afiliado_editar' u.afiliado.pk %}" class="badge bg-success text-decoration-none">
+                    {{ u.afiliado.nombre_completo }}
+                  </a>
+                {% else %}
+                  <span class="badge bg-secondary">Sin vincular</span>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <button class="btn btn-sm {% if u.activo %}btn-success{% else %}btn-outline-danger{% endif %} toggle-btn"
+                  data-pk="{{ u.pk }}" data-campo="activo">
+                  {% if u.activo %}Activo{% else %}Inactivo{% endif %}
+                </button>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center text-muted py-3">No hay participantes registrados aún.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /tab polla -->
+</div><!-- /tab-content -->
+
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+const TOGGLE_URL = '{% url "accounts:toggle_permiso" 0 %}';
+const CSRF = '{{ csrf_token }}';
+
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', async function () {
+    const pk  = this.dataset.pk;
+    const campo = this.dataset.campo;
+    const url = TOGGLE_URL.replace('/0/', `/${pk}/`);
+    this.disabled = true;
+
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {'X-CSRFToken': CSRF, 'Content-Type': 'application/x-www-form-urlencoded'},
+      body: `campo=${campo}`,
+    });
+    const data = await resp.json();
+    this.disabled = false;
+
+    if (!data.ok) { alert('Error: ' + (data.error || 'desconocido')); return; }
+
+    if (campo === 'es_admin_polla') {
+      this.className = `btn btn-sm toggle-btn ${data.valor ? 'btn-warning' : 'btn-outline-secondary'}`;
+      this.innerHTML = data.valor
+        ? '<i class="bi bi-trophy-fill"></i> Sí'
+        : '<i class="bi bi-trophy"></i> No';
+    } else if (campo === 'rol_admin') {
+      const isAdmin = data.valor === 'admin';
+      this.className = `btn btn-sm toggle-btn ${isAdmin ? 'btn-danger' : 'btn-outline-secondary'}`;
+      this.innerHTML = isAdmin
+        ? '<i class="bi bi-shield-fill-check"></i> Admin'
+        : '<i class="bi bi-shield"></i> Comité';
+    } else if (campo === 'activo') {
+      this.className = `btn btn-sm toggle-btn ${data.valor ? 'btn-success' : 'btn-outline-danger'}`;
+      this.textContent = data.valor ? 'Activo' : 'Inactivo';
+    }
+  });
+});
+</script>
+{% endblock %}

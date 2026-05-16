@@ -10,30 +10,44 @@
 
   let timer;
   const badge = document.createElement('div');
-  badge.className = 'form-text';
+  badge.className = 'form-text mt-1';
   cedulaInput.closest('.mb-3').appendChild(badge);
 
+  // Trigger al escribir
   cedulaInput.addEventListener('input', function () {
     clearTimeout(timer);
     const cedula = this.value.trim();
-    if (cedula.length < 5) { badge.textContent = ''; return; }
+    if (cedula.length < 5) { badge.innerHTML = ''; return; }
     timer = setTimeout(() => buscarEmpleado(cedula), 500);
   });
 
-  function buscarEmpleado(cedula) {
-    badge.textContent = 'Buscando en nómina...';
+  // Trigger en page load si la cédula ya tiene valor (página de edición)
+  const cedulaInicial = cedulaInput.value.trim();
+  if (cedulaInicial.length >= 5) {
+    buscarEmpleado(cedulaInicial, true);
+  }
+
+  function buscarEmpleado(cedula, soloMostrar) {
+    badge.innerHTML = '<span class="text-secondary"><i class="bi bi-hourglass-split me-1"></i>Buscando en nómina...</span>';
     fetch(`{% url 'polla:api_empleado_por_cedula' %}?cedula=${encodeURIComponent(cedula)}`)
       .then(r => r.json())
       .then(data => {
         if (data.encontrado) {
-          badge.innerHTML = '<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Empleado encontrado en nómina. Datos precargados.</span>';
-          if (nombreInput && !nombreInput.value) nombreInput.value = data.nombre;
-          if (areaInput   && !areaInput.value)   areaInput.value   = data.area;
+          badge.innerHTML = '<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Empleado encontrado en nómina.</span>';
+          if (!soloMostrar) {
+            // Escritura manual: siempre sobreescribe
+            if (nombreInput) nombreInput.value = data.nombre;
+            if (areaInput)   areaInput.value   = data.area;
+          } else {
+            // Page load: solo llena campos vacíos
+            if (nombreInput && !nombreInput.value) nombreInput.value = data.nombre;
+            if (areaInput   && !areaInput.value)   areaInput.value   = data.area;
+          }
         } else {
           badge.innerHTML = '<span class="text-muted"><i class="bi bi-info-circle me-1"></i>Cédula no encontrada en la nómina activa.</span>';
         }
       })
-      .catch(() => { badge.textContent = ''; });
+      .catch(() => { badge.innerHTML = ''; });
   }
 })();
 </script>

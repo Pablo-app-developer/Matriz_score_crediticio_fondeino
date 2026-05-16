@@ -3,9 +3,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.conf import settings
 from django.core.mail import send_mail
+from django.views.decorators.http import require_POST
 
 from .models import Usuario
 from .forms import LoginForm, UsuarioCrearForm, UsuarioEditarForm, CambiarPasswordForm
@@ -183,3 +184,48 @@ def manual_usuario(request):
 def protocolo_comite(request):
     """Presentación del protocolo del Comité de Crédito (pública, sin login)."""
     return render(request, 'accounts/protocolo_comite.html')
+
+
+@login_required
+def admin_panel(request):
+    if not request.user.es_admin:
+        return HttpResponseForbidden()
+    usuarios_credito = Usuario.objects.filter(
+        rol__in=[Usuario.ROL_ADMIN, Usuario.ROL_COMITE]
+    ).order_by('rol', 'first_name', 'username')
+    usuarios_polla = Usuario.objects.exclude(
+        rol=Usuario.ROL_POLLA
+    ).order_by('first_name', 'username')
+    participantes_polla = Usuario.objects.filter(
+        rol=Usuario.ROL_POLLA
+    ).order_by('first_name', 'username')
+    return render(request, 'accounts/admin_panel.html', {
+        'usuarios_credito': usuarios_credito,
+        'usuarios_polla': usuarios_polla,
+        'participantes_polla': participantes_polla,
+    })
+
+
+@login_required
+@require_POST
+def toggle_permiso(request, pk):
+    if not request.user.es_admin:
+        return JsonResponse({'ok': False, 'error': 'Sin permiso'}, status=403)
+    target = get_object_or_404(Usuario, pk=pk)
+    campo = request.POST.get('campo')
+    if campo == 'es_admin_polla':
+        target.es_admin_polla = not target.es_admin_polla
+        target.save(update_fields=['es_admin_polla'])
+        return JsonResponse({'ok': True, 'valor': target.es_admin_polla})
+    if campo == 'rol_admin':
+        if target.rol == Usuario.ROL_ADMIN:
+            target.rol = Usuario.ROL_COMITE
+        else:
+            target.rol = Usuario.ROL_ADMIN
+        target.save(update_fields=['rol'])
+        return JsonResponse({'ok': True, 'valor': target.rol, 'label': target.get_rol_display()})
+    if campo == 'activo':
+        target.activo = not target.activo
+        target.save(update_fields=['activo'])
+        return JsonResponse({'ok': True, 'valor': target.activo})
+    return JsonResponse({'ok': False, 'error': 'Campo no válido'}, status=400)
