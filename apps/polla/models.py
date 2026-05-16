@@ -100,6 +100,10 @@ class Partido(models.Model):
     estadio = models.CharField(max_length=100, blank=True, verbose_name='Estadio')
     ciudad = models.CharField(max_length=60, blank=True, verbose_name='Ciudad')
 
+    # Para fases eliminatorias: describe quién juega antes de conocer el equipo real
+    etiqueta_local = models.CharField(max_length=60, blank=True, verbose_name='Etiqueta local')
+    etiqueta_visitante = models.CharField(max_length=60, blank=True, verbose_name='Etiqueta visitante')
+
     goles_local = models.IntegerField(null=True, blank=True, verbose_name='Goles local')
     goles_visitante = models.IntegerField(null=True, blank=True, verbose_name='Goles visitante')
     finalizado = models.BooleanField(default=False, verbose_name='Finalizado')
@@ -115,6 +119,31 @@ class Partido(models.Model):
     @property
     def es_eliminatoria(self):
         return self.fase in FASES_ELIMINATORIAS
+
+    # ── Helpers de display para templates ──
+    @property
+    def nombre_local_display(self):
+        return self.etiqueta_local or self.equipo_local.nombre
+
+    @property
+    def nombre_visitante_display(self):
+        return self.etiqueta_visitante or self.equipo_visitante.nombre
+
+    @property
+    def bandera_local(self):
+        return '' if self.etiqueta_local else self.equipo_local.bandera_emoji
+
+    @property
+    def bandera_visitante(self):
+        return '' if self.etiqueta_visitante else self.equipo_visitante.bandera_emoji
+
+    @property
+    def codigo_local(self):
+        return self.etiqueta_local or self.equipo_local.codigo_fifa
+
+    @property
+    def codigo_visitante(self):
+        return self.etiqueta_visitante or self.equipo_visitante.codigo_fifa
 
     @property
     def cerrado_para_pronosticos(self):

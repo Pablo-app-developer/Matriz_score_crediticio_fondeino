@@ -171,105 +171,68 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f'OK Partidos de grupos: {num - 1} partidos procesados.'))
 
-        # ── Ronda de 32 (16 partidos) ──
-        placeholder = equipos_map.get('USA')  # placeholder hasta conocer clasificados
-        for i in range(1, 17):
+        # ── Partidos eliminatorios ──
+        placeholder = equipos_map.get('USA')
+
+        ELIMINATORIOS = [
+            # fase, etiqueta_local, etiqueta_visitante, año, mes, dia, hora, estadio, ciudad
+            # Ronda de 32 (73-88)
+            ('TREINTA_DOS', '1° Grupo A',           '2° Grupo B',           2026, 7, 1,  18, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', '1° Grupo B',           '2° Grupo A',           2026, 7, 1,  21, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', '1° Grupo C',           '2° Grupo D',           2026, 7, 2,  18, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', '1° Grupo D',           '2° Grupo C',           2026, 7, 2,  21, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', '1° Grupo E',           '2° Grupo F',           2026, 7, 3,  18, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', '1° Grupo F',           '2° Grupo E',           2026, 7, 3,  21, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', '1° Grupo G',           '2° Grupo H',           2026, 7, 4,  18, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', '1° Grupo H',           '2° Grupo G',           2026, 7, 4,  21, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', '1° Grupo I',           '2° Grupo J',           2026, 7, 5,  18, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', '1° Grupo J',           '2° Grupo I',           2026, 7, 5,  21, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', '1° Grupo K',           '2° Grupo L',           2026, 7, 6,  18, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', '1° Grupo L',           '2° Grupo K',           2026, 7, 6,  21, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', 'Mejor 3° (A/B/C/D)',  'Mejor 3° (E/F/G/H)',  2026, 7, 3,  15, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', 'Mejor 3° (A/B/C/D)',  'Mejor 3° (E/F/G/H)',  2026, 7, 4,  15, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', 'Mejor 3° (I/J/K/L)',  'Mejor 3° (A/B/C/D)',  2026, 7, 5,  15, '(Por confirmar)', '(Por confirmar)'),
+            ('TREINTA_DOS', 'Mejor 3° (I/J/K/L)',  'Mejor 3° (I/J/K/L)',  2026, 7, 6,  15, '(Por confirmar)', '(Por confirmar)'),
+            # Octavos de final (89-96)
+            ('OCTAVOS', 'Ganador P73', 'Ganador P74', 2026, 7, 7,  18, '(Por confirmar)', '(Por confirmar)'),
+            ('OCTAVOS', 'Ganador P75', 'Ganador P76', 2026, 7, 7,  21, '(Por confirmar)', '(Por confirmar)'),
+            ('OCTAVOS', 'Ganador P77', 'Ganador P78', 2026, 7, 8,  18, '(Por confirmar)', '(Por confirmar)'),
+            ('OCTAVOS', 'Ganador P79', 'Ganador P80', 2026, 7, 8,  21, '(Por confirmar)', '(Por confirmar)'),
+            ('OCTAVOS', 'Ganador P81', 'Ganador P82', 2026, 7, 9,  18, '(Por confirmar)', '(Por confirmar)'),
+            ('OCTAVOS', 'Ganador P83', 'Ganador P84', 2026, 7, 9,  21, '(Por confirmar)', '(Por confirmar)'),
+            ('OCTAVOS', 'Ganador P85', 'Ganador P86', 2026, 7, 10, 18, '(Por confirmar)', '(Por confirmar)'),
+            ('OCTAVOS', 'Ganador P87', 'Ganador P88', 2026, 7, 10, 21, '(Por confirmar)', '(Por confirmar)'),
+            # Cuartos de final (97-100)
+            ('CUARTOS', 'Ganador P89', 'Ganador P90', 2026, 7, 11, 18, '(Por confirmar)', '(Por confirmar)'),
+            ('CUARTOS', 'Ganador P91', 'Ganador P92', 2026, 7, 11, 21, '(Por confirmar)', '(Por confirmar)'),
+            ('CUARTOS', 'Ganador P93', 'Ganador P94', 2026, 7, 12, 18, '(Por confirmar)', '(Por confirmar)'),
+            ('CUARTOS', 'Ganador P95', 'Ganador P96', 2026, 7, 12, 21, '(Por confirmar)', '(Por confirmar)'),
+            # Semifinales (101-102)
+            ('SEMIS', 'Ganador P97',  'Ganador P98',  2026, 7, 15, 19, '(Por confirmar)', '(Por confirmar)'),
+            ('SEMIS', 'Ganador P99',  'Ganador P100', 2026, 7, 16, 19, '(Por confirmar)', '(Por confirmar)'),
+            # Tercer puesto (103)
+            ('TERCERO', 'Perdedor SF1 (P101)', 'Perdedor SF2 (P102)', 2026, 7, 18, 15, '(Por confirmar)', '(Por confirmar)'),
+            # Final (104)
+            ('FINAL', 'Ganador SF1 (P101)', 'Ganador SF2 (P102)', 2026, 7, 19, 17, 'MetLife Stadium', 'Nueva Jersey / Nueva York'),
+        ]
+
+        for fase, et_local, et_vis, y, mo, d, h, estadio, ciudad in ELIMINATORIOS:
             _, created = Partido.objects.get_or_create(
                 numero=num,
                 defaults={
-                    'fase': 'TREINTA_DOS',
+                    'fase': fase,
+                    'etiqueta_local': et_local,
+                    'etiqueta_visitante': et_vis,
                     'equipo_local': placeholder,
                     'equipo_visitante': placeholder,
-                    'fecha_hora': _dt(2026, 7, 1 + (i % 4), 18),
-                    'estadio': '(Por confirmar)',
-                    'ciudad': '(Por confirmar)',
+                    'fecha_hora': _dt(y, mo, d, h),
+                    'estadio': estadio,
+                    'ciudad': ciudad,
                 }
             )
             if created:
                 partidos_creados += 1
             num += 1
-
-        # ── Octavos de final (8 partidos) ──
-        for i in range(1, 9):
-            _, created = Partido.objects.get_or_create(
-                numero=num,
-                defaults={
-                    'fase': 'OCTAVOS',
-                    'equipo_local': placeholder,
-                    'equipo_visitante': placeholder,
-                    'fecha_hora': _dt(2026, 7, 5 + (i % 4), 18),
-                    'estadio': '(Por confirmar)',
-                    'ciudad': '(Por confirmar)',
-                }
-            )
-            if created:
-                partidos_creados += 1
-            num += 1
-
-        # ── Cuartos (4 partidos) ──
-        for i in range(1, 5):
-            _, created = Partido.objects.get_or_create(
-                numero=num,
-                defaults={
-                    'fase': 'CUARTOS',
-                    'equipo_local': placeholder,
-                    'equipo_visitante': placeholder,
-                    'fecha_hora': _dt(2026, 7, 9 + (i % 2), 18),
-                    'estadio': '(Por confirmar)',
-                    'ciudad': '(Por confirmar)',
-                }
-            )
-            if created:
-                partidos_creados += 1
-            num += 1
-
-        # ── Semifinales (2 partidos) ──
-        for i, dia in enumerate([14, 15]):
-            _, created = Partido.objects.get_or_create(
-                numero=num,
-                defaults={
-                    'fase': 'SEMIS',
-                    'equipo_local': placeholder,
-                    'equipo_visitante': placeholder,
-                    'fecha_hora': _dt(2026, 7, dia, 19),
-                    'estadio': '(Por confirmar)',
-                    'ciudad': '(Por confirmar)',
-                }
-            )
-            if created:
-                partidos_creados += 1
-            num += 1
-
-        # ── Tercer puesto ──
-        _, created = Partido.objects.get_or_create(
-            numero=num,
-            defaults={
-                'fase': 'TERCERO',
-                'equipo_local': placeholder,
-                'equipo_visitante': placeholder,
-                'fecha_hora': _dt(2026, 7, 18, 15),
-                'estadio': '(Por confirmar)',
-                'ciudad': '(Por confirmar)',
-            }
-        )
-        if created:
-            partidos_creados += 1
-        num += 1
-
-        # ── Final ──
-        _, created = Partido.objects.get_or_create(
-            numero=num,
-            defaults={
-                'fase': 'FINAL',
-                'equipo_local': placeholder,
-                'equipo_visitante': placeholder,
-                'fecha_hora': _dt(2026, 7, 19, 17),
-                'estadio': 'MetLife Stadium',
-                'ciudad': 'Nueva Jersey / Nueva York',
-            }
-        )
-        if created:
-            partidos_creados += 1
 
         total_partidos = Partido.objects.count()
         self.stdout.write(self.style.SUCCESS(

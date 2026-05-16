@@ -56,9 +56,9 @@
         <div class="row align-items-center g-2">
           <!-- Local -->
           <div class="col-4 text-end small fw-bold">
-            {{ item.partido.equipo_local.bandera_emoji }}
-            <span class="d-none d-md-inline">{{ item.partido.equipo_local.nombre }}</span>
-            <span class="d-inline d-md-none">{{ item.partido.equipo_local.codigo_fifa }}</span>
+            {{ item.partido.bandera_local }}
+            <span class="d-none d-md-inline">{{ item.partido.nombre_local_display }}</span>
+            <span class="d-inline d-md-none">{{ item.partido.codigo_local }}</span>
           </div>
 
           <!-- Score inputs -->
@@ -115,9 +115,9 @@
 
           <!-- Visitante -->
           <div class="col-4 text-start small fw-bold">
-            <span class="d-none d-md-inline">{{ item.partido.equipo_visitante.nombre }}</span>
-            <span class="d-inline d-md-none">{{ item.partido.equipo_visitante.codigo_fifa }}</span>
-            {{ item.partido.equipo_visitante.bandera_emoji }}
+            <span class="d-none d-md-inline">{{ item.partido.nombre_visitante_display }}</span>
+            <span class="d-inline d-md-none">{{ item.partido.codigo_visitante }}</span>
+            {{ item.partido.bandera_visitante }}
           </div>
         </div>
         <div class="text-center small text-muted" style="font-size:0.7rem;">

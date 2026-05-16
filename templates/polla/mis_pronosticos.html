@@ -48,9 +48,9 @@
             {% endif %}
           ">
             <td class="small">
-              {{ pron.partido.equipo_local.bandera_emoji }}{{ pron.partido.equipo_local.codigo_fifa }}
+              {{ pron.partido.bandera_local }}{{ pron.partido.codigo_local }}
               vs
-              {{ pron.partido.equipo_visitante.bandera_emoji }}{{ pron.partido.equipo_visitante.codigo_fifa }}
+              {{ pron.partido.bandera_visitante }}{{ pron.partido.codigo_visitante }}
               <div class="text-muted" style="font-size:0.7rem;">{{ pron.partido.fecha_hora|date:"d/m H:i" }}</div>
             </td>
             <td class="text-center small">{{ pron.partido.get_fase_display }}</td>

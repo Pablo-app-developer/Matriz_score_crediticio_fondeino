@@ -109,9 +109,9 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
                     <span class="small fw-bold">
-                      {{ partido.equipo_local.bandera_emoji }} {{ partido.equipo_local.nombre }}
+                      {{ partido.bandera_local }} {{ partido.nombre_local_display }}
                       vs
-                      {{ partido.equipo_visitante.bandera_emoji }} {{ partido.equipo_visitante.nombre }}
+                      {{ partido.bandera_visitante }} {{ partido.nombre_visitante_display }}
                     </span>
                     <br>
                     <span class="text-muted" style="font-size:0.75rem;">
@@ -146,9 +146,9 @@
               <li class="list-group-item py-2">
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="small">
-                    {{ partido.equipo_local.bandera_emoji }} {{ partido.equipo_local.nombre }}
+                    {{ partido.bandera_local }} {{ partido.nombre_local_display }}
                     <span class="fw-bold mx-1">{{ partido.goles_local }} - {{ partido.goles_visitante }}</span>
-                    {{ partido.equipo_visitante.nombre }} {{ partido.equipo_visitante.bandera_emoji }}
+                    {{ partido.nombre_visitante_display }} {{ partido.bandera_visitante }}
                     <div class="text-muted" style="font-size:0.75rem;">{{ partido.fecha_hora|date:"d/m/Y" }}</div>
                   </div>
                 </div>

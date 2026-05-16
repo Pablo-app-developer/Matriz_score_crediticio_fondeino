@@ -33,9 +33,9 @@
             <tr>
               <td class="text-center small">{{ partido.numero }}</td>
               <td class="small fw-bold">
-                {{ partido.equipo_local.bandera_emoji }} {{ partido.equipo_local.nombre }}
+                {{ partido.bandera_local }} {{ partido.nombre_local_display }}
                 vs
-                {{ partido.equipo_visitante.nombre }} {{ partido.equipo_visitante.bandera_emoji }}
+                {{ partido.nombre_visitante_display }} {{ partido.bandera_visitante }}
               </td>
               <td class="text-center small d-none d-md-table-cell">{{ partido.get_fase_display }}</td>
               <td class="text-center small d-none d-md-table-cell">{{ partido.fecha_hora|date:"d/m H:i" }}</td>
@@ -95,9 +95,9 @@
           <tr>
             <td class="small">{{ partido.numero }}</td>
             <td class="small">
-              {{ partido.equipo_local.bandera_emoji }} {{ partido.equipo_local.nombre }}
+              {{ partido.bandera_local }} {{ partido.nombre_local_display }}
               vs
-              {{ partido.equipo_visitante.nombre }} {{ partido.equipo_visitante.bandera_emoji }}
+              {{ partido.nombre_visitante_display }} {{ partido.bandera_visitante }}
             </td>
             <td class="text-center fw-bold">{{ partido.goles_local }} – {{ partido.goles_visitante }}</td>
             <td class="text-center small">{{ partido.get_fase_display }}</td>

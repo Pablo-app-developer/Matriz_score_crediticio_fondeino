@@ -42,9 +42,9 @@
           {% for pron in pronosticos %}
           <tr class="{% if pron.acerto_marcador %}table-success{% elif pron.acerto_resultado %}table-warning{% elif pron.partido.finalizado %}{% endif %}">
             <td class="small">
-              {{ pron.partido.equipo_local.bandera_emoji }}{{ pron.partido.equipo_local.codigo_fifa }}
+              {{ pron.partido.bandera_local }}{{ pron.partido.codigo_local }}
               vs
-              {{ pron.partido.equipo_visitante.bandera_emoji }}{{ pron.partido.equipo_visitante.codigo_fifa }}
+              {{ pron.partido.bandera_visitante }}{{ pron.partido.codigo_visitante }}
             </td>
             <td class="text-center fw-bold">{{ pron.goles_local }} – {{ pron.goles_visitante }}</td>
             <td class="text-center fw-bold">
