@@ -28,7 +28,17 @@
           <label class="form-label fw-semibold small" for="{{ field.id_for_label }}">
             {{ field.label }} <span class="text-danger">*</span>
           </label>
+          {% if field.field.widget.input_type == 'password' %}
+          <div class="input-group">
+            {{ field }}
+            <button type="button" class="btn btn-outline-secondary"
+                    onclick="togglePassword(this)" title="Mostrar/ocultar contraseña">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+          {% else %}
           {{ field }}
+          {% endif %}
           {% if field.errors %}
             {% for error in field.errors %}
               <div class="text-danger small mt-1">{{ error }}</div>

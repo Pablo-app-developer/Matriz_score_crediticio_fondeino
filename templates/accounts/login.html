@@ -46,18 +46,4 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-<script>
-function togglePassword(btn) {
-  const input = btn.closest('.input-group').querySelector('input');
-  const icon  = btn.querySelector('i');
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.className = 'bi bi-eye-slash';
-  } else {
-    input.type = 'password';
-    icon.className = 'bi bi-eye';
-  }
-}
-</script>
-{% endblock %}
+{% block scripts %}{{ block.super }}{% endblock %}
