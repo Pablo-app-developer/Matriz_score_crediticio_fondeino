@@ -92,11 +92,22 @@
         {% endif %}
         {% endfor %}
         <hr>
-        <div class="d-flex gap-2">
-          <button type="submit" class="btn btn-primary fw-bold">
-            <i class="bi bi-check-circle me-1"></i>{{ accion }}
-          </button>
-          <a href="{% url 'polla:admin_afiliados' %}" class="btn btn-outline-secondary">Cancelar</a>
+        <div class="d-flex gap-2 justify-content-between">
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary fw-bold">
+              <i class="bi bi-check-circle me-1"></i>{{ accion }}
+            </button>
+            <a href="{% url 'polla:admin_afiliados' %}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+          {% if afiliado %}
+          <form method="post" action="{% url 'polla:admin_afiliado_eliminar' afiliado.pk %}"
+                onsubmit="return confirm('¿Eliminar a {{ afiliado.nombre_completo }}? Esta acción no se puede deshacer.');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger">
+              <i class="bi bi-trash me-1"></i>Eliminar afiliado
+            </button>
+          </form>
+          {% endif %}
         </div>
       </form>
     </div>

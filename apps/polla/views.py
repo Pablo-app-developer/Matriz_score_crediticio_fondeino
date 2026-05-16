@@ -677,6 +677,22 @@ def admin_afiliado_editar(request, afiliado_id):
 
 
 @admin_polla_required
+@require_POST
+def admin_afiliado_eliminar(request, afiliado_id):
+    afiliado = get_object_or_404(Afiliado, pk=afiliado_id)
+    nombre = afiliado.nombre_completo
+    # Desvincula el usuario Django si existe (no lo elimina, solo rompe el enlace)
+    if afiliado.user:
+        user = afiliado.user
+        afiliado.user = None
+        afiliado.save(update_fields=['user'])
+        user.delete()
+    afiliado.delete()
+    messages.success(request, f'Afiliado "{nombre}" eliminado correctamente.')
+    return redirect('polla:admin_afiliados')
+
+
+@admin_polla_required
 def admin_asignar_doble_polla(request, afiliado_id):
     afiliado = get_object_or_404(Afiliado, pk=afiliado_id, activo=True)
     if afiliado.cantidad_pollas == 2:
