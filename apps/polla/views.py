@@ -28,6 +28,7 @@ from .models import (
     Afiliado,
     ConfiguracionPolla,
     Equipo,
+    FASE_CHOICES,
     InscripcionPolla,
     Partido,
     PronosticoCampeon,
@@ -453,11 +454,16 @@ def pronosticos(request):
         })
 
     partidos_por_fecha_ord = dict(sorted(partidos_por_fecha.items()))
-    pendientes = sum(
-        1 for items in partidos_por_fecha_ord.values()
-        for item in items
-        if not item['cerrado'] and not item['partido'].finalizado and not item['pronostico']
-    )
+
+    ORDEN_FASES = ['GRUPOS', 'TREINTA_DOS', 'OCTAVOS', 'CUARTOS', 'SEMIS', 'TERCERO', 'FINAL']
+    FASE_LABEL = dict(FASE_CHOICES)
+    _pend = {}
+    for items in partidos_por_fecha_ord.values():
+        for item in items:
+            if not item['cerrado'] and not item['partido'].finalizado and not item['pronostico']:
+                _pend[item['partido'].fase] = _pend.get(item['partido'].fase, 0) + 1
+    pendientes_por_fase = {FASE_LABEL[f]: _pend[f] for f in ORDEN_FASES if f in _pend}
+    pendientes = sum(pendientes_por_fase.values())
 
     return render(request, 'polla/pronosticos.html', {
         'afiliado': afiliado,
@@ -468,6 +474,7 @@ def pronosticos(request):
         'config': config,
         'ahora': ahora,
         'pendientes': pendientes,
+        'pendientes_por_fase': pendientes_por_fase,
     })
 
 

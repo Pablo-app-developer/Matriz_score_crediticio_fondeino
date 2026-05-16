@@ -23,10 +23,15 @@
     <i class="bi bi-lock-fill me-2"></i><strong>La polla está cerrada.</strong> Ya no se pueden modificar pronósticos.
   </div>
   {% elif pendientes > 0 %}
-  <div class="alert alert-warning d-flex align-items-center gap-2">
-    <i class="bi bi-exclamation-triangle-fill fs-5 flex-shrink-0"></i>
+  <div class="alert alert-warning d-flex align-items-start gap-2">
+    <i class="bi bi-exclamation-triangle-fill fs-5 flex-shrink-0 mt-1"></i>
     <div>
-      Te faltan <strong>{{ pendientes }} partido{% if pendientes != 1 %}s{% endif %}</strong> por pronosticar.
+      Te faltan <strong>{{ pendientes }} partido{% if pendientes != 1 %}s{% endif %}</strong> por pronosticar:
+      <ul class="mb-1 mt-1 ps-3">
+        {% for fase, cant in pendientes_por_fase.items %}
+        <li><strong>{{ cant }}</strong> de <em>{{ fase }}</em></li>
+        {% endfor %}
+      </ul>
       <span class="text-muted small">Los pronósticos cierran automáticamente cuando inicia cada partido.</span>
     </div>
   </div>
