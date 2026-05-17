@@ -71,12 +71,36 @@ class Afiliado(models.Model):
         return dict(self.MOTIVO_DOBLE).get(self.motivo_doble_polla, '')
 
 
+_FIFA_ISO2 = {
+    'USA': 'us', 'MAR': 'ma', 'UZB': 'uz', 'NZL': 'nz',
+    'MEX': 'mx', 'GER': 'de', 'RSA': 'za', 'IDN': 'id',
+    'CAN': 'ca', 'POR': 'pt', 'TUN': 'tn', 'BOL': 'bo',
+    'FRA': 'fr', 'JPN': 'jp', 'HON': 'hn', 'ROU': 'ro',
+    'ESP': 'es', 'KOR': 'kr', 'COD': 'cd', 'URU': 'uy',
+    'ENG': 'gb-eng', 'IRN': 'ir', 'PAN': 'pa', 'COL': 'co',
+    'BRA': 'br', 'SUI': 'ch', 'NGA': 'ng', 'JAM': 'jm',
+    'ARG': 'ar', 'AUS': 'au', 'CMR': 'cm', 'SVK': 'sk',
+    'NED': 'nl', 'KSA': 'sa', 'EGY': 'eg', 'ECU': 'ec',
+    'BEL': 'be', 'IRQ': 'iq', 'SEN': 'sn', 'VEN': 've',
+    'DEN': 'dk', 'JOR': 'jo', 'GHA': 'gh', 'HUN': 'hu',
+    'AUT': 'at', 'TUR': 'tr', 'SCO': 'gb-sct', 'CIV': 'ci',
+}
+
+
 class Equipo(models.Model):
     nombre = models.CharField(max_length=60, verbose_name='Nombre')
     codigo_fifa = models.CharField(max_length=3, unique=True, verbose_name='Código FIFA')
     bandera_emoji = models.CharField(max_length=10, blank=True, verbose_name='Bandera')
     grupo = models.CharField(max_length=1, verbose_name='Grupo')
     api_football_id = models.IntegerField(null=True, blank=True, verbose_name='ID api-football.com')
+
+    @property
+    def iso2(self):
+        return _FIFA_ISO2.get(self.codigo_fifa, self.codigo_fifa.lower()[:2])
+
+    @property
+    def bandera_url(self):
+        return f'https://flagcdn.com/w160/{self.iso2}.png'
 
     class Meta:
         ordering = ['grupo', 'nombre']
@@ -140,6 +164,14 @@ class Partido(models.Model):
     @property
     def bandera_visitante(self):
         return '' if self.etiqueta_visitante else self.equipo_visitante.bandera_emoji
+
+    @property
+    def bandera_url_local(self):
+        return '' if self.etiqueta_local else self.equipo_local.bandera_url
+
+    @property
+    def bandera_url_visitante(self):
+        return '' if self.etiqueta_visitante else self.equipo_visitante.bandera_url
 
     @property
     def codigo_local(self):

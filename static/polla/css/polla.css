@@ -1,91 +1,325 @@
-/* ── Polla Mundialista FONDEINO 2026 ── */
+/* ═══════════════════════════════════════════════════
+   Polla Mundialista FONDEINO 2026 — Design System
+   ═══════════════════════════════════════════════════ */
 
-/* Hero section */
-.polla-hero {
-  background: linear-gradient(135deg, #1a472a 0%, #2d6a4f 50%, #1a3a2a 100%);
-  border: 2px solid #ffd700;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+:root {
+  --pk-dark:    #0a2f1a;
+  --pk-green:   #155230;
+  --pk-mid:     #1e7a45;
+  --pk-light:   #2d9a5f;
+  --pk-gold:    #f0c040;
+  --pk-gold-dk: #c8a020;
+  --pk-bg:      #f2f7f4;
+  --pk-card:    #ffffff;
+  --pk-border:  #d0e8d8;
+  --pk-text:    #1a3a25;
 }
 
-/* Partido row hover */
-.partido-row {
-  transition: background-color 0.15s ease;
+body { background-color: var(--pk-bg) !important; }
+
+/* ══ NAVBAR ══════════════════════════════════════════ */
+.polla-navbar {
+  background: linear-gradient(135deg, var(--pk-dark) 0%, var(--pk-green) 100%);
+  border-bottom: 3px solid var(--pk-gold);
+  box-shadow: 0 3px 20px rgba(0,0,0,0.4);
+  padding: 0.4rem 1rem;
 }
-.partido-row:hover {
-  background-color: rgba(0,100,0,0.05) !important;
+.polla-navbar .navbar-brand {
+  color: var(--pk-gold) !important;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.3px;
+}
+.polla-navbar .navbar-brand:hover { color: #fff !important; }
+.polla-navbar .nav-link {
+  color: rgba(255,255,255,0.85) !important;
+  font-weight: 500;
+  padding: 0.45rem 0.8rem;
+  border-radius: 6px;
+  transition: background 0.18s, color 0.18s;
+}
+.polla-navbar .nav-link:hover { background: rgba(255,255,255,0.13); color: #fff !important; }
+.polla-navbar .nav-link.active {
+  background: rgba(255,255,255,0.16);
+  color: #fff !important;
+  border-bottom: 2px solid var(--pk-gold);
+}
+.polla-navbar .dropdown-menu {
+  border: 1px solid var(--pk-border);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  border-radius: 10px;
+}
+.polla-navbar .navbar-toggler { border-color: rgba(255,255,255,0.35); }
+.polla-navbar .navbar-toggler-icon { filter: invert(1); }
+
+/* ══ HERO BANNER ═════════════════════════════════════ */
+.polla-hero-banner {
+  background: linear-gradient(135deg, var(--pk-dark) 0%, var(--pk-green) 55%, var(--pk-mid) 100%);
+  color: white;
+  border-radius: 16px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+}
+.polla-hero-banner::before {
+  content: '⚽';
+  position: absolute;
+  right: -10px;
+  top: -20px;
+  font-size: 9rem;
+  opacity: 0.05;
+  transform: rotate(-15deg);
+  user-select: none;
+  pointer-events: none;
+}
+.polla-hero-banner::after {
+  content: '🏆';
+  position: absolute;
+  right: 110px;
+  bottom: -20px;
+  font-size: 7rem;
+  opacity: 0.05;
+  user-select: none;
+  pointer-events: none;
+}
+.polla-hero-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 0.2rem;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.25);
+}
+.polla-hero-sub {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.88rem;
+  margin-bottom: 1.25rem;
 }
 
-/* Ranking - zona de premios */
-.table tbody tr.border-start {
-  border-left-width: 4px !important;
+/* ── Stat chips inside hero ── */
+.polla-stat-chip {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  padding: 0.65rem 1.1rem;
+  text-align: center;
+  min-width: 90px;
+}
+.polla-stat-chip .sv { font-size: 1.8rem; font-weight: 800; color: var(--pk-gold); line-height: 1; }
+.polla-stat-chip .sl { font-size: 0.68rem; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.polla-stat-chip .ss { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 1px; }
+
+/* ══ SECTION TITLE ════════════════════════════════════ */
+.polla-section-title {
+  color: var(--pk-dark);
+  font-weight: 800;
+  font-size: 1.05rem;
+  border-left: 4px solid var(--pk-gold);
+  padding-left: 0.7rem;
+  margin-bottom: 1rem;
 }
 
-/* Inputs de pronóstico */
+/* ══ PROGRESS BAR ════════════════════════════════════ */
+.polla-progress-wrap {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--pk-border);
+  padding: 0.9rem 1.2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+.polla-progress-track {
+  background: #e2f0e8;
+  border-radius: 50px;
+  height: 10px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+.polla-progress-fill {
+  background: linear-gradient(90deg, var(--pk-green), var(--pk-light));
+  height: 100%;
+  border-radius: 50px;
+  transition: width 1.2s ease;
+}
+
+/* ══ MATCH CARD ══════════════════════════════════════ */
+.match-card {
+  background: var(--pk-card);
+  border: 1px solid var(--pk-border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.match-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+}
+.match-card-header {
+  background: var(--pk-dark);
+  color: rgba(255,255,255,0.8);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0.35rem 1rem;
+  font-weight: 600;
+}
+.match-card-body {
+  padding: 1.1rem;
+  flex: 1;
+}
+.match-teams {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.match-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 0.45rem;
+}
+.flag-wrap {
+  width: 80px;
+  height: 54px;
+  border-radius: 7px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #dde8e2;
+  flex-shrink: 0;
+}
+.flag-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.flag-wrap-sm {
+  width: 52px;
+  height: 35px;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #dde8e2;
+  vertical-align: middle;
+}
+.flag-wrap-sm img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.flag-placeholder { font-size: 2rem; line-height: 1; }
+.match-team-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--pk-text);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  max-width: 90px;
+  word-break: break-word;
+  line-height: 1.2;
+}
+.match-vs {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--pk-mid);
+  flex-shrink: 0;
+  padding: 0 0.3rem;
+}
+.match-score-badge {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--pk-dark);
+  background: var(--pk-bg);
+  border: 2px solid var(--pk-border);
+  border-radius: 10px;
+  padding: 0.15rem 0.75rem;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+.match-card-footer {
+  border-top: 1px solid var(--pk-border);
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f7fcf9;
+  font-size: 0.76rem;
+  color: #6c757d;
+  gap: 0.5rem;
+}
+
+/* ══ PRONOSTICO INPUTS ═══════════════════════════════ */
 .polla-goles-local,
 .polla-goles-visitante {
-  font-size: 1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  border-radius: 8px;
+  border: 2px solid var(--pk-border);
+  transition: border-color 0.15s;
+}
+.polla-goles-local:focus,
+.polla-goles-visitante:focus {
+  border-color: var(--pk-mid);
+  box-shadow: 0 0 0 3px rgba(30,122,69,0.15);
+  outline: none;
+}
+.polla-feedback { font-size: 1rem; line-height: 1; min-width: 20px; display: inline-block; }
+
+/* ══ PARTIDO ROW (pronósticos page) ══════════════════ */
+.partido-row { transition: background-color 0.15s ease; }
+.partido-row:hover { background-color: rgba(0,100,0,0.04) !important; }
+
+/* ══ RANKING TABLE ═══════════════════════════════════ */
+.polla-rank-gold   { background: rgba(255,215,0,0.15) !important; }
+.polla-rank-silver { background: rgba(192,192,192,0.12) !important; }
+.polla-rank-bronze { background: rgba(205,127,50,0.10) !important; }
+
+/* ══ CAMPEON PAGE ════════════════════════════════════ */
+.campeon-card {
+  cursor: pointer;
+  border: 3px solid transparent;
+  border-radius: 14px;
+  background: white;
+  padding: 1rem 0.75rem;
+  text-align: center;
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.15s;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.07);
+}
+.campeon-card:hover { border-color: var(--pk-mid); transform: translateY(-2px); box-shadow: 0 5px 16px rgba(0,0,0,0.12); }
+.campeon-card.selected { border-color: var(--pk-gold); box-shadow: 0 0 0 4px rgba(240,192,64,0.3); }
+.campeon-card .flag-wrap { width: 80px; height: 54px; border-radius: 8px; margin: 0 auto 0.5rem; }
+.campeon-card .eq-name { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--pk-text); }
+
+/* ══ BADGES ══════════════════════════════════════════ */
+.badge-nuevo   { background-color: #198754; }
+.badge-aumento { background-color: #0d6efd; }
+.badge-doble {
+  background: linear-gradient(135deg, var(--pk-gold), #e8a000);
+  color: #1a2800;
   font-weight: 700;
 }
 
-/* Feedback inline AJAX */
-.polla-feedback {
-  font-size: 1rem;
-  line-height: 1;
-  min-width: 20px;
-  display: inline-block;
-}
-
-/* Badges de motivo doble polla */
-.badge-nuevo {
-  background-color: #198754;
-}
-.badge-aumento {
-  background-color: #0d6efd;
-}
-
-/* Navbar polla sub-nav */
-.navbar.navbar-light.bg-white.border-bottom {
-  z-index: 100;
-}
-
-/* Mobile adjustments */
+/* ══ MOBILE ══════════════════════════════════════════ */
 @media (max-width: 576px) {
-  .polla-hero h1 {
-    font-size: 1.5rem;
-  }
-  .polla-hero .lead {
-    font-size: 0.9rem;
-  }
-  .partido-row .small {
-    font-size: 0.75rem;
-  }
-}
-
-/* Top 3 highlight en ranking */
-.table tbody tr:first-child td {
-  background-color: rgba(255, 215, 0, 0.15);
-}
-.table tbody tr:nth-child(2) td {
-  background-color: rgba(192, 192, 192, 0.1);
-}
-.table tbody tr:nth-child(3) td {
-  background-color: rgba(205, 127, 50, 0.1);
-}
-
-/* Countdown / próximos partidos */
-.partido-countdown {
-  font-size: 0.75rem;
-  color: #6c757d;
-}
-
-/* Estados del pronóstico en la grilla */
-.polla-status-done::after {
-  content: ' ✓';
-  color: #198754;
-  font-weight: bold;
-}
-.polla-status-missing::after {
-  content: ' !';
-  color: #dc3545;
-  font-weight: bold;
+  .polla-hero-banner { padding: 1.25rem; }
+  .polla-hero-title  { font-size: 1.3rem; }
+  .flag-wrap         { width: 60px; height: 40px; }
+  .flag-wrap-sm      { width: 40px; height: 27px; }
+  .polla-stat-chip .sv { font-size: 1.4rem; }
+  .match-team-name   { font-size: 0.65rem; max-width: 70px; }
+  .match-score-badge { font-size: 1.1rem; }
 }
