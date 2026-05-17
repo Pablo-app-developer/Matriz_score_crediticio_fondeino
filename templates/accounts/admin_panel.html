@@ -108,6 +108,15 @@
                 <a href="{% url 'accounts:usuario_password' u.pk %}" class="btn btn-sm btn-outline-warning" title="Cambiar contraseña">
                   <i class="bi bi-key"></i>
                 </a>
+                {% if u != request.user %}
+                <form method="post" action="{% url 'accounts:usuario_eliminar' u.pk %}" class="d-inline"
+                      onsubmit="return confirm('¿Eliminar al usuario «{{ u.get_full_name|default:u.username }}»? Esta acción no se puede deshacer.')">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar usuario">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+                {% endif %}
               </td>
             </tr>
             {% empty %}
@@ -176,10 +185,10 @@
               <td class="text-center">
                 {% if u.es_solo_polla %}
                 <form method="post" action="{% url 'accounts:resetear_password_polla' u.pk %}"
-                      onsubmit="return confirm('¿Resetear la contraseña de {{ u.get_full_name|default:u.username }}?')">
+                      class="d-inline" onsubmit="return confirm('¿Resetear la contraseña de {{ u.get_full_name|default:u.username }}?')">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-sm btn-outline-warning" title="Resetear contraseña temporal">
-                    <i class="bi bi-arrow-counterclockwise me-1"></i>Reset pwd
+                    <i class="bi bi-arrow-counterclockwise"></i>
                   </button>
                 </form>
                 {% else %}
@@ -187,6 +196,13 @@
                     <i class="bi bi-pencil"></i>
                   </a>
                 {% endif %}
+                <form method="post" action="{% url 'accounts:usuario_eliminar' u.pk %}" class="d-inline"
+                      onsubmit="return confirm('¿Eliminar al usuario «{{ u.get_full_name|default:u.username }}»? Esta acción no se puede deshacer.')">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar usuario">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
               </td>
             </tr>
             {% empty %}

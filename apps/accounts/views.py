@@ -260,3 +260,18 @@ def toggle_permiso(request, pk):
         target.save(update_fields=['activo'])
         return JsonResponse({'ok': True, 'valor': target.activo})
     return JsonResponse({'ok': False, 'error': 'Campo no válido'}, status=400)
+
+
+@login_required
+@require_POST
+def usuario_eliminar(request, pk):
+    if not request.user.es_admin:
+        return HttpResponseForbidden()
+    target = get_object_or_404(Usuario, pk=pk)
+    if target == request.user:
+        messages.error(request, 'No puedes eliminar tu propia cuenta.')
+        return redirect('accounts:admin_panel')
+    nombre = target.get_full_name() or target.username
+    target.delete()
+    messages.success(request, f'Usuario «{nombre}» eliminado correctamente.')
+    return redirect('accounts:admin_panel')
