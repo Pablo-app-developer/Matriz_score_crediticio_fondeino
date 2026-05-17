@@ -125,8 +125,21 @@
             {{ item.partido.bandera_visitante }}
           </div>
         </div>
-        <div class="text-center small text-muted" style="font-size:0.7rem;">
-          {{ item.partido.get_fase_display }}{% if item.partido.estadio %} · {{ item.partido.ciudad }}{% endif %}
+
+        <!-- Pie del partido: fase + ciudad + botón estadísticas -->
+        <div class="d-flex justify-content-center align-items-center gap-2 mt-1" style="font-size:0.7rem;">
+          <span class="text-muted">
+            {{ item.partido.get_fase_display }}{% if item.partido.ciudad %} · {{ item.partido.ciudad }}{% endif %}
+          </span>
+          {% if item.partido.equipo_local.api_football_id and item.partido.equipo_visitante.api_football_id %}
+          <button class="btn btn-outline-info btn-stats py-0 px-1"
+                  style="font-size:0.7rem; line-height:1.4;"
+                  data-partido-pk="{{ item.partido.pk }}"
+                  data-titulo="{{ item.partido.nombre_local_display }} vs {{ item.partido.nombre_visitante_display }}"
+                  title="Ver estadísticas e historial">
+            <i class="bi bi-bar-chart-line-fill"></i> Stats
+          </button>
+          {% endif %}
         </div>
       </div>
       {% endfor %}
@@ -135,9 +148,29 @@
   {% endfor %}
 </div>
 
+<!-- Modal de estadísticas del partido -->
+<div class="modal fade" id="modalStats" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header py-2 bg-dark text-white">
+        <h6 class="modal-title small fw-bold" id="modalStatsTitulo"></h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3" id="modalStatsCuerpo">
+        <div class="text-center py-3">
+          <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+          <div class="small text-muted mt-2">Cargando datos...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% block polla_scripts %}
 <script>
 const CSRF = '{{ csrf_token }}';
+
+// ── Guardar pronóstico ──
 document.querySelectorAll('[data-partido-id]').forEach(container => {
   const btn = container.querySelector('.polla-guardar-btn');
   const fb = container.querySelector('.polla-feedback');
@@ -169,6 +202,109 @@ document.querySelectorAll('[data-partido-id]').forEach(container => {
       .finally(() => { btn.disabled = false; });
   });
 });
+
+// ── Modal de estadísticas ──
+const modalEl = document.getElementById('modalStats');
+if (modalEl) {
+  const modal = new bootstrap.Modal(modalEl);
+  const spinnerHTML = `
+    <div class="text-center py-3">
+      <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+      <div class="small text-muted mt-2">Cargando datos...</div>
+    </div>`;
+
+  document.querySelectorAll('.btn-stats').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pk = btn.dataset.partidoPk;
+      const titulo = btn.dataset.titulo;
+      document.getElementById('modalStatsTitulo').textContent = titulo;
+      document.getElementById('modalStatsCuerpo').innerHTML = spinnerHTML;
+      modal.show();
+
+      fetch(`/polla/api/partido/${pk}/datos/`)
+        .then(r => r.json())
+        .then(resp => {
+          document.getElementById('modalStatsCuerpo').innerHTML =
+            resp.ok ? renderStats(resp.datos) : '<p class="text-muted text-center py-2 small">Datos no disponibles aún.<br>Se actualizarán antes del partido.</p>';
+        })
+        .catch(() => {
+          document.getElementById('modalStatsCuerpo').innerHTML =
+            '<p class="text-danger text-center small">Error al cargar estadísticas.</p>';
+        });
+    });
+  });
+}
+
+function renderStats(d) {
+  let html = '';
+
+  // ── Historial H2H ──
+  if (d.h2h && d.h2h.total > 0) {
+    const h = d.h2h;
+    const pL = Math.round(h.victorias_local / h.total * 100);
+    const pV = Math.round(h.victorias_visitante / h.total * 100);
+    const pE = 100 - pL - pV;
+    html += `
+      <div class="mb-3">
+        <div class="fw-bold small mb-2">⚔️ Historial cara a cara (${h.total} partidos)</div>
+        <div class="d-flex text-center gap-1 mb-2">
+          <div class="flex-fill border rounded py-1">
+            <div class="fw-bold text-primary fs-5 lh-1">${h.victorias_local}</div>
+            <div class="text-muted" style="font-size:0.65rem;">Local gana</div>
+          </div>
+          <div class="flex-fill border rounded py-1">
+            <div class="fw-bold fs-5 lh-1">${h.empates}</div>
+            <div class="text-muted" style="font-size:0.65rem;">Empates</div>
+          </div>
+          <div class="flex-fill border rounded py-1">
+            <div class="fw-bold text-danger fs-5 lh-1">${h.victorias_visitante}</div>
+            <div class="text-muted" style="font-size:0.65rem;">Visitante gana</div>
+          </div>
+        </div>
+        <div class="progress mb-2" style="height:6px;" title="${pL}% / ${pE}% / ${pV}%">
+          <div class="progress-bar bg-primary" style="width:${pL}%"></div>
+          <div class="progress-bar bg-secondary" style="width:${pE}%"></div>
+          <div class="progress-bar bg-danger" style="width:${pV}%"></div>
+        </div>`;
+
+    if (h.ultimos && h.ultimos.length) {
+      html += `<div style="font-size:0.7rem;" class="text-muted">Últimos enfrentamientos:</div>
+        <ul class="list-unstyled mb-0" style="font-size:0.7rem;">`;
+      h.ultimos.forEach(p => {
+        html += `<li class="border-bottom py-1">${p.fecha} · ${p.local} <strong>${p.marcador}</strong> ${p.visitante}</li>`;
+      });
+      html += `</ul>`;
+    }
+    html += `</div>`;
+  } else if (d.h2h && d.h2h.total === 0) {
+    html += `<div class="text-muted small mb-3">⚔️ Sin historial previo entre estos equipos.</div>`;
+  }
+
+  // ── Forma reciente ──
+  const badgeForma = (letra) => {
+    const cls = letra === 'W' ? 'bg-success' : letra === 'L' ? 'bg-danger' : 'bg-secondary';
+    const lbl = letra === 'W' ? 'G' : letra === 'L' ? 'P' : 'E';
+    return `<span class="badge ${cls} px-2">${lbl}</span>`;
+  };
+
+  if (d.forma_local || d.forma_visitante) {
+    html += `<div class="mb-1"><div class="fw-bold small mb-1">📈 Forma reciente (últimos 5)</div>`;
+    if (d.forma_local && d.forma_local.length) {
+      html += `<div class="d-flex align-items-center gap-1 mb-1" style="font-size:0.7rem;">
+        <span class="text-muted me-1">Local:</span>${d.forma_local.map(badgeForma).join('')}
+      </div>`;
+    }
+    if (d.forma_visitante && d.forma_visitante.length) {
+      html += `<div class="d-flex align-items-center gap-1" style="font-size:0.7rem;">
+        <span class="text-muted me-1">Visit.:</span>${d.forma_visitante.map(badgeForma).join('')}
+      </div>`;
+    }
+    html += `</div>`;
+  }
+
+  html += `<div class="text-end mt-2" style="font-size:0.6rem; color:#aaa;">Fuente: api-football.com · caché 6h</div>`;
+  return html || '<p class="text-muted text-center py-2 small">Sin datos disponibles aún.</p>';
+}
 </script>
 {% endblock %}
 {% endblock %}

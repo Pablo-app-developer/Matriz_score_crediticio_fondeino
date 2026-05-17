@@ -478,6 +478,16 @@ def pronosticos(request):
     })
 
 
+@login_required
+def datos_partido_api(request, partido_id):
+    from .api_service import get_datos_partido
+    partido = get_object_or_404(Partido, pk=partido_id)
+    datos = get_datos_partido(partido)
+    if datos is None:
+        return JsonResponse({'ok': False, 'error': 'Datos no disponibles'})
+    return JsonResponse({'ok': True, 'datos': datos})
+
+
 @require_POST
 @afiliado_activo
 def guardar_pronostico(request):

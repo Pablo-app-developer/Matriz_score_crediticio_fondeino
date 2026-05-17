@@ -76,6 +76,7 @@ class Equipo(models.Model):
     codigo_fifa = models.CharField(max_length=3, unique=True, verbose_name='Código FIFA')
     bandera_emoji = models.CharField(max_length=10, blank=True, verbose_name='Bandera')
     grupo = models.CharField(max_length=1, verbose_name='Grupo')
+    api_football_id = models.IntegerField(null=True, blank=True, verbose_name='ID api-football.com')
 
     class Meta:
         ordering = ['grupo', 'nombre']
@@ -107,6 +108,9 @@ class Partido(models.Model):
     goles_local = models.IntegerField(null=True, blank=True, verbose_name='Goles local')
     goles_visitante = models.IntegerField(null=True, blank=True, verbose_name='Goles visitante')
     finalizado = models.BooleanField(default=False, verbose_name='Finalizado')
+
+    datos_previos = models.JSONField(null=True, blank=True, verbose_name='Datos API (caché)')
+    datos_previos_ts = models.DateTimeField(null=True, blank=True, verbose_name='Timestamp caché API')
 
     class Meta:
         ordering = ['fecha_hora', 'numero']

@@ -20,6 +20,7 @@ urlpatterns = [
 
     # API
     path('api/empleado/', views.api_empleado_por_cedula, name='api_empleado_por_cedula'),
+    path('api/partido/<int:partido_id>/datos/', views.datos_partido_api, name='datos_partido_api'),
 
     # Admin
     path('admin/afiliados/', views.admin_afiliados, name='admin_afiliados'),

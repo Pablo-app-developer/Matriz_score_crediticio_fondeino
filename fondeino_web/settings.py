@@ -107,6 +107,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# ── API Football (api-football.com vía RapidAPI) ──
+API_FOOTBALL_KEY = os.environ.get('API_FOOTBALL_KEY', '')
+
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
