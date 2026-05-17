@@ -107,6 +107,11 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# ── Seguridad de sesión ──
+SESSION_COOKIE_AGE      = 1800   # 30 min server-side (respaldo al JS de inactividad)
+SESSION_SAVE_EVERY_REQUEST = True  # resetea el timer en cada request
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # cierra al cerrar el navegador
+
 # ── API Football (api-football.com vía RapidAPI) ──
 API_FOOTBALL_KEY = os.environ.get('API_FOOTBALL_KEY', '')
 

@@ -111,5 +111,70 @@ function togglePassword(btn) {
 }
 </script>
 {% block scripts %}{% endblock %}
+
+{% if request.user.is_authenticated %}
+<!-- Modal de sesión por inactividad -->
+<div class="modal fade" id="modalInactividad" tabindex="-1"
+     data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-warning">
+      <div class="modal-header bg-warning py-2">
+        <h6 class="modal-title fw-bold">
+          <i class="bi bi-clock-history me-2"></i>Sesión por cerrar
+        </h6>
+      </div>
+      <div class="modal-body text-center py-3">
+        <p class="mb-2 text-muted small">Sin actividad detectada. Tu sesión cerrará en</p>
+        <div class="display-4 fw-bold text-danger" id="inac-cuenta">60</div>
+        <p class="text-muted small mt-1">segundos</p>
+      </div>
+      <div class="modal-footer justify-content-center py-2">
+        <button class="btn btn-warning fw-bold px-4" id="inac-continuar">
+          <i class="bi bi-hand-index me-1"></i>Seguir en el sistema
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  const TIMEOUT_MS  = 10 * 60 * 1000;   // 10 minutos de inactividad
+  const AVISO_MS    = 60 * 1000;         // aviso 60 s antes
+  const LOGOUT_URL  = '{% url "accounts:logout" %}';
+
+  const modalEl  = document.getElementById('modalInactividad');
+  const cuentaEl = document.getElementById('inac-cuenta');
+  const bsModal  = new bootstrap.Modal(modalEl);
+
+  let timerAviso, timerCuenta;
+
+  function cerrarSesion() { window.location.href = LOGOUT_URL; }
+
+  function iniciarCuenta() {
+    let s = 60;
+    cuentaEl.textContent = s;
+    clearInterval(timerCuenta);
+    timerCuenta = setInterval(() => {
+      s -= 1;
+      cuentaEl.textContent = s;
+      if (s <= 0) { clearInterval(timerCuenta); cerrarSesion(); }
+    }, 1000);
+  }
+
+  function resetear() {
+    clearTimeout(timerAviso);
+    clearInterval(timerCuenta);
+    if (modalEl.classList.contains('show')) bsModal.hide();
+    timerAviso = setTimeout(() => { bsModal.show(); iniciarCuenta(); }, TIMEOUT_MS - AVISO_MS);
+  }
+
+  document.getElementById('inac-continuar').addEventListener('click', resetear);
+  ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click']
+    .forEach(ev => document.addEventListener(ev, resetear, { passive: true }));
+
+  resetear();
+})();
+</script>
+{% endif %}
 </body>
 </html>
