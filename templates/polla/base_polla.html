@@ -3,21 +3,28 @@
 
 {% block title %}Polla FIFA 2026 — FONDEINO{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'polla/css/polla.css' %}">
+{% endblock %}
+
 {% block navbar %}{% endblock %}
 
 {% block content %}
-<nav class="polla-navbar navbar navbar-expand-lg mb-0">
+
+<!-- ════ NAVBAR POLLA ════════════════════════════════════ -->
+<nav class="pk-nav navbar navbar-expand-lg">
   <div class="container-fluid px-3">
 
-    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'polla:index' %}">
-      <i class="bi bi-trophy-fill"></i>Polla FIFA 2026
+    <a class="navbar-brand" href="{% url 'polla:index' %}">
+      <i class="bi bi-trophy-fill" style="color:var(--pk-gold)"></i>
+      Polla FIFA 2026
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#pollaNav">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#pkNav">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="pollaNav">
+    <div class="collapse navbar-collapse" id="pkNav">
       <ul class="navbar-nav me-auto gap-1">
 
         <li class="nav-item">
@@ -26,46 +33,40 @@
           </a>
         </li>
 
-        {% if request.user.is_authenticated %}
-          {% if afiliado_nav %}
-            <li class="nav-item">
-              <a class="nav-link {% block nav_pronosticos %}{% endblock %}" href="{% url 'polla:pronosticos' %}">
-                <i class="bi bi-pencil-square me-1"></i>Pronosticar
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% block nav_campeon %}{% endblock %}" href="{% url 'polla:campeon' %}">
-                <i class="bi bi-star-fill me-1"></i>Campeón
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% block nav_mis_pronosticos %}{% endblock %}" href="{% url 'polla:mis_pronosticos' %}">
-                <i class="bi bi-list-check me-1"></i>Mis pronósticos
-              </a>
-            </li>
-          {% endif %}
+        {% if request.user.is_authenticated and afiliado_nav %}
+          <li class="nav-item">
+            <a class="nav-link {% block nav_pronosticos %}{% endblock %}" href="{% url 'polla:pronosticos' %}">
+              <i class="bi bi-pencil-square me-1"></i>Pronosticar
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% block nav_campeon %}{% endblock %}" href="{% url 'polla:campeon' %}">
+              <i class="bi bi-star-fill me-1"></i>Campeón
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% block nav_mis_pronosticos %}{% endblock %}" href="{% url 'polla:mis_pronosticos' %}">
+              <i class="bi bi-list-check me-1"></i>Mis pronósticos
+            </a>
+          </li>
+        {% endif %}
 
-          {% if request.user.es_admin or request.user.es_admin_polla %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                <i class="bi bi-gear-fill me-1"></i>Admin
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'polla:admin_afiliados' %}">
-                  <i class="bi bi-people me-1"></i>Afiliados
-                </a></li>
-                <li><a class="dropdown-item" href="{% url 'polla:admin_cargar_afiliados' %}">
-                  <i class="bi bi-file-earmark-excel me-1"></i>Cargar Excel
-                </a></li>
-                <li><a class="dropdown-item" href="{% url 'polla:admin_cargar_resultados' %}">
-                  <i class="bi bi-check2-circle me-1"></i>Resultados
-                </a></li>
-                <li><a class="dropdown-item" href="{% url 'polla:admin_reporte' %}">
-                  <i class="bi bi-graph-up me-1"></i>Reporte
-                </a></li>
-              </ul>
-            </li>
-          {% endif %}
+        {% if request.user.is_authenticated and request.user.es_admin or request.user.es_admin_polla %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-gear-fill me-1"></i>Admin
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'polla:admin_afiliados' %}">
+                <i class="bi bi-people me-2"></i>Afiliados</a></li>
+              <li><a class="dropdown-item" href="{% url 'polla:admin_cargar_afiliados' %}">
+                <i class="bi bi-file-earmark-excel me-2"></i>Cargar Excel</a></li>
+              <li><a class="dropdown-item" href="{% url 'polla:admin_cargar_resultados' %}">
+                <i class="bi bi-check2-circle me-2"></i>Resultados</a></li>
+              <li><a class="dropdown-item" href="{% url 'polla:admin_reporte' %}">
+                <i class="bi bi-graph-up me-2"></i>Reporte</a></li>
+            </ul>
+          </li>
         {% endif %}
 
         <li class="nav-item">
@@ -76,63 +77,54 @@
       </ul>
 
       <!-- Usuario -->
-      <div class="d-flex align-items-center">
-        {% if request.user.is_authenticated %}
-        <div class="dropdown">
-          <a href="#" class="nav-link dropdown-toggle d-flex align-items-center gap-1"
-             data-bs-toggle="dropdown" style="font-size:0.85rem; color:rgba(255,255,255,0.85);">
-            <i class="bi bi-person-circle fs-5"></i>
-            <span>
-              {% if afiliado_nav %}
-                {{ afiliado_nav.nombre_completo|truncatechars:22 }}
-                {% if afiliado_nav.cantidad_pollas == 2 %}
-                  <span class="badge badge-doble ms-1" style="font-size:0.65rem;">⭐×2</span>
-                {% endif %}
-              {% else %}
-                {{ request.user.get_full_name|default:request.user.username|truncatechars:22 }}
+      {% if request.user.is_authenticated %}
+      <div class="dropdown">
+        <a href="#" class="pk-nav-user nav-link dropdown-toggle d-flex align-items-center gap-2"
+           data-bs-toggle="dropdown">
+          <i class="bi bi-person-circle fs-5"></i>
+          <span>
+            {% if afiliado_nav %}
+              {{ afiliado_nav.nombre_completo|truncatechars:20 }}
+              {% if afiliado_nav.cantidad_pollas == 2 %}
+                <span class="badge badge-doble ms-1" style="font-size:.63rem;">⭐×2</span>
               {% endif %}
-            </span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li class="dropdown-item-text text-muted small px-3 py-1">
-              <i class="bi bi-controller me-1"></i>
-              {% if afiliado_nav %}{{ afiliado_nav.cedula }}{% else %}Polla Mundialista{% endif %}
-            </li>
-            <li><hr class="dropdown-divider my-1"></li>
-            <li>
-              <a class="dropdown-item" href="{% url 'accounts:cambiar_mi_password' %}">
-                <i class="bi bi-key me-2"></i>Cambiar contraseña
-              </a>
-            </li>
-            {% if not request.user.es_solo_polla %}
-            <li>
-              <a class="dropdown-item" href="{% url 'accounts:panel_selector' %}">
-                <i class="bi bi-grid-1x2 me-2"></i>Cambiar módulo
-              </a>
-            </li>
+            {% else %}
+              {{ request.user.get_full_name|default:request.user.username|truncatechars:20 }}
             {% endif %}
-            <li><hr class="dropdown-divider my-1"></li>
-            <li>
-              <a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">
-                <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
-              </a>
-            </li>
-          </ul>
-        </div>
-        {% endif %}
+          </span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          {% if afiliado_nav %}
+          <li class="px-3 py-1">
+            <small class="text-muted">CC {{ afiliado_nav.cedula }}</small>
+          </li>
+          <li><hr class="dropdown-divider my-1"></li>
+          {% endif %}
+          <li><a class="dropdown-item" href="{% url 'accounts:cambiar_mi_password' %}">
+            <i class="bi bi-key me-2"></i>Cambiar contraseña</a></li>
+          {% if not request.user.es_solo_polla %}
+          <li><a class="dropdown-item" href="{% url 'accounts:panel_selector' %}">
+            <i class="bi bi-grid-1x2 me-2"></i>Cambiar módulo</a></li>
+          {% endif %}
+          <li><hr class="dropdown-divider my-1"></li>
+          <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">
+            <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
+        </ul>
       </div>
+      {% endif %}
     </div>
   </div>
 </nav>
 
-<div class="container-fluid px-3 py-3">
+<!-- ════ CONTENIDO ══════════════════════════════════════ -->
+<div class="container-fluid px-3 px-md-4 py-3">
   {% block polla_content %}{% endblock %}
 </div>
+
 {% endblock %}
 
 {% block scripts %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'polla/css/polla.css' %}">
 <script src="{% static 'polla/js/polla.js' %}"></script>
 {% block polla_scripts %}{% endblock %}
 {% endblock %}

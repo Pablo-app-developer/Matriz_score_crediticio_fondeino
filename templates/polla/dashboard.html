@@ -3,13 +3,13 @@
 
 {% block polla_content %}
 
-<!-- ══ HERO ══════════════════════════════════════════════ -->
-<div class="polla-hero-banner mb-4">
-  <p class="polla-hero-sub mb-1">
-    <i class="bi bi-trophy-fill me-1" style="color:var(--pk-gold)"></i>Copa Mundial FIFA 2026
+{# ══ HERO ══════════════════════════════════════════════════ #}
+<div class="pk-hero">
+  <p class="pk-hero-meta">
+    <i class="bi bi-globe2 me-1"></i>Copa Mundial FIFA 2026 · FONDEINO
   </p>
-  <h1 class="polla-hero-title">¡Hola, {{ afiliado.nombre_completo|truncatechars:28 }}!</h1>
-  <p class="polla-hero-sub">
+  <h1 class="pk-hero-title">¡Hola, {{ afiliado.nombre_completo|truncatechars:30 }}!</h1>
+  <p class="pk-hero-meta">
     {% if afiliado.area %}{{ afiliado.area }} · {% endif %}
     {% if afiliado.cantidad_pollas == 2 %}
       <span class="badge badge-doble"><i class="bi bi-stars me-1"></i>Doble Polla — {{ afiliado.motivo_doble_label }}</span>
@@ -18,199 +18,196 @@
     {% endif %}
   </p>
 
-  <!-- Stat chips -->
+  {# Chips por inscripción #}
   <div class="d-flex flex-wrap gap-2 mt-3">
     {% for insc in inscripciones %}
-    <div class="polla-stat-chip">
-      <div class="sv">{{ insc.puntos_totales }}</div>
-      <div class="sl">Pts · Polla {{ insc.label }}</div>
-      <div class="ss">
-        {% for k, v in posiciones.items %}{% if k == insc.pk %}#{{ v }} en el ranking{% endif %}{% endfor %}
+      {% if inscripciones|length > 1 %}
+      <div class="pk-chip" style="min-width:60px;">
+        <div class="pk-chip-label">Polla {{ insc.label }}</div>
       </div>
-    </div>
-    <div class="polla-stat-chip">
-      <div class="sv">{{ insc.aciertos_resultado }}</div>
-      <div class="sl">Resultados</div>
-      <div class="ss">Polla {{ insc.label }}</div>
-    </div>
-    <div class="polla-stat-chip">
-      <div class="sv">{{ insc.aciertos_marcador }}</div>
-      <div class="sl">Exactos</div>
-      <div class="ss">Polla {{ insc.label }}</div>
-    </div>
-    {% if not forloop.last %}<div class="vr mx-2" style="opacity:.2"></div>{% endif %}
+      {% endif %}
+      <div class="pk-chip">
+        <div class="pk-chip-value">{{ insc.puntos_totales }}</div>
+        <div class="pk-chip-label">Puntos</div>
+        <div class="pk-chip-sub">
+          {% for k,v in posiciones.items %}{% if k == insc.pk %}Posición #{{ v }}{% endif %}{% endfor %}
+        </div>
+      </div>
+      <div class="pk-chip">
+        <div class="pk-chip-value">{{ insc.aciertos_resultado }}</div>
+        <div class="pk-chip-label">Resultados</div>
+        <div class="pk-chip-sub">correctos</div>
+      </div>
+      <div class="pk-chip">
+        <div class="pk-chip-value">{{ insc.aciertos_marcador }}</div>
+        <div class="pk-chip-label">Exactos</div>
+        <div class="pk-chip-sub">marcadores</div>
+      </div>
+      {% if not forloop.last %}
+        <div style="width:1px; background:rgba(255,255,255,.15); margin:0 .3rem; align-self:stretch;"></div>
+      {% endif %}
     {% endfor %}
   </div>
 </div>
 
-<!-- ══ PROGRESO PRONÓSTICOS ════════════════════════════ -->
+{# ══ BARRA DE PROGRESO ══════════════════════════════════════ #}
 {% if partidos_abiertos > 0 %}
-<div class="polla-progress-wrap">
-  <div class="d-flex justify-content-between align-items-center small">
-    <span>
+<div class="pk-progress-wrap">
+  <div class="d-flex justify-content-between align-items-center">
+    <div class="small fw-semibold" style="color:var(--pk-text)">
       <i class="bi bi-pencil-square me-1 text-success"></i>
-      <strong>{{ pronosticos_hechos }}</strong> de <strong>{{ partidos_abiertos }}</strong> pronósticos completados
-    </span>
-    <a href="{% url 'polla:pronosticos' %}" class="btn btn-sm btn-success">
+      Pronósticos completados:
+      <strong>{{ pronosticos_hechos }}</strong> de <strong>{{ partidos_abiertos }}</strong>
+    </div>
+    <a href="{% url 'polla:pronosticos' %}" class="btn btn-sm btn-success fw-bold px-3">
       Pronosticar <i class="bi bi-arrow-right ms-1"></i>
     </a>
   </div>
-  <div class="polla-progress-track">
-    <div class="polla-progress-fill" style="width:{% widthratio pronosticos_hechos partidos_abiertos 100 %}%"></div>
+  <div class="pk-progress-track mt-2">
+    <div class="pk-progress-fill" style="width:{% widthratio pronosticos_hechos partidos_abiertos 100 %}%"></div>
   </div>
 </div>
 {% endif %}
 
 {% if pronosticos_hechos == 0 and partidos_abiertos > 0 %}
-<div class="alert alert-warning d-flex align-items-center gap-3 mb-4">
+<div class="alert alert-warning d-flex gap-3 align-items-start mb-4">
   <i class="bi bi-hand-index-thumb fs-2 flex-shrink-0"></i>
   <div>
-    <strong>¡Empieza a pronosticar!</strong> Tienes <strong>{{ partidos_abiertos }}</strong> partido{{ partidos_abiertos|pluralize }} disponibles.
-    Los pronósticos se cierran automáticamente cuando inicia cada partido.
+    <strong>¡Empieza ya!</strong> Tienes <strong>{{ partidos_abiertos }}</strong>
+    partido{{ partidos_abiertos|pluralize }} disponibles para pronosticar.
+    Los pronósticos se cierran solos cuando empieza cada partido.
   </div>
 </div>
 {% endif %}
 
 <div class="row g-4">
 
-  <!-- ══ PRÓXIMOS PARTIDOS ════════════════════════════ -->
+  {# ══ PRÓXIMOS PARTIDOS ════════════════════════════════════ #}
   <div class="col-lg-7">
-    <div class="polla-section-title">
-      <i class="bi bi-calendar-event me-2"></i>Próximos partidos
-    </div>
+    <div class="pk-section"><i class="bi bi-calendar-event me-2"></i>Próximos partidos</div>
 
     {% if proximos %}
-    <div class="row g-3">
+    <div class="d-flex flex-column gap-3">
       {% for partido in proximos %}
-      <div class="col-12">
-        <div class="match-card">
-          <div class="match-card-header">
-            {{ partido.get_fase_display }}
-            {% if partido.jornada %} · Jornada {{ partido.jornada }}{% endif %}
-            {% if partido.estadio %} · {{ partido.estadio }}{% endif %}
-          </div>
-          <div class="match-card-body">
-            <div class="match-teams">
+      <div class="pk-match-card">
 
-              <!-- Local -->
-              <div class="match-team">
-                <div class="flag-wrap">
-                  {% if partido.bandera_url_local %}
-                    <img src="{{ partido.bandera_url_local }}"
-                         alt="{{ partido.nombre_local_display }}"
-                         loading="lazy">
-                  {% else %}
-                    <span class="flag-placeholder">🏳️</span>
-                  {% endif %}
-                </div>
-                <div class="match-team-name">{{ partido.nombre_local_display }}</div>
+        <div class="pk-match-header">
+          {{ partido.get_fase_display }}
+          {% if partido.jornada %} · Jornada {{ partido.jornada }}{% endif %}
+          {% if partido.estadio %} · {{ partido.estadio }}{% endif %}
+        </div>
+
+        <div class="pk-match-body">
+          <div class="pk-teams">
+
+            {# Local #}
+            <div class="pk-team">
+              <div class="pk-flag">
+                {% if partido.bandera_url_local %}
+                  <img src="{{ partido.bandera_url_local }}" alt="{{ partido.nombre_local_display }}" loading="lazy">
+                {% else %}
+                  <span class="pk-flag-emoji">🏳️</span>
+                {% endif %}
               </div>
-
-              <div class="match-vs">VS</div>
-
-              <!-- Visitante -->
-              <div class="match-team">
-                <div class="flag-wrap">
-                  {% if partido.bandera_url_visitante %}
-                    <img src="{{ partido.bandera_url_visitante }}"
-                         alt="{{ partido.nombre_visitante_display }}"
-                         loading="lazy">
-                  {% else %}
-                    <span class="flag-placeholder">🏳️</span>
-                  {% endif %}
-                </div>
-                <div class="match-team-name">{{ partido.nombre_visitante_display }}</div>
-              </div>
-
+              <div class="pk-team-name">{{ partido.nombre_local_display }}</div>
             </div>
-          </div>
-          <div class="match-card-footer">
-            <span>
-              <i class="bi bi-clock me-1"></i>{{ partido.fecha_hora|date:"D d/m · H:i" }}
-            </span>
-            <a href="{% url 'polla:pronosticos' %}?partido={{ partido.pk }}"
-               class="btn btn-sm btn-success">
-              <i class="bi bi-pencil me-1"></i>Pronosticar
-            </a>
+
+            <div class="pk-vs">VS</div>
+
+            {# Visitante #}
+            <div class="pk-team">
+              <div class="pk-flag">
+                {% if partido.bandera_url_visitante %}
+                  <img src="{{ partido.bandera_url_visitante }}" alt="{{ partido.nombre_visitante_display }}" loading="lazy">
+                {% else %}
+                  <span class="pk-flag-emoji">🏳️</span>
+                {% endif %}
+              </div>
+              <div class="pk-team-name">{{ partido.nombre_visitante_display }}</div>
+            </div>
+
           </div>
         </div>
+
+        <div class="pk-match-footer">
+          <span><i class="bi bi-clock me-1"></i>{{ partido.fecha_hora|date:"D d/m · H:i" }} COL</span>
+          <a href="{% url 'polla:pronosticos' %}#partido-{{ partido.pk }}"
+             class="btn btn-sm btn-success fw-bold">
+            <i class="bi bi-pencil me-1"></i>Pronosticar
+          </a>
+        </div>
+
       </div>
       {% endfor %}
     </div>
+
     {% else %}
-    <div class="card border-0 shadow-sm text-center py-5 text-muted">
-      <i class="bi bi-calendar-x fs-1 mb-2 d-block" style="color:var(--pk-border)"></i>
-      No hay próximos partidos disponibles.
+    <div class="card border-0 shadow-sm text-center py-5">
+      <i class="bi bi-calendar-x fs-1 mb-2 d-block text-muted opacity-25"></i>
+      <span class="text-muted">No hay partidos próximos disponibles.</span>
     </div>
     {% endif %}
   </div>
 
-  <!-- ══ ÚLTIMOS RESULTADOS ══════════════════════════ -->
+  {# ══ ÚLTIMOS RESULTADOS ═══════════════════════════════════ #}
   <div class="col-lg-5">
-    <div class="polla-section-title">
-      <i class="bi bi-check2-all me-2"></i>Últimos resultados
-    </div>
+    <div class="pk-section"><i class="bi bi-check2-all me-2"></i>Últimos resultados</div>
 
     {% if ultimos %}
     <div class="d-flex flex-column gap-3">
       {% for partido in ultimos %}
-      <div class="match-card">
-        <div class="match-card-header">
+      <div class="pk-match-card">
+
+        <div class="pk-match-header">
           {{ partido.get_fase_display }} · {{ partido.fecha_hora|date:"d/m/Y" }}
         </div>
-        <div class="match-card-body">
-          <div class="match-teams">
 
-            <!-- Local -->
-            <div class="match-team">
-              <div class="flag-wrap">
+        <div class="pk-match-body">
+          <div class="pk-teams">
+
+            {# Local #}
+            <div class="pk-team">
+              <div class="pk-flag">
                 {% if partido.bandera_url_local %}
-                  <img src="{{ partido.bandera_url_local }}"
-                       alt="{{ partido.nombre_local_display }}"
-                       loading="lazy">
+                  <img src="{{ partido.bandera_url_local }}" alt="{{ partido.nombre_local_display }}" loading="lazy">
                 {% else %}
-                  <span class="flag-placeholder">🏳️</span>
+                  <span class="pk-flag-emoji">🏳️</span>
                 {% endif %}
               </div>
-              <div class="match-team-name">{{ partido.nombre_local_display }}</div>
+              <div class="pk-team-name">{{ partido.nombre_local_display }}</div>
             </div>
 
-            <!-- Score -->
-            <div class="match-score-badge">
-              {{ partido.goles_local }}–{{ partido.goles_visitante }}
-            </div>
+            <div class="pk-score">{{ partido.goles_local }}–{{ partido.goles_visitante }}</div>
 
-            <!-- Visitante -->
-            <div class="match-team">
-              <div class="flag-wrap">
+            {# Visitante #}
+            <div class="pk-team">
+              <div class="pk-flag">
                 {% if partido.bandera_url_visitante %}
-                  <img src="{{ partido.bandera_url_visitante }}"
-                       alt="{{ partido.nombre_visitante_display }}"
-                       loading="lazy">
+                  <img src="{{ partido.bandera_url_visitante }}" alt="{{ partido.nombre_visitante_display }}" loading="lazy">
                 {% else %}
-                  <span class="flag-placeholder">🏳️</span>
+                  <span class="pk-flag-emoji">🏳️</span>
                 {% endif %}
               </div>
-              <div class="match-team-name">{{ partido.nombre_visitante_display }}</div>
+              <div class="pk-team-name">{{ partido.nombre_visitante_display }}</div>
             </div>
 
           </div>
         </div>
+
       </div>
       {% endfor %}
     </div>
 
     <div class="text-end mt-2">
-      <a href="{% url 'polla:mis_pronosticos' %}" class="btn btn-link btn-sm p-0 small"
-         style="color:var(--pk-mid)">
-        Ver mi historial completo <i class="bi bi-arrow-right"></i>
+      <a href="{% url 'polla:mis_pronosticos' %}" class="small" style="color:var(--pk-mid)">
+        Ver historial completo <i class="bi bi-arrow-right"></i>
       </a>
     </div>
 
     {% else %}
-    <div class="card border-0 shadow-sm text-center py-4 text-muted">
-      <i class="bi bi-hourglass-split fs-2 mb-2 d-block" style="color:var(--pk-border)"></i>
-      Aún no hay partidos finalizados.
+    <div class="card border-0 shadow-sm text-center py-4">
+      <i class="bi bi-hourglass-split fs-2 mb-2 d-block text-muted opacity-25"></i>
+      <span class="text-muted small">Aún no hay partidos finalizados.</span>
     </div>
     {% endif %}
 
