@@ -178,6 +178,7 @@
     </a>
 
     <!-- POLLA -->
+    {% if muestra_polla %}
     <a href="{% url 'polla:index' %}" class="panel-card polla">
       <div class="card-icon polla">
         <i class="bi bi-trophy"></i>
@@ -191,6 +192,7 @@
         Ingresar
       </span>
     </a>
+    {% endif %}
 
   </div>
 

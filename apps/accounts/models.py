@@ -21,6 +21,11 @@ class Usuario(AbstractUser):
         verbose_name='Admin Polla Mundialista',
         help_text='Permite gestionar afiliados y cargar resultados en la Polla Mundialista.',
     )
+    participa_polla = models.BooleanField(
+        default=False,
+        verbose_name='Participa en la Polla',
+        help_text='Miembro del comité que también juega la Polla Mundialista con su propia cuenta.',
+    )
     debe_cambiar_password = models.BooleanField(
         default=False,
         verbose_name='Debe cambiar contraseña',
@@ -40,3 +45,8 @@ class Usuario(AbstractUser):
     @property
     def es_solo_polla(self):
         return self.rol == self.ROL_POLLA and not self.is_superuser
+
+    @property
+    def puede_jugar_polla(self):
+        """True si el usuario tiene acceso al módulo de la polla como jugador."""
+        return self.es_solo_polla or self.participa_polla or self.es_admin

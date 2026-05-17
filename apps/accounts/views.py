@@ -38,7 +38,9 @@ def login_view(request):
 def panel_selector(request):
     if request.user.es_solo_polla:
         return redirect('polla:index')
-    return render(request, 'accounts/panel_selector.html')
+    return render(request, 'accounts/panel_selector.html', {
+        'muestra_polla': request.user.puede_jugar_polla,
+    })
 
 
 def debug_db(request):
@@ -221,15 +223,12 @@ def admin_panel(request):
     usuarios_credito = Usuario.objects.filter(
         rol__in=[Usuario.ROL_ADMIN, Usuario.ROL_COMITE]
     ).order_by('rol', 'first_name', 'username')
-    usuarios_polla = Usuario.objects.exclude(
-        rol=Usuario.ROL_POLLA
-    ).order_by('first_name', 'username')
+    from django.db.models import Q
     participantes_polla = Usuario.objects.filter(
-        rol=Usuario.ROL_POLLA
+        Q(rol=Usuario.ROL_POLLA) | Q(participa_polla=True)
     ).order_by('first_name', 'username')
     return render(request, 'accounts/admin_panel.html', {
         'usuarios_credito': usuarios_credito,
-        'usuarios_polla': usuarios_polla,
         'participantes_polla': participantes_polla,
     })
 
@@ -252,6 +251,10 @@ def toggle_permiso(request, pk):
             target.rol = Usuario.ROL_ADMIN
         target.save(update_fields=['rol'])
         return JsonResponse({'ok': True, 'valor': target.rol, 'label': target.get_rol_display()})
+    if campo == 'participa_polla':
+        target.participa_polla = not target.participa_polla
+        target.save(update_fields=['participa_polla'])
+        return JsonResponse({'ok': True, 'valor': target.participa_polla})
     if campo == 'activo':
         target.activo = not target.activo
         target.save(update_fields=['activo'])
