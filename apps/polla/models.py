@@ -84,6 +84,10 @@ _FIFA_ISO2 = {
     'BEL': 'be', 'IRQ': 'iq', 'SEN': 'sn', 'VEN': 've',
     'DEN': 'dk', 'JOR': 'jo', 'GHA': 'gh', 'HUN': 'hu',
     'AUT': 'at', 'TUR': 'tr', 'SCO': 'gb-sct', 'CIV': 'ci',
+    # Equipos incorporados en el fixture oficial 2026
+    'CZE': 'cz', 'BIH': 'ba', 'HAI': 'ht', 'PAR': 'py',
+    'CUW': 'cw', 'SWE': 'se', 'CPV': 'cv', 'NOR': 'no',
+    'ALG': 'dz', 'CRO': 'hr', 'QAT': 'qa',
 }
 
 
