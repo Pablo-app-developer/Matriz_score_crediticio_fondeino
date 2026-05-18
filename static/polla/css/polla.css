@@ -111,63 +111,95 @@ body { background-color: var(--pk-bg) !important; }
   border-radius: 9px; padding: .1rem .75rem; white-space: nowrap;
 }
 
+/* ══ SEPARADOR DE FECHA ════════════════════════════════════ */
+.pk-date-divider {
+  display: flex; align-items: center;
+  margin: 1.75rem 0 1rem;
+}
+.pk-date-divider-line {
+  flex: 1; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--pk-border));
+  border-radius: 2px;
+}
+.pk-date-divider-line.right {
+  background: linear-gradient(270deg, transparent, var(--pk-border));
+}
+.pk-date-divider-badge {
+  background: linear-gradient(135deg, var(--pk-dark), var(--pk-green));
+  color: white; font-size: .78rem; font-weight: 700;
+  padding: .4rem 1.1rem; border-radius: 20px;
+  box-shadow: 0 3px 12px rgba(10,47,26,.35);
+  white-space: nowrap; letter-spacing: .2px;
+  margin: 0 .75rem;
+}
+
 /* ══ PRONÓSTICO CARD ═══════════════════════════════════════ */
 .pk-pro-card {
-  background: white; border-radius: 12px;
+  background: white; border-radius: 13px;
   border: 1px solid var(--pk-border);
   border-left: 5px solid var(--pk-border);
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
-  overflow: hidden; margin-bottom: .85rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+  overflow: hidden; margin-bottom: .75rem;
+  transition: box-shadow .18s, transform .15s;
 }
-.pk-pro-card.abierto       { border-left-color: #198754; }
-.pk-pro-card.cerrado       { border-left-color: #ffc107; }
-.pk-pro-card.finalizado    { border-left-color: #6c757d; background: #fafbfa; }
+.pk-pro-card:hover {
+  box-shadow: 0 5px 20px rgba(0,0,0,.11);
+  transform: translateY(-1px);
+}
+.pk-pro-card.abierto        { border-left-color: #198754; }
+.pk-pro-card.cerrado        { border-left-color: #e6a800; }
+.pk-pro-card.finalizado     { border-left-color: #6c757d; background: #f9fafb; }
 .pk-pro-card.sin-pronostico { border-left-color: #dc3545; }
 
 .pk-pro-header {
-  background: #0a2f1a; color: rgba(255,255,255,.75);
-  font-size: .7rem; text-transform: uppercase; letter-spacing: .8px;
-  padding: .3rem 1rem; font-weight: 600;
+  background: linear-gradient(90deg, #0a2f1a, #155230);
+  color: rgba(255,255,255,.78);
+  font-size: .68rem; text-transform: uppercase; letter-spacing: .9px;
+  padding: .32rem 1rem; font-weight: 600;
   display: flex; justify-content: space-between; align-items: center;
 }
 .pk-pro-header .fase-tag {
-  background: rgba(255,255,255,.12); border-radius: 4px;
-  padding: .05rem .45rem; font-size: .62rem;
+  background: rgba(240,192,64,.18); color: var(--pk-gold);
+  border: 1px solid rgba(240,192,64,.3);
+  border-radius: 4px; padding: .05rem .45rem; font-size: .62rem;
+  font-weight: 700; letter-spacing: .3px;
 }
 
 /* Bandera pequeña dentro del pronóstico */
 .pk-bandera {
-  width: 42px; height: 28px; object-fit: cover;
-  border-radius: 4px; box-shadow: 0 1px 5px rgba(0,0,0,.22);
+  width: 32px; height: 21px; object-fit: cover;
+  border-radius: 3px; box-shadow: 0 1px 4px rgba(0,0,0,.25);
   flex-shrink: 0; display: inline-block;
 }
 
 /* Input de goles */
 .pk-gol-inp {
-  width: 50px; height: 42px;
-  font-size: 1.25rem; font-weight: 800; text-align: center;
-  border: 2px solid var(--pk-border); border-radius: 8px;
-  background: white; color: #0a2f1a; outline: none;
+  width: 48px; height: 44px;
+  font-size: 1.3rem; font-weight: 800; text-align: center;
+  border: 2px solid var(--pk-border); border-radius: 9px;
+  background: #f7fcf9; color: #0a2f1a; outline: none;
   -moz-appearance: textfield;
-  transition: border-color .15s, box-shadow .15s;
+  transition: border-color .15s, box-shadow .15s, background .15s;
 }
 .pk-gol-inp::-webkit-inner-spin-button,
 .pk-gol-inp::-webkit-outer-spin-button { -webkit-appearance: none; }
 .pk-gol-inp:focus {
-  border-color: #1e7a45;
+  border-color: #1e7a45; background: white;
   box-shadow: 0 0 0 3px rgba(30,122,69,.18);
 }
 
 /* Score estático (cerrado / finalizado) */
 .pk-score-static {
-  font-size: 1.35rem; font-weight: 900;
-  background: #f0f0f0; border-radius: 8px;
-  padding: .1rem .75rem; color: #444; white-space: nowrap;
+  font-size: 1.3rem; font-weight: 900;
+  background: #ececec; border-radius: 9px;
+  padding: .12rem .8rem; color: #555; white-space: nowrap;
+  letter-spacing: 1px;
 }
 .pk-score-real {
-  font-size: 1.35rem; font-weight: 900;
-  background: var(--pk-bg); border-radius: 8px;
-  padding: .1rem .75rem; color: var(--pk-dark); white-space: nowrap;
+  font-size: 1.3rem; font-weight: 900;
+  background: var(--pk-bg); border: 2px solid var(--pk-border);
+  border-radius: 9px; padding: .12rem .8rem;
+  color: var(--pk-dark); white-space: nowrap; letter-spacing: 1px;
 }
 
 /* ══ CAMPEON ═══════════════════════════════════════════════ */
@@ -197,7 +229,7 @@ body { background-color: var(--pk-bg) !important; }
   .pk-hero { padding: 1.3rem 1.1rem; }
   .pk-hero-title { font-size: 1.3rem; }
   .pk-chip-value { font-size: 1.4rem; }
-  .pk-bandera { width: 36px; height: 24px; }
-  .pk-gol-inp { width: 44px; height: 38px; font-size: 1.1rem; }
+  .pk-bandera { width: 28px; height: 19px; }
+  .pk-gol-inp { width: 42px; height: 38px; font-size: 1.1rem; }
   .pk-flag-md { width: 46px; height: 31px; }
 }

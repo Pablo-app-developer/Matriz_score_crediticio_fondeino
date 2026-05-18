@@ -58,12 +58,12 @@
 {# ══ PARTIDOS AGRUPADOS POR FECHA ═══════════════════════════ #}
 {% for fecha, partidos in partidos_por_fecha.items %}
 
-<div class="d-flex align-items-center gap-2 mt-4 mb-2">
-  <div style="height:1px;flex:1;background:#cde5d8;"></div>
-  <span class="fw-bold small px-2" style="color:#155230;white-space:nowrap;">
+<div class="pk-date-divider">
+  <div class="pk-date-divider-line"></div>
+  <div class="pk-date-divider-badge">
     <i class="bi bi-calendar3 me-1"></i>{{ fecha|date:"l d \d\e F \d\e Y"|capfirst }}
-  </span>
-  <div style="height:1px;flex:1;background:#cde5d8;"></div>
+  </div>
+  <div class="pk-date-divider-line right"></div>
 </div>
 
 {% for item in partidos %}
@@ -85,18 +85,18 @@
   <div class="px-3 py-3">
     <div class="row align-items-center g-2">
 
-      {# ── Equipo LOCAL (derecha de su col, flag al borde centro) ── #}
-      <div class="col-5 d-flex align-items-center justify-content-end gap-2">
-        <div class="text-end">
-          <div class="fw-bold" style="font-size:.85rem;color:#0a2f1a;text-transform:uppercase;line-height:1.2;">
+      {# ── Equipo LOCAL ── #}
+      <div class="col-5 d-flex align-items-center justify-content-end gap-2 pe-1">
+        <div class="text-end lh-sm">
+          <div class="fw-bold text-uppercase" style="font-size:.82rem;color:#0a2f1a;letter-spacing:.2px;">
             {{ p.nombre_local_display }}
           </div>
-          <div class="text-muted" style="font-size:.68rem;font-weight:600;">{{ p.codigo_local }}</div>
+          <div class="text-muted fw-semibold" style="font-size:.65rem;letter-spacing:.5px;">{{ p.codigo_local }}</div>
         </div>
         {% if p.bandera_url_local %}
           <img src="{{ p.bandera_url_local }}" class="pk-bandera" alt="{{ p.nombre_local_display }}" loading="lazy">
         {% else %}
-          <span style="font-size:1.5rem;">🏳️</span>
+          <span style="font-size:1.2rem;line-height:1;">🏳️</span>
         {% endif %}
       </div>
 
@@ -175,18 +175,18 @@
 
       </div>
 
-      {# ── Equipo VISITANTE (flag al borde centro) ── #}
-      <div class="col-5 d-flex align-items-center gap-2">
+      {# ── Equipo VISITANTE ── #}
+      <div class="col-5 d-flex align-items-center gap-2 ps-1">
         {% if p.bandera_url_visitante %}
           <img src="{{ p.bandera_url_visitante }}" class="pk-bandera" alt="{{ p.nombre_visitante_display }}" loading="lazy">
         {% else %}
-          <span style="font-size:1.5rem;">🏳️</span>
+          <span style="font-size:1.2rem;line-height:1;">🏳️</span>
         {% endif %}
-        <div>
-          <div class="fw-bold" style="font-size:.85rem;color:#0a2f1a;text-transform:uppercase;line-height:1.2;">
+        <div class="lh-sm">
+          <div class="fw-bold text-uppercase" style="font-size:.82rem;color:#0a2f1a;letter-spacing:.2px;">
             {{ p.nombre_visitante_display }}
           </div>
-          <div class="text-muted" style="font-size:.68rem;font-weight:600;">{{ p.codigo_visitante }}</div>
+          <div class="text-muted fw-semibold" style="font-size:.65rem;letter-spacing:.5px;">{{ p.codigo_visitante }}</div>
         </div>
       </div>
 
