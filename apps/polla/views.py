@@ -953,36 +953,52 @@ def admin_cargar_resultados(request):
 def admin_reporte(request):
     config = ConfiguracionPolla.get()
 
-    stats = {
-        'afiliados': Afiliado.objects.filter(activo=True).count(),
-        'doble_polla': Afiliado.objects.filter(activo=True, cantidad_pollas=2).count(),
-        'vinculados': Afiliado.objects.filter(activo=True, user__isnull=False).count(),
-        'inscripciones': InscripcionPolla.objects.filter(activa=True).count(),
-        'pronosticos': Pronostico.objects.count(),
-        'partidos_jugados': Partido.objects.filter(finalizado=True).count(),
-        'partidos_total': Partido.objects.count(),
-    }
+    total_afiliados   = Afiliado.objects.filter(activo=True).count()
+    total_doble       = Afiliado.objects.filter(activo=True, cantidad_pollas=2).count()
+    total_vinculados  = Afiliado.objects.filter(activo=True, user__isnull=False).count()
+    total_inscripciones = InscripcionPolla.objects.filter(activa=True).count()
+    total_pronosticos = Pronostico.objects.count()
+    partidos_jugados  = Partido.objects.filter(finalizado=True).count()
+    partidos_total    = Partido.objects.count()
 
-    top5_general = InscripcionPolla.objects.filter(activa=True).select_related('afiliado').order_by(
-        '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'afiliado__nombre_completo'
-    )[:5]
+    top5_general = list(
+        InscripcionPolla.objects.filter(activa=True)
+        .select_related('afiliado')
+        .order_by('-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'afiliado__nombre_completo')
+        [:5]
+    )
 
-    top5_grupos = InscripcionPolla.objects.filter(activa=True).select_related('afiliado').annotate(
-        puntos_grupos=Sum(
-            'pronosticos__puntos_obtenidos',
-            filter=Q(pronosticos__partido__fase='GRUPOS')
+    top5_grupos = list(
+        InscripcionPolla.objects.filter(activa=True)
+        .select_related('afiliado')
+        .annotate(
+            puntos_grupos=Coalesce(
+                Sum('pronosticos__puntos_obtenidos',
+                    filter=Q(pronosticos__partido__fase='GRUPOS')),
+                0
+            )
         )
-    ).order_by('-puntos_grupos', 'afiliado__nombre_completo')[:5]
+        .order_by('-puntos_grupos', 'afiliado__nombre_completo')
+        [:5]
+    )
 
-    pronosticos_campeon = PronosticoCampeon.objects.select_related(
-        'equipo', 'inscripcion__afiliado'
-    ).order_by('equipo__nombre')
+    pronosticos_campeon = list(
+        PronosticoCampeon.objects
+        .select_related('equipo', 'inscripcion__afiliado')
+        .order_by('equipo__nombre', 'inscripcion__afiliado__nombre_completo')
+    )
 
     return render(request, 'polla/admin/reporte.html', {
         'config': config,
-        'stats': stats,
-        'top5_general': top5_general,
-        'top5_grupos': top5_grupos,
+        'total_afiliados':    total_afiliados,
+        'total_doble':        total_doble,
+        'total_vinculados':   total_vinculados,
+        'total_inscripciones': total_inscripciones,
+        'total_pronosticos':  total_pronosticos,
+        'partidos_jugados':   partidos_jugados,
+        'partidos_total':     partidos_total,
+        'top5_general':       top5_general,
+        'top5_grupos':        top5_grupos,
         'pronosticos_campeon': pronosticos_campeon,
     })
 
