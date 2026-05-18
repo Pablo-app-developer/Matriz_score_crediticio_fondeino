@@ -11,7 +11,10 @@
   --pk-border:#cde5d8;
 }
 
-body { background-color: var(--pk-bg) !important; }
+body {
+  background-color: var(--pk-bg) !important;
+  font-family: 'Montserrat', sans-serif;
+}
 
 /* ══ NAVBAR ════════════════════════════════════════════════ */
 .pk-nav {
@@ -165,21 +168,46 @@ body { background-color: var(--pk-bg) !important; }
   font-weight: 700; letter-spacing: .3px;
 }
 
-/* Bandera pequeña dentro del pronóstico */
+/* ══ TEAM COLUMN (pollaya-style) ═══════════════════════════ */
+.pk-pro-body {
+  display: flex; align-items: center;
+  padding: 1rem 1.1rem; gap: .6rem;
+}
+.pk-team-col {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: .3rem; text-align: center;
+  min-width: 0;
+}
 .pk-bandera {
-  width: 32px; height: 21px; object-fit: cover;
-  border-radius: 3px; box-shadow: 0 1px 4px rgba(0,0,0,.25);
-  flex-shrink: 0; display: inline-block;
+  width: 56px; height: 37px; object-fit: cover;
+  border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  display: block;
+}
+.pk-team-name {
+  font-size: .72rem; font-weight: 800;
+  color: #0a2f1a; text-transform: uppercase;
+  letter-spacing: .2px; line-height: 1.2;
+  word-break: break-word;
+}
+.pk-team-code {
+  font-size: .58rem; font-weight: 700;
+  color: #aaa; letter-spacing: .8px; text-transform: uppercase;
+}
+.pk-score-col {
+  flex-shrink: 0; display: flex; flex-direction: column;
+  align-items: center; gap: .35rem;
+  min-width: 152px;
 }
 
 /* Input de goles */
 .pk-gol-inp {
-  width: 48px; height: 44px;
-  font-size: 1.3rem; font-weight: 800; text-align: center;
+  width: 52px; height: 48px;
+  font-size: 1.4rem; font-weight: 800; text-align: center;
   border: 2px solid var(--pk-border); border-radius: 9px;
   background: #f7fcf9; color: #0a2f1a; outline: none;
   -moz-appearance: textfield;
   transition: border-color .15s, box-shadow .15s, background .15s;
+  font-family: 'Montserrat', sans-serif;
 }
 .pk-gol-inp::-webkit-inner-spin-button,
 .pk-gol-inp::-webkit-outer-spin-button { -webkit-appearance: none; }
@@ -190,16 +218,20 @@ body { background-color: var(--pk-bg) !important; }
 
 /* Score estático (cerrado / finalizado) */
 .pk-score-static {
-  font-size: 1.3rem; font-weight: 900;
+  font-size: 1.4rem; font-weight: 900;
   background: #ececec; border-radius: 9px;
-  padding: .12rem .8rem; color: #555; white-space: nowrap;
-  letter-spacing: 1px;
+  padding: .12rem .9rem; color: #555; white-space: nowrap;
+  letter-spacing: 1px; font-family: 'Montserrat', sans-serif;
 }
 .pk-score-real {
-  font-size: 1.3rem; font-weight: 900;
+  font-size: 1.4rem; font-weight: 900;
   background: var(--pk-bg); border: 2px solid var(--pk-border);
-  border-radius: 9px; padding: .12rem .8rem;
+  border-radius: 9px; padding: .12rem .9rem;
   color: var(--pk-dark); white-space: nowrap; letter-spacing: 1px;
+  font-family: 'Montserrat', sans-serif;
+}
+.pk-score-sep {
+  font-size: 1.3rem; font-weight: 900; color: #bbb; line-height: 1; user-select: none;
 }
 
 /* ══ CAMPEON ═══════════════════════════════════════════════ */
@@ -229,7 +261,10 @@ body { background-color: var(--pk-bg) !important; }
   .pk-hero { padding: 1.3rem 1.1rem; }
   .pk-hero-title { font-size: 1.3rem; }
   .pk-chip-value { font-size: 1.4rem; }
-  .pk-bandera { width: 28px; height: 19px; }
-  .pk-gol-inp { width: 42px; height: 38px; font-size: 1.1rem; }
+  .pk-bandera { width: 44px; height: 29px; }
+  .pk-gol-inp { width: 44px; height: 42px; font-size: 1.2rem; }
   .pk-flag-md { width: 46px; height: 31px; }
+  .pk-pro-body { padding: .75rem .75rem; gap: .35rem; }
+  .pk-score-col { min-width: 132px; }
+  .pk-team-name { font-size: .65rem; }
 }

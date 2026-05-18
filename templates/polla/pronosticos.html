@@ -81,117 +81,103 @@
     <span class="fase-tag">{{ p.get_fase_display }}</span>
   </div>
 
-  {# Cuerpo: 3 columnas con Bootstrap row #}
-  <div class="px-3 py-3">
-    <div class="row align-items-center g-2">
+  {# Cuerpo: bandera arriba, nombre abajo (pollaya-style) #}
+  <div class="pk-pro-body">
 
-      {# ── Equipo LOCAL ── #}
-      <div class="col-5 d-flex align-items-center justify-content-end gap-2 pe-1">
-        <div class="text-end lh-sm">
-          <div class="fw-bold text-uppercase" style="font-size:.82rem;color:#0a2f1a;letter-spacing:.2px;">
-            {{ p.nombre_local_display }}
+    {# ── Equipo LOCAL ── #}
+    <div class="pk-team-col">
+      {% if p.bandera_url_local %}
+        <img src="{{ p.bandera_url_local }}" class="pk-bandera" alt="{{ p.nombre_local_display }}" loading="lazy">
+      {% else %}
+        <span style="font-size:2rem;line-height:1;display:block;">🏳️</span>
+      {% endif %}
+      <div class="pk-team-name">{{ p.nombre_local_display }}</div>
+      <div class="pk-team-code">{{ p.codigo_local }}</div>
+    </div>
+
+    {# ── Centro: inputs o resultado ── #}
+    <div class="pk-score-col">
+
+      {% if p.finalizado %}
+        <div class="pk-score-real">{{ p.goles_local }}&nbsp;–&nbsp;{{ p.goles_visitante }}</div>
+        <div class="text-muted" style="font-size:.63rem;font-weight:700;letter-spacing:.5px;">FINAL</div>
+        {% if pr %}
+          <div class="text-center" style="font-size:.68rem;color:#555;">
+            Tu pron: <strong>{{ pr.goles_local }}-{{ pr.goles_visitante }}</strong>
+            {% if pr.acerto_marcador %}🎯{% elif pr.acerto_resultado %}✅{% else %}❌{% endif %}
           </div>
-          <div class="text-muted fw-semibold" style="font-size:.65rem;letter-spacing:.5px;">{{ p.codigo_local }}</div>
+          <span class="badge {% if pr.puntos_obtenidos > 0 %}bg-success{% else %}bg-secondary{% endif %}"
+                style="font-size:.68rem;">
+            {% if pr.puntos_obtenidos > 0 %}+{% endif %}{{ pr.puntos_obtenidos }} pts
+          </span>
+        {% else %}
+          <span class="badge bg-secondary" style="font-size:.63rem;">Sin pronóstico</span>
+        {% endif %}
+
+      {% elif item.cerrado %}
+        <div class="pk-score-static">
+          {% if pr %}{{ pr.goles_local }}&nbsp;–&nbsp;{{ pr.goles_visitante }}{% else %}?&nbsp;–&nbsp;?{% endif %}
         </div>
-        {% if p.bandera_url_local %}
-          <img src="{{ p.bandera_url_local }}" class="pk-bandera" alt="{{ p.nombre_local_display }}" loading="lazy">
+        {% if pr %}
+          <span style="font-size:.65rem;color:#6c757d;">
+            <i class="bi bi-lock-fill text-warning"></i> Guardado
+          </span>
         {% else %}
-          <span style="font-size:1.2rem;line-height:1;">🏳️</span>
-        {% endif %}
-      </div>
-
-      {# ── Centro: inputs o resultado ── #}
-      <div class="col-2 d-flex flex-column align-items-center gap-1">
-
-        {% if p.finalizado %}
-          {# Resultado real #}
-          <div class="pk-score-real">{{ p.goles_local }}–{{ p.goles_visitante }}</div>
-          <div class="text-muted" style="font-size:.65rem;font-weight:600;">FINAL</div>
-          {% if pr %}
-            <div class="text-center" style="font-size:.7rem;color:#555;">
-              Pron: <strong>{{ pr.goles_local }}-{{ pr.goles_visitante }}</strong>
-              {% if pr.acerto_marcador %}🎯{% elif pr.acerto_resultado %}✅{% else %}❌{% endif %}
-            </div>
-            <span class="badge {% if pr.puntos_obtenidos > 0 %}bg-success{% else %}bg-secondary{% endif %}"
-                  style="font-size:.7rem;">
-              {% if pr.puntos_obtenidos > 0 %}+{% endif %}{{ pr.puntos_obtenidos }} pts
-            </span>
-          {% else %}
-            <span class="badge bg-secondary" style="font-size:.65rem;">Sin pronóstico</span>
-          {% endif %}
-
-        {% elif item.cerrado %}
-          {# Cerrado, aún sin jugar #}
-          <div class="pk-score-static">
-            {% if pr %}{{ pr.goles_local }}–{{ pr.goles_visitante }}{% else %}?–?{% endif %}
-          </div>
-          {% if pr %}
-            <span class="text-muted" style="font-size:.65rem;">
-              <i class="bi bi-lock-fill text-warning"></i> Guardado
-            </span>
-          {% else %}
-            <span class="text-danger fw-bold" style="font-size:.65rem;">
-              <i class="bi bi-lock-fill"></i> Sin pronóstico
-            </span>
-          {% endif %}
-
-        {% else %}
-          {# Abierto: inputs #}
-          <div class="d-flex align-items-center gap-1"
-               data-partido-id="{{ p.pk }}"
-               data-polla-num="{{ polla_sel }}">
-            <input type="number" class="pk-gol-inp pk-gl"
-                   min="0" max="20" inputmode="numeric"
-                   value="{% if pr %}{{ pr.goles_local }}{% endif %}"
-                   placeholder="0">
-            <span class="fw-bold text-muted" style="font-size:1.2rem;">–</span>
-            <input type="number" class="pk-gol-inp pk-gv"
-                   min="0" max="20" inputmode="numeric"
-                   value="{% if pr %}{{ pr.goles_visitante }}{% endif %}"
-                   placeholder="0">
-          </div>
-          <button class="btn btn-success btn-sm pk-save-btn fw-bold"
-                  data-target="{{ p.pk }}"
-                  style="font-size:.78rem;padding:.25rem .75rem;">
-            <i class="bi bi-check-lg me-1"></i>{% if pr %}Actualizar{% else %}Guardar{% endif %}
-          </button>
-          <div class="pk-msg" id="msg-{{ p.pk }}" style="font-size:.75rem;min-height:1rem;text-align:center;"></div>
-          {% if pr %}
-            <div class="text-success" style="font-size:.65rem;">
-              <i class="bi bi-check-circle me-1"></i>Guardado
-            </div>
-          {% endif %}
-
-          {# Botón de estadísticas (API) #}
-          {% if p.equipo_local.api_football_id and p.equipo_visitante.api_football_id %}
-          <button class="btn btn-outline-secondary btn-sm btn-stats"
-                  style="font-size:.68rem;padding:.2rem .5rem;margin-top:.1rem;"
-                  data-partido-pk="{{ p.pk }}"
-                  data-titulo="{{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}">
-            <i class="bi bi-bar-chart-line-fill me-1"></i>Stats
-          </button>
-          {% endif %}
+          <span class="text-danger fw-bold" style="font-size:.65rem;">
+            <i class="bi bi-lock-fill"></i> Sin pronóstico
+          </span>
         {% endif %}
 
-      </div>
-
-      {# ── Equipo VISITANTE ── #}
-      <div class="col-5 d-flex align-items-center gap-2 ps-1">
-        {% if p.bandera_url_visitante %}
-          <img src="{{ p.bandera_url_visitante }}" class="pk-bandera" alt="{{ p.nombre_visitante_display }}" loading="lazy">
-        {% else %}
-          <span style="font-size:1.2rem;line-height:1;">🏳️</span>
-        {% endif %}
-        <div class="lh-sm">
-          <div class="fw-bold text-uppercase" style="font-size:.82rem;color:#0a2f1a;letter-spacing:.2px;">
-            {{ p.nombre_visitante_display }}
-          </div>
-          <div class="text-muted fw-semibold" style="font-size:.65rem;letter-spacing:.5px;">{{ p.codigo_visitante }}</div>
+      {% else %}
+        {# Abierto: inputs #}
+        <div class="d-flex align-items-center gap-1"
+             data-partido-id="{{ p.pk }}"
+             data-polla-num="{{ polla_sel }}">
+          <input type="number" class="pk-gol-inp pk-gl"
+                 min="0" max="20" inputmode="numeric"
+                 value="{% if pr %}{{ pr.goles_local }}{% endif %}"
+                 placeholder="0">
+          <span class="pk-score-sep">–</span>
+          <input type="number" class="pk-gol-inp pk-gv"
+                 min="0" max="20" inputmode="numeric"
+                 value="{% if pr %}{{ pr.goles_visitante }}{% endif %}"
+                 placeholder="0">
         </div>
-      </div>
+        <button class="btn btn-success btn-sm pk-save-btn fw-bold"
+                data-target="{{ p.pk }}"
+                style="font-size:.78rem;padding:.28rem .9rem;width:100%;">
+          <i class="bi bi-check-lg me-1"></i>{% if pr %}Actualizar{% else %}Guardar{% endif %}
+        </button>
+        <div class="pk-msg" id="msg-{{ p.pk }}" style="font-size:.72rem;min-height:1rem;text-align:center;"></div>
+        {% if pr %}
+          <div class="text-success" style="font-size:.63rem;font-weight:600;">
+            <i class="bi bi-check-circle me-1"></i>Guardado
+          </div>
+        {% endif %}
+        {% if p.equipo_local.api_football_id and p.equipo_visitante.api_football_id %}
+        <button class="btn btn-outline-secondary btn-sm btn-stats"
+                style="font-size:.65rem;padding:.18rem .45rem;"
+                data-partido-pk="{{ p.pk }}"
+                data-titulo="{{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}">
+          <i class="bi bi-bar-chart-line-fill me-1"></i>Stats
+        </button>
+        {% endif %}
+      {% endif %}
 
-    </div>{# /row #}
-  </div>{# /px-3 py-3 #}
+    </div>
+
+    {# ── Equipo VISITANTE ── #}
+    <div class="pk-team-col">
+      {% if p.bandera_url_visitante %}
+        <img src="{{ p.bandera_url_visitante }}" class="pk-bandera" alt="{{ p.nombre_visitante_display }}" loading="lazy">
+      {% else %}
+        <span style="font-size:2rem;line-height:1;display:block;">🏳️</span>
+      {% endif %}
+      <div class="pk-team-name">{{ p.nombre_visitante_display }}</div>
+      <div class="pk-team-code">{{ p.codigo_visitante }}</div>
+    </div>
+
+  </div>{# /pk-pro-body #}
 
 </div>{# /pk-pro-card #}
 
