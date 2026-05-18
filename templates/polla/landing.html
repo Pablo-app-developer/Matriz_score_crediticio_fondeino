@@ -5,16 +5,22 @@
 <div class="container-fluid px-3">
 
   <!-- Hero -->
-  <div class="polla-hero rounded-3 p-4 mb-4 text-white text-center">
-    <div class="mb-3" style="font-size:3.5rem;">🏆⚽🌍</div>
-    <h1 class="display-5 fw-bold mb-2">Polla Mundialista FONDEINO 2026</h1>
-    <p class="lead mb-3">
+  <div class="pk-hero text-center mb-4">
+    <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+      <i class="bi bi-globe2"      style="font-size:2rem;color:rgba(255,255,255,.45);"></i>
+      <i class="bi bi-trophy-fill" style="font-size:3rem;color:var(--pk-gold);filter:drop-shadow(0 0 16px rgba(240,192,64,.5));"></i>
+      <i class="bi bi-people-fill" style="font-size:2rem;color:rgba(255,255,255,.45);"></i>
+    </div>
+    <h1 class="fw-black mb-1" style="font-size:clamp(1.4rem,4.5vw,2.3rem);letter-spacing:-.01em;">
+      Polla Mundialista FONDEINO 2026
+    </h1>
+    <p class="mb-4" style="color:rgba(255,255,255,.65);font-size:.95rem;max-width:480px;margin-inline:auto;">
       Un beneficio exclusivo para los asociados del fondo.<br>
-      Pronostica, compite y gana premios.
+      Pronostica, compite y gana premios reales.
     </p>
     {% if request.user.is_authenticated %}
       <a href="{% url 'polla:activar_cuenta' %}" class="btn btn-warning btn-lg px-5 fw-bold shadow">
-        <i class="bi bi-key-fill me-2"></i>Activar mi cuenta de la Polla
+        <i class="bi bi-key-fill me-2"></i>Activar mi cuenta
       </a>
     {% else %}
       <a href="/login/?next=/polla/" class="btn btn-warning btn-lg px-5 fw-bold shadow">
@@ -59,7 +65,7 @@
     <div class="col-md-4">
       <div class="card border-success h-100">
         <div class="card-body text-center">
-          <div class="display-4 mb-2">⭐⭐</div>
+          <i class="bi bi-1-circle-fill display-4 text-success mb-2 d-block"></i>
           <h5 class="card-title text-success">Doble polla</h5>
           <p class="card-text small">
             Los <strong>nuevos asociados</strong> o quienes <strong>aumenten sus aportes</strong>
@@ -72,7 +78,7 @@
     <div class="col-md-4">
       <div class="card border-primary h-100">
         <div class="card-body text-center">
-          <div class="display-4 mb-2">🏅</div>
+          <i class="bi bi-award-fill display-4 text-primary mb-2 d-block"></i>
           <h5 class="card-title text-primary">Premios reales</h5>
           <p class="card-text small">
             Top 5 en fase de grupos, Top 5 general y sorteo entre quienes
@@ -84,7 +90,7 @@
     <div class="col-md-4">
       <div class="card border-warning h-100">
         <div class="card-body text-center">
-          <div class="display-4 mb-2">🎽</div>
+          <i class="bi bi-trophy-fill display-4 text-warning mb-2 d-block"></i>
           <h5 class="card-title text-warning">Sorteo del campeón</h5>
           <p class="card-text small">
             {{ config.premio_campeon_sorteo }} para quien acierte al campeón del Mundial.
