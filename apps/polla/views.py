@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.db.models import Count, Q, Sum
+from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -258,10 +259,10 @@ def ranking(request):
 
     if tipo == 'grupos':
         ranking_qs = base_qs.annotate(
-            puntos_fase=Sum(
+            puntos_fase=Coalesce(Sum(
                 'pronosticos__puntos_obtenidos',
                 filter=Q(pronosticos__partido__fase='GRUPOS'),
-            ),
+            ), 0),
             marcadores_fase=Count(
                 'pronosticos',
                 filter=Q(pronosticos__partido__fase='GRUPOS', pronosticos__acerto_marcador=True),
