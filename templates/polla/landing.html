@@ -23,6 +23,37 @@
     {% endif %}
   </div>
 
+  <!-- ── Countdown al Mundial ──────────────────────────────── -->
+  <div id="wc-cd-wrap" class="wc-cd-wrap mb-4">
+    <div class="wc-cd-eyebrow">
+      <i class="bi bi-clock-history me-1"></i>El torneo comienza en
+    </div>
+    <div class="wc-cd-row">
+      <div class="wc-cd-box">
+        <span class="wc-cd-num" id="cd-dias">--</span>
+        <span class="wc-cd-lbl">Días</span>
+      </div>
+      <div class="wc-cd-sep">:</div>
+      <div class="wc-cd-box">
+        <span class="wc-cd-num" id="cd-horas">--</span>
+        <span class="wc-cd-lbl">Horas</span>
+      </div>
+      <div class="wc-cd-sep">:</div>
+      <div class="wc-cd-box">
+        <span class="wc-cd-num" id="cd-mins">--</span>
+        <span class="wc-cd-lbl">Minutos</span>
+      </div>
+      <div class="wc-cd-sep">:</div>
+      <div class="wc-cd-box">
+        <span class="wc-cd-num" id="cd-segs">--</span>
+        <span class="wc-cd-lbl">Segundos</span>
+      </div>
+    </div>
+    <div class="wc-cd-footer">
+      ⚽ <strong>11 de junio, 2026</strong> — Primer partido del FIFA World Cup™
+    </div>
+  </div>
+
   <div class="row g-3 mb-4">
     <!-- Beneficio doble polla -->
     <div class="col-md-4">
@@ -122,4 +153,143 @@
   {% endif %}
 
 </div>
+{% block extra_css %}
+{{ block.super }}
+<style>
+.wc-cd-wrap {
+  background: linear-gradient(135deg, #0b1623 0%, #14263a 60%, #091320 100%);
+  border: 1px solid #1e3a5f;
+  border-radius: 18px;
+  padding: 1.6rem 1rem 1.2rem;
+  text-align: center;
+  box-shadow: 0 4px 32px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+  position: relative;
+  overflow: hidden;
+}
+.wc-cd-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(240,192,64,.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.wc-cd-eyebrow {
+  color: #6a9abf;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 1.1rem;
+}
+.wc-cd-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .45rem;
+  flex-wrap: wrap;
+}
+.wc-cd-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0,0,0,.4);
+  border: 1px solid #1e3a5f;
+  border-radius: 14px;
+  padding: .7rem 1.1rem .55rem;
+  min-width: 72px;
+  position: relative;
+}
+.wc-cd-box::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(30,58,95,.6);
+}
+.wc-cd-num {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(1.9rem, 6vw, 2.8rem);
+  font-weight: 900;
+  color: #f0c040;
+  line-height: 1;
+  letter-spacing: -.03em;
+  text-shadow: 0 0 20px rgba(240,192,64,.3);
+  position: relative;
+  z-index: 1;
+}
+.wc-cd-lbl {
+  font-size: .55rem;
+  color: #2e5070;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  margin-top: .35rem;
+  position: relative;
+  z-index: 1;
+}
+.wc-cd-sep {
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-weight: 900;
+  color: #1e3a5f;
+  margin-bottom: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.wc-cd-footer {
+  margin-top: 1rem;
+  font-size: .72rem;
+  color: #3a6080;
+  font-weight: 600;
+  letter-spacing: .03em;
+}
+.wc-cd-acabado {
+  color: #78d860;
+  font-size: 1.3rem;
+  font-weight: 800;
+  padding: .5rem 0;
+  text-shadow: 0 0 16px rgba(120,216,96,.4);
+}
+@media (max-width: 400px) {
+  .wc-cd-box { min-width: 60px; padding: .55rem .7rem .45rem; }
+  .wc-cd-sep { display: none; }
+  .wc-cd-row { gap: .3rem; }
+}
+</style>
+{% endblock %}
+
+{% block polla_scripts %}
+<script>
+(function () {
+  /* Primer partido: 11 jun 2026 18:00 COT (UTC-5) → 23:00 UTC */
+  const TARGET = new Date('2026-06-11T23:00:00Z');
+  const wrap   = document.getElementById('wc-cd-wrap');
+  const elD    = document.getElementById('cd-dias');
+  const elH    = document.getElementById('cd-horas');
+  const elM    = document.getElementById('cd-mins');
+  const elS    = document.getElementById('cd-segs');
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function tick() {
+    const diff = TARGET - Date.now();
+    if (diff <= 0) {
+      wrap.innerHTML = '<div class="wc-cd-acabado py-2">🏆 ¡El Mundial ya empezó!</div>';
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    elD.textContent = pad(d);
+    elH.textContent = pad(h);
+    elM.textContent = pad(m);
+    elS.textContent = pad(s);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+{% endblock %}
 {% endblock %}
