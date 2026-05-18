@@ -32,16 +32,23 @@
           <i class="bi bi-lock-fill me-2"></i>El plazo para elegir al campeón ya cerró.
         </div>
         {% if pronostico_campeon %}
-        <div class="text-center">
-          <p class="small text-muted">Tu pronóstico guardado (Polla {{ inscripcion.label }}):</p>
-          <h4>{{ pronostico_campeon.equipo.bandera_emoji }} {{ pronostico_campeon.equipo.nombre }}</h4>
+        <div class="text-center py-2">
+          <p class="small text-muted mb-2">Tu pronóstico guardado (Polla {{ inscripcion.label }}):</p>
+          <img src="{{ pronostico_campeon.equipo.bandera_url }}"
+               alt="{{ pronostico_campeon.equipo.nombre }}"
+               style="width:96px;height:64px;object-fit:cover;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.25);"
+               class="mb-2">
+          <h4 class="fw-bold mb-0">{{ pronostico_campeon.equipo.nombre }}</h4>
         </div>
         {% endif %}
       {% else %}
         {% if pronostico_campeon %}
         <div class="alert alert-success text-center mb-3">
-          <i class="bi bi-check-circle-fill me-2"></i>
-          Tu selección actual: <strong>{{ pronostico_campeon.equipo.bandera_emoji }} {{ pronostico_campeon.equipo.nombre }}</strong>
+          <img src="{{ pronostico_campeon.equipo.bandera_url }}"
+               alt="{{ pronostico_campeon.equipo.nombre }}"
+               style="width:56px;height:37px;object-fit:cover;border-radius:5px;box-shadow:0 2px 8px rgba(0,0,0,.2);"
+               class="me-2 align-middle">
+          <strong class="align-middle">{{ pronostico_campeon.equipo.nombre }}</strong>
           <br><small class="text-muted">Puedes cambiarla hasta el cierre.</small>
         </div>
         {% endif %}
