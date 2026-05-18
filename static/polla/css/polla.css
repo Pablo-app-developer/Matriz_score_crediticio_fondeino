@@ -268,3 +268,139 @@ body {
   .pk-score-col { min-width: 132px; }
   .pk-team-name { font-size: .65rem; }
 }
+
+/* ===== Pronósticos refresh 2026 ===== */
+.pk-pronosticos-page {
+  background: radial-gradient(circle at top, #f8fffb 0%, #eef8f1 60%, #e7f3eb 100%);
+  border: 1px solid rgba(21, 82, 48, 0.12);
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 12px 30px rgba(10,47,26,.08);
+}
+.pk-page-head {
+  background: linear-gradient(135deg, #0a2f1a 0%, #0f4a2a 60%, #1d7e49 100%);
+  border-radius: 14px;
+  padding: .8rem 1rem;
+  box-shadow: 0 8px 26px rgba(10,47,26,.24);
+}
+.pk-page-title { color: #fff; letter-spacing: .3px; }
+.pk-page-title i { color: #f0c040; }
+.pk-polla-switch .btn { border-radius: 999px !important; }
+.pk-polla-switch .btn-success {
+  background: linear-gradient(135deg, #f0c040, #d89f1f);
+  border-color: #d89f1f;
+  color: #2f2406;
+}
+.pk-alert { border-radius: 12px; box-shadow: 0 3px 14px rgba(0,0,0,.05); }
+.pk-pro-card { border-radius: 16px; }
+.pk-pro-header { padding: .45rem 1rem; }
+.pk-save-btn {
+  background: linear-gradient(135deg, #0f7a3f, #1f9d57);
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(23,135,73,.25);
+}
+.pk-save-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.pk-gol-inp {
+  border-radius: 12px;
+  background: linear-gradient(180deg,#ffffff,#f1faf4);
+}
+.btn-stats {
+  border-radius: 20px;
+  border-color: #bedbc9;
+  color: #2d6344;
+  background: #f9fdfb;
+}
+.btn-stats:hover { background: #ebf7ef; border-color: #9dc9ae; }
+@media (max-width: 575px) {
+  .pk-pronosticos-page { padding: .65rem; border-radius: 14px; }
+  .pk-page-head { padding: .65rem .7rem; }
+}
+
+/* ===== Pronósticos turbo refresh ===== */
+.pk-pronosticos-page {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #f7fcf9 0%, #edf7f0 100%);
+  border: 1px solid rgba(20,85,50,.14);
+  border-radius: 24px;
+  padding: 1.25rem;
+}
+.pk-noise-layer {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(16,82,46,.06) 1px, transparent 1px);
+  background-size: 12px 12px;
+  opacity: .25; pointer-events: none;
+}
+.pk-pronosticos-page > * { position: relative; z-index: 1; }
+.pk-page-head {
+  border: 1px solid rgba(255,255,255,.25);
+  background: linear-gradient(110deg,#092715 0%,#104d2b 55%,#1ca45d 100%);
+}
+.pk-page-title { font-size: 1.15rem; text-transform: uppercase; }
+.pk-polla-switch {
+  background: rgba(255,255,255,.08);
+  border-radius: 999px;
+  padding: .2rem;
+}
+.pk-polla-switch .btn { font-size: .77rem; padding: .38rem .8rem; }
+.pk-date-divider-badge { font-size: .72rem; text-transform: uppercase; }
+.pk-pro-card {
+  border: 1px solid #d8eadf;
+  border-left-width: 0;
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(8,48,27,.08);
+}
+.pk-pro-header {
+  background: linear-gradient(90deg,#0a2f1a 0%,#10482a 55%,#17683d 100%);
+  padding: .55rem 1rem;
+  position: relative;
+}
+.pk-state-pill {
+  position: absolute;
+  left: .8rem;
+  top: -.55rem;
+  font-size: .6rem;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: .15rem .5rem;
+  letter-spacing: .4px;
+  border: 1px solid transparent;
+}
+.pk-state-pill.is-open { background: #d5f7e3; color: #065f35; border-color:#9de6bc; }
+.pk-state-pill.is-locked { background: #fff3cf; color: #8a5c00; border-color:#ffe08a; }
+.pk-state-pill.is-final { background: #eceef1; color: #4f5965; border-color:#d5dbe2; }
+.pk-pro-body { padding-top: 1.2rem; }
+.pk-team-name { font-size: .76rem; }
+.pk-score-col { min-width: 170px; }
+.pk-gol-inp {
+  width: 58px; height: 52px;
+  border-color: #b9dcca;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.04);
+}
+.pk-score-sep { color: #8fb79f; font-size: 1.45rem; }
+.pk-save-btn {
+  padding: .42rem .8rem !important;
+  border-radius: 12px;
+  font-size: .76rem !important;
+  text-transform: uppercase;
+  letter-spacing: .35px;
+}
+.pk-pro-footer {
+  border-top: 1px dashed #d9e9df;
+  display: flex;
+  justify-content: space-between;
+  gap: .4rem;
+  font-size: .64rem;
+  color: #78907f;
+  padding: .42rem .8rem .5rem;
+  background: #fbfefc;
+}
+#modalStats .modal-content { border-radius: 16px; overflow: hidden; }
+#modalStats .modal-body { background: #f9fdfb; }
+@media (max-width: 575px) {
+  .pk-pro-card { border-radius: 14px; }
+  .pk-state-pill { display:none; }
+  .pk-pro-footer { font-size: .6rem; flex-direction: column; }
+  .pk-score-col { min-width: 148px; }
+}
