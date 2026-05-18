@@ -1,3 +1,4 @@
+import io
 import json
 import random
 from collections import defaultdict
@@ -7,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from django.core.management import call_command
 from django.db.models import Count, Q, Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -932,4 +934,39 @@ def admin_cerrar_polla(request):
         'config': config,
         'total_inscripciones': InscripcionPolla.objects.filter(activa=True).count(),
         'partidos_sin_resultado': Partido.objects.filter(finalizado=False).count(),
+    })
+
+
+
+@admin_polla_required
+def admin_actualizar_fixture(request):
+    """Ejecuta el comando actualizar_fixture_oficial desde el navegador."""
+    if request.method == 'POST' and request.POST.get('confirmar') == 'SI_ACTUALIZAR':
+        buf = io.StringIO()
+        try:
+            call_command('actualizar_fixture_oficial', stdout=buf, stderr=buf)
+            ok = True
+        except Exception as exc:
+            buf.write(f'\nERROR: {exc}')
+            ok = False
+
+        resultado = buf.getvalue()
+        if ok:
+            messages.success(request, 'Fixture oficial FIFA 2026 aplicado correctamente.')
+        else:
+            messages.error(request, 'Ocurrió un error al actualizar el fixture.')
+
+        return render(request, 'polla/admin/actualizar_fixture.html', {
+            'hecho': True,
+            'ok': ok,
+            'resultado': resultado,
+        })
+
+    partidos_actuales = Partido.objects.filter(numero__lte=72).count()
+    pronosticos_afectados = Pronostico.objects.filter(partido__numero__lte=72).count()
+
+    return render(request, 'polla/admin/actualizar_fixture.html', {
+        'hecho': False,
+        'partidos_actuales': partidos_actuales,
+        'pronosticos_afectados': pronosticos_afectados,
     })

@@ -33,4 +33,5 @@ urlpatterns = [
     path('admin/resultados/', views.admin_cargar_resultados, name='admin_cargar_resultados'),
     path('admin/reporte/', views.admin_reporte, name='admin_reporte'),
     path('admin/cerrar/', views.admin_cerrar_polla, name='admin_cerrar_polla'),
+    path('admin/actualizar-fixture/', views.admin_actualizar_fixture, name='admin_actualizar_fixture'),
 ]

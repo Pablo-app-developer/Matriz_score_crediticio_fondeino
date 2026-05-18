@@ -1,0 +1,83 @@
+{% extends "polla/base_polla.html" %}
+
+{% block polla_content %}
+<div class="container" style="max-width:640px;">
+
+{% if not hecho %}
+{# ── Confirmación ──────────────────────────────────────────────────────────── #}
+<div class="card shadow border-warning mt-2">
+  <div class="card-header fw-bold" style="background:#1a2840;color:#f0c040;">
+    <i class="bi bi-calendar2-week-fill me-2"></i>Actualizar Fixture Oficial FIFA 2026
+  </div>
+  <div class="card-body" style="background:#182438;color:#c8ddf0;">
+
+    <div class="alert alert-warning">
+      <strong><i class="bi bi-exclamation-triangle-fill me-1"></i>Atención — acción con impacto en datos</strong><br>
+      Este proceso aplica el fixture oficial del sorteo del 5-dic-2024:
+      <ul class="mb-0 mt-2">
+        <li>Actualiza los <strong>48 equipos</strong> con grupos y nombres correctos.</li>
+        <li>Elimina los <strong>{{ partidos_actuales }} partidos de grupos</strong> actuales (núm. 1–72) y los recrea.</li>
+        <li>Elimina los <strong>{{ pronosticos_afectados }} pronósticos</strong> de fase de grupos ya registrados.</li>
+        <li>Los partidos eliminatorios (73–104) <strong>no se tocan</strong>.</li>
+      </ul>
+    </div>
+
+    {% if pronosticos_afectados > 0 %}
+    <div class="alert alert-danger">
+      <i class="bi bi-trash-fill me-1"></i>
+      Se perderán <strong>{{ pronosticos_afectados }} pronósticos</strong> de la fase de grupos.
+      Esto es necesario porque esos pronósticos apuntaban a partidos incorrectos
+      (p.ej. Colombia vs Panamá, que no existe en el fixture oficial).
+    </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="confirmar" value="SI_ACTUALIZAR">
+      <div class="d-flex gap-2 justify-content-center mt-3">
+        <button type="submit" class="btn btn-warning fw-bold px-4" style="color:#1a1000;">
+          <i class="bi bi-arrow-repeat me-2"></i>Sí, actualizar fixture oficial
+        </button>
+        <a href="{% url 'polla:admin_reporte' %}" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% else %}
+{# ── Resultado ─────────────────────────────────────────────────────────────── #}
+<div class="card shadow mt-2" style="border-color:{% if ok %}#3cba6a{% else %}#e05050{% endif %};">
+  <div class="card-header fw-bold"
+       style="background:#1a2840;color:{% if ok %}#3cba6a{% else %}#e05050{% endif %};">
+    {% if ok %}
+      <i class="bi bi-check-circle-fill me-2"></i>Fixture actualizado correctamente
+    {% else %}
+      <i class="bi bi-x-circle-fill me-2"></i>Error al actualizar el fixture
+    {% endif %}
+  </div>
+  <div class="card-body" style="background:#182438;">
+    {% if messages %}
+      {% for msg in messages %}
+      <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <pre style="background:#0d1b2a;color:#8ab0d0;border:1px solid #1e3050;
+                border-radius:8px;padding:1rem;font-size:.78rem;
+                white-space:pre-wrap;max-height:320px;overflow-y:auto;">{{ resultado }}</pre>
+
+    <div class="d-flex gap-2 mt-3 justify-content-center">
+      <a href="{% url 'polla:admin_reporte' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-graph-up me-1"></i>Ir al reporte
+      </a>
+      <a href="{% url 'polla:admin_cargar_resultados' %}" class="btn btn-success fw-bold">
+        <i class="bi bi-check2-circle me-1"></i>Cargar resultados
+      </a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+</div>
+{% endblock %}
