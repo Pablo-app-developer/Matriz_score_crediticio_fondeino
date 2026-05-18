@@ -936,10 +936,10 @@ def admin_cargar_resultados(request):
             messages.info(request, 'No hubo cambios que guardar.')
         return redirect('polla:admin_cargar_resultados')
 
-    # También mostrar partidos ya finalizados para corrección
+    # Partidos finalizados — editables para corrección
     partidos_fin = Partido.objects.filter(finalizado=True).select_related(
         'equipo_local', 'equipo_visitante'
-    ).order_by('-fecha_hora')[:20]
+    ).order_by('-fecha_hora')[:40]
 
     return render(request, 'polla/admin/cargar_resultados.html', {
         'partidos': partidos,
