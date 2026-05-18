@@ -6,11 +6,9 @@
 
 {# ══ CABECERA ══════════════════════════════════════════════ #}
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-  <h5 class="mb-0 fw-bold" style="color:var(--pk-dark)">
-    <i class="bi bi-pencil-square me-2" style="color:var(--pk-green)"></i>Mis Pronósticos
+  <h5 class="mb-0 fw-bold" style="color:#0a2f1a">
+    <i class="bi bi-pencil-square me-2" style="color:#155230"></i>Mis Pronósticos
   </h5>
-
-  {# Selector doble polla #}
   {% if inscripciones|length > 1 %}
   <div class="btn-group">
     {% for insc in inscripciones %}
@@ -34,166 +32,169 @@
   <i class="bi bi-exclamation-triangle-fill fs-4 flex-shrink-0 mt-1"></i>
   <div>
     <strong>Te faltan {{ pendientes }} partido{% if pendientes != 1 %}s{% endif %} por pronosticar:</strong>
-    <div class="d-flex flex-wrap gap-2 mt-1">
+    <div class="d-flex flex-wrap gap-1 mt-1">
       {% for fase, cant in pendientes_por_fase.items %}
-      <span class="badge bg-warning text-dark fw-semibold">{{ fase }}: {{ cant }}</span>
+        <span class="badge bg-warning text-dark">{{ fase }}: {{ cant }}</span>
       {% endfor %}
     </div>
-    <div class="text-muted small mt-1">Los pronósticos cierran automáticamente al inicio de cada partido.</div>
+    <div class="text-muted small mt-1">
+      Los pronósticos cierran automáticamente al inicio de cada partido.
+    </div>
   </div>
 </div>
 {% elif partidos_por_fecha %}
 <div class="alert alert-success d-flex gap-2 align-items-center">
   <i class="bi bi-check-circle-fill fs-5"></i>
-  <span>¡Todos los partidos disponibles están pronosticados! Vuelve cuando se abran nuevos partidos.</span>
+  ¡Todos los partidos disponibles están pronosticados!
 </div>
 {% endif %}
 
 {% if not partidos_por_fecha %}
 <div class="alert alert-info">
-  <i class="bi bi-info-circle me-2"></i>No hay partidos cargados todavía. El administrador los configurará pronto.
+  <i class="bi bi-info-circle me-2"></i>No hay partidos cargados todavía.
 </div>
 {% endif %}
 
-{# ══ PARTIDOS POR FECHA ══════════════════════════════════════ #}
+{# ══ PARTIDOS AGRUPADOS POR FECHA ═══════════════════════════ #}
 {% for fecha, partidos in partidos_por_fecha.items %}
 
-<div class="mb-2 mt-4">
-  <div class="d-flex align-items-center gap-2">
-    <div style="height:2px; flex:1; background:var(--pk-border); border-radius:2px;"></div>
-    <span class="fw-bold small px-2" style="color:var(--pk-green); white-space:nowrap;">
-      <i class="bi bi-calendar3 me-1"></i>{{ fecha|date:"l d \d\e F \d\e Y"|capfirst }}
-    </span>
-    <div style="height:2px; flex:1; background:var(--pk-border); border-radius:2px;"></div>
-  </div>
+<div class="d-flex align-items-center gap-2 mt-4 mb-2">
+  <div style="height:1px;flex:1;background:#cde5d8;"></div>
+  <span class="fw-bold small px-2" style="color:#155230;white-space:nowrap;">
+    <i class="bi bi-calendar3 me-1"></i>{{ fecha|date:"l d \d\e F \d\e Y"|capfirst }}
+  </span>
+  <div style="height:1px;flex:1;background:#cde5d8;"></div>
 </div>
 
 {% for item in partidos %}
 {% with p=item.partido pr=item.pronostico %}
 
-<div id="partido-{{ p.pk }}" class="pk-pronostico {% if p.finalizado %}finalizado{% elif item.cerrado and not pr %}sin-pronostico{% elif item.cerrado %}cerrado{% else %}abierto{% endif %}">
+<div id="partido-{{ p.pk }}"
+     class="pk-pro-card {% if p.finalizado %}finalizado{% elif item.cerrado and not pr %}sin-pronostico{% elif item.cerrado %}cerrado{% else %}abierto{% endif %}">
 
   {# Header del partido #}
   <div class="pk-pro-header">
     <span>
       <i class="bi bi-clock me-1"></i>{{ p.fecha_hora|date:"H:i" }} COL
-      {% if p.ciudad %} · {{ p.ciudad }}{% endif %}
+      {% if p.ciudad %}&nbsp;·&nbsp;{{ p.ciudad }}{% endif %}
     </span>
-    <span class="fase-badge">{{ p.get_fase_display }}</span>
+    <span class="fase-tag">{{ p.get_fase_display }}</span>
   </div>
 
-  {# Cuerpo: local | centro | visitante #}
-  <div class="pk-pro-body">
+  {# Cuerpo: 3 columnas con Bootstrap row #}
+  <div class="px-3 py-3">
+    <div class="row align-items-center g-2">
 
-    {# ── EQUIPO LOCAL ── #}
-    <div class="pk-pro-local">
-      <div class="pk-pro-flag">
+      {# ── Equipo LOCAL (derecha de su col, flag al borde centro) ── #}
+      <div class="col-5 d-flex align-items-center justify-content-end gap-2">
+        <div class="text-end">
+          <div class="fw-bold" style="font-size:.85rem;color:#0a2f1a;text-transform:uppercase;line-height:1.2;">
+            {{ p.nombre_local_display }}
+          </div>
+          <div class="text-muted" style="font-size:.68rem;font-weight:600;">{{ p.codigo_local }}</div>
+        </div>
         {% if p.bandera_url_local %}
-          <img src="{{ p.bandera_url_local }}" alt="{{ p.nombre_local_display }}" loading="lazy">
+          <img src="{{ p.bandera_url_local }}" class="pk-bandera" alt="{{ p.nombre_local_display }}" loading="lazy">
         {% else %}
-          <span class="pk-pro-flag-emoji">🏳️</span>
+          <span style="font-size:1.5rem;">🏳️</span>
         {% endif %}
       </div>
-      <div>
-        <div class="pk-pro-name">{{ p.nombre_local_display }}</div>
-        <div class="pk-pro-code">{{ p.codigo_local }}</div>
+
+      {# ── Centro: inputs o resultado ── #}
+      <div class="col-2 d-flex flex-column align-items-center gap-1">
+
+        {% if p.finalizado %}
+          {# Resultado real #}
+          <div class="pk-score-real">{{ p.goles_local }}–{{ p.goles_visitante }}</div>
+          <div class="text-muted" style="font-size:.65rem;font-weight:600;">FINAL</div>
+          {% if pr %}
+            <div class="text-center" style="font-size:.7rem;color:#555;">
+              Pron: <strong>{{ pr.goles_local }}-{{ pr.goles_visitante }}</strong>
+              {% if pr.acerto_marcador %}🎯{% elif pr.acerto_resultado %}✅{% else %}❌{% endif %}
+            </div>
+            <span class="badge {% if pr.puntos_obtenidos > 0 %}bg-success{% else %}bg-secondary{% endif %}"
+                  style="font-size:.7rem;">
+              {% if pr.puntos_obtenidos > 0 %}+{% endif %}{{ pr.puntos_obtenidos }} pts
+            </span>
+          {% else %}
+            <span class="badge bg-secondary" style="font-size:.65rem;">Sin pronóstico</span>
+          {% endif %}
+
+        {% elif item.cerrado %}
+          {# Cerrado, aún sin jugar #}
+          <div class="pk-score-static">
+            {% if pr %}{{ pr.goles_local }}–{{ pr.goles_visitante }}{% else %}?–?{% endif %}
+          </div>
+          {% if pr %}
+            <span class="text-muted" style="font-size:.65rem;">
+              <i class="bi bi-lock-fill text-warning"></i> Guardado
+            </span>
+          {% else %}
+            <span class="text-danger fw-bold" style="font-size:.65rem;">
+              <i class="bi bi-lock-fill"></i> Sin pronóstico
+            </span>
+          {% endif %}
+
+        {% else %}
+          {# Abierto: inputs #}
+          <div class="d-flex align-items-center gap-1"
+               data-partido-id="{{ p.pk }}"
+               data-polla-num="{{ polla_sel }}">
+            <input type="number" class="pk-gol-inp pk-gl"
+                   min="0" max="20" inputmode="numeric"
+                   value="{% if pr %}{{ pr.goles_local }}{% endif %}"
+                   placeholder="0">
+            <span class="fw-bold text-muted" style="font-size:1.2rem;">–</span>
+            <input type="number" class="pk-gol-inp pk-gv"
+                   min="0" max="20" inputmode="numeric"
+                   value="{% if pr %}{{ pr.goles_visitante }}{% endif %}"
+                   placeholder="0">
+          </div>
+          <button class="btn btn-success btn-sm pk-save-btn fw-bold"
+                  data-target="{{ p.pk }}"
+                  style="font-size:.78rem;padding:.25rem .75rem;">
+            <i class="bi bi-check-lg me-1"></i>{% if pr %}Actualizar{% else %}Guardar{% endif %}
+          </button>
+          <div class="pk-msg" id="msg-{{ p.pk }}" style="font-size:.75rem;min-height:1rem;text-align:center;"></div>
+          {% if pr %}
+            <div class="text-success" style="font-size:.65rem;">
+              <i class="bi bi-check-circle me-1"></i>Guardado
+            </div>
+          {% endif %}
+
+          {# Botón de estadísticas (API) #}
+          {% if p.equipo_local.api_football_id and p.equipo_visitante.api_football_id %}
+          <button class="btn btn-outline-secondary btn-sm btn-stats"
+                  style="font-size:.68rem;padding:.2rem .5rem;margin-top:.1rem;"
+                  data-partido-pk="{{ p.pk }}"
+                  data-titulo="{{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}">
+            <i class="bi bi-bar-chart-line-fill me-1"></i>Stats
+          </button>
+          {% endif %}
+        {% endif %}
+
       </div>
-    </div>
 
-    {# ── CENTRO: inputs o resultado ── #}
-    <div class="pk-pro-center">
-
-      {% if p.finalizado %}
-        {# Resultado real #}
-        <div class="pk-real-score">{{ p.goles_local }} – {{ p.goles_visitante }}</div>
-        <div class="small text-muted fw-semibold">Resultado final</div>
-        {% if pr %}
-          <div class="pk-my-pron">
-            Mi pronóstico: <strong>{{ pr.goles_local }}-{{ pr.goles_visitante }}</strong>
-            {% if pr.acerto_marcador %}
-              <span title="Marcador exacto">🎯</span>
-            {% elif pr.acerto_resultado %}
-              <span title="Resultado correcto">✅</span>
-            {% else %}
-              <span title="Sin puntos">❌</span>
-            {% endif %}
-          </div>
-          <span class="pk-pts-badge {% if pr.puntos_obtenidos > 0 %}bg-success text-white{% else %}bg-secondary text-white{% endif %}">
-            {% if pr.puntos_obtenidos > 0 %}+{% endif %}{{ pr.puntos_obtenidos }} pts
-          </span>
-        {% else %}
-          <span class="badge bg-secondary small">Sin pronóstico</span>
-        {% endif %}
-
-      {% elif item.cerrado %}
-        {# Cerrado sin jugar #}
-        <div class="pk-locked-score">
-          {% if pr %}{{ pr.goles_local }} – {{ pr.goles_visitante }}{% else %}? – ?{% endif %}
-        </div>
-        {% if pr %}
-          <span class="small text-muted"><i class="bi bi-lock-fill me-1 text-warning"></i>Pronóstico guardado</span>
-        {% else %}
-          <span class="small text-danger fw-semibold"><i class="bi bi-lock-fill me-1"></i>Sin pronóstico — cerrado</span>
-        {% endif %}
-
-      {% else %}
-        {# Abierto — inputs #}
-        <div class="pk-score-inputs"
-             data-partido-id="{{ p.pk }}"
-             data-polla-num="{{ polla_sel }}">
-          <input type="number" class="pk-score-inp pk-gl" min="0" max="20"
-                 value="{% if pr %}{{ pr.goles_local }}{% endif %}"
-                 placeholder="0"
-                 inputmode="numeric">
-          <span class="pk-score-sep">–</span>
-          <input type="number" class="pk-score-inp pk-gv" min="0" max="20"
-                 value="{% if pr %}{{ pr.goles_visitante }}{% endif %}"
-                 placeholder="0"
-                 inputmode="numeric">
-        </div>
-        <button class="pk-btn-save pk-save-trigger"
-                data-target="{{ p.pk }}">
-          <i class="bi bi-check-lg"></i>
-          {% if pr %}Actualizar{% else %}Guardar{% endif %}
-        </button>
-        <div class="pk-save-msg" id="msg-{{ p.pk }}"></div>
-        {% if pr %}
-          <div class="small text-success" style="font-size:.72rem;">
-            <i class="bi bi-check-circle me-1"></i>Guardado · Puedes cambiar hasta el inicio
-          </div>
-        {% endif %}
-
-        {# Botón de estadísticas #}
-        {% if p.equipo_local.api_football_id and p.equipo_visitante.api_football_id %}
-        <button class="btn btn-outline-secondary btn-sm btn-stats py-0 px-2 mt-1"
-                style="font-size:.72rem;"
-                data-partido-pk="{{ p.pk }}"
-                data-titulo="{{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}">
-          <i class="bi bi-bar-chart-line-fill me-1"></i>Estadísticas
-        </button>
-        {% endif %}
-      {% endif %}
-
-    </div>
-
-    {# ── EQUIPO VISITANTE ── #}
-    <div class="pk-pro-vis">
-      <div class="pk-pro-flag">
+      {# ── Equipo VISITANTE (flag al borde centro) ── #}
+      <div class="col-5 d-flex align-items-center gap-2">
         {% if p.bandera_url_visitante %}
-          <img src="{{ p.bandera_url_visitante }}" alt="{{ p.nombre_visitante_display }}" loading="lazy">
+          <img src="{{ p.bandera_url_visitante }}" class="pk-bandera" alt="{{ p.nombre_visitante_display }}" loading="lazy">
         {% else %}
-          <span class="pk-pro-flag-emoji">🏳️</span>
+          <span style="font-size:1.5rem;">🏳️</span>
         {% endif %}
+        <div>
+          <div class="fw-bold" style="font-size:.85rem;color:#0a2f1a;text-transform:uppercase;line-height:1.2;">
+            {{ p.nombre_visitante_display }}
+          </div>
+          <div class="text-muted" style="font-size:.68rem;font-weight:600;">{{ p.codigo_visitante }}</div>
+        </div>
       </div>
-      <div>
-        <div class="pk-pro-name">{{ p.nombre_visitante_display }}</div>
-        <div class="pk-pro-code">{{ p.codigo_visitante }}</div>
-      </div>
-    </div>
 
-  </div>{# /pk-pro-body #}
+    </div>{# /row #}
+  </div>{# /px-3 py-3 #}
 
-</div>{# /pk-pronostico #}
+</div>{# /pk-pro-card #}
+
 {% endwith %}
 {% endfor %}
 
@@ -203,14 +204,13 @@
 <div class="modal fade" id="modalStats" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
     <div class="modal-content">
-      <div class="modal-header py-2" style="background:var(--pk-dark); color:white;">
+      <div class="modal-header py-2" style="background:#0a2f1a;color:white;">
         <h6 class="modal-title small fw-bold" id="modalStatsTitulo"></h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-3" id="modalStatsCuerpo">
         <div class="text-center py-3">
-          <div class="spinner-border spinner-border-sm" role="status"
-               style="color:var(--pk-green)"></div>
+          <div class="spinner-border spinner-border-sm" style="color:#155230;" role="status"></div>
           <div class="small text-muted mt-2">Cargando estadísticas...</div>
         </div>
       </div>
@@ -222,59 +222,81 @@
 <script>
 const CSRF = '{{ csrf_token }}';
 
-/* ── Guardar pronóstico ─────────────────────────────────── */
-document.querySelectorAll('.pk-save-trigger').forEach(btn => {
+/* ── Guardar pronóstico ──────────────────────────────────── */
+document.querySelectorAll('.pk-save-btn').forEach(btn => {
   btn.addEventListener('click', function () {
-    const center    = this.closest('.pk-pro-center');
-    const container = center.querySelector('[data-partido-id]');
+    const card = this.closest('.pk-pro-card');
+    const container = card.querySelector('[data-partido-id]');
     if (!container) return;
 
-    const gl  = parseInt(container.querySelector('.pk-gl').value);
-    const gv  = parseInt(container.querySelector('.pk-gv').value);
+    const gl  = container.querySelector('.pk-gl').value.trim();
+    const gv  = container.querySelector('.pk-gv').value.trim();
+    const glN = parseInt(gl === '' ? '0' : gl);
+    const gvN = parseInt(gv === '' ? '0' : gv);
     const msg = document.getElementById('msg-' + container.dataset.partidoId);
 
-    if (isNaN(gl) || isNaN(gv) || gl < 0 || gv < 0) {
-      if (msg) { msg.innerHTML = '<span class="text-danger">Ingresa los goles (0 o más).</span>'; }
+    if (isNaN(glN) || isNaN(gvN) || glN < 0 || gvN < 0) {
+      if (msg) msg.innerHTML = '<span class="text-danger">Ingresa los goles.</span>';
       return;
     }
 
-    btn.disabled = true;
+    this.disabled = true;
     if (msg) msg.innerHTML = '<span class="text-muted">Guardando…</span>';
 
     fetch('/polla/pronosticos/guardar/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
       body: JSON.stringify({
-        partido_id: parseInt(container.dataset.partidoId),
-        polla_num:  parseInt(container.dataset.pollaNum),
-        goles_local: gl,
-        goles_visitante: gv,
+        partido_id:     parseInt(container.dataset.partidoId),
+        polla_num:      parseInt(container.dataset.pollaNum),
+        goles_local:    glN,
+        goles_visitante: gvN,
       })
     })
     .then(r => r.json())
     .then(data => {
       if (data.ok) {
         if (msg) msg.innerHTML = '<span class="text-success fw-bold">✓ Guardado</span>';
-        btn.innerHTML = '<i class="bi bi-check-lg"></i> Actualizar';
+        this.textContent = '✓ Actualizar';
+        this.innerHTML = '<i class="bi bi-check-lg me-1"></i>Actualizar';
       } else {
-        if (msg) msg.innerHTML = `<span class="text-danger">${data.error}</span>`;
+        if (msg) msg.innerHTML = `<span class="text-danger small">${data.error}</span>`;
       }
       setTimeout(() => { if (msg) msg.innerHTML = ''; }, 4000);
     })
     .catch(() => {
-      if (msg) msg.innerHTML = '<span class="text-danger">Error de red. Intenta de nuevo.</span>';
+      if (msg) msg.innerHTML = '<span class="text-danger small">Error de red.</span>';
     })
-    .finally(() => { btn.disabled = false; });
+    .finally(() => { this.disabled = false; });
   });
 });
 
-/* ── Modal estadísticas ─────────────────────────────────── */
+/* ── Enter entre inputs ──────────────────────────────────── */
+document.querySelectorAll('.pk-gl').forEach(inp => {
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const gv = inp.closest('[data-partido-id]').querySelector('.pk-gv');
+      if (gv) gv.focus();
+    }
+  });
+});
+document.querySelectorAll('.pk-gv').forEach(inp => {
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const card = inp.closest('.pk-pro-card');
+      const btn  = card ? card.querySelector('.pk-save-btn') : null;
+      if (btn) btn.click();
+    }
+  });
+});
+
+/* ── Modal estadísticas ──────────────────────────────────── */
 const modalEl = document.getElementById('modalStats');
 if (modalEl) {
   const modal = new bootstrap.Modal(modalEl);
   const spinner = `<div class="text-center py-3">
-    <div class="spinner-border spinner-border-sm" style="color:var(--pk-green);" role="status"></div>
-    <div class="small text-muted mt-2">Cargando estadísticas...</div></div>`;
+    <div class="spinner-border spinner-border-sm" style="color:#155230;" role="status"></div>
+    <div class="small text-muted mt-2">Cargando...</div></div>`;
 
   document.querySelectorAll('.btn-stats').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -286,11 +308,11 @@ if (modalEl) {
         .then(resp => {
           document.getElementById('modalStatsCuerpo').innerHTML =
             resp.ok ? renderStats(resp.datos)
-                    : '<p class="text-muted text-center py-2 small">Datos no disponibles aún.<br>Se actualizarán antes del partido.</p>';
+                    : '<p class="text-muted text-center py-2 small">Datos no disponibles aún.</p>';
         })
         .catch(() => {
           document.getElementById('modalStatsCuerpo').innerHTML =
-            '<p class="text-danger text-center small">Error al cargar estadísticas.</p>';
+            '<p class="text-danger text-center small">Error al cargar.</p>';
         });
     });
   });
@@ -307,16 +329,16 @@ function renderStats(d) {
       <div class="fw-bold small mb-2">⚔️ Historial cara a cara (${h.total} partidos)</div>
       <div class="d-flex text-center gap-1 mb-2">
         <div class="flex-fill border rounded py-1">
-          <div class="fw-bold text-primary fs-5 lh-1">${h.victorias_local}</div>
-          <div class="text-muted" style="font-size:.65rem;">Local gana</div>
+          <div class="fw-bold text-primary fs-5">${h.victorias_local}</div>
+          <div class="text-muted" style="font-size:.65rem;">Local</div>
         </div>
         <div class="flex-fill border rounded py-1">
-          <div class="fw-bold fs-5 lh-1">${h.empates}</div>
+          <div class="fw-bold fs-5">${h.empates}</div>
           <div class="text-muted" style="font-size:.65rem;">Empates</div>
         </div>
         <div class="flex-fill border rounded py-1">
-          <div class="fw-bold text-danger fs-5 lh-1">${h.victorias_visitante}</div>
-          <div class="text-muted" style="font-size:.65rem;">Visitante gana</div>
+          <div class="fw-bold text-danger fs-5">${h.victorias_visitante}</div>
+          <div class="text-muted" style="font-size:.65rem;">Visitante</div>
         </div>
       </div>
       <div class="progress mb-2" style="height:6px;">
@@ -324,36 +346,31 @@ function renderStats(d) {
         <div class="progress-bar bg-secondary" style="width:${pE}%"></div>
         <div class="progress-bar bg-danger" style="width:${pV}%"></div>
       </div>`;
-    if (h.ultimos && h.ultimos.length) {
-      html += `<div style="font-size:.7rem;" class="text-muted mb-1">Últimos enfrentamientos:</div>
+    if (h.ultimos?.length) {
+      html += `<div class="text-muted mb-1" style="font-size:.7rem;">Últimos enfrentamientos:</div>
         <ul class="list-unstyled mb-0" style="font-size:.7rem;">`;
       h.ultimos.forEach(p => {
-        html += `<li class="border-bottom py-1">${p.fecha} · ${p.local} <strong>${p.marcador}</strong> ${p.visitante}</li>`;
+        html += `<li class="border-bottom py-1">${p.fecha} · ${p.local} <b>${p.marcador}</b> ${p.visitante}</li>`;
       });
       html += `</ul>`;
     }
     html += `</div>`;
-  } else if (d.h2h && d.h2h.total === 0) {
-    html += `<div class="text-muted small mb-3">⚔️ Sin historial previo entre estos equipos.</div>`;
+  } else if (d.h2h?.total === 0) {
+    html += `<div class="text-muted small mb-3">Sin historial previo.</div>`;
   }
-
-  const badgeF = l => {
-    const c = l==='W'?'bg-success':l==='L'?'bg-danger':'bg-secondary';
-    const t = l==='W'?'G':l==='L'?'P':'E';
-    return `<span class="badge ${c} px-2">${t}</span>`;
-  };
-  if (d.forma_local || d.forma_visitante) {
-    html += `<div class="mb-1"><div class="fw-bold small mb-1">📈 Forma reciente (últimos 5)</div>`;
+  const bf = l => `<span class="badge ${l==='W'?'bg-success':l==='L'?'bg-danger':'bg-secondary'} px-2">
+    ${l==='W'?'G':l==='L'?'P':'E'}</span>`;
+  if (d.forma_local?.length || d.forma_visitante?.length) {
+    html += `<div class="fw-bold small mb-1">📈 Forma reciente</div>`;
     if (d.forma_local?.length)
-      html += `<div class="d-flex align-items-center gap-1 mb-1" style="font-size:.7rem;">
-        <span class="text-muted me-1">Local:</span>${d.forma_local.map(badgeF).join('')}</div>`;
+      html += `<div class="d-flex gap-1 mb-1 align-items-center" style="font-size:.7rem;">
+        <span class="text-muted me-1">Local:</span>${d.forma_local.map(bf).join('')}</div>`;
     if (d.forma_visitante?.length)
-      html += `<div class="d-flex align-items-center gap-1" style="font-size:.7rem;">
-        <span class="text-muted me-1">Visit.:</span>${d.forma_visitante.map(badgeF).join('')}</div>`;
-    html += `</div>`;
+      html += `<div class="d-flex gap-1 align-items-center" style="font-size:.7rem;">
+        <span class="text-muted me-1">Visit.:</span>${d.forma_visitante.map(bf).join('')}</div>`;
   }
-  html += `<div class="text-end mt-2" style="font-size:.6rem;color:#aaa;">Fuente: api-football.com · caché 6h</div>`;
-  return html || '<p class="text-muted text-center py-2 small">Sin datos disponibles aún.</p>';
+  html += `<div class="text-end mt-2" style="font-size:.6rem;color:#bbb;">api-football.com · caché 6h</div>`;
+  return html || '<p class="text-muted text-center small py-2">Sin datos disponibles.</p>';
 }
 </script>
 {% endblock %}
