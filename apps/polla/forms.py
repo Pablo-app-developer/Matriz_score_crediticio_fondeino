@@ -96,7 +96,7 @@ class CampeonForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['equipo'].queryset = Equipo.objects.order_by('grupo', 'nombre')
+        self.fields['equipo'].queryset = Equipo.objects.order_by('nombre')
 
 
 class CargarAfiliadosForm(forms.Form):

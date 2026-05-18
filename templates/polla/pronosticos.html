@@ -4,7 +4,25 @@
 
 {% block extra_css %}
 {{ block.super }}
-<style>body { background: #0d1b2a !important; }</style>
+<style>
+body { background: #0d1b2a !important; }
+
+/* ── Tabs de fase ─────────────────────────────────────────── */
+.pn-tab {
+  display: inline-flex; align-items: center; gap: .35rem;
+  background: #162030; border: 1px solid #1e3050; color: #4e6e8c;
+  font-weight: 700; font-size: .72rem; padding: .38rem .9rem;
+  border-radius: 7px; text-decoration: none; transition: all .13s;
+  white-space: nowrap; position: relative;
+}
+.pn-tab:hover { background: #1e3050; color: #8ab0d0; }
+.pn-tab.on    { background: #f0c040; color: #1a1200; border-color: #f0c040; }
+.pn-tab-dot {
+  position: absolute; top: -5px; right: -5px;
+  background: #e05050; color: #fff; font-size: .52rem; font-weight: 900;
+  padding: .1rem .28rem; border-radius: 10px; min-width: 15px; text-align: center;
+}
+</style>
 {% endblock %}
 
 {% block polla_content %}
@@ -40,6 +58,21 @@
     {% endif %}
   </div>
 </div>
+
+{# ── Tabs de fase ────────────────────────────────────────── #}
+{% if fases_tabs %}
+<div class="d-flex gap-1 flex-wrap mb-3">
+  {% for tab in fases_tabs %}
+  <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
+     class="pn-tab {% if tab.key == fase_sel %}on{% endif %}">
+    <i class="bi {{ tab.icon }}"></i>{{ tab.label }}
+    {% if tab.pendientes > 0 and tab.key != fase_sel %}
+      <span class="pn-tab-dot">{{ tab.pendientes }}</span>
+    {% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
 
 {% if not partidos_por_fecha %}
 <div style="color:#3e5e7c;text-align:center;padding:4rem 0;">

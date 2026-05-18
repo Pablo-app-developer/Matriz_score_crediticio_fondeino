@@ -444,16 +444,57 @@ def pronosticos(request):
     polla_sel = int(request.GET.get('polla', 1))
     inscripcion_activa = next((i for i in inscripciones if i.numero_polla == polla_sel), inscripciones.first())
 
-    # Partidos agrupados por fecha
-    partidos = Partido.objects.select_related('equipo_local', 'equipo_visitante').order_by('fecha_hora')
+    ORDEN_FASES = ['GRUPOS', 'TREINTA_DOS', 'OCTAVOS', 'CUARTOS', 'SEMIS', 'TERCERO', 'FINAL']
+    FASE_LABEL = dict(FASE_CHOICES)
+    SHORT_LABEL = {
+        'GRUPOS': 'Grupos', 'TREINTA_DOS': '32avos', 'OCTAVOS': 'Octavos',
+        'CUARTOS': 'Cuartos', 'SEMIS': 'Semis', 'TERCERO': '3er puesto', 'FINAL': 'Final',
+    }
+    FASE_ICON = {
+        'GRUPOS': 'bi-grid-3x3', 'TREINTA_DOS': 'bi-diagram-3', 'OCTAVOS': 'bi-shuffle',
+        'CUARTOS': 'bi-star', 'SEMIS': 'bi-lightning-fill', 'TERCERO': 'bi-award', 'FINAL': 'bi-trophy-fill',
+    }
+
     ahora = timezone.now()
 
-    partidos_con_estado = []
+    fase_sel = request.GET.get('fase', 'GRUPOS')
+    if fase_sel not in FASE_LABEL:
+        fase_sel = 'GRUPOS'
+
+    # Fases que tienen al menos un partido cargado
+    fases_con_partidos = set(Partido.objects.values_list('fase', flat=True).distinct())
+
+    # IDs de partidos ya pronosticados (para calcular pendientes en todos los tabs)
+    pronosticos_ids = set()
+    if inscripcion_activa:
+        pronosticos_ids = set(inscripcion_activa.pronosticos.values_list('partido_id', flat=True))
+
+    # Pendientes por fase: partidos futuros sin pronóstico
+    pend_por_fase = {}
+    for f in ORDEN_FASES:
+        if f in fases_con_partidos:
+            pend_por_fase[f] = Partido.objects.filter(
+                fase=f, fecha_hora__gt=ahora, finalizado=False,
+            ).exclude(pk__in=pronosticos_ids).count()
+
+    fases_tabs = [
+        {'key': f, 'label': SHORT_LABEL[f], 'pendientes': pend_por_fase.get(f, 0), 'icon': FASE_ICON[f]}
+        for f in ORDEN_FASES if f in fases_con_partidos
+    ]
+    pendientes = sum(pend_por_fase.values())
+
+    # Partidos solo de la fase seleccionada
+    partidos = Partido.objects.filter(fase=fase_sel).select_related(
+        'equipo_local', 'equipo_visitante'
+    ).order_by('fecha_hora', 'numero')
+
     pronosticos_dict = {}
     if inscripcion_activa:
         pronosticos_dict = {
             p.partido_id: p
-            for p in inscripcion_activa.pronosticos.select_related('partido').all()
+            for p in inscripcion_activa.pronosticos.filter(
+                partido__fase=fase_sel
+            ).select_related('partido').all()
         }
 
     partidos_por_fecha = defaultdict(list)
@@ -466,16 +507,7 @@ def pronosticos(request):
         })
 
     partidos_por_fecha_ord = dict(sorted(partidos_por_fecha.items()))
-
-    ORDEN_FASES = ['GRUPOS', 'TREINTA_DOS', 'OCTAVOS', 'CUARTOS', 'SEMIS', 'TERCERO', 'FINAL']
-    FASE_LABEL = dict(FASE_CHOICES)
-    _pend = {}
-    for items in partidos_por_fecha_ord.values():
-        for item in items:
-            if not item['cerrado'] and not item['partido'].finalizado and not item['pronostico']:
-                _pend[item['partido'].fase] = _pend.get(item['partido'].fase, 0) + 1
-    pendientes_por_fase = {FASE_LABEL[f]: _pend[f] for f in ORDEN_FASES if f in _pend}
-    pendientes = sum(pendientes_por_fase.values())
+    pendientes_por_fase = {FASE_LABEL[f]: pend_por_fase.get(f, 0) for f in ORDEN_FASES if f in pend_por_fase}
 
     return render(request, 'polla/pronosticos.html', {
         'afiliado': afiliado,
@@ -487,6 +519,8 @@ def pronosticos(request):
         'ahora': ahora,
         'pendientes': pendientes,
         'pendientes_por_fase': pendientes_por_fase,
+        'fase_sel': fase_sel,
+        'fases_tabs': fases_tabs,
     })
 
 
