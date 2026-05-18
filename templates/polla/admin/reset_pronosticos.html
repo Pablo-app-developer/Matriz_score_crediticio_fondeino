@@ -1,0 +1,78 @@
+{% extends "polla/base_polla.html" %}
+
+{% block polla_content %}
+<div class="container" style="max-width:640px;">
+
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <a href="{% url 'polla:admin_afiliados' %}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i>
+    </a>
+    <h6 class="mb-0 fw-bold">
+      <i class="bi bi-person-circle me-2 text-primary"></i>{{ afiliado.nombre_completo }}
+      <span class="text-muted fw-normal small ms-1">CC {{ afiliado.cedula }}</span>
+    </h6>
+  </div>
+
+  {% for msg in messages %}
+  <div class="alert alert-{{ msg.tags }} alert-dismissible fade show">
+    {{ msg }}<button class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+
+  {% for pk, datos in pronosticos_por_insc.items %}
+  {% with insc=datos.insc %}
+  <div class="card shadow-sm mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center
+                {% if insc.numero_polla == 2 %}bg-warning text-dark{% else %}bg-secondary text-white{% endif %}">
+      <span class="fw-bold">
+        Polla {% if insc.numero_polla == 2 %}B (Doble){% else %}A{% endif %}
+      </span>
+      <span class="small">{{ insc.puntos_totales }} pts · {{ insc.aciertos_resultado }} res. · {{ insc.aciertos_marcador }} exactos</span>
+    </div>
+    <div class="card-body">
+      <div class="row g-2 mb-3">
+        <div class="col-4 text-center">
+          <div class="fs-4 fw-bold">{{ datos.total }}</div>
+          <div class="small text-muted">Pronósticos totales</div>
+        </div>
+        <div class="col-4 text-center">
+          <div class="fs-4 fw-bold text-danger">{{ datos.finalizados }}</div>
+          <div class="small text-muted">En partidos finalizados</div>
+        </div>
+        <div class="col-4 text-center">
+          <div class="fs-4 fw-bold text-warning">{{ datos.total|add:datos.finalizados|add:"-1"|add:"1" }}</div>
+          <div class="small text-muted">Abiertos / pendientes</div>
+        </div>
+      </div>
+
+      {% if datos.total > 0 %}
+      {% if datos.finalizados > 0 %}
+      <div class="alert alert-warning small mb-3">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        <strong>{{ datos.finalizados }} de estos pronósticos corresponden a partidos ya finalizados.</strong>
+        Al resetear se perderán los puntos obtenidos y no se pueden recuperar.
+      </div>
+      {% endif %}
+
+      <form method="post"
+            onsubmit="return confirm('¿Resetear TODOS los pronósticos de Polla {% if insc.numero_polla == 2 %}B{% else %}A{% endif %} de {{ afiliado.nombre_completo }}?\n\nEsto elimina {{ datos.total }} pronósticos y pone sus puntos en 0. No se puede deshacer.');">
+        {% csrf_token %}
+        <input type="hidden" name="polla_num" value="{{ insc.numero_polla }}">
+        <button type="submit" class="btn btn-danger fw-bold w-100">
+          <i class="bi bi-trash-fill me-2"></i>
+          Resetear Polla {% if insc.numero_polla == 2 %}B{% else %}A{% endif %}
+          — eliminar {{ datos.total }} pronóstico{{ datos.total|pluralize }}
+        </button>
+      </form>
+      {% else %}
+      <div class="text-muted text-center py-2 small">
+        <i class="bi bi-check-circle me-1 text-success"></i>Sin pronósticos registrados.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endwith %}
+  {% endfor %}
+
+</div>
+{% endblock %}

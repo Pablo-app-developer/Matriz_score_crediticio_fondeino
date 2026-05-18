@@ -88,7 +88,8 @@
           <tr class="{% if not afl.activo %}table-secondary{% endif %}">
             <td class="small font-monospace">{{ afl.cedula }}</td>
             <td class="small">
-              {{ afl.nombre_completo }}
+              <a href="{% url 'polla:admin_reset_pronosticos' afl.pk %}"
+                 class="text-decoration-none fw-semibold">{{ afl.nombre_completo }}</a>
               {% if afl.correo %}
                 <div class="text-muted" style="font-size:0.7rem;">{{ afl.correo }}</div>
               {% endif %}
@@ -130,6 +131,10 @@
                 <a href="{% url 'polla:admin_afiliado_editar' afl.pk %}"
                    class="btn btn-outline-secondary btn-sm" title="Editar">
                   <i class="bi bi-pencil"></i>
+                </a>
+                <a href="{% url 'polla:admin_reset_pronosticos' afl.pk %}"
+                   class="btn btn-outline-warning btn-sm" title="Ver / resetear pronósticos">
+                  <i class="bi bi-arrow-counterclockwise"></i>
                 </a>
                 {% if afl.activo and afl.cantidad_pollas == 1 %}
                 <a href="{% url 'polla:admin_asignar_doble_polla' afl.pk %}"

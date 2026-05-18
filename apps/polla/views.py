@@ -600,11 +600,11 @@ def perfil_afiliado(request, afiliado_id):
     polla_sel = int(request.GET.get('polla', 1))
     inscripcion = get_object_or_404(InscripcionPolla, afiliado=afiliado, numero_polla=polla_sel)
 
-    # Solo mostrar partidos que ya cerraron (transparencia post-partido)
+    # Solo mostrar partidos que ya cerraron (cerrado = fecha_hora ya pasó)
     pronosticos_qs = inscripcion.pronosticos.select_related(
         'partido__equipo_local', 'partido__equipo_visitante'
     ).filter(
-        partido__cerrado_para_pronosticos=True
+        partido__fecha_hora__lte=timezone.now()
     ).order_by('partido__fecha_hora')
 
     return render(request, 'polla/perfil_afiliado.html', {
@@ -700,6 +700,45 @@ def admin_afiliado_editar(request, afiliado_id):
         'afiliado': afiliado,
         'titulo': f'Editar: {afiliado.nombre_completo}',
         'accion': 'Guardar cambios',
+    })
+
+
+@admin_polla_required
+def admin_reset_pronosticos(request, afiliado_id):
+    """Permite al admin ver el perfil de un afiliado y resetear sus pronósticos."""
+    afiliado = get_object_or_404(Afiliado, pk=afiliado_id)
+    inscripciones = afiliado.inscripciones.filter(activa=True).order_by('numero_polla')
+
+    if request.method == 'POST':
+        polla_num = int(request.POST.get('polla_num', 1))
+        inscripcion = get_object_or_404(InscripcionPolla, afiliado=afiliado, numero_polla=polla_num)
+        borrados = Pronostico.objects.filter(inscripcion=inscripcion).count()
+        Pronostico.objects.filter(inscripcion=inscripcion).delete()
+        inscripcion.puntos_totales = 0
+        inscripcion.aciertos_resultado = 0
+        inscripcion.aciertos_marcador = 0
+        inscripcion.save(update_fields=['puntos_totales', 'aciertos_resultado', 'aciertos_marcador'])
+        messages.success(
+            request,
+            f'Se eliminaron {borrados} pronósticos de Polla {"A" if polla_num == 1 else "B"} '
+            f'de {afiliado.nombre_completo}.'
+        )
+        return redirect('polla:admin_reset_pronosticos', afiliado_id=afiliado_id)
+
+    pronosticos_por_insc = {}
+    for insc in inscripciones:
+        pronosticos_por_insc[insc.pk] = {
+            'insc': insc,
+            'total': Pronostico.objects.filter(inscripcion=insc).count(),
+            'finalizados': Pronostico.objects.filter(
+                inscripcion=insc, partido__finalizado=True
+            ).count(),
+        }
+
+    return render(request, 'polla/admin/reset_pronosticos.html', {
+        'afiliado': afiliado,
+        'inscripciones': inscripciones,
+        'pronosticos_por_insc': pronosticos_por_insc,
     })
 
 
