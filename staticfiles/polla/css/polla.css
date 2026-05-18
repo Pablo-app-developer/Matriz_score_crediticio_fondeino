@@ -189,9 +189,12 @@ body { background-color: var(--pk-bg) !important; font-family: 'Montserrat', san
 .pn-day-body {
   background: #111e2e; border: 1px solid #1e3050; border-top: none;
   border-radius: 0 0 10px 10px; padding: .42rem;
-  display: flex; flex-direction: column; gap: .38rem;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: .38rem;
 }
 .pn-day-body.shut { display: none; }
+.pn-day-body > .pn-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (max-width: 767px) { .pn-day-body { grid-template-columns: 1fr; } }
+@media (max-width: 767px) { .pn-day-body > .pn-card:last-child:nth-child(odd) { grid-column: auto; } }
 
 /* ── Tarjeta de partido ──────────────────────────────────── */
 .pn-card {
@@ -239,20 +242,35 @@ body { background-color: var(--pk-bg) !important; font-family: 'Montserrat', san
 }
 
 .pn-mid {
-  flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-width: 132px;
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-width: 170px;
 }
 .pn-inputs { display: flex; align-items: center; gap: .28rem; }
+
+/* Spinner: [−] [input] [+] */
+.pn-spinner { display: flex; align-items: center; }
+.pn-spin-btn {
+  width: 26px; height: 46px; flex-shrink: 0;
+  background: #243855; color: #8ab0d0; border: 2px solid #243855;
+  font-size: 1.05rem; font-weight: 900; cursor: pointer; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .1s, color .1s; user-select: none;
+}
+.pn-spin-btn:first-child { border-radius: 8px 0 0 8px; border-right: none; }
+.pn-spin-btn:last-child  { border-radius: 0 8px 8px 0; border-left: none; }
+.pn-spin-btn:hover       { background: #2e4a6a; color: #f0c040; }
+.pn-spin-btn:active      { background: #1e3050; }
+
 .pn-inp {
-  width: 50px; height: 46px; font-size: 1.3rem; font-weight: 800; text-align: center;
+  width: 44px; height: 46px; font-size: 1.25rem; font-weight: 800; text-align: center;
   background: #0d1b2a; color: #dde8f6; outline: none;
-  border: 2px solid #243855; border-radius: 8px;
+  border: 2px solid #243855; border-radius: 0;
   font-family: 'Montserrat', sans-serif; -moz-appearance: textfield;
   transition: border-color .13s, box-shadow .13s;
 }
 .pn-inp::-webkit-inner-spin-button,
 .pn-inp::-webkit-outer-spin-button { -webkit-appearance: none; }
-.pn-inp:focus { border-color: #f0c040; box-shadow: 0 0 0 3px rgba(240,192,64,.12); background: #111e2e; }
-.pn-dash { color: #2a4060; font-size: .95rem; font-weight: 900; user-select: none; flex-shrink: 0; }
+.pn-inp:focus { border-color: #f0c040; box-shadow: 0 0 0 3px rgba(240,192,64,.12); background: #111e2e; z-index: 1; position: relative; }
+.pn-dash { color: #2a4060; font-size: .95rem; font-weight: 900; user-select: none; flex-shrink: 0; margin: 0 .1rem; }
 
 .pn-score {
   font-size: 1.25rem; font-weight: 900; letter-spacing: 2px; white-space: nowrap;
@@ -298,10 +316,11 @@ body { background-color: var(--pk-bg) !important; font-family: 'Montserrat', san
 
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 575px) {
-  .pn-body  { padding: .65rem .75rem; gap: .3rem; }
-  .pn-mid   { min-width: 112px; }
-  .pn-inp   { width: 43px; height: 40px; font-size: 1.1rem; }
-  .pn-flag  { width: 22px; height: 15px; }
-  .pn-name  { font-size: .76rem; }
-  .pn-top, .pn-foot { padding: .32rem .75rem; }
+  .pn-body      { padding: .6rem .65rem; gap: .25rem; }
+  .pn-mid       { min-width: 148px; }
+  .pn-inp       { width: 38px; height: 40px; font-size: 1.05rem; }
+  .pn-spin-btn  { width: 22px; height: 40px; font-size: .9rem; }
+  .pn-flag      { width: 22px; height: 15px; }
+  .pn-name      { font-size: .75rem; }
+  .pn-top, .pn-foot { padding: .3rem .7rem; }
 }

@@ -103,11 +103,19 @@
           </div>
         {% else %}
           <div class="pn-inputs" data-partido-id="{{ p.pk }}" data-polla-num="{{ polla_sel }}">
-            <input type="number" class="pn-inp pk-gl" min="0" max="20" inputmode="numeric"
-                   value="{% if pr %}{{ pr.goles_local }}{% endif %}" placeholder="0">
+            <div class="pn-spinner">
+              <button class="pn-spin-btn" type="button" data-dir="-1">−</button>
+              <input type="number" class="pn-inp pk-gl" min="0" max="20" inputmode="numeric"
+                     value="{% if pr %}{{ pr.goles_local }}{% endif %}" placeholder="0">
+              <button class="pn-spin-btn" type="button" data-dir="1">+</button>
+            </div>
             <span class="pn-dash">–</span>
-            <input type="number" class="pn-inp pk-gv" min="0" max="20" inputmode="numeric"
-                   value="{% if pr %}{{ pr.goles_visitante }}{% endif %}" placeholder="0">
+            <div class="pn-spinner">
+              <button class="pn-spin-btn" type="button" data-dir="-1">−</button>
+              <input type="number" class="pn-inp pk-gv" min="0" max="20" inputmode="numeric"
+                     value="{% if pr %}{{ pr.goles_visitante }}{% endif %}" placeholder="0">
+              <button class="pn-spin-btn" type="button" data-dir="1">+</button>
+            </div>
           </div>
         {% endif %}
       </div>
@@ -271,6 +279,15 @@ document.querySelectorAll('.pk-save-btn').forEach(btn => {
       this.textContent = 'Guardar';
     })
     .finally(() => { this.disabled = false; });
+  });
+});
+
+/* ── Botones +/− del spinner ────────────────────────────── */
+document.querySelectorAll('.pn-spin-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const inp = this.parentElement.querySelector('input');
+    const dir = parseInt(this.dataset.dir);
+    inp.value = Math.max(0, Math.min(20, (parseInt(inp.value) || 0) + dir));
   });
 });
 
