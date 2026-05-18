@@ -89,9 +89,11 @@ body { background: #0d1b2a !important; }
   background: #162030; border: 1px solid #1e3050; color: #4e6e8c;
   font-weight: 700; font-size: .75rem; padding: .32rem .75rem;
   border-radius: 6px; text-decoration: none; transition: all .13s;
+  min-width: 34px; text-align: center; display: inline-block;
 }
 .rk-pgbtn:hover { background: #1e3050; color: #8ab0d0; }
 .rk-pgbtn.off   { opacity: .35; pointer-events: none; }
+.rk-pgbtn.on    { background: #f0c040; color: #1a1200; border-color: #f0c040; cursor: default; }
 
 /* ── Vacío ────────────────────────────────────────────────── */
 .rk-empty {
@@ -236,25 +238,56 @@ body { background: #0d1b2a !important; }
 
 {# Paginación #}
 {% if total_paginas > 1 %}
-<div class="d-flex justify-content-between align-items-center mt-3">
-  <span style="color:#2a4060;font-size:.72rem;">{{ total }} participantes</span>
-  <div class="d-flex align-items-center gap-2">
-    {% if pagina > 1 %}
-      <a href="?tipo={{ tipo }}&pagina={{ pagina|add:-1 }}" class="rk-pgbtn">
-        <i class="bi bi-chevron-left"></i>
-      </a>
-    {% else %}
-      <span class="rk-pgbtn off"><i class="bi bi-chevron-left"></i></span>
+<div class="d-flex justify-content-center align-items-center gap-1 mt-4 flex-wrap">
+
+  {# Anterior #}
+  {% if pagina > 1 %}
+    <a href="?tipo={{ tipo }}&pagina={{ pagina|add:-1 }}" class="rk-pgbtn" title="Anterior">
+      <i class="bi bi-chevron-left"></i>
+    </a>
+  {% else %}
+    <span class="rk-pgbtn off"><i class="bi bi-chevron-left"></i></span>
+  {% endif %}
+
+  {# Primera página si el rango no la incluye #}
+  {% if paginas_rango.0 > 1 %}
+    <a href="?tipo={{ tipo }}&pagina=1" class="rk-pgbtn">1</a>
+    {% if paginas_rango.0 > 2 %}
+      <span style="color:#2a4060;font-size:.8rem;padding:0 .2rem;">…</span>
     {% endif %}
-    <span style="color:#5a7fa0;font-size:.8rem;font-weight:700;">{{ pagina }} / {{ total_paginas }}</span>
-    {% if pagina < total_paginas %}
-      <a href="?tipo={{ tipo }}&pagina={{ pagina|add:1 }}" class="rk-pgbtn">
-        <i class="bi bi-chevron-right"></i>
-      </a>
+  {% endif %}
+
+  {# Páginas del rango central #}
+  {% for p in paginas_rango %}
+    {% if p == pagina %}
+      <span class="rk-pgbtn on">{{ p }}</span>
     {% else %}
-      <span class="rk-pgbtn off"><i class="bi bi-chevron-right"></i></span>
+      <a href="?tipo={{ tipo }}&pagina={{ p }}" class="rk-pgbtn">{{ p }}</a>
     {% endif %}
-  </div>
+  {% endfor %}
+
+  {# Última página si el rango no la incluye #}
+  {% with last=paginas_rango|last %}
+  {% if last < total_paginas %}
+    {% if last < total_paginas|add:-1 %}
+      <span style="color:#2a4060;font-size:.8rem;padding:0 .2rem;">…</span>
+    {% endif %}
+    <a href="?tipo={{ tipo }}&pagina={{ total_paginas }}" class="rk-pgbtn">{{ total_paginas }}</a>
+  {% endif %}
+  {% endwith %}
+
+  {# Siguiente #}
+  {% if pagina < total_paginas %}
+    <a href="?tipo={{ tipo }}&pagina={{ pagina|add:1 }}" class="rk-pgbtn" title="Siguiente">
+      <i class="bi bi-chevron-right"></i>
+    </a>
+  {% else %}
+    <span class="rk-pgbtn off"><i class="bi bi-chevron-right"></i></span>
+  {% endif %}
+
+</div>
+<div class="text-center mt-2" style="color:#2a4060;font-size:.68rem;">
+  Página {{ pagina }} de {{ total_paginas }} · {{ total }} participante{{ total|pluralize }}
 </div>
 {% endif %}
 

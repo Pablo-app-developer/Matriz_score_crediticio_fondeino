@@ -290,14 +290,23 @@ def ranking(request):
         )
         titulo = 'Ranking General'
 
-    # Paginación manual (50 por página)
+    # Paginación manual (20 por página)
     pagina = int(request.GET.get('pagina', 1))
-    por_pagina = 50
+    por_pagina = 20
     total = ranking_qs.count()
+    total_paginas = max(1, (total + por_pagina - 1) // por_pagina)
+    pagina = max(1, min(pagina, total_paginas))
     inicio = (pagina - 1) * por_pagina
-    fin = inicio + por_pagina
-    ranking_pagina = ranking_qs[inicio:fin]
-    total_paginas = (total + por_pagina - 1) // por_pagina
+    ranking_pagina = ranking_qs[inicio: inicio + por_pagina]
+
+    # Rango de páginas cercanas para mostrar en la UI (máx 5 botones)
+    radio = 2
+    p_inicio = max(1, pagina - radio)
+    p_fin = min(total_paginas, pagina + radio)
+    if p_fin - p_inicio < radio * 2:
+        p_inicio = max(1, p_fin - radio * 2)
+        p_fin = min(total_paginas, p_inicio + radio * 2)
+    paginas_rango = list(range(p_inicio, p_fin + 1))
 
     afiliado_user = _get_afiliado(request.user) if request.user.is_authenticated else None
 
@@ -310,6 +319,7 @@ def ranking(request):
         'total_paginas': total_paginas,
         'total': total,
         'offset': inicio,
+        'paginas_rango': paginas_rango,
         'afiliado_user': afiliado_user,
     })
 
