@@ -48,9 +48,21 @@
             {% endif %}
           ">
             <td class="small">
-              {{ pron.partido.bandera_local }}{{ pron.partido.codigo_local }}
-              vs
-              {{ pron.partido.bandera_visitante }}{{ pron.partido.codigo_visitante }}
+              <div class="d-flex align-items-center gap-1 flex-wrap" style="min-width:160px;">
+                {% if pron.partido.bandera_url_local %}
+                  <img src="{{ pron.partido.bandera_url_local }}"
+                       style="width:22px;height:15px;object-fit:cover;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.25);"
+                       alt="{{ pron.partido.nombre_local_display }}" loading="lazy">
+                {% endif %}
+                <span>{{ pron.partido.nombre_local_display }}</span>
+                <span class="text-muted">vs</span>
+                {% if pron.partido.bandera_url_visitante %}
+                  <img src="{{ pron.partido.bandera_url_visitante }}"
+                       style="width:22px;height:15px;object-fit:cover;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.25);"
+                       alt="{{ pron.partido.nombre_visitante_display }}" loading="lazy">
+                {% endif %}
+                <span>{{ pron.partido.nombre_visitante_display }}</span>
+              </div>
               <div class="text-muted" style="font-size:0.7rem;">{{ pron.partido.fecha_hora|date:"d/m H:i" }}</div>
             </td>
             <td class="text-center small">{{ pron.partido.get_fase_display }}</td>
