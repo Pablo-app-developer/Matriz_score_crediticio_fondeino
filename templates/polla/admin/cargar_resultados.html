@@ -42,13 +42,13 @@
               <td class="text-center">
                 <div class="d-flex justify-content-center align-items-center gap-1">
                   <input type="number" name="goles_local_{{ partido.pk }}"
-                         value="{% if partido.goles_local is not None %}{{ partido.goles_local }}{% endif %}"
-                         min="0" max="20" placeholder="0"
+                         value="{{ partido.goles_local|default:0 }}"
+                         min="0" max="20"
                          class="form-control form-control-sm text-center" style="width:55px;">
                   <span class="fw-bold">–</span>
                   <input type="number" name="goles_visitante_{{ partido.pk }}"
-                         value="{% if partido.goles_visitante is not None %}{{ partido.goles_visitante }}{% endif %}"
-                         min="0" max="20" placeholder="0"
+                         value="{{ partido.goles_visitante|default:0 }}"
+                         min="0" max="20"
                          class="form-control form-control-sm text-center" style="width:55px;">
                 </div>
               </td>

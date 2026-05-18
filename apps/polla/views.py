@@ -890,24 +890,39 @@ def admin_cargar_resultados(request):
 
     if request.method == 'POST':
         actualizados = 0
+        errores = 0
         for partido in Partido.objects.select_related('equipo_local', 'equipo_visitante').all():
             key_local = f'goles_local_{partido.pk}'
             key_visitante = f'goles_visitante_{partido.pk}'
             key_fin = f'finalizado_{partido.pk}'
 
-            if key_local in request.POST and key_visitante in request.POST:
-                try:
-                    gl = int(request.POST[key_local])
-                    gv = int(request.POST[key_visitante])
-                    fin = key_fin in request.POST
-                    if 0 <= gl <= 20 and 0 <= gv <= 20:
-                        partido.goles_local = gl
-                        partido.goles_visitante = gv
-                        partido.finalizado = fin
-                        partido.save(update_fields=['goles_local', 'goles_visitante', 'finalizado'])
-                        actualizados += 1
-                except (ValueError, TypeError):
-                    pass
+            if key_local not in request.POST or key_visitante not in request.POST:
+                continue
+
+            gl_raw = request.POST[key_local].strip()
+            gv_raw = request.POST[key_visitante].strip()
+            fin = key_fin in request.POST
+
+            try:
+                gl = int(gl_raw) if gl_raw != '' else (partido.goles_local if partido.goles_local is not None else 0)
+                gv = int(gv_raw) if gv_raw != '' else (partido.goles_visitante if partido.goles_visitante is not None else 0)
+            except (ValueError, TypeError):
+                errores += 1
+                continue
+
+            if not (0 <= gl <= 20 and 0 <= gv <= 20):
+                errores += 1
+                continue
+
+            # Solo guardar si algo cambió
+            cambiaron_goles = (gl != (partido.goles_local or 0) or gv != (partido.goles_visitante or 0))
+            cambio_finalizado = (fin != partido.finalizado)
+            if cambiaron_goles or cambio_finalizado:
+                partido.goles_local = gl
+                partido.goles_visitante = gv
+                partido.finalizado = fin
+                partido.save(update_fields=['goles_local', 'goles_visitante', 'finalizado'])
+                actualizados += 1
 
         if actualizados:
             total = recalcular_todo(config)
@@ -915,6 +930,10 @@ def admin_cargar_resultados(request):
                 request,
                 f'Se actualizaron {actualizados} partido(s) y se recalcularon los puntos de {total} inscripciones.'
             )
+        elif errores:
+            messages.error(request, f'{errores} partido(s) con valores inválidos — no se guardaron.')
+        else:
+            messages.info(request, 'No hubo cambios que guardar.')
         return redirect('polla:admin_cargar_resultados')
 
     # También mostrar partidos ya finalizados para corrección
