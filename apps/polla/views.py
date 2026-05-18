@@ -1187,3 +1187,45 @@ def admin_asignar_eliminatorias(request):
         'equipos': equipos,
         'FASE_CHOICES': dict(FASE_CHOICES),
     })
+
+
+@admin_polla_required
+def admin_sync_api_football(request):
+    """Ejecuta sync_api_football desde el navegador (Vercel no tiene CLI)."""
+    from django.conf import settings as _settings
+
+    tiene_key = bool(getattr(_settings, 'API_FOOTBALL_KEY', ''))
+    total_equipos = Equipo.objects.count()
+    con_id = Equipo.objects.filter(api_football_id__isnull=False).count()
+
+    if request.method == 'POST' and request.POST.get('confirmar') == 'SI_SYNC':
+        buf = io.StringIO()
+        try:
+            call_command('sync_api_football', stdout=buf, stderr=buf)
+            ok = True
+        except Exception as exc:
+            buf.write(f'\nERROR: {exc}')
+            ok = False
+
+        resultado = buf.getvalue()
+        con_id_post = Equipo.objects.filter(api_football_id__isnull=False).count()
+        if ok:
+            messages.success(request, f'Sincronización completada — {con_id_post}/{total_equipos} equipos con ID.')
+        else:
+            messages.error(request, 'Error durante la sincronización. Revisa la salida.')
+
+        return render(request, 'polla/admin/sync_api_football.html', {
+            'hecho': True,
+            'ok': ok,
+            'resultado': resultado,
+            'tiene_key': tiene_key,
+            'con_id': con_id_post,
+            'total_equipos': total_equipos,
+        })
+
+    return render(request, 'polla/admin/sync_api_football.html', {
+        'hecho': False,
+        'tiene_key': tiene_key,
+        'con_id': con_id,
+        'total_equipos': total_equipos,
+    })

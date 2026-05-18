@@ -36,4 +36,5 @@ urlpatterns = [
     path('admin/actualizar-fixture/', views.admin_actualizar_fixture, name='admin_actualizar_fixture'),
     path('admin/afiliados/<int:afiliado_id>/reset/', views.admin_reset_pronosticos, name='admin_reset_pronosticos'),
     path('admin/eliminatorias/', views.admin_asignar_eliminatorias, name='admin_asignar_eliminatorias'),
+    path('admin/sync-api/', views.admin_sync_api_football, name='admin_sync_api_football'),
 ]
