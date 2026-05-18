@@ -52,6 +52,13 @@ def _get_afiliado(user):
         return None
 
 
+def _int_param(params, key, default=1):
+    try:
+        return int(params.get(key, default))
+    except (ValueError, TypeError):
+        return default
+
+
 # ─────────────────────────────────────────────
 # API
 # ─────────────────────────────────────────────
@@ -318,7 +325,7 @@ def ranking(request):
         titulo = 'Ranking General'
 
     # Paginación manual (20 por página)
-    pagina = int(request.GET.get('pagina', 1))
+    pagina = _int_param(request.GET, 'pagina', 1)
     por_pagina = 20
     total = ranking_qs.count()
     total_paginas = max(1, (total + por_pagina - 1) // por_pagina)
@@ -483,7 +490,7 @@ def pronosticos(request):
     config = ConfiguracionPolla.get()
     inscripciones = afiliado.inscripciones.filter(activa=True).order_by('numero_polla')
 
-    polla_sel = int(request.GET.get('polla', 1))
+    polla_sel = _int_param(request.GET, 'polla', 1)
     inscripcion_activa = next((i for i in inscripciones if i.numero_polla == polla_sel), inscripciones.first())
 
     ORDEN_FASES = ['GRUPOS', 'TREINTA_DOS', 'OCTAVOS', 'CUARTOS', 'SEMIS', 'TERCERO', 'FINAL']
@@ -623,7 +630,7 @@ def campeon(request):
     afiliado = request.user.afiliado
     config = ConfiguracionPolla.get()
     inscripciones = afiliado.inscripciones.filter(activa=True).order_by('numero_polla')
-    polla_sel = int(request.GET.get('polla', 1))
+    polla_sel = _int_param(request.GET, 'polla', 1)
     inscripcion = get_object_or_404(InscripcionPolla, afiliado=afiliado, numero_polla=polla_sel)
 
     try:
@@ -663,7 +670,7 @@ def campeon(request):
 def mis_pronosticos(request):
     afiliado = request.user.afiliado
     inscripciones = afiliado.inscripciones.filter(activa=True).order_by('numero_polla')
-    polla_sel = int(request.GET.get('polla', 1))
+    polla_sel = _int_param(request.GET, 'polla', 1)
     inscripcion = get_object_or_404(InscripcionPolla, afiliado=afiliado, numero_polla=polla_sel)
 
     pronosticos_qs = inscripcion.pronosticos.select_related(
@@ -683,7 +690,7 @@ def mis_pronosticos(request):
 def perfil_afiliado(request, afiliado_id):
     afiliado = get_object_or_404(Afiliado, pk=afiliado_id, activo=True)
     inscripciones = afiliado.inscripciones.filter(activa=True).order_by('numero_polla')
-    polla_sel = int(request.GET.get('polla', 1))
+    polla_sel = _int_param(request.GET, 'polla', 1)
     inscripcion = get_object_or_404(InscripcionPolla, afiliado=afiliado, numero_polla=polla_sel)
 
     # Mostrar pronósticos de partidos ya finalizados (el admin cargó el resultado)
@@ -797,7 +804,7 @@ def admin_reset_pronosticos(request, afiliado_id):
     inscripciones = afiliado.inscripciones.filter(activa=True).order_by('numero_polla')
 
     if request.method == 'POST':
-        polla_num = int(request.POST.get('polla_num', 1))
+        polla_num = _int_param(request.POST, 'polla_num', 1)
         inscripcion = get_object_or_404(InscripcionPolla, afiliado=afiliado, numero_polla=polla_num)
         borrados = Pronostico.objects.filter(inscripcion=inscripcion).count()
         Pronostico.objects.filter(inscripcion=inscripcion).delete()

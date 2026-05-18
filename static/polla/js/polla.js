@@ -12,28 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-/* ── Validación de inputs numéricos de pronóstico ── */
+/* ── Validación de inputs numéricos de resultados (admin) ── */
 document.addEventListener('input', e => {
-  if (e.target.classList.contains('polla-goles-local') ||
-      e.target.classList.contains('polla-goles-visitante')) {
-    let val = parseInt(e.target.value);
-    if (isNaN(val) || val < 0) e.target.value = 0;
-    if (val > 20) e.target.value = 20;
-  }
-});
-
-/* ── Guardar pronóstico con Enter en cualquier input de la fila ── */
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    const input = e.target;
-    if (input.classList.contains('polla-goles-local') ||
-        input.classList.contains('polla-goles-visitante')) {
-      const container = input.closest('[data-partido-id]');
-      if (container) {
-        e.preventDefault();
-        const btn = container.querySelector('.polla-guardar-btn');
-        if (btn && !btn.disabled) btn.click();
-      }
+  const inp = e.target;
+  if (inp.type === 'number' && inp.closest('form')) {
+    const val = parseInt(inp.value);
+    if (!isNaN(val)) {
+      const min = parseInt(inp.min ?? 0);
+      const max = parseInt(inp.max ?? 20);
+      if (val < min) inp.value = min;
+      if (val > max) inp.value = max;
     }
   }
 });

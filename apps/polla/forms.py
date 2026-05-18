@@ -102,9 +102,18 @@ class CampeonForm(forms.ModelForm):
 class CargarAfiliadosForm(forms.Form):
     archivo = forms.FileField(
         label='Archivo Excel (.xlsx)',
-        help_text='Columnas requeridas: cedula, nombre_completo. Opcionales: correo, telefono, area, cantidad_pollas, motivo_doble',
+        help_text='Columnas requeridas: cedula, nombre_completo. Opcionales: correo, telefono, area, cantidad_pollas, motivo_doble. Máximo 5 MB.',
         widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': '.xlsx,.xls'}),
     )
+
+    def clean_archivo(self):
+        f = self.cleaned_data['archivo']
+        if f.size > 5 * 1024 * 1024:
+            raise forms.ValidationError('El archivo supera el límite de 5 MB.')
+        ext = f.name.rsplit('.', 1)[-1].lower()
+        if ext not in ('xlsx', 'xls'):
+            raise forms.ValidationError('Solo se permiten archivos .xlsx o .xls.')
+        return f
 
 
 class AfiliadoManualForm(forms.ModelForm):

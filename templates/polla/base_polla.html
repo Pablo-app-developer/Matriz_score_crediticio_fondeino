@@ -52,7 +52,7 @@
           </li>
         {% endif %}
 
-        {% if request.user.is_authenticated and request.user.es_admin or request.user.es_admin_polla %}
+        {% if request.user.is_authenticated and request.user.es_admin or request.user.is_authenticated and request.user.es_admin_polla %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
               <i class="bi bi-gear-fill me-1"></i>Admin

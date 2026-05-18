@@ -127,10 +127,18 @@
     {% endif %}
 
     <div class="d-flex justify-content-end">
-      <button type="submit" class="btn btn-success fw-bold px-4">
+      <button type="submit" class="btn btn-success fw-bold px-4" id="btn-guardar-resultados">
         <i class="bi bi-check-all me-2"></i>Guardar cambios y recalcular puntos
       </button>
     </div>
+
+    <script>
+    document.querySelector('form').addEventListener('submit', function() {
+      const btn = document.getElementById('btn-guardar-resultados');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Recalculando puntos...';
+    });
+    </script>
 
   </form>
 </div>
