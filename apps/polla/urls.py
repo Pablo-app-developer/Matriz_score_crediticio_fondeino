@@ -35,4 +35,5 @@ urlpatterns = [
     path('admin/cerrar/', views.admin_cerrar_polla, name='admin_cerrar_polla'),
     path('admin/actualizar-fixture/', views.admin_actualizar_fixture, name='admin_actualizar_fixture'),
     path('admin/afiliados/<int:afiliado_id>/reset/', views.admin_reset_pronosticos, name='admin_reset_pronosticos'),
+    path('admin/eliminatorias/', views.admin_asignar_eliminatorias, name='admin_asignar_eliminatorias'),
 ]

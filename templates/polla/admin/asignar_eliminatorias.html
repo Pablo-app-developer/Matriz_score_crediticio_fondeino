@@ -1,0 +1,119 @@
+{% extends "polla/base_polla.html" %}
+
+{% block polla_content %}
+<div class="container-fluid px-3">
+
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+      <h5 class="mb-0"><i class="bi bi-diagram-3 text-info me-2"></i>Equipos Eliminatorias</h5>
+      <small class="text-muted">
+        Asigna el equipo real a cada partido una vez se conozcan los clasificados.
+        Vacía la etiqueta para que aparezca la bandera del equipo seleccionado.
+      </small>
+    </div>
+    <a href="{% url 'polla:admin_reporte' %}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-graph-up me-1"></i>Ver reporte
+    </a>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+
+    {% regroup partidos by get_fase_display as por_fase %}
+    {% for fase_group in por_fase %}
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-dark text-white py-2 fw-bold small">
+        <i class="bi bi-trophy me-1"></i>{{ fase_group.grouper }}
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0 align-middle">
+          <thead class="table-secondary">
+            <tr>
+              <th class="text-center" style="width:42px;">#</th>
+              <th style="width:160px;">Fecha</th>
+              <th>
+                Local
+                <small class="text-muted fw-normal">— etiqueta (dejar vacío = usa el equipo)</small>
+              </th>
+              <th class="text-center" style="width:36px;"></th>
+              <th>
+                Visitante
+                <small class="text-muted fw-normal">— etiqueta</small>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for partido in fase_group.list %}
+            <tr class="{% if not partido.etiqueta_local and not partido.etiqueta_visitante %}table-success{% endif %}">
+              <td class="text-center small text-muted fw-bold">{{ partido.numero }}</td>
+              <td class="small text-muted">{{ partido.fecha_hora|date:"d/m H:i" }}</td>
+
+              {# ── Local ── #}
+              <td>
+                <div class="d-flex flex-column gap-1">
+                  <select name="equipo_local_{{ partido.pk }}"
+                          class="form-select form-select-sm">
+                    <option value="">— seleccionar equipo —</option>
+                    {% for eq in equipos %}
+                    <option value="{{ eq.pk }}"
+                      {% if eq.pk == partido.equipo_local_id %}selected{% endif %}>
+                      {{ eq.nombre }} ({{ eq.codigo_fifa }})
+                    </option>
+                    {% endfor %}
+                  </select>
+                  <input type="text" name="etiqueta_local_{{ partido.pk }}"
+                         value="{{ partido.etiqueta_local }}"
+                         placeholder="Etiqueta (ej: 1° Grupo A) — vaciar para mostrar bandera"
+                         class="form-control form-control-sm text-muted"
+                         style="font-size:.72rem;">
+                </div>
+              </td>
+
+              <td class="text-center fw-bold text-muted">vs</td>
+
+              {# ── Visitante ── #}
+              <td>
+                <div class="d-flex flex-column gap-1">
+                  <select name="equipo_visitante_{{ partido.pk }}"
+                          class="form-select form-select-sm">
+                    <option value="">— seleccionar equipo —</option>
+                    {% for eq in equipos %}
+                    <option value="{{ eq.pk }}"
+                      {% if eq.pk == partido.equipo_visitante_id %}selected{% endif %}>
+                      {{ eq.nombre }} ({{ eq.codigo_fifa }})
+                    </option>
+                    {% endfor %}
+                  </select>
+                  <input type="text" name="etiqueta_visitante_{{ partido.pk }}"
+                         value="{{ partido.etiqueta_visitante }}"
+                         placeholder="Etiqueta — vaciar para mostrar bandera"
+                         class="form-control form-control-sm text-muted"
+                         style="font-size:.72rem;">
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {% endfor %}
+
+    <div class="d-flex justify-content-end mb-4">
+      <button type="submit" class="btn btn-info fw-bold text-white px-4">
+        <i class="bi bi-check-all me-2"></i>Guardar equipos
+      </button>
+    </div>
+  </form>
+
+  <div class="alert alert-light border small">
+    <i class="bi bi-info-circle text-primary me-1"></i>
+    <strong>Cómo usarlo:</strong> Selecciona el equipo del dropdown y
+    <strong>borra el texto de la etiqueta</strong> para que el partido muestre la bandera y nombre real.
+    Las filas en <span class="badge bg-success">verde</span> ya tienen equipos asignados sin etiqueta.
+  </div>
+
+</div>
+{% endblock %}

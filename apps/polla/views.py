@@ -1073,3 +1073,59 @@ def admin_actualizar_fixture(request):
         'partidos_actuales': partidos_actuales,
         'pronosticos_afectados': pronosticos_afectados,
     })
+
+
+@admin_polla_required
+def admin_asignar_eliminatorias(request):
+    """Asigna equipos reales a los partidos de fases eliminatorias."""
+    equipos = Equipo.objects.order_by('nombre')
+    # Solo partidos eliminatorios que todavía tienen etiqueta (sin equipo real definido)
+    fases_elim = ['TREINTA_DOS', 'OCTAVOS', 'CUARTOS', 'SEMIS', 'TERCERO', 'FINAL']
+    partidos = Partido.objects.filter(
+        fase__in=fases_elim
+    ).select_related('equipo_local', 'equipo_visitante').order_by('numero')
+
+    if request.method == 'POST':
+        actualizados = 0
+        for partido in partidos:
+            el_id = request.POST.get(f'equipo_local_{partido.pk}', '').strip()
+            ev_id = request.POST.get(f'equipo_visitante_{partido.pk}', '').strip()
+            et_local = request.POST.get(f'etiqueta_local_{partido.pk}', '').strip()
+            et_visitante = request.POST.get(f'etiqueta_visitante_{partido.pk}', '').strip()
+
+            changed = False
+            try:
+                if el_id:
+                    partido.equipo_local_id = int(el_id)
+                    changed = True
+                if ev_id:
+                    partido.equipo_visitante_id = int(ev_id)
+                    changed = True
+            except (ValueError, TypeError):
+                pass
+
+            nuevo_et_local = et_local
+            nuevo_et_visitante = et_visitante
+            if nuevo_et_local != partido.etiqueta_local or nuevo_et_visitante != partido.etiqueta_visitante:
+                partido.etiqueta_local = nuevo_et_local
+                partido.etiqueta_visitante = nuevo_et_visitante
+                changed = True
+
+            if changed:
+                partido.save(update_fields=[
+                    'equipo_local', 'equipo_visitante',
+                    'etiqueta_local', 'etiqueta_visitante',
+                ])
+                actualizados += 1
+
+        if actualizados:
+            messages.success(request, f'Se actualizaron {actualizados} partido(s) de eliminatorias.')
+        else:
+            messages.info(request, 'No hubo cambios que guardar.')
+        return redirect('polla:admin_asignar_eliminatorias')
+
+    return render(request, 'polla/admin/asignar_eliminatorias.html', {
+        'partidos': partidos,
+        'equipos': equipos,
+        'FASE_CHOICES': dict(FASE_CHOICES),
+    })
