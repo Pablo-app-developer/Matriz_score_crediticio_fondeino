@@ -8,3 +8,4 @@ pandas
 python-dotenv
 python-dateutil
 Pillow
+requests
