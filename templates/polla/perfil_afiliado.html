@@ -5,11 +5,15 @@
   <a href="{% url 'polla:ranking' %}" class="btn btn-sm btn-outline-secondary mb-3">
     <i class="bi bi-arrow-left me-1"></i>Volver al ranking
   </a>
+
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <h5 class="mb-0">
-      <i class="bi bi-person-circle me-2"></i>{{ afiliado.nombre_completo }}
-      {% if afiliado.cantidad_pollas == 2 %}<span class="badge bg-warning text-dark ms-1">⭐×2</span>{% endif %}
-    </h5>
+    <div>
+      <h5 class="mb-0">
+        <i class="bi bi-person-circle me-2"></i>{{ afiliado.nombre_completo }}
+        {% if afiliado.cantidad_pollas == 2 %}<span class="badge bg-warning text-dark ms-1">⭐×2</span>{% endif %}
+      </h5>
+      {% if afiliado.area %}<div class="text-muted small mt-1">{{ afiliado.area }}</div>{% endif %}
+    </div>
     {% if inscripciones|length > 1 %}
     <div class="btn-group btn-group-sm">
       {% for insc in inscripciones %}
@@ -22,9 +26,31 @@
     {% endif %}
   </div>
 
-  <div class="alert alert-light border small">
+  {# Resumen de puntos #}
+  <div class="row g-2 mb-3">
+    <div class="col-4">
+      <div class="card text-center py-2 border-warning">
+        <div class="fs-3 fw-bold text-warning">{{ inscripcion.puntos_totales }}</div>
+        <div class="small text-muted">Puntos</div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="card text-center py-2 border-success">
+        <div class="fs-3 fw-bold text-success">{{ inscripcion.aciertos_marcador }}</div>
+        <div class="small text-muted">Exactos 🎯</div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="card text-center py-2 border-primary">
+        <div class="fs-3 fw-bold text-primary">{{ inscripcion.aciertos_resultado }}</div>
+        <div class="small text-muted">Resultado ✅</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-light border small py-2">
     <i class="bi bi-eye me-1 text-primary"></i>
-    Solo se muestran los pronósticos de partidos que ya iniciaron (transparencia post-partido).
+    Solo se muestran pronósticos de partidos ya <strong>finalizados</strong> o cuya hora ya pasó.
   </div>
 
   <div class="card shadow-sm">
@@ -33,30 +59,59 @@
         <thead class="table-dark">
           <tr>
             <th>Partido</th>
-            <th class="text-center">Pronóstico</th>
+            <th class="text-center">Mi pronóstico</th>
             <th class="text-center">Resultado real</th>
-            <th class="text-center">Puntos</th>
+            <th class="text-center">Pts</th>
           </tr>
         </thead>
         <tbody>
           {% for pron in pronosticos %}
-          <tr class="{% if pron.acerto_marcador %}table-success{% elif pron.acerto_resultado %}table-warning{% elif pron.partido.finalizado %}{% endif %}">
+          <tr class="
+            {% if pron.acerto_marcador %}table-success
+            {% elif pron.acerto_resultado %}table-warning
+            {% elif pron.partido.finalizado %}table-danger-subtle
+            {% endif %}">
             <td class="small">
-              {{ pron.partido.bandera_local }}{{ pron.partido.codigo_local }}
-              vs
-              {{ pron.partido.bandera_visitante }}{{ pron.partido.codigo_visitante }}
+              <div class="d-flex align-items-center gap-1 flex-wrap">
+                {% if pron.partido.bandera_url_local %}
+                  <img src="{{ pron.partido.bandera_url_local }}"
+                       style="width:20px;height:14px;object-fit:cover;border-radius:2px;" loading="lazy">
+                {% endif %}
+                <span>{{ pron.partido.nombre_local_display }}</span>
+                <span class="text-muted">vs</span>
+                {% if pron.partido.bandera_url_visitante %}
+                  <img src="{{ pron.partido.bandera_url_visitante }}"
+                       style="width:20px;height:14px;object-fit:cover;border-radius:2px;" loading="lazy">
+                {% endif %}
+                <span>{{ pron.partido.nombre_visitante_display }}</span>
+              </div>
+              <div class="text-muted" style="font-size:.68rem;">{{ pron.partido.fecha_hora|date:"d/m H:i" }} · {{ pron.partido.get_fase_display }}</div>
             </td>
             <td class="text-center fw-bold">{{ pron.goles_local }} – {{ pron.goles_visitante }}</td>
             <td class="text-center fw-bold">
-              {% if pron.partido.finalizado %}{{ pron.partido.goles_local }} – {{ pron.partido.goles_visitante }}
-              {% else %}<span class="text-muted">—</span>{% endif %}
+              {% if pron.partido.finalizado %}
+                {{ pron.partido.goles_local }} – {{ pron.partido.goles_visitante }}
+              {% else %}
+                <span class="text-muted small">En curso</span>
+              {% endif %}
             </td>
-            <td class="text-center fw-bold {% if pron.puntos_obtenidos > 0 %}text-success{% else %}text-muted{% endif %}">
-              {% if pron.partido.finalizado %}{{ pron.puntos_obtenidos }}{% else %}—{% endif %}
+            <td class="text-center fw-bold">
+              {% if pron.partido.finalizado %}
+                {% if pron.acerto_marcador %}<span class="text-success">{{ pron.puntos_obtenidos }}</span>
+                {% elif pron.acerto_resultado %}<span class="text-warning">{{ pron.puntos_obtenidos }}</span>
+                {% else %}<span class="text-muted">0</span>{% endif %}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
             </td>
           </tr>
           {% empty %}
-          <tr><td colspan="4" class="text-muted text-center py-4">Sin pronósticos visibles todavía.</td></tr>
+          <tr>
+            <td colspan="4" class="text-muted text-center py-4">
+              <i class="bi bi-hourglass-split d-block mb-2" style="font-size:1.5rem;opacity:.4;"></i>
+              Sin pronósticos visibles todavía — los resultados aparecen cuando el admin carga el marcador final.
+            </td>
+          </tr>
           {% endfor %}
         </tbody>
       </table>

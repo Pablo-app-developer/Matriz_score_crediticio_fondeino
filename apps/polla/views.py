@@ -686,11 +686,12 @@ def perfil_afiliado(request, afiliado_id):
     polla_sel = int(request.GET.get('polla', 1))
     inscripcion = get_object_or_404(InscripcionPolla, afiliado=afiliado, numero_polla=polla_sel)
 
-    # Solo mostrar partidos que ya cerraron (cerrado = fecha_hora ya pasó)
+    # Mostrar pronósticos de partidos ya finalizados (el admin cargó el resultado)
+    # O partidos cuya hora ya pasó aunque no estén marcados como finalizados
     pronosticos_qs = inscripcion.pronosticos.select_related(
         'partido__equipo_local', 'partido__equipo_visitante'
     ).filter(
-        partido__fecha_hora__lte=timezone.now()
+        Q(partido__finalizado=True) | Q(partido__fecha_hora__lte=timezone.now())
     ).order_by('partido__fecha_hora')
 
     return render(request, 'polla/perfil_afiliado.html', {
