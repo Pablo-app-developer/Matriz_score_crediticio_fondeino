@@ -269,6 +269,197 @@ body {
   .pk-team-name { font-size: .65rem; }
 }
 
+/* ══════════════════════════════════════════════════════════
+   PRONOSTICOS — Dark FIFA-app style
+   ══════════════════════════════════════════════════════════ */
+
+/* Page header */
+.pk-pronos-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: .75rem; margin-bottom: 1.4rem;
+}
+.pk-pronos-heading {
+  color: var(--pk-gold); font-weight: 800; font-size: .72rem;
+  text-transform: uppercase; letter-spacing: 2px;
+}
+.pk-pronos-sub { color: #8aa8c4; font-size: .85rem; margin-top: .22rem; }
+
+.pk-polla-switch { display: flex; gap: .3rem; }
+.pk-switch-btn {
+  background: #1a2738; border: 1px solid #243448;
+  color: #8aa8c4; font-weight: 700; font-size: .73rem;
+  padding: .3rem .8rem; border-radius: 6px; text-decoration: none;
+  transition: background .14s, color .14s;
+}
+.pk-switch-btn.active, .pk-switch-btn:hover {
+  background: var(--pk-gold); color: #1a1200; border-color: var(--pk-gold);
+}
+
+.pk-counter-pill {
+  background: #1a2738; border: 1px solid #243448;
+  color: #5a7a96; font-size: .78rem; font-weight: 700;
+  padding: .3rem .9rem; border-radius: 20px; white-space: nowrap;
+}
+.pk-counter-num { color: var(--pk-gold); }
+
+/* ── Sección de día (collapsible) ───────────────────────── */
+.pk-day-section { margin-bottom: .5rem; }
+.pk-day-header {
+  background: #111e2d; border: 1px solid #1e3048; border-radius: 10px;
+  padding: .7rem 1.1rem;
+  display: flex; justify-content: space-between; align-items: center;
+  cursor: pointer; user-select: none; transition: background .15s;
+}
+.pk-day-header.is-open { border-radius: 10px 10px 0 0; border-bottom-color: #0d1b2a; }
+.pk-day-header:hover { background: #162030; }
+.pk-day-label {
+  color: #b8cfe0; font-size: .7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.4px;
+}
+.pk-day-count { color: #4a6a84; font-size: .7rem; margin-top: .12rem; }
+.pk-day-toggle {
+  color: var(--pk-gold); font-weight: 900; font-size: 1.2rem;
+  background: none; border: none; padding: 0; line-height: 1;
+  width: 22px; text-align: center; cursor: pointer; flex-shrink: 0;
+}
+.pk-day-body {
+  background: #111e2d; border: 1px solid #1e3048; border-top: none;
+  border-radius: 0 0 10px 10px; padding: .45rem;
+  display: flex; flex-direction: column; gap: .4rem;
+}
+.pk-day-body.pk-collapsed { display: none; }
+
+/* ── Dark match card ─────────────────────────────────────── */
+.pk-dark-card {
+  background: #1a2738; border: 1px solid #243448;
+  border-radius: 8px; overflow: hidden;
+  transition: background .15s, box-shadow .15s;
+}
+.pk-dark-card:hover { background: #1e2f44; box-shadow: 0 4px 18px rgba(0,0,0,.4); }
+
+/* ── Card top ────────────────────────────────────────────── */
+.pk-card-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .38rem .85rem; border-bottom: 1px solid #1e3048;
+}
+.pk-status-pill {
+  font-size: .57rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .8px; padding: .2rem .55rem; border-radius: 4px;
+}
+.pk-dark-card.abierto      .pk-status-pill { background: #1e3d10; color: #80dc68; }
+.pk-dark-card.cerrado      .pk-status-pill { background: #3a2800; color: #ffb640; }
+.pk-dark-card.sin-pronostico .pk-status-pill { background: #3d1212; color: #ff8080; }
+.pk-dark-card.finalizado   .pk-status-pill { background: #1a2738; color: #4a6a84; border: 1px solid #243448; }
+
+.pk-card-meta { display: flex; align-items: center; gap: .5rem; }
+.pk-grupo-pill {
+  font-size: .57rem; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+  padding: .2rem .5rem; border-radius: 4px; background: #3a1a5a; color: #cc88ff;
+}
+.pk-hora-text { color: #4a6a84; font-size: .7rem; font-weight: 600; white-space: nowrap; }
+
+/* ── Card middle ─────────────────────────────────────────── */
+.pk-card-mid {
+  display: flex; align-items: center;
+  padding: .85rem 1rem; gap: .5rem;
+}
+.pk-team-left {
+  flex: 1; display: flex; align-items: center; gap: .5rem; min-width: 0;
+}
+.pk-team-right {
+  flex: 1; display: flex; align-items: center; justify-content: flex-end;
+  gap: .5rem; min-width: 0;
+}
+.pk-flag-sm {
+  width: 28px; height: 19px; object-fit: cover; flex-shrink: 0;
+  border-radius: 3px; box-shadow: 0 1px 5px rgba(0,0,0,.45);
+}
+.pk-team-nm {
+  font-size: .86rem; font-weight: 700; color: #dce8f2;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pk-center-col {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  min-width: 128px;
+}
+.pk-inputs-row { display: flex; align-items: center; gap: .3rem; }
+.pk-sep-dark {
+  color: #3a5070; font-size: 1rem; font-weight: 900; user-select: none; flex-shrink: 0;
+}
+
+/* Override gol inputs for dark card */
+.pk-dark-card .pk-gol-inp {
+  width: 50px; height: 46px; font-size: 1.3rem; font-weight: 800;
+  background: #0d1b2a !important; color: #e8f2ff !important;
+  border: 2px solid #2a3f58 !important; border-radius: 7px;
+  font-family: 'Montserrat', sans-serif;
+}
+.pk-dark-card .pk-gol-inp:focus {
+  border-color: var(--pk-gold) !important;
+  box-shadow: 0 0 0 3px rgba(240,192,64,.14) !important;
+  background: #111e2d !important;
+}
+
+.pk-result-final {
+  font-size: 1.25rem; font-weight: 900; color: #dce8f2;
+  background: #0d1b2a; border: 2px solid var(--pk-gold);
+  border-radius: 8px; padding: .15rem 1rem; letter-spacing: 2px;
+  font-family: 'Montserrat', sans-serif; white-space: nowrap;
+}
+.pk-result-locked {
+  font-size: 1.25rem; font-weight: 900; color: #4a6a84;
+  background: #0d1b2a; border: 2px solid #243448;
+  border-radius: 8px; padding: .15rem 1rem; letter-spacing: 2px;
+  font-family: 'Montserrat', sans-serif; white-space: nowrap;
+}
+
+/* ── Card bottom ─────────────────────────────────────────── */
+.pk-card-bot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .38rem .85rem; border-top: 1px solid #1e3048; gap: .5rem;
+  min-height: 36px;
+}
+.pk-bot-left  { display: flex; align-items: center; gap: .5rem; min-width: 0; flex-wrap: wrap; }
+.pk-bot-right { display: flex; align-items: center; gap: .4rem; flex-shrink: 0; }
+.pk-pron-text { color: #4a6a84; font-size: .7rem; font-weight: 600; white-space: nowrap; }
+
+.pk-pts-badge {
+  font-size: .7rem; font-weight: 700; padding: .18rem .6rem;
+  border-radius: 20px; white-space: nowrap;
+  background: #1a2738; border: 1px solid #243448; color: #4a6a84;
+}
+.pk-pts-badge.has-pts { background: #1e3d10; border-color: #2a5518; color: #80dc68; }
+
+.pk-btn-guardar {
+  background: var(--pk-gold); color: #1a1200;
+  font-weight: 800; font-size: .78rem; border: none;
+  border-radius: 6px; padding: .35rem 1.05rem; cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  transition: background .13s, transform .1s; white-space: nowrap;
+}
+.pk-btn-guardar:hover  { background: #ffd040; transform: translateY(-1px); }
+.pk-btn-guardar:disabled { background: #243448; color: #3a5070; cursor: not-allowed; transform: none; }
+
+.pk-btn-stats {
+  background: #1a2738; color: #6a8aaa; font-size: .65rem; font-weight: 700;
+  border: 1px solid #243448; border-radius: 5px; padding: .2rem .55rem;
+  cursor: pointer; font-family: 'Montserrat', sans-serif; transition: background .13s;
+}
+.pk-btn-stats:hover { background: #243448; color: #8aa8c4; }
+
+.pk-msg { font-size: .7rem; min-height: 1rem; }
+
+/* ── Mobile dark ─────────────────────────────────────────── */
+@media (max-width: 575px) {
+  .pk-card-mid  { padding: .65rem .75rem; gap: .35rem; }
+  .pk-center-col { min-width: 110px; }
+  .pk-dark-card .pk-gol-inp { width: 43px; height: 40px; font-size: 1.1rem; }
+  .pk-flag-sm   { width: 22px; height: 15px; }
+  .pk-team-nm   { font-size: .78rem; }
+  .pk-card-bot  { padding: .35rem .75rem; }
+  .pk-card-top  { padding: .35rem .75rem; }
+}
+
 /* ===== Pronósticos refresh 2026 ===== */
 .pk-pronosticos-page {
   background: radial-gradient(circle at top, #f8fffb 0%, #eef8f1 60%, #e7f3eb 100%);

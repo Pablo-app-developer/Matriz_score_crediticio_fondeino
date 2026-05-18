@@ -2,186 +2,299 @@
 {% load static %}
 {% block nav_pronosticos %}active{% endblock %}
 
-{% block polla_content %}
-<div class="pk-pronosticos-page">
-<div class="pk-noise-layer"></div>
-{# ══ CABECERA ══════════════════════════════════════════════ #}
-<div class="pk-page-head d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-  <h5 class="mb-0 fw-bold pk-page-title">
-    <i class="bi bi-pencil-square me-2"></i>Mis Pronósticos
-  </h5>
-  {% if inscripciones|length > 1 %}
-  <div class="btn-group pk-polla-switch" role="group" aria-label="Selector de polla">
-    {% for insc in inscripciones %}
-    <a href="?polla={{ insc.numero_polla }}"
-       class="btn btn-sm {% if insc.numero_polla == polla_sel %}btn-success{% else %}btn-outline-success{% endif %} fw-bold">
-      <i class="bi bi-trophy me-1"></i>Polla {{ insc.label }}
-    </a>
-    {% endfor %}
-  </div>
-  {% endif %}
-</div>
+{% block extra_css %}
+{{ block.super }}
+<style>body { background: #0d1b2a !important; }</style>
+{% endblock %}
 
-{# ══ ALERTAS ════════════════════════════════════════════════ #}
-{% if config.polla_cerrada %}
-<div class="alert alert-danger d-flex gap-2 align-items-center pk-alert">
-  <i class="bi bi-lock-fill fs-5"></i>
-  <strong>La polla está cerrada.</strong> Ya no se pueden modificar pronósticos.
-</div>
-{% elif pendientes > 0 %}
-<div class="alert alert-warning d-flex gap-3 align-items-start pk-alert">
-  <i class="bi bi-exclamation-triangle-fill fs-4 flex-shrink-0 mt-1"></i>
+{% block polla_content %}
+
+{# ══ CABECERA ══════════════════════════════════════════════ #}
+<div class="pk-pronos-head">
   <div>
-    <strong>Te faltan {{ pendientes }} partido{% if pendientes != 1 %}s{% endif %} por pronosticar:</strong>
-    <div class="d-flex flex-wrap gap-1 mt-1">
-      {% for fase, cant in pendientes_por_fase.items %}
-        <span class="badge bg-warning text-dark">{{ fase }}: {{ cant }}</span>
+    <div class="pk-pronos-heading">Tus pronósticos</div>
+    {% if config.polla_cerrada %}
+      <div class="pk-pronos-sub">La polla está cerrada — no puedes modificar pronósticos.</div>
+    {% elif pendientes > 0 %}
+      <div class="pk-pronos-sub">Te faltan <strong style="color:#dce8f2;">{{ pendientes }}</strong> partido{% if pendientes != 1 %}s{% endif %} por pronosticar.</div>
+    {% elif partidos_por_fecha %}
+      <div class="pk-pronos-sub" style="color:#80dc68;">¡Todos los partidos disponibles están pronosticados!</div>
+    {% else %}
+      <div class="pk-pronos-sub">No hay partidos cargados todavía.</div>
+    {% endif %}
+  </div>
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    {% if inscripciones|length > 1 %}
+    <div class="pk-polla-switch">
+      {% for insc in inscripciones %}
+      <a href="?polla={{ insc.numero_polla }}"
+         class="pk-switch-btn {% if insc.numero_polla == polla_sel %}active{% endif %}">
+        Polla {{ insc.label }}
+      </a>
       {% endfor %}
     </div>
-    <div class="text-muted small mt-1">
-      Los pronósticos cierran automáticamente al inicio de cada partido.
+    {% endif %}
+    {% if pendientes > 0 %}
+    <div class="pk-counter-pill">
+      <span class="pk-counter-num">{{ pendientes }}</span> pendiente{% if pendientes != 1 %}s{% endif %}
     </div>
+    {% endif %}
   </div>
 </div>
-{% elif partidos_por_fecha %}
-<div class="alert alert-success d-flex gap-2 align-items-center pk-alert">
-  <i class="bi bi-check-circle-fill fs-5"></i>
-  ¡Todos los partidos disponibles están pronosticados!
-</div>
-{% endif %}
 
 {% if not partidos_por_fecha %}
-<div class="alert alert-info pk-alert">
-  <i class="bi bi-info-circle me-2"></i>No hay partidos cargados todavía.
+<div style="color:#4a6a84;text-align:center;padding:4rem 0;">
+  <i class="bi bi-calendar-x" style="font-size:2.5rem;display:block;margin-bottom:.75rem;opacity:.5;"></i>
+  No hay partidos cargados todavía.
 </div>
 {% endif %}
 
+{# ══ PARTIDOS AGRUPADOS POR FECHA ═══════════════════════════ #}
 {% for fecha, partidos in partidos_por_fecha.items %}
-<div class="pk-date-divider">
-  <div class="pk-date-divider-line"></div>
-  <div class="pk-date-divider-badge">
-    <i class="bi bi-calendar3 me-1"></i>{{ fecha|date:"l d \d\e F \d\e Y"|capfirst }}
-  </div>
-  <div class="pk-date-divider-line right"></div>
-</div>
 
-{% for item in partidos %}
-{% with p=item.partido pr=item.pronostico %}
-<div id="partido-{{ p.pk }}"
-     class="pk-pro-card {% if p.finalizado %}finalizado{% elif item.cerrado and not pr %}sin-pronostico{% elif item.cerrado %}cerrado{% else %}abierto{% endif %}">
-  <div class="pk-pro-header">
-    <span class="pk-state-pill {% if p.finalizado %}is-final{% elif item.cerrado %}is-locked{% else %}is-open{% endif %}">{% if p.finalizado %}Finalizado{% elif item.cerrado %}Cerrado{% else %}Abierto{% endif %}</span>
-    <span>
-      <i class="bi bi-clock me-1"></i>{{ p.fecha_hora|date:"H:i" }} COL
-      {% if p.ciudad %}&nbsp;·&nbsp;{{ p.ciudad }}{% endif %}
-    </span>
-    <span class="fase-tag">{{ p.get_fase_display }}</span>
-  </div>
-  <div class="pk-pro-body">
-    <div class="pk-team-col">
-      {% if p.bandera_url_local %}<img src="{{ p.bandera_url_local }}" class="pk-bandera" alt="{{ p.nombre_local_display }}" loading="lazy">{% else %}<span style="font-size:2rem;line-height:1;display:block;">🏳️</span>{% endif %}
-      <div class="pk-team-name">{{ p.nombre_local_display }}</div>
-      <div class="pk-team-code">{{ p.codigo_local }}</div>
+<div class="pk-day-section">
+
+  <div class="pk-day-header is-open" onclick="pkToggleDay(this)">
+    <div>
+      <div class="pk-day-label">{{ fecha|date:"l, d \d\e F"|upper }}</div>
+      <div class="pk-day-count">{{ partidos|length }} partido{% if partidos|length != 1 %}s{% endif %}</div>
     </div>
+    <span class="pk-day-toggle">−</span>
+  </div>
 
-    <div class="pk-score-col">
-      {% if p.finalizado %}
-        <div class="pk-score-real">{{ p.goles_local }}&nbsp;–&nbsp;{{ p.goles_visitante }}</div>
-        <div class="text-muted" style="font-size:.63rem;font-weight:700;letter-spacing:.5px;">FINAL</div>
-        {% if pr %}
-          <div class="text-center" style="font-size:.68rem;color:#555;">Tu pron: <strong>{{ pr.goles_local }}-{{ pr.goles_visitante }}</strong> {% if pr.acerto_marcador %}🎯{% elif pr.acerto_resultado %}✅{% else %}❌{% endif %}</div>
-          <span class="badge {% if pr.puntos_obtenidos > 0 %}bg-success{% else %}bg-secondary{% endif %}" style="font-size:.68rem;">{% if pr.puntos_obtenidos > 0 %}+{% endif %}{{ pr.puntos_obtenidos }} pts</span>
-        {% else %}<span class="badge bg-secondary" style="font-size:.63rem;">Sin pronóstico</span>{% endif %}
-      {% elif item.cerrado %}
-        <div class="pk-score-static">{% if pr %}{{ pr.goles_local }}&nbsp;–&nbsp;{{ pr.goles_visitante }}{% else %}?&nbsp;–&nbsp;?{% endif %}</div>
-        {% if pr %}<span style="font-size:.65rem;color:#6c757d;"><i class="bi bi-lock-fill text-warning"></i> Guardado</span>{% else %}<span class="text-danger fw-bold" style="font-size:.65rem;"><i class="bi bi-lock-fill"></i> Sin pronóstico</span>{% endif %}
-      {% else %}
-        <div class="d-flex align-items-center gap-1" data-partido-id="{{ p.pk }}" data-polla-num="{{ polla_sel }}">
-          <input type="number" class="pk-gol-inp pk-gl" min="0" max="20" inputmode="numeric" value="{% if pr %}{{ pr.goles_local }}{% endif %}" placeholder="0">
-          <span class="pk-score-sep">–</span>
-          <input type="number" class="pk-gol-inp pk-gv" min="0" max="20" inputmode="numeric" value="{% if pr %}{{ pr.goles_visitante }}{% endif %}" placeholder="0">
+  <div class="pk-day-body">
+
+    {% for item in partidos %}
+    {% with p=item.partido pr=item.pronostico %}
+
+    <div id="partido-{{ p.pk }}"
+         class="pk-dark-card {% if p.finalizado %}finalizado{% elif item.cerrado and not pr %}sin-pronostico{% elif item.cerrado %}cerrado{% else %}abierto{% endif %}">
+
+      {# ── Top: estado · fase · hora ── #}
+      <div class="pk-card-top">
+        <span class="pk-status-pill">
+          {% if p.finalizado %}Finalizado
+          {% elif item.cerrado and not pr %}Sin pronóstico
+          {% elif item.cerrado %}Cerrado
+          {% else %}Pendiente
+          {% endif %}
+        </span>
+        <div class="pk-card-meta">
+          <span class="pk-grupo-pill">{{ p.get_fase_display }}</span>
+          <span class="pk-hora-text">{{ p.fecha_hora|date:"h:i a" }} COL</span>
         </div>
-        <button class="btn btn-success btn-sm pk-save-btn fw-bold" data-target="{{ p.pk }}" style="font-size:.78rem;padding:.28rem .9rem;width:100%;"><i class="bi bi-check-lg me-1"></i>{% if pr %}Actualizar{% else %}Guardar{% endif %}</button>
-        <div class="pk-msg" id="msg-{{ p.pk }}" style="font-size:.72rem;min-height:1rem;text-align:center;"></div>
-        {% if pr %}<div class="text-success" style="font-size:.63rem;font-weight:600;"><i class="bi bi-check-circle me-1"></i>Guardado</div>{% endif %}
-        {% if p.equipo_local.api_football_id and p.equipo_visitante.api_football_id %}
-        <button class="btn btn-outline-secondary btn-sm btn-stats" style="font-size:.65rem;padding:.18rem .45rem;" data-partido-pk="{{ p.pk }}" data-titulo="{{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}"><i class="bi bi-bar-chart-line-fill me-1"></i>Stats</button>
-        {% endif %}
-      {% endif %}
+      </div>
+
+      {# ── Mid: equipo local | marcador/inputs | equipo visitante ── #}
+      <div class="pk-card-mid">
+
+        {# Local #}
+        <div class="pk-team-left">
+          {% if p.bandera_url_local %}
+            <img src="{{ p.bandera_url_local }}" class="pk-flag-sm"
+                 alt="{{ p.nombre_local_display }}" loading="lazy">
+          {% else %}
+            <span style="font-size:1.3rem;flex-shrink:0;">🏳️</span>
+          {% endif %}
+          <span class="pk-team-nm">{{ p.nombre_local_display }}</span>
+        </div>
+
+        {# Centro #}
+        <div class="pk-center-col">
+          {% if p.finalizado %}
+            <div class="pk-result-final">{{ p.goles_local }} – {{ p.goles_visitante }}</div>
+          {% elif item.cerrado %}
+            <div class="pk-result-locked">
+              {% if pr %}{{ pr.goles_local }} – {{ pr.goles_visitante }}{% else %}? – ?{% endif %}
+            </div>
+          {% else %}
+            <div class="pk-inputs-row" data-partido-id="{{ p.pk }}" data-polla-num="{{ polla_sel }}">
+              <input type="number" class="pk-gol-inp pk-gl"
+                     min="0" max="20" inputmode="numeric"
+                     value="{% if pr %}{{ pr.goles_local }}{% endif %}"
+                     placeholder="0">
+              <span class="pk-sep-dark">-</span>
+              <input type="number" class="pk-gol-inp pk-gv"
+                     min="0" max="20" inputmode="numeric"
+                     value="{% if pr %}{{ pr.goles_visitante }}{% endif %}"
+                     placeholder="0">
+            </div>
+          {% endif %}
+        </div>
+
+        {# Visitante #}
+        <div class="pk-team-right">
+          <span class="pk-team-nm">{{ p.nombre_visitante_display }}</span>
+          {% if p.bandera_url_visitante %}
+            <img src="{{ p.bandera_url_visitante }}" class="pk-flag-sm"
+                 alt="{{ p.nombre_visitante_display }}" loading="lazy">
+          {% else %}
+            <span style="font-size:1.3rem;flex-shrink:0;">🏳️</span>
+          {% endif %}
+        </div>
+
+      </div>
+
+      {# ── Bottom: info izquierda | acción derecha ── #}
+      <div class="pk-card-bot">
+
+        <div class="pk-bot-left">
+          {% if p.finalizado %}
+            {% if pr %}
+              <span class="pk-pron-text">
+                Pron: <strong style="color:#b0c8e0;">{{ pr.goles_local }}-{{ pr.goles_visitante }}</strong>
+                {% if pr.acerto_marcador %}🎯{% elif pr.acerto_resultado %}✅{% else %}❌{% endif %}
+              </span>
+            {% else %}
+              <span class="pk-pron-text">Sin pronóstico</span>
+            {% endif %}
+          {% elif item.cerrado %}
+            {% if pr %}
+              <span class="pk-pron-text">
+                <i class="bi bi-lock-fill me-1" style="color:var(--pk-gold);"></i>Guardado
+              </span>
+            {% else %}
+              <span class="pk-pron-text" style="color:#e06060;">
+                <i class="bi bi-lock-fill me-1"></i>Sin pronóstico
+              </span>
+            {% endif %}
+          {% else %}
+            {% if pr %}
+              <span class="pk-pron-text" style="color:#7fdc68;">
+                <i class="bi bi-check-circle me-1"></i>Guardado
+              </span>
+            {% endif %}
+            <div class="pk-msg" id="msg-{{ p.pk }}"></div>
+          {% endif %}
+        </div>
+
+        <div class="pk-bot-right">
+          {% if p.finalizado %}
+            {% if pr %}
+              <span class="pk-pts-badge {% if pr.puntos_obtenidos > 0 %}has-pts{% endif %}">
+                {% if pr.puntos_obtenidos > 0 %}+{% endif %}{{ pr.puntos_obtenidos }} pts
+              </span>
+            {% endif %}
+            {% if p.equipo_local.api_football_id and p.equipo_visitante.api_football_id %}
+              <button class="pk-btn-stats btn-stats"
+                      data-partido-pk="{{ p.pk }}"
+                      data-titulo="{{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}">
+                <i class="bi bi-bar-chart-line-fill me-1"></i>Stats
+              </button>
+            {% endif %}
+          {% elif item.cerrado %}
+            {% if p.equipo_local.api_football_id and p.equipo_visitante.api_football_id %}
+              <button class="pk-btn-stats btn-stats"
+                      data-partido-pk="{{ p.pk }}"
+                      data-titulo="{{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}">
+                <i class="bi bi-bar-chart-line-fill me-1"></i>Stats
+              </button>
+            {% endif %}
+          {% else %}
+            {% if p.equipo_local.api_football_id and p.equipo_visitante.api_football_id %}
+              <button class="pk-btn-stats btn-stats"
+                      data-partido-pk="{{ p.pk }}"
+                      data-titulo="{{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}">
+                <i class="bi bi-bar-chart-line-fill me-1"></i>Stats
+              </button>
+            {% endif %}
+            <button class="pk-btn-guardar pk-save-btn" data-target="{{ p.pk }}">
+              {% if pr %}Actualizar{% else %}Guardar{% endif %}
+            </button>
+          {% endif %}
+        </div>
+
+      </div>
     </div>
 
-    <div class="pk-team-col">
-      {% if p.bandera_url_visitante %}<img src="{{ p.bandera_url_visitante }}" class="pk-bandera" alt="{{ p.nombre_visitante_display }}" loading="lazy">{% else %}<span style="font-size:2rem;line-height:1;display:block;">🏳️</span>{% endif %}
-      <div class="pk-team-name">{{ p.nombre_visitante_display }}</div>
-      <div class="pk-team-code">{{ p.codigo_visitante }}</div>
+    {% endwith %}
+    {% endfor %}
+
+  </div>{# /pk-day-body #}
+</div>{# /pk-day-section #}
+
+{% endfor %}
+
+{# ══ MODAL ESTADÍSTICAS ═════════════════════════════════════ #}
+<div class="modal fade" id="modalStats" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+    <div class="modal-content" style="background:#162030;border-color:#243448;color:#dce8f2;">
+      <div class="modal-header py-2" style="background:#0d1b2a;border-color:#1e3048;">
+        <h6 class="modal-title small fw-bold" id="modalStatsTitulo" style="color:#dce8f2;"></h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3" id="modalStatsCuerpo">
+        <div class="text-center py-3">
+          <div class="spinner-border spinner-border-sm" style="color:var(--pk-gold);" role="status"></div>
+          <div class="small mt-2" style="color:#4a6a84;">Cargando estadísticas...</div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="pk-pro-footer">
-    <span><i class="bi bi-controller me-1"></i>Partido #{{ p.pk }}</span>
-    {% if p.finalizado %}<span class="text-secondary">Bloqueado por resultado final</span>{% elif item.cerrado %}<span class="text-warning-emphasis">Pronóstico cerrado por horario</span>{% else %}<span class="text-success-emphasis">Aún puedes editar este partido</span>{% endif %}
-  </div>
 </div>
-{% endwith %}
-{% endfor %}
-{% endfor %}
-</div>
-
-<div class="modal fade" id="modalStats" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered" style="max-width:420px;"><div class="modal-content"><div class="modal-header py-2" style="background:#0a2f1a;color:white;"><h6 class="modal-title small fw-bold" id="modalStatsTitulo"></h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body p-3" id="modalStatsCuerpo"><div class="text-center py-3"><div class="spinner-border spinner-border-sm" style="color:#155230;" role="status"></div><div class="small text-muted mt-2">Cargando estadísticas...</div></div></div></div></div></div>
 
 {% block polla_scripts %}
 <script>
 const CSRF = '{{ csrf_token }}';
 
-/* ── Guardar pronóstico ──────────────────────────────────── */
+/* ── Colapsar / expandir sección de día ─────────────────── */
+function pkToggleDay(header) {
+  const body      = header.nextElementSibling;
+  const btn       = header.querySelector('.pk-day-toggle');
+  const collapsed = body.classList.toggle('pk-collapsed');
+  btn.textContent = collapsed ? '+' : '−';
+  header.classList.toggle('is-open', !collapsed);
+}
+
+/* ── Guardar pronóstico ─────────────────────────────────── */
 document.querySelectorAll('.pk-save-btn').forEach(btn => {
   btn.addEventListener('click', function () {
-    const card = this.closest('.pk-pro-card');
+    const card      = this.closest('.pk-dark-card');
     const container = card.querySelector('[data-partido-id]');
     if (!container) return;
 
-    const gl  = container.querySelector('.pk-gl').value.trim();
-    const gv  = container.querySelector('.pk-gv').value.trim();
-    const glN = parseInt(gl === '' ? '0' : gl);
-    const gvN = parseInt(gv === '' ? '0' : gv);
+    const glN = parseInt(container.querySelector('.pk-gl').value.trim() || '0');
+    const gvN = parseInt(container.querySelector('.pk-gv').value.trim() || '0');
     const msg = document.getElementById('msg-' + container.dataset.partidoId);
 
     if (isNaN(glN) || isNaN(gvN) || glN < 0 || gvN < 0) {
-      if (msg) msg.innerHTML = '<span class="text-danger">Ingresa los goles.</span>';
+      if (msg) msg.innerHTML = '<span style="color:#e06060;">Ingresa los goles.</span>';
       return;
     }
 
     this.disabled = true;
-    if (msg) msg.innerHTML = '<span class="text-muted">Guardando…</span>';
+    this.textContent = 'Guardando…';
 
     fetch('/polla/pronosticos/guardar/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
       body: JSON.stringify({
-        partido_id:     parseInt(container.dataset.partidoId),
-        polla_num:      parseInt(container.dataset.pollaNum),
-        goles_local:    glN,
+        partido_id:      parseInt(container.dataset.partidoId),
+        polla_num:       parseInt(container.dataset.pollaNum),
+        goles_local:     glN,
         goles_visitante: gvN,
       })
     })
     .then(r => r.json())
     .then(data => {
       if (data.ok) {
-        if (msg) msg.innerHTML = '<span class="text-success fw-bold">✓ Guardado</span>';
-        this.textContent = '✓ Actualizar';
-        this.innerHTML = '<i class="bi bi-check-lg me-1"></i>Actualizar';
+        this.innerHTML = 'Actualizar';
+        if (msg) { msg.innerHTML = '<span style="color:#80dc68;">✓ Guardado</span>'; }
       } else {
-        if (msg) msg.innerHTML = `<span class="text-danger small">${data.error}</span>`;
+        if (msg) msg.innerHTML = `<span style="color:#e06060;font-size:.7rem;">${data.error}</span>`;
+        this.textContent = 'Guardar';
       }
       setTimeout(() => { if (msg) msg.innerHTML = ''; }, 4000);
     })
     .catch(() => {
-      if (msg) msg.innerHTML = '<span class="text-danger small">Error de red.</span>';
+      if (msg) msg.innerHTML = '<span style="color:#e06060;font-size:.7rem;">Error de red.</span>';
+      this.textContent = 'Guardar';
     })
     .finally(() => { this.disabled = false; });
   });
 });
 
-/* ── Enter entre inputs ──────────────────────────────────── */
+/* ── Enter entre inputs ─────────────────────────────────── */
 document.querySelectorAll('.pk-gl').forEach(inp => {
   inp.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
@@ -193,20 +306,20 @@ document.querySelectorAll('.pk-gl').forEach(inp => {
 document.querySelectorAll('.pk-gv').forEach(inp => {
   inp.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
-      const card = inp.closest('.pk-pro-card');
-      const btn  = card ? card.querySelector('.pk-save-btn') : null;
+      const card = inp.closest('.pk-dark-card');
+      const btn  = card && card.querySelector('.pk-save-btn');
       if (btn) btn.click();
     }
   });
 });
 
-/* ── Modal estadísticas ──────────────────────────────────── */
+/* ── Modal estadísticas ─────────────────────────────────── */
 const modalEl = document.getElementById('modalStats');
 if (modalEl) {
-  const modal = new bootstrap.Modal(modalEl);
+  const modal   = new bootstrap.Modal(modalEl);
   const spinner = `<div class="text-center py-3">
-    <div class="spinner-border spinner-border-sm" style="color:#155230;" role="status"></div>
-    <div class="small text-muted mt-2">Cargando...</div></div>`;
+    <div class="spinner-border spinner-border-sm" style="color:var(--pk-gold);" role="status"></div>
+    <div class="small mt-2" style="color:#4a6a84;">Cargando...</div></div>`;
 
   document.querySelectorAll('.btn-stats').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -218,11 +331,11 @@ if (modalEl) {
         .then(resp => {
           document.getElementById('modalStatsCuerpo').innerHTML =
             resp.ok ? renderStats(resp.datos)
-                    : '<p class="text-muted text-center py-2 small">Datos no disponibles aún.</p>';
+                    : '<p style="color:#4a6a84;" class="text-center py-2 small">Datos no disponibles aún.</p>';
         })
         .catch(() => {
           document.getElementById('modalStatsCuerpo').innerHTML =
-            '<p class="text-danger text-center small">Error al cargar.</p>';
+            '<p style="color:#e06060;" class="text-center small">Error al cargar.</p>';
         });
     });
   });
@@ -231,56 +344,59 @@ if (modalEl) {
 function renderStats(d) {
   let html = '';
   if (d.h2h && d.h2h.total > 0) {
-    const h = d.h2h;
+    const h  = d.h2h;
     const pL = Math.round(h.victorias_local / h.total * 100);
     const pV = Math.round(h.victorias_visitante / h.total * 100);
     const pE = 100 - pL - pV;
     html += `<div class="mb-3">
-      <div class="fw-bold small mb-2">⚔️ Historial cara a cara (${h.total} partidos)</div>
+      <div class="fw-bold small mb-2" style="color:#dce8f2;">⚔️ Historial cara a cara (${h.total} partidos)</div>
       <div class="d-flex text-center gap-1 mb-2">
-        <div class="flex-fill border rounded py-1">
-          <div class="fw-bold text-primary fs-5">${h.victorias_local}</div>
-          <div class="text-muted" style="font-size:.65rem;">Local</div>
+        <div class="flex-fill rounded py-1" style="background:#0d1b2a;border:1px solid #1e3048;">
+          <div class="fw-bold fs-5" style="color:#6ba4ff;">${h.victorias_local}</div>
+          <div style="font-size:.64rem;color:#4a6a84;">Local</div>
         </div>
-        <div class="flex-fill border rounded py-1">
-          <div class="fw-bold fs-5">${h.empates}</div>
-          <div class="text-muted" style="font-size:.65rem;">Empates</div>
+        <div class="flex-fill rounded py-1" style="background:#0d1b2a;border:1px solid #1e3048;">
+          <div class="fw-bold fs-5" style="color:#dce8f2;">${h.empates}</div>
+          <div style="font-size:.64rem;color:#4a6a84;">Empates</div>
         </div>
-        <div class="flex-fill border rounded py-1">
-          <div class="fw-bold text-danger fs-5">${h.victorias_visitante}</div>
-          <div class="text-muted" style="font-size:.65rem;">Visitante</div>
+        <div class="flex-fill rounded py-1" style="background:#0d1b2a;border:1px solid #1e3048;">
+          <div class="fw-bold fs-5" style="color:#e06060;">${h.victorias_visitante}</div>
+          <div style="font-size:.64rem;color:#4a6a84;">Visitante</div>
         </div>
       </div>
-      <div class="progress mb-2" style="height:6px;">
-        <div class="progress-bar bg-primary" style="width:${pL}%"></div>
-        <div class="progress-bar bg-secondary" style="width:${pE}%"></div>
-        <div class="progress-bar bg-danger" style="width:${pV}%"></div>
+      <div class="progress mb-2" style="height:5px;background:#1a2738;border-radius:4px;">
+        <div class="progress-bar" style="width:${pL}%;background:#6ba4ff;"></div>
+        <div class="progress-bar" style="width:${pE}%;background:#2a3f58;"></div>
+        <div class="progress-bar" style="width:${pV}%;background:#e06060;"></div>
       </div>`;
     if (h.ultimos?.length) {
-      html += `<div class="text-muted mb-1" style="font-size:.7rem;">Últimos enfrentamientos:</div>
-        <ul class="list-unstyled mb-0" style="font-size:.7rem;">`;
+      html += `<div style="font-size:.68rem;color:#4a6a84;" class="mb-1">Últimos:</div>
+        <ul class="list-unstyled mb-0" style="font-size:.68rem;color:#8aa8c4;">`;
       h.ultimos.forEach(p => {
-        html += `<li class="border-bottom py-1">${p.fecha} · ${p.local} <b>${p.marcador}</b> ${p.visitante}</li>`;
+        html += `<li style="border-bottom:1px solid #1e3048;padding:.28rem 0;">
+          ${p.fecha} · ${p.local} <b style="color:#dce8f2;">${p.marcador}</b> ${p.visitante}</li>`;
       });
       html += `</ul>`;
     }
     html += `</div>`;
   } else if (d.h2h?.total === 0) {
-    html += `<div class="text-muted small mb-3">Sin historial previo.</div>`;
+    html += `<div style="color:#4a6a84;font-size:.85rem;" class="mb-3">Sin historial previo.</div>`;
   }
-  const bf = l => `<span class="badge ${l==='W'?'bg-success':l==='L'?'bg-danger':'bg-secondary'} px-2">
-    ${l==='W'?'G':l==='L'?'P':'E'}</span>`;
+  const bf = l => `<span style="display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;
+    border-radius:4px;font-weight:700;font-size:.65rem;
+    background:${l==='W'?'#1e3d10':l==='L'?'#3d1212':'#1a2738'};
+    color:${l==='W'?'#80dc68':l==='L'?'#e06060':'#4a6a84'};">${l==='W'?'G':l==='L'?'P':'E'}</span>`;
   if (d.forma_local?.length || d.forma_visitante?.length) {
-    html += `<div class="fw-bold small mb-1">📈 Forma reciente</div>`;
+    html += `<div class="fw-bold small mb-1" style="color:#dce8f2;">📈 Forma reciente</div>`;
     if (d.forma_local?.length)
       html += `<div class="d-flex gap-1 mb-1 align-items-center" style="font-size:.7rem;">
-        <span class="text-muted me-1">Local:</span>${d.forma_local.map(bf).join('')}</div>`;
+        <span style="color:#4a6a84;margin-right:.2rem;">Local:</span>${d.forma_local.map(bf).join('')}</div>`;
     if (d.forma_visitante?.length)
       html += `<div class="d-flex gap-1 align-items-center" style="font-size:.7rem;">
-        <span class="text-muted me-1">Visit.:</span>${d.forma_visitante.map(bf).join('')}</div>`;
+        <span style="color:#4a6a84;margin-right:.2rem;">Visit.:</span>${d.forma_visitante.map(bf).join('')}</div>`;
   }
-  html += `<div class="text-end mt-2" style="font-size:.6rem;color:#bbb;">api-football.com · caché 6h</div>`;
-  return html || '<p class="text-muted text-center small py-2">Sin datos disponibles.</p>';
+  html += `<div class="text-end mt-2" style="font-size:.58rem;color:#2a3f58;">api-football.com · caché 6h</div>`;
+  return html || `<p style="color:#4a6a84;" class="text-center small py-2">Sin datos disponibles.</p>`;
 }
 </script>
 {% endblock %}
