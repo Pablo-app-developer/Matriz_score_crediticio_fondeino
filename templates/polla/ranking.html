@@ -15,74 +15,82 @@ body { background: #0d1b2a !important; }
 .rk-tab:hover { background: #1e3050; color: #8ab0d0; }
 .rk-tab.on    { background: #f0c040; color: #1a1200; border-color: #f0c040; }
 
+/* ── Gráfica ──────────────────────────────────────────────── */
+.rk-chart-wrap {
+  background: #111e2e; border: 1px solid #1e3050; border-radius: 10px;
+  padding: .75rem 1rem 1rem; margin-bottom: 1.1rem;
+}
+.rk-chart-title {
+  font-size: .65rem; font-weight: 800; color: #3e5e7c;
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: .5rem;
+}
+
 /* ── Fila de ranking ──────────────────────────────────────── */
 .rk-row {
-  display: flex; align-items: center; gap: .6rem;
-  background: #182438; border: 1px solid #243855; border-left: 3px solid #243855;
-  border-radius: 8px; padding: .4rem .85rem; margin-bottom: .28rem;
-  transition: box-shadow .15s, background .13s;
+  display: flex; align-items: center; gap: .5rem;
+  background: #182438; border: 1px solid #1e3050; border-left: 3px solid #1e3050;
+  border-radius: 6px; padding: .22rem .75rem; margin-bottom: .18rem;
+  transition: background .12s;
 }
-.rk-row:hover { box-shadow: 0 4px 20px rgba(0,0,0,.55); }
+.rk-row:hover { background: #1c2d42; }
 
-.rk-row.pos-1 { border-left-color: #f0c040; background: linear-gradient(90deg,#1e2a10 0%,#182438 60%); }
-.rk-row.pos-2 { border-left-color: #a8b8c8; background: linear-gradient(90deg,#1a2235 0%,#182438 60%); }
-.rk-row.pos-3 { border-left-color: #cd8040; background: linear-gradient(90deg,#201a10 0%,#182438 60%); }
-.rk-row.me    { border-left-color: #3cba6a; box-shadow: 0 0 0 1px rgba(60,186,106,.25); }
+.rk-row.pos-1 { border-left-color: #f0c040; background: linear-gradient(90deg,#1e2a10 0%,#182438 55%); }
+.rk-row.pos-2 { border-left-color: #a8b8c8; background: linear-gradient(90deg,#1a2235 0%,#182438 55%); }
+.rk-row.pos-3 { border-left-color: #cd8040; background: linear-gradient(90deg,#201a10 0%,#182438 55%); }
+.rk-row.me    { border-left-color: #3cba6a; box-shadow: 0 0 0 1px rgba(60,186,106,.2); }
 
 /* posición */
-.rk-pos { font-size: 1rem; font-weight: 900; text-align: center; min-width: 34px; flex-shrink: 0; }
-.rk-row.pos-1 .rk-pos { font-size: 1.5rem; }
-.rk-row.pos-2 .rk-pos { font-size: 1.25rem; }
-.rk-row.pos-3 .rk-pos { font-size: 1.1rem; }
-.rk-pos-num { color: #2a4060; font-size: .9rem; font-weight: 800; }
+.rk-pos {
+  font-size: .85rem; font-weight: 900; text-align: center;
+  min-width: 28px; flex-shrink: 0; line-height: 1;
+}
+.rk-row.pos-1 .rk-pos { font-size: 1.15rem; }
+.rk-row.pos-2 .rk-pos { font-size: 1rem; }
+.rk-row.pos-3 .rk-pos { font-size: .95rem; }
+.rk-pos-num { color: #2a4060; font-size: .78rem; font-weight: 800; }
 
-/* info */
-.rk-info { flex: 1; min-width: 0; }
+/* nombre — una sola línea */
+.rk-info { flex: 1; min-width: 0; display: flex; align-items: center; gap: .35rem; }
 .rk-name {
-  font-size: .92rem; font-weight: 700; color: #c8ddf0;
+  font-size: .8rem; font-weight: 700; color: #b8d0e8;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.rk-row.pos-1 .rk-name { font-size: 1.05rem; color: #f0c040; }
-.rk-row.pos-2 .rk-name { font-size: 1rem;    color: #e0e8f8; }
+.rk-row.pos-1 .rk-name { color: #f0c040; font-size: .85rem; }
+.rk-row.pos-2 .rk-name { color: #dce8f8; }
 .rk-row.pos-3 .rk-name { color: #ddb870; }
-.rk-meta { font-size: .68rem; color: #3e5e7c; margin-top: .1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .rk-badge {
-  display: inline-block; font-size: .57rem; font-weight: 800;
-  padding: .1rem .38rem; border-radius: 4px; vertical-align: middle; margin-left: .3rem;
+  display: inline-block; font-size: .5rem; font-weight: 800;
+  padding: .08rem .3rem; border-radius: 3px; vertical-align: middle; flex-shrink: 0;
 }
 .rk-badge-me  { background: #3cba6a; color: #fff; }
 .rk-badge-dbl { background: #f0c040; color: #1a1200; }
 
 /* stats */
-.rk-stats { display: flex; align-items: center; gap: .55rem; flex-shrink: 0; }
-.rk-stat { text-align: center; min-width: 38px; }
-.rk-stat-val { font-size: .88rem; font-weight: 700; color: #7090b0; }
-.rk-stat-lbl { font-size: .55rem; color: #2a4060; text-transform: uppercase; letter-spacing: .6px; }
+.rk-stats { display: flex; align-items: center; gap: .4rem; flex-shrink: 0; }
+.rk-stat { text-align: center; min-width: 32px; }
+.rk-stat-val { font-size: .75rem; font-weight: 700; color: #5a7fa0; }
+.rk-stat-lbl { font-size: .48rem; color: #2a4060; text-transform: uppercase; letter-spacing: .5px; }
 
-.rk-pts { text-align: center; min-width: 58px; }
-.rk-pts-val { font-size: 1.45rem; font-weight: 900; color: #f0c040; line-height: 1; }
-.rk-row.pos-1 .rk-pts-val { font-size: 1.75rem; }
-.rk-row.pos-2 .rk-pts-val { font-size: 1.55rem; }
-.rk-pts-lbl { font-size: .56rem; color: #3e5e7c; text-transform: uppercase; letter-spacing: .8px; }
+.rk-pts { text-align: right; min-width: 42px; flex-shrink: 0; }
+.rk-pts-val { font-size: 1rem; font-weight: 900; color: #f0c040; line-height: 1; }
+.rk-row.pos-1 .rk-pts-val { font-size: 1.2rem; }
+.rk-row.pos-2 .rk-pts-val { font-size: 1.1rem; }
+.rk-pts-lbl { font-size: .48rem; color: #3e5e7c; text-transform: uppercase; letter-spacing: .7px; }
 
 /* ── Tab campeón ──────────────────────────────────────────── */
 .rk-camp {
-  background: #182438; border: 1px solid #243855; border-radius: 10px;
-  padding: .9rem 1rem; display: flex; align-items: center; gap: .9rem;
-  margin-bottom: .42rem; transition: box-shadow .15s;
+  background: #182438; border: 1px solid #243855; border-radius: 9px;
+  padding: .7rem .9rem; display: flex; align-items: center; gap: .8rem;
+  margin-bottom: .35rem; transition: box-shadow .15s;
 }
-.rk-camp:hover { box-shadow: 0 4px 18px rgba(0,0,0,.5); }
-.rk-camp-flag {
-  width: 60px; height: 40px; object-fit: cover;
-  border-radius: 6px; box-shadow: 0 2px 10px rgba(0,0,0,.55); flex-shrink: 0;
-}
-.rk-camp-emoji { font-size: 2rem; flex-shrink: 0; }
-.rk-camp-name { font-size: .95rem; font-weight: 800; color: #dde8f6; }
-.rk-camp-people { font-size: .7rem; color: #4e6e8c; margin-top: .2rem; }
-.rk-camp-votos { margin-left: auto; text-align: center; flex-shrink: 0; min-width: 50px; }
-.rk-camp-num  { font-size: 1.55rem; font-weight: 900; color: #f0c040; line-height: 1; }
-.rk-camp-lbl  { font-size: .56rem; color: #3e5e7c; text-transform: uppercase; letter-spacing: .7px; }
+.rk-camp:hover { box-shadow: 0 4px 16px rgba(0,0,0,.5); }
+.rk-camp-flag { width: 54px; height: 36px; object-fit: cover; border-radius: 5px; flex-shrink: 0; }
+.rk-camp-name { font-size: .9rem; font-weight: 800; color: #dde8f6; }
+.rk-camp-people { font-size: .68rem; color: #4e6e8c; margin-top: .15rem; }
+.rk-camp-votos { margin-left: auto; text-align: center; flex-shrink: 0; min-width: 44px; }
+.rk-camp-num  { font-size: 1.4rem; font-weight: 900; color: #f0c040; line-height: 1; }
+.rk-camp-lbl  { font-size: .52rem; color: #3e5e7c; text-transform: uppercase; letter-spacing: .6px; }
 
 /* ── Paginación ───────────────────────────────────────────── */
 .rk-pgbtn {
@@ -96,16 +104,14 @@ body { background: #0d1b2a !important; }
 .rk-pgbtn.on    { background: #f0c040; color: #1a1200; border-color: #f0c040; cursor: default; }
 
 /* ── Vacío ────────────────────────────────────────────────── */
-.rk-empty {
-  color: #2a4060; text-align: center; padding: 4rem 1rem;
-}
-.rk-empty i { font-size: 2.8rem; display: block; margin-bottom: .75rem; opacity: .35; }
+.rk-empty { color: #2a4060; text-align: center; padding: 3.5rem 1rem; }
+.rk-empty i { font-size: 2.5rem; display: block; margin-bottom: .75rem; opacity: .3; }
 
 @media (max-width: 575px) {
-  .rk-row       { padding: .32rem .6rem; gap: .4rem; }
-  .rk-pts-val   { font-size: 1.2rem; }
-  .rk-row.pos-1 .rk-pts-val { font-size: 1.4rem; }
-  .rk-camp-flag { width: 46px; height: 31px; }
+  .rk-row     { padding: .18rem .55rem; gap: .35rem; }
+  .rk-pts-val { font-size: .9rem; }
+  .rk-row.pos-1 .rk-pts-val { font-size: 1.05rem; }
+  .rk-camp-flag { width: 42px; height: 28px; }
 }
 </style>
 {% endblock %}
@@ -114,9 +120,9 @@ body { background: #0d1b2a !important; }
 <div style="max-width:860px;margin:0 auto;">
 
 {# ── Header + tabs ─────────────────────────────────────────── #}
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
   <div>
-    <div style="color:#f0c040;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:2.5px;">
+    <div style="color:#f0c040;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:2.5px;">
       <i class="bi bi-trophy-fill me-1"></i>Polla FIFA 2026
     </div>
     <h5 class="mb-0 fw-bold" style="color:#f0c040;">{{ titulo }}</h5>
@@ -141,17 +147,16 @@ body { background: #0d1b2a !important; }
   {% for grupo in por_equipo %}
   <div class="rk-camp">
     {% if grupo.grouper.bandera_url %}
-      <img src="{{ grupo.grouper.bandera_url }}"
-           alt="{{ grupo.grouper.nombre }}" class="rk-camp-flag">
+      <img src="{{ grupo.grouper.bandera_url }}" alt="{{ grupo.grouper.nombre }}" class="rk-camp-flag">
     {% else %}
-      <span class="rk-camp-emoji">{{ grupo.grouper.bandera_emoji }}</span>
+      <span style="font-size:1.8rem;flex-shrink:0;">{{ grupo.grouper.bandera_emoji }}</span>
     {% endif %}
     <div style="flex:1;min-width:0;">
       <div class="rk-camp-name">{{ grupo.grouper.nombre }}</div>
       <div class="rk-camp-people">
         {% for pc in grupo.list %}
           {{ pc.inscripcion.afiliado.nombre_completo }}{% if pc.inscripcion.afiliado.cantidad_pollas == 2 %}
-            <span style="color:#f0c040;font-size:.62rem;">({{ pc.inscripcion.label }})</span>{% endif %}{% if not forloop.last %}, {% endif %}
+            <span style="color:#f0c040;font-size:.6rem;">({{ pc.inscripcion.label }})</span>{% endif %}{% if not forloop.last %}, {% endif %}
         {% endfor %}
       </div>
     </div>
@@ -162,59 +167,54 @@ body { background: #0d1b2a !important; }
   </div>
   {% endfor %}
 {% else %}
-  <div class="rk-empty">
-    <i class="bi bi-star"></i>
-    Nadie ha elegido campeón todavía.
-  </div>
+  <div class="rk-empty"><i class="bi bi-star"></i>Nadie ha elegido campeón todavía.</div>
 {% endif %}
 
 {% else %}
 {# ════ TAB GENERAL / GRUPOS ══════════════════════════════════ #}
 {% if ranking %}
 
-{# Contador total #}
-{% if total > 0 %}
-<div class="d-flex justify-content-between align-items-center mb-2">
-  <span style="color:#3e5e7c;font-size:.72rem;">{{ total }} participante{{ total|pluralize }}</span>
-  {% if total_paginas > 1 %}
-  <span style="color:#2a4060;font-size:.72rem;">Página {{ pagina }} de {{ total_paginas }}</span>
-  {% endif %}
+{# ── Gráfica de barras top 25 ─────────────────────────────── #}
+{% if chart_labels_json %}
+<div class="rk-chart-wrap">
+  <div class="rk-chart-title"><i class="bi bi-bar-chart-horizontal-fill me-1"></i>Puntos — Top {{ chart_labels_json|length }}</div>
+  <canvas id="rkChart"></canvas>
 </div>
 {% endif %}
 
+{# Contador #}
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <span style="color:#3e5e7c;font-size:.68rem;">{{ total }} participante{{ total|pluralize }}</span>
+  {% if total_paginas > 1 %}
+  <span style="color:#2a4060;font-size:.68rem;">Pág. {{ pagina }}/{{ total_paginas }}</span>
+  {% endif %}
+</div>
+
+{# ── Filas ────────────────────────────────────────────────── #}
 {% for insc in ranking %}
 {% with pos=forloop.counter|add:offset %}
 <div class="rk-row
   {% if pos == 1 %}pos-1{% elif pos == 2 %}pos-2{% elif pos == 3 %}pos-3{% endif %}
   {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}me{% endif %}">
 
-  {# Posición #}
   <div class="rk-pos">
-    {% if pos == 1 %}🥇
-    {% elif pos == 2 %}🥈
-    {% elif pos == 3 %}🥉
-    {% else %}<span class="rk-pos-num">{{ pos }}</span>
-    {% endif %}
+    {% if pos == 1 %}🥇{% elif pos == 2 %}🥈{% elif pos == 3 %}🥉
+    {% else %}<span class="rk-pos-num">{{ pos }}</span>{% endif %}
   </div>
 
-  {# Nombre + área #}
   <div class="rk-info">
     <div class="rk-name">
       <a href="{% url 'polla:perfil_afiliado' insc.afiliado.pk %}"
          style="color:inherit;text-decoration:none;">{{ insc.afiliado.nombre_completo }}</a>
-      {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}
-        <span class="rk-badge rk-badge-me">TÚ</span>
-      {% endif %}
-      {% if insc.afiliado.cantidad_pollas == 2 %}
-        <span class="rk-badge rk-badge-dbl">⭐ {{ insc.label }}</span>
-      {% endif %}
     </div>
-    {% if insc.afiliado.area %}
-    <div class="rk-meta">{{ insc.afiliado.area }}</div>
+    {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}
+      <span class="rk-badge rk-badge-me">TÚ</span>
+    {% endif %}
+    {% if insc.afiliado.cantidad_pollas == 2 %}
+      <span class="rk-badge rk-badge-dbl">⭐{{ insc.label }}</span>
     {% endif %}
   </div>
 
-  {# Stats #}
   <div class="rk-stats">
     <div class="rk-stat d-none d-sm-flex flex-column">
       <div class="rk-stat-val">{{ insc.aciertos_marcador }}</div>
@@ -236,58 +236,40 @@ body { background: #0d1b2a !important; }
 {% endwith %}
 {% endfor %}
 
-{# Paginación #}
+{# ── Paginación ───────────────────────────────────────────── #}
 {% if total_paginas > 1 %}
 <div class="d-flex justify-content-center align-items-center gap-1 mt-4 flex-wrap">
-
-  {# Anterior #}
   {% if pagina > 1 %}
-    <a href="?tipo={{ tipo }}&pagina={{ pagina|add:-1 }}" class="rk-pgbtn" title="Anterior">
-      <i class="bi bi-chevron-left"></i>
-    </a>
+    <a href="?tipo={{ tipo }}&pagina={{ pagina|add:-1 }}" class="rk-pgbtn"><i class="bi bi-chevron-left"></i></a>
   {% else %}
     <span class="rk-pgbtn off"><i class="bi bi-chevron-left"></i></span>
   {% endif %}
 
-  {# Primera página si el rango no la incluye #}
   {% if paginas_rango.0 > 1 %}
     <a href="?tipo={{ tipo }}&pagina=1" class="rk-pgbtn">1</a>
-    {% if paginas_rango.0 > 2 %}
-      <span style="color:#2a4060;font-size:.8rem;padding:0 .2rem;">…</span>
-    {% endif %}
+    {% if paginas_rango.0 > 2 %}<span style="color:#2a4060;font-size:.8rem;padding:0 .2rem;">…</span>{% endif %}
   {% endif %}
 
-  {# Páginas del rango central #}
   {% for p in paginas_rango %}
-    {% if p == pagina %}
-      <span class="rk-pgbtn on">{{ p }}</span>
-    {% else %}
-      <a href="?tipo={{ tipo }}&pagina={{ p }}" class="rk-pgbtn">{{ p }}</a>
-    {% endif %}
+    {% if p == pagina %}<span class="rk-pgbtn on">{{ p }}</span>
+    {% else %}<a href="?tipo={{ tipo }}&pagina={{ p }}" class="rk-pgbtn">{{ p }}</a>{% endif %}
   {% endfor %}
 
-  {# Última página si el rango no la incluye #}
   {% with last=paginas_rango|last %}
   {% if last < total_paginas %}
-    {% if last < total_paginas|add:-1 %}
-      <span style="color:#2a4060;font-size:.8rem;padding:0 .2rem;">…</span>
-    {% endif %}
+    {% if last < total_paginas|add:-1 %}<span style="color:#2a4060;font-size:.8rem;padding:0 .2rem;">…</span>{% endif %}
     <a href="?tipo={{ tipo }}&pagina={{ total_paginas }}" class="rk-pgbtn">{{ total_paginas }}</a>
   {% endif %}
   {% endwith %}
 
-  {# Siguiente #}
   {% if pagina < total_paginas %}
-    <a href="?tipo={{ tipo }}&pagina={{ pagina|add:1 }}" class="rk-pgbtn" title="Siguiente">
-      <i class="bi bi-chevron-right"></i>
-    </a>
+    <a href="?tipo={{ tipo }}&pagina={{ pagina|add:1 }}" class="rk-pgbtn"><i class="bi bi-chevron-right"></i></a>
   {% else %}
     <span class="rk-pgbtn off"><i class="bi bi-chevron-right"></i></span>
   {% endif %}
-
 </div>
-<div class="text-center mt-2" style="color:#2a4060;font-size:.68rem;">
-  Página {{ pagina }} de {{ total_paginas }} · {{ total }} participante{{ total|pluralize }}
+<div class="text-center mt-2" style="color:#2a4060;font-size:.65rem;">
+  Pág. {{ pagina }} de {{ total_paginas }} · {{ total }} participante{{ total|pluralize }}
 </div>
 {% endif %}
 
@@ -299,6 +281,81 @@ body { background: #0d1b2a !important; }
 {% endif %}
 
 {% endif %}{# /tipo #}
-
 </div>
+{% endblock %}
+
+{% block polla_scripts %}
+{% if chart_labels_json and tipo != 'campeon' %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  const labels = {{ chart_labels_json|safe }};
+  const values = {{ chart_values_json|safe }};
+  if (!labels.length) return;
+
+  const colors = labels.map((_, i) =>
+    i === 0 ? '#f0c040' : i === 1 ? '#a8b8c8' : i === 2 ? '#cd8040' : '#2a5070'
+  );
+  const borderColors = colors.map(c => c);
+
+  const ctx = document.getElementById('rkChart');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderColor: borderColors,
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.parsed.x} pts`
+          },
+          backgroundColor: '#0d1b2a',
+          borderColor: '#1e3050',
+          borderWidth: 1,
+          titleColor: '#8ab0d0',
+          bodyColor: '#f0c040',
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: '#1a2a3a' },
+          ticks: { color: '#3e5e7c', font: { size: 11 } },
+          border: { color: '#1e3050' },
+        },
+        y: {
+          grid: { display: false },
+          ticks: {
+            color: '#7090b0',
+            font: { size: 11 },
+            callback: function(val, idx) {
+              const name = this.getLabelForValue(val);
+              return name.length > 22 ? name.slice(0, 21) + '…' : name;
+            }
+          },
+          border: { color: '#1e3050' },
+        }
+      }
+    },
+    plugins: [{
+      id: 'chartHeight',
+      beforeInit(chart) {
+        chart.canvas.parentNode.style.height = Math.max(220, labels.length * 26) + 'px';
+      }
+    }]
+  });
+})();
+</script>
+{% endif %}
 {% endblock %}

@@ -311,6 +311,19 @@ def ranking(request):
 
     afiliado_user = _get_afiliado(request.user) if request.user.is_authenticated else None
 
+    # Top 25 para la gráfica (independiente de la paginación)
+    top_chart = list(ranking_qs[:25])
+    if tipo == 'grupos':
+        chart_labels = [i.afiliado.nombre_completo for i in top_chart]
+        chart_values = [int(i.puntos_fase) for i in top_chart]
+    else:
+        chart_labels = [i.afiliado.nombre_completo for i in top_chart]
+        chart_values = [i.puntos_totales for i in top_chart]
+
+    import json as _json
+    chart_labels_json = _json.dumps(chart_labels)
+    chart_values_json = _json.dumps(chart_values)
+
     return render(request, 'polla/ranking.html', {
         'tipo': tipo,
         'ranking': ranking_pagina,
@@ -322,6 +335,8 @@ def ranking(request):
         'offset': inicio,
         'paginas_rango': paginas_rango,
         'afiliado_user': afiliado_user,
+        'chart_labels_json': chart_labels_json,
+        'chart_values_json': chart_values_json,
     })
 
 
