@@ -49,15 +49,19 @@ body { background: #0d1b2a !important; }
 .rk-row.pos-3 .rk-pos { font-size: .95rem; }
 .rk-pos-num { color: #2a4060; font-size: .78rem; font-weight: 800; }
 
-/* nombre — una sola línea */
-.rk-info { flex: 1; min-width: 0; display: flex; align-items: center; gap: .35rem; }
+/* nombre + área — una sola línea */
+.rk-info { flex: 1; min-width: 0; display: flex; align-items: center; gap: .35rem; overflow: hidden; }
 .rk-name {
   font-size: .8rem; font-weight: 700; color: #b8d0e8;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 1;
 }
 .rk-row.pos-1 .rk-name { color: #f0c040; font-size: .85rem; }
 .rk-row.pos-2 .rk-name { color: #dce8f8; }
 .rk-row.pos-3 .rk-name { color: #ddb870; }
+.rk-area {
+  font-size: .6rem; color: #2e4e68; font-weight: 500;
+  white-space: nowrap; flex-shrink: 0;
+}
 
 .rk-badge {
   display: inline-block; font-size: .5rem; font-weight: 800;
@@ -137,10 +141,24 @@ body { background: #0d1b2a !important; }
     <a href="?tipo=campeon" class="rk-tab {% if tipo == 'campeon' %}on{% endif %}">
       <i class="bi bi-star-fill me-1"></i>Campeón
     </a>
+    <a href="?tipo=grafica" class="rk-tab {% if tipo == 'grafica' %}on{% endif %}">
+      <i class="bi bi-bar-chart-horizontal-fill me-1"></i>Gráfica
+    </a>
   </div>
 </div>
 
-{% if tipo == 'campeon' %}
+{% if tipo == 'grafica' %}
+{# ════ TAB GRÁFICA ════════════════════════════════════════════ #}
+<div class="rk-chart-wrap mb-4">
+  <div class="rk-chart-title"><i class="bi bi-bar-chart-fill me-1"></i>Top 30 — Ranking General</div>
+  <canvas id="rkChartGen"></canvas>
+</div>
+<div class="rk-chart-wrap">
+  <div class="rk-chart-title"><i class="bi bi-grid me-1"></i>Top 30 — Fase de Grupos</div>
+  <canvas id="rkChartGrp"></canvas>
+</div>
+
+{% elif tipo == 'campeon' %}
 {# ════ TAB CAMPEÓN ════════════════════════════════════════════ #}
 {% regroup pronosticos_campeon by equipo as por_equipo %}
 {% if por_equipo %}
@@ -174,14 +192,6 @@ body { background: #0d1b2a !important; }
 {# ════ TAB GENERAL / GRUPOS ══════════════════════════════════ #}
 {% if ranking %}
 
-{# ── Gráfica de barras top 25 ─────────────────────────────── #}
-{% if chart_labels_json %}
-<div class="rk-chart-wrap">
-  <div class="rk-chart-title"><i class="bi bi-bar-chart-horizontal-fill me-1"></i>Puntos — Top {{ chart_labels_json|length }}</div>
-  <canvas id="rkChart"></canvas>
-</div>
-{% endif %}
-
 {# Contador #}
 <div class="d-flex justify-content-between align-items-center mb-2">
   <span style="color:#3e5e7c;font-size:.68rem;">{{ total }} participante{{ total|pluralize }}</span>
@@ -212,6 +222,9 @@ body { background: #0d1b2a !important; }
     {% endif %}
     {% if insc.afiliado.cantidad_pollas == 2 %}
       <span class="rk-badge rk-badge-dbl">⭐{{ insc.label }}</span>
+    {% endif %}
+    {% if insc.afiliado.area %}
+      <span class="rk-area d-none d-sm-inline">· {{ insc.afiliado.area }}</span>
     {% endif %}
   </div>
 
@@ -285,30 +298,26 @@ body { background: #0d1b2a !important; }
 {% endblock %}
 
 {% block polla_scripts %}
-{% if chart_labels_json and tipo != 'campeon' %}
+{% if tipo == 'grafica' %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
-(function() {
-  const labels = {{ chart_labels_json|safe }};
-  const values = {{ chart_values_json|safe }};
+function buildChart(canvasId, labels, values) {
   if (!labels.length) return;
-
   const colors = labels.map((_, i) =>
     i === 0 ? '#f0c040' : i === 1 ? '#a8b8c8' : i === 2 ? '#cd8040' : '#2a5070'
   );
-  const borderColors = colors.map(c => c);
-
-  const ctx = document.getElementById('rkChart');
+  const ctx = document.getElementById(canvasId);
+  ctx.parentNode.style.height = Math.max(260, labels.length * 28) + 'px';
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: labels,
+      labels,
       datasets: [{
         data: values,
         backgroundColor: colors,
-        borderColor: borderColors,
+        borderColor: colors,
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 5,
       }]
     },
     options: {
@@ -318,9 +327,7 @@ body { background: #0d1b2a !important; }
       plugins: {
         legend: { display: false },
         tooltip: {
-          callbacks: {
-            label: ctx => ` ${ctx.parsed.x} pts`
-          },
+          callbacks: { label: c => ` ${c.parsed.x} pts` },
           backgroundColor: '#0d1b2a',
           borderColor: '#1e3050',
           borderWidth: 1,
@@ -338,24 +345,20 @@ body { background: #0d1b2a !important; }
           grid: { display: false },
           ticks: {
             color: '#7090b0',
-            font: { size: 11 },
-            callback: function(val, idx) {
-              const name = this.getLabelForValue(val);
-              return name.length > 22 ? name.slice(0, 21) + '…' : name;
+            font: { size: 12 },
+            callback(val) {
+              const n = this.getLabelForValue(val);
+              return n.length > 26 ? n.slice(0, 25) + '…' : n;
             }
           },
           border: { color: '#1e3050' },
         }
       }
-    },
-    plugins: [{
-      id: 'chartHeight',
-      beforeInit(chart) {
-        chart.canvas.parentNode.style.height = Math.max(220, labels.length * 26) + 'px';
-      }
-    }]
+    }
   });
-})();
+}
+buildChart('rkChartGen', {{ gen_labels_json|safe }}, {{ gen_values_json|safe }});
+buildChart('rkChartGrp', {{ grp_labels_json|safe }}, {{ grp_values_json|safe }});
 </script>
 {% endif %}
 {% endblock %}

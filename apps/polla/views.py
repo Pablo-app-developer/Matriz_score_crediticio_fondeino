@@ -285,6 +285,32 @@ def ranking(request):
             'config': config,
             'titulo': 'Pronósticos de Campeón',
         })
+    elif tipo == 'grafica':
+        import json as _json
+        qs_gen = base_qs.order_by(
+            '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'afiliado__nombre_completo'
+        )[:30]
+        qs_grp = base_qs.annotate(
+            puntos_fase=Coalesce(Sum(
+                'pronosticos__puntos_obtenidos',
+                filter=Q(pronosticos__partido__fase='GRUPOS'),
+            ), 0),
+        ).order_by('-puntos_fase', 'afiliado__nombre_completo')[:30]
+
+        gen_labels = [i.afiliado.nombre_completo for i in qs_gen]
+        gen_values = [i.puntos_totales for i in qs_gen]
+        grp_labels = [i.afiliado.nombre_completo for i in qs_grp]
+        grp_values = [int(i.puntos_fase) for i in qs_grp]
+
+        return render(request, 'polla/ranking.html', {
+            'tipo': tipo,
+            'config': config,
+            'titulo': 'Gráfica de puntos',
+            'gen_labels_json': _json.dumps(gen_labels),
+            'gen_values_json': _json.dumps(gen_values),
+            'grp_labels_json': _json.dumps(grp_labels),
+            'grp_values_json': _json.dumps(grp_values),
+        })
     else:
         ranking_qs = base_qs.order_by(
             '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'afiliado__nombre_completo'
