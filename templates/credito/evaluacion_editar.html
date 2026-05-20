@@ -4,9 +4,25 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Editar Evaluación #{{ ev.pk }} — {{ ev.nombre_completo }}</h4>
-  <a href="{% url 'credito:detalle' ev.pk %}" class="btn btn-outline-secondary btn-sm">
-    <i class="bi bi-arrow-left me-1"></i>Cancelar
-  </a>
+  <div class="d-flex gap-2">
+    {% if pk_anterior %}
+    <a href="{% url 'credito:evaluacion_editar' pk_anterior %}" class="btn btn-outline-secondary btn-sm" title="Evaluación anterior">
+      <i class="bi bi-chevron-left me-1"></i>Anterior
+    </a>
+    {% else %}
+    <span class="btn btn-outline-secondary btn-sm disabled"><i class="bi bi-chevron-left me-1"></i>Anterior</span>
+    {% endif %}
+    {% if pk_siguiente %}
+    <a href="{% url 'credito:evaluacion_editar' pk_siguiente %}" class="btn btn-outline-secondary btn-sm" title="Evaluación siguiente">
+      Siguiente<i class="bi bi-chevron-right ms-1"></i>
+    </a>
+    {% else %}
+    <span class="btn btn-outline-secondary btn-sm disabled">Siguiente<i class="bi bi-chevron-right ms-1"></i></span>
+    {% endif %}
+    <a href="{% url 'credito:detalle' ev.pk %}" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-arrow-left me-1"></i>Cancelar
+    </a>
+  </div>
 </div>
 
 <div class="alert alert-warning">

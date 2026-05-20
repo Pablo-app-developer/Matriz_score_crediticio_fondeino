@@ -585,11 +585,16 @@ def evaluacion_editar(request, pk):
         messages.success(request, 'Evaluación actualizada y recalculada correctamente.')
         return redirect('credito:detalle', pk=ev.pk)
 
+    anterior = EvaluacionCredito.objects.filter(pk__lt=pk).order_by('-pk').values_list('pk', flat=True).first()
+    siguiente = EvaluacionCredito.objects.filter(pk__gt=pk).order_by('pk').values_list('pk', flat=True).first()
+
     import json as _json
     return render(request, 'credito/evaluacion_editar.html', {
         'form': form,
         'ev': ev,
         'otras_obligaciones_json': _json.dumps(ev.otras_obligaciones or []),
+        'pk_anterior': anterior,
+        'pk_siguiente': siguiente,
     })
 
 
