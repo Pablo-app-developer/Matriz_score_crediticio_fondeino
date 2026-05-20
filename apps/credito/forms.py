@@ -5,7 +5,7 @@ from datetime import date
 
 TIPO_DOCUMENTO_CHOICES = [('C.C.', 'Cédula de Ciudadanía'), ('C.E.', 'Cédula de Extranjería'), ('Pasaporte', 'Pasaporte')]
 TIPO_VINCULACION_CHOICES = [('Indefinido', 'Contrato Indefinido'), ('A termino fijo', 'A término fijo'), ('Servicios', 'Prestación de servicios')]
-TIPO_CREDITO_CHOICES = [('', '— Seleccione —'), ('Nuevo', 'Nuevo'), ('Renovación', 'Renovación'), ('Reestructuración', 'Reestructuración')]
+TIPO_CREDITO_CHOICES = [('', '— Seleccione —'), ('Nuevo', 'Nuevo'), ('Refinanciación', 'Refinanciación'), ('Reestructuración', 'Reestructuración')]
 SI_NO = [('NO', 'No'), ('SI', 'Sí')]
 
 INPUT = 'form-control'
