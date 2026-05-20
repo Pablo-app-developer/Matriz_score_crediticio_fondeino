@@ -167,6 +167,7 @@ class EvaluacionCredito(models.Model):
     fecha_desembolso = models.DateField()
     monto_solicitado = models.DecimalField(max_digits=14, decimal_places=2)
     n_cuotas = models.IntegerField()
+    tipo_credito = models.CharField(max_length=30, blank=True)
     motivo = models.CharField(max_length=200, blank=True)
 
     # Resultados calculados

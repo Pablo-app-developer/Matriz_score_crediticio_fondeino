@@ -206,6 +206,7 @@
           <tr><td class="bg-light">Tasa Mensual</td><td class="text-right fw-bold">{{ ev.modalidad.tasa_mensual|mul:100|floatformat:4 }}% m.v.</td></tr>
           <tr><td class="bg-light">Tasa Nominal Anual</td><td class="text-right fw-bold">{{ ev.modalidad.tasa_nominal_anual|mul:100|floatformat:2 }}% n.a.</td></tr>
           <tr><td class="bg-light">Fecha Desembolso</td><td class="text-right">{{ ev.fecha_desembolso|date:"d/m/Y" }}</td></tr>
+          {% if ev.tipo_credito %}<tr><td class="bg-light">Tipo de Crédito</td><td class="text-right">{{ ev.tipo_credito }}</td></tr>{% endif %}
           {% if ev.motivo %}<tr><td class="bg-light">Motivo</td><td class="text-right">{{ ev.motivo }}</td></tr>{% endif %}
         </table>
       </div>
@@ -339,9 +340,6 @@
 {% endfor %}
 
 <script>
-  window.addEventListener('load', function() {
-    setTimeout(function() { window.print(); }, 400);
-  });
 </script>
 </body>
 </html>

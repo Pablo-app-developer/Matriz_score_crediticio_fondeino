@@ -146,6 +146,7 @@ def evaluacion(request):
             fecha_desembolso=cd['fecha_desembolso'],
             monto_solicitado=cd['monto_solicitado'],
             n_cuotas=cd['n_cuotas'],
+            tipo_credito=cd.get('tipo_credito', ''),
             motivo=cd.get('motivo', ''),
             salario_neto=resultado['salario_neto'],
             minimo_vital=resultado['minimo_vital'],
@@ -512,6 +513,7 @@ def evaluacion_editar(request, pk):
         'fecha_desembolso': ev.fecha_desembolso,
         'monto_solicitado': ev.monto_solicitado,
         'n_cuotas': ev.n_cuotas,
+        'tipo_credito': ev.tipo_credito,
         'motivo': ev.motivo,
     })
 
@@ -563,6 +565,7 @@ def evaluacion_editar(request, pk):
         ev.fecha_desembolso = cd['fecha_desembolso']
         ev.monto_solicitado = cd['monto_solicitado']
         ev.n_cuotas = cd['n_cuotas']
+        ev.tipo_credito = cd.get('tipo_credito', '')
         ev.motivo = cd.get('motivo', '')
         ev.salario_neto = resultado['salario_neto']
         ev.minimo_vital = resultado['minimo_vital']

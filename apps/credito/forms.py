@@ -5,6 +5,7 @@ from datetime import date
 
 TIPO_DOCUMENTO_CHOICES = [('C.C.', 'Cédula de Ciudadanía'), ('C.E.', 'Cédula de Extranjería'), ('Pasaporte', 'Pasaporte')]
 TIPO_VINCULACION_CHOICES = [('Indefinido', 'Contrato Indefinido'), ('A termino fijo', 'A término fijo'), ('Servicios', 'Prestación de servicios')]
+TIPO_CREDITO_CHOICES = [('', '— Seleccione —'), ('Nuevo', 'Nuevo'), ('Renovación', 'Renovación'), ('Reestructuración', 'Reestructuración')]
 SI_NO = [('NO', 'No'), ('SI', 'Sí')]
 
 INPUT = 'form-control'
@@ -74,6 +75,8 @@ class EvaluacionForm(forms.Form):
                                                                           'id': 'id_monto_solicitado'}))
     n_cuotas = forms.IntegerField(min_value=1, max_value=48, initial=12,
                                   widget=forms.NumberInput(attrs={'class': INPUT, 'id': 'id_n_cuotas'}))
+    tipo_credito = forms.ChoiceField(choices=TIPO_CREDITO_CHOICES, required=False,
+                                    widget=forms.Select(attrs={'class': SELECT}))
     motivo = forms.CharField(max_length=200, required=False,
                              widget=forms.TextInput(attrs={'class': INPUT}))
 
