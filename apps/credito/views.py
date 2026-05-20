@@ -291,13 +291,18 @@ def detalle(request, pk):
     """Vista de resultado / detalle de una evaluación."""
     ev = get_object_or_404(EvaluacionCredito, pk=pk)
     form_comite = DecisionComiteForm(request.POST or None, instance=ev)
-    if request.method == 'POST' and form_comite.is_valid():
-        obj = form_comite.save(commit=False)
-        obj.fecha_decision_comite = timezone.now()
-        obj.registrado_por_comite = request.user
-        obj.save()
-        messages.success(request, 'Decisión del comité registrada.')
-        return redirect('credito:detalle', pk=pk)
+    if request.method == 'POST':
+        if ev.bloqueada:
+            messages.error(request, 'Esta evaluación está bloqueada. El comité ya registró una decisión. Solicite al administrador que desbloquee la edición.')
+            return redirect('credito:detalle', pk=pk)
+        if form_comite.is_valid():
+            obj = form_comite.save(commit=False)
+            obj.fecha_decision_comite = timezone.now()
+            obj.registrado_por_comite = request.user
+            obj.edicion_desbloqueada = False
+            obj.save()
+            messages.success(request, 'Decisión del comité registrada.')
+            return redirect('credito:detalle', pk=pk)
 
     # Regenerar plan de pagos para mostrar
     from .scoring import generar_plan_pagos, calcular_seguro, calcular_pmt
@@ -457,13 +462,24 @@ def modalidad_editar(request, pk):
 # ─────────────────────────────────────────────
 
 def _puede_modificar(user, ev):
-    """Admin puede modificar cualquiera; comité solo las propias del mes en curso."""
-    if user.es_admin:
-        return True
-    hoy = timezone.now()
-    mismo_mes = (ev.fecha_evaluacion.year == hoy.year and
-                 ev.fecha_evaluacion.month == hoy.month)
-    return mismo_mes and ev.evaluado_por == user
+    """Cualquier usuario autenticado puede modificar mientras no haya decisión del comité.
+    Una vez tomada la decisión, solo el admin puede desbloquear."""
+    return True
+
+
+@login_required
+def evaluacion_desbloquear(request, pk):
+    """Solo el admin puede desbloquear la edición de una evaluación con decisión del comité."""
+    ev = get_object_or_404(EvaluacionCredito, pk=pk)
+    if not request.user.es_admin:
+        return HttpResponseForbidden()
+    if not ev.decision_comite:
+        messages.info(request, 'Esta evaluación no tiene decisión del comité registrada.')
+        return redirect('credito:detalle', pk=pk)
+    ev.edicion_desbloqueada = True
+    ev.save(update_fields=['edicion_desbloqueada'])
+    messages.warning(request, f'Edición desbloqueada para "{ev.nombre_completo}". Se volverá a bloquear automáticamente al guardar cambios.')
+    return redirect('credito:detalle', pk=pk)
 
 
 @login_required
@@ -471,6 +487,9 @@ def evaluacion_editar(request, pk):
     ev = get_object_or_404(EvaluacionCredito, pk=pk)
     if not _puede_modificar(request.user, ev):
         return HttpResponseForbidden()
+    if ev.bloqueada:
+        messages.error(request, 'Esta evaluación está bloqueada. El comité ya registró una decisión. Solicite al administrador que desbloquee la edición.')
+        return redirect('credito:detalle', pk=pk)
 
     form = EvaluacionForm(request.POST or None, initial={
         'tipo_documento': ev.tipo_documento,
@@ -560,6 +579,7 @@ def evaluacion_editar(request, pk):
         ev.score_total = resultado['score_total']
         ev.clasificacion = resultado['clasificacion']
         ev.decision = resultado['decision']
+        ev.edicion_desbloqueada = False
         ev.save()
 
         messages.success(request, 'Evaluación actualizada y recalculada correctamente.')

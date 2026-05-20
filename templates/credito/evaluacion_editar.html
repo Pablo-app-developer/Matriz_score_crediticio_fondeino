@@ -379,7 +379,7 @@ function fetchTasa(pk, callback) {
     .then(r => r.json())
     .then(d => {
       document.getElementById('tasaInfo').textContent =
-        `Tasa: ${(d.tasa_mensual * 100).toFixed(2)}% mensual | ${(d.tasa_anual * 100).toFixed(2)}% nominal anual`;
+        `Tasa: ${(d.tasa_mensual * 100).toFixed(4)}% mensual | ${(d.tasa_anual * 100).toFixed(2)}% nominal anual`;
       calcularPreview();
       if (callback) callback();
     });

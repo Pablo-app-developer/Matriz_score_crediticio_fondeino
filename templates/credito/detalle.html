@@ -11,9 +11,15 @@
       <i class="bi bi-arrow-left me-1"></i>Historial
     </a>
     {% if puede_modificar %}
+    {% if ev.bloqueada %}
+    <span class="btn btn-warning btn-sm disabled" title="Bloqueado: el comité ya tomó una decisión">
+      <i class="bi bi-lock me-1"></i>Editar
+    </span>
+    {% else %}
     <a href="{% url 'credito:evaluacion_editar' ev.pk %}" class="btn btn-warning btn-sm">
       <i class="bi bi-pencil me-1"></i>Editar
     </a>
+    {% endif %}
     <a href="{% url 'credito:evaluacion_eliminar' ev.pk %}" class="btn btn-danger btn-sm">
       <i class="bi bi-trash me-1"></i>Eliminar
     </a>
@@ -158,7 +164,7 @@
           <tr><td class="bg-light">Modalidad</td><td class="text-end">{{ ev.modalidad.nombre }}</td></tr>
           <tr><td class="bg-light">Monto Solicitado</td><td class="text-end fw-bold">${{ ev.monto_solicitado|cop }}</td></tr>
           <tr><td class="bg-light">Número de Cuotas</td><td class="text-end">{{ ev.n_cuotas }}</td></tr>
-          <tr><td class="bg-light">Tasa Mensual</td><td class="text-end fw-semibold">{{ ev.modalidad.tasa_mensual|floatformat:2 }}%</td></tr>
+          <tr><td class="bg-light">Tasa Mensual</td><td class="text-end fw-semibold">{{ ev.modalidad.tasa_mensual|floatformat:4 }}%</td></tr>
           <tr><td class="bg-light">Tasa Nominal Anual</td><td class="text-end fw-semibold">{{ ev.modalidad.tasa_nominal_anual|floatformat:1 }}%</td></tr>
           <tr><td class="bg-light">Fecha Desembolso</td><td class="text-end">{{ ev.fecha_desembolso|date:"d/m/Y" }}</td></tr>
           {% if ev.motivo %}<tr><td class="bg-light">Motivo</td><td class="text-end">{{ ev.motivo }}</td></tr>{% endif %}
@@ -261,23 +267,51 @@
           <div class="small"><i class="bi bi-chat-text me-1"></i><strong>Observaciones:</strong> {{ ev.observaciones }}</div>
           {% endif %}
         </div>
-        <p class="text-muted small mb-2">Para modificar la decisión, complete el formulario:</p>
         {% endif %}
-        <form method="post">
-          {% csrf_token %}
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Decisión del Comité</label>
-            {{ form_comite.decision_comite }}
+
+        {% if ev.bloqueada %}
+          <div class="alert alert-secondary d-flex align-items-center gap-2 mb-0">
+            <i class="bi bi-lock-fill fs-5"></i>
+            <div class="flex-grow-1">
+              <strong>Evaluación bloqueada.</strong>
+              El comité ya registró una decisión. No se pueden realizar cambios.
+              {% if request.user.es_admin %}
+              Para modificar, desbloquee primero.
+              {% else %}
+              Solicite al administrador que desbloquee la edición.
+              {% endif %}
+            </div>
+            {% if request.user.es_admin %}
+            <a href="{% url 'credito:evaluacion_desbloquear' ev.pk %}"
+               class="btn btn-sm btn-outline-danger"
+               onclick="return confirm('¿Desbloquear la edición de esta evaluación?\n\nSe volverá a bloquear automáticamente al guardar.');">
+              <i class="bi bi-unlock-fill me-1"></i>Desbloquear
+            </a>
+            {% endif %}
           </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Observaciones / Condiciones</label>
-            {{ form_comite.observaciones }}
-            <div class="form-text">Indique condiciones, motivo de rechazo, o cualquier nota relevante.</div>
+        {% else %}
+          {% if ev.decision_comite and ev.edicion_desbloqueada %}
+          <div class="alert alert-warning py-2 small mb-3">
+            <i class="bi bi-unlock me-1"></i><strong>Edición desbloqueada por el administrador.</strong>
+            Se bloqueará automáticamente al guardar.
           </div>
-          <button type="submit" class="btn btn-warning">
-            <i class="bi bi-save me-1"></i>{% if ev.decision_comite %}Actualizar Decisión{% else %}Registrar Decisión{% endif %}
-          </button>
-        </form>
+          {% endif %}
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Decisión del Comité</label>
+              {{ form_comite.decision_comite }}
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Observaciones / Condiciones</label>
+              {{ form_comite.observaciones }}
+              <div class="form-text">Indique condiciones, motivo de rechazo, o cualquier nota relevante.</div>
+            </div>
+            <button type="submit" class="btn btn-warning">
+              <i class="bi bi-save me-1"></i>{% if ev.decision_comite %}Actualizar Decisión{% else %}Registrar Decisión{% endif %}
+            </button>
+          </form>
+        {% endif %}
       </div>
     </div>
 

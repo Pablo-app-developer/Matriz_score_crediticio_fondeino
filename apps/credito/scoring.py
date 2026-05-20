@@ -41,8 +41,8 @@ def calcular_pmt(monto: float, tasa_mensual: float, n_cuotas: int) -> float:
 
 
 def calcular_seguro(monto: float) -> float:
-    """Seguro mensual = 0.25% del monto."""
-    return monto * 0.0025
+    """Seguro mensual = 0.0857‰ del monto."""
+    return monto * 0.000857
 
 
 def calcular_obligaciones(cuotas_otras: float, cuota_aporte: float, cuota_ahorro: float,

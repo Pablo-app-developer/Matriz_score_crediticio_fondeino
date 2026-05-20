@@ -196,6 +196,10 @@ class EvaluacionCredito(models.Model):
         settings.AUTH_USER_MODEL, null=True, blank=True,
         on_delete=models.SET_NULL, related_name='decisiones_comite'
     )
+    edicion_desbloqueada = models.BooleanField(
+        default=False,
+        help_text="Permite editar la evaluación aunque el comité ya tomó una decisión."
+    )
 
     class Meta:
         verbose_name = 'Evaluación de Crédito'
@@ -204,6 +208,11 @@ class EvaluacionCredito(models.Model):
 
     def __str__(self):
         return f"{self.nombre_completo} - ${self.monto_solicitado:,.0f} - {self.decision}"
+
+    @property
+    def bloqueada(self):
+        """True cuando el comité ya decidió y el admin no ha desbloqueado la edición."""
+        return bool(self.decision_comite) and not self.edicion_desbloqueada
 
     @property
     def decision_color(self):
