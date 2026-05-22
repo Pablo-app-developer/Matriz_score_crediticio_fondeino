@@ -111,12 +111,12 @@
   <span class="badge bg-secondary">{{ total_2meses }} evaluación{{ total_2meses|pluralize:"es" }}</span>
 </div>
 
-<!-- Fila 1: Tendencia (línea ancha) + Decisiones (doughnut) -->
+<!-- Fila 1: Tendencia mensual (línea ancha) + Decisiones (doughnut) -->
 <div class="row g-3 mb-3">
   <div class="col-md-8">
     <div class="card shadow-sm border-0 h-100">
       <div class="card-header border-0 bg-transparent pt-3 pb-0">
-        <h6 class="fw-bold mb-0"><i class="bi bi-graph-up me-2 text-primary"></i>Solicitudes por día</h6>
+        <h6 class="fw-bold mb-0"><i class="bi bi-graph-up me-2 text-primary"></i>Solicitudes por mes <small class="text-muted fw-normal">(últimos 12 meses)</small></h6>
       </div>
       <div class="card-body" style="height:240px">
         <canvas id="chartTendencia"></canvas>
@@ -126,7 +126,7 @@
   <div class="col-md-4">
     <div class="card shadow-sm border-0 h-100">
       <div class="card-header border-0 bg-transparent pt-3 pb-0">
-        <h6 class="fw-bold mb-0"><i class="bi bi-pie-chart me-2 text-primary"></i>Distribución decisiones</h6>
+        <h6 class="fw-bold mb-0"><i class="bi bi-pie-chart me-2 text-primary"></i>Distribución decisiones <small class="text-muted fw-normal">(2 meses)</small></h6>
       </div>
       <div class="card-body d-flex align-items-center justify-content-center" style="height:240px">
         <canvas id="chartDecision"></canvas>
@@ -135,22 +135,22 @@
   </div>
 </div>
 
-<!-- Fila 2: Por tipo de crédito (barras) + Score por modalidad (barras horizontales) -->
+<!-- Fila 2: Tipo de crédito (doughnut) + Score por modalidad (barras horizontales) -->
 <div class="row g-3 mb-4">
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="card shadow-sm border-0 h-100">
       <div class="card-header border-0 bg-transparent pt-3 pb-0">
-        <h6 class="fw-bold mb-0"><i class="bi bi-bar-chart me-2 text-primary"></i>Solicitudes por tipo de crédito</h6>
+        <h6 class="fw-bold mb-0"><i class="bi bi-pie-chart me-2 text-primary"></i>Por tipo de crédito <small class="text-muted fw-normal">(2 meses)</small></h6>
       </div>
-      <div class="card-body" style="height:260px">
+      <div class="card-body d-flex align-items-center justify-content-center" style="height:260px">
         <canvas id="chartTipos"></canvas>
       </div>
     </div>
   </div>
-  <div class="col-md-6">
+  <div class="col-md-8">
     <div class="card shadow-sm border-0 h-100">
       <div class="card-header border-0 bg-transparent pt-3 pb-0">
-        <h6 class="fw-bold mb-0"><i class="bi bi-bar-chart-horizontal me-2 text-primary"></i>Score promedio por modalidad</h6>
+        <h6 class="fw-bold mb-0"><i class="bi bi-bar-chart-horizontal me-2 text-primary"></i>Score promedio por modalidad <small class="text-muted fw-normal">(2 meses)</small></h6>
       </div>
       <div class="card-body" style="height:260px">
         <canvas id="chartScore"></canvas>
@@ -245,7 +245,6 @@ const TENDENCIA_LABELS = {{ chart_tendencia_labels|safe }};
 const TENDENCIA_DATA   = {{ chart_tendencia_data|safe }};
 const TIPOS_LABELS     = {{ chart_tipos_labels|safe }};
 const TIPOS_CANTIDAD   = {{ chart_tipos_cantidad|safe }};
-const TIPOS_MONTO      = {{ chart_tipos_monto|safe }};
 const DECISION_DATA    = {{ chart_decision_data|safe }};
 const SCORE_LABELS     = {{ chart_score_modal_labels|safe }};
 const SCORE_DATA       = {{ chart_score_modal_data|safe }};
@@ -253,7 +252,6 @@ const SCORE_DATA       = {{ chart_score_modal_data|safe }};
 Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
 Chart.defaults.font.size   = 12;
 
-// Paleta corporativa
 const AZUL    = 'rgba(13,110,253,0.85)';
 const VERDE   = 'rgba(25,135,84,0.85)';
 const ROJO    = 'rgba(220,53,69,0.85)';
@@ -261,43 +259,53 @@ const AMARILLO= 'rgba(255,193,7,0.85)';
 const CELESTE = 'rgba(13,202,240,0.85)';
 const VIOLETA = 'rgba(111,66,193,0.85)';
 const NARANJA = 'rgba(253,126,20,0.85)';
-const PALETA  = [AZUL, VERDE, ROJO, AMARILLO, CELESTE, VIOLETA, NARANJA];
+const ROSA    = 'rgba(214,51,132,0.85)';
+const PALETA  = [AZUL, VERDE, AMARILLO, NARANJA, CELESTE, VIOLETA, ROJO, ROSA];
 
-// 1 ─ Tendencia diaria (área)
+// 1 ─ Tendencia mensual (barras + línea superpuesta)
 new Chart(document.getElementById('chartTendencia'), {
-  type: 'line',
+  type: 'bar',
   data: {
     labels: TENDENCIA_LABELS,
-    datasets: [{
-      label: 'Solicitudes',
-      data: TENDENCIA_DATA,
-      borderColor: AZUL,
-      backgroundColor: 'rgba(13,110,253,0.08)',
-      borderWidth: 2,
-      pointRadius: 0,
-      pointHoverRadius: 4,
-      fill: true,
-      tension: 0.4,
-    }]
+    datasets: [
+      {
+        type: 'line',
+        label: 'Tendencia',
+        data: TENDENCIA_DATA,
+        borderColor: AZUL,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        tension: 0.35,
+        order: 1,
+      },
+      {
+        type: 'bar',
+        label: 'Solicitudes',
+        data: TENDENCIA_DATA,
+        backgroundColor: 'rgba(13,110,253,0.15)',
+        borderColor: 'rgba(13,110,253,0.4)',
+        borderWidth: 1,
+        borderRadius: 4,
+        order: 2,
+      }
+    ]
   },
   options: {
     responsive: true,
     maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
-    plugins: { legend: { display: false } },
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: {
-          maxTicksLimit: 10,
-          maxRotation: 0,
-        }
-      },
-      y: {
-        beginAtZero: true,
-        ticks: { stepSize: 1 },
-        grid: { color: 'rgba(0,0,0,0.05)' }
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: { label: ctx => ctx.datasetIndex === 0 ? ` ${ctx.raw} solicitud${ctx.raw !== 1 ? 'es' : ''}` : null },
+        filter: item => item.datasetIndex === 0,
       }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { maxRotation: 45 } },
+      y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } }
     }
   }
 });
@@ -319,65 +327,39 @@ new Chart(document.getElementById('chartDecision'), {
     maintainAspectRatio: false,
     cutout: '62%',
     plugins: {
-      legend: {
-        position: 'bottom',
-        labels: { boxWidth: 12, padding: 10 }
-      }
+      legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10 } }
     }
   }
 });
 
-// 3 ─ Por tipo de crédito — barras agrupadas (cantidad + monto)
+// 3 ─ Por tipo de crédito (doughnut)
 if (TIPOS_LABELS.length > 0) {
   new Chart(document.getElementById('chartTipos'), {
-    type: 'bar',
+    type: 'doughnut',
     data: {
       labels: TIPOS_LABELS,
-      datasets: [
-        {
-          label: 'Cantidad',
-          data: TIPOS_CANTIDAD,
-          backgroundColor: AZUL,
-          borderRadius: 4,
-          yAxisID: 'yCant',
-        },
-        {
-          label: 'Monto (MM$)',
-          data: TIPOS_MONTO,
-          backgroundColor: VERDE,
-          borderRadius: 4,
-          yAxisID: 'yMonto',
-        }
-      ]
+      datasets: [{
+        data: TIPOS_CANTIDAD,
+        backgroundColor: PALETA.slice(0, TIPOS_LABELS.length),
+        borderWidth: 2,
+        borderColor: '#fff',
+      }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
+      cutout: '55%',
       plugins: {
-        legend: { position: 'top', labels: { boxWidth: 12 } },
+        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 8 } },
         tooltip: {
           callbacks: {
-            label: ctx => ctx.datasetIndex === 1
-              ? ` $${ctx.raw.toFixed(1)} MM`
-              : ` ${ctx.raw} solicitud${ctx.raw !== 1 ? 'es' : ''}`
+            label: ctx => {
+              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+              const pct   = total ? ((ctx.raw / total) * 100).toFixed(1) : 0;
+              return ` ${ctx.raw} solicitud${ctx.raw !== 1 ? 'es' : ''} (${pct}%)`;
+            }
           }
         }
-      },
-      scales: {
-        yCant: {
-          type: 'linear', position: 'left',
-          beginAtZero: true, ticks: { stepSize: 1 },
-          grid: { color: 'rgba(0,0,0,0.05)' },
-          title: { display: true, text: 'Cantidad' }
-        },
-        yMonto: {
-          type: 'linear', position: 'right',
-          beginAtZero: true,
-          grid: { drawOnChartArea: false },
-          title: { display: true, text: 'Monto (MM$)' }
-        },
-        x: { grid: { display: false } }
       }
     }
   });
