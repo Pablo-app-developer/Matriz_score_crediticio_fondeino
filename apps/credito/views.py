@@ -55,25 +55,31 @@ def dashboard(request):
     hace_2_meses = hoy - timedelta(days=60)
     qs_2m = EvaluacionCredito.objects.filter(fecha_evaluacion__gte=hace_2_meses, anulado=False)
 
-    # 1. Tendencia mensual — últimos 12 meses (línea)
+    # 1. Tendencia mensual — últimos 12 meses (evaluaciones + histórico Excel)
     hace_12_meses = hoy - timedelta(days=365)
-    meses_raw = (
+    MESES_ES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
+
+    ev_raw = (
         EvaluacionCredito.objects.filter(fecha_evaluacion__gte=hace_12_meses, anulado=False)
         .annotate(mes=TruncMonth('fecha_evaluacion'))
         .values('mes').annotate(n=Count('id')).order_by('mes')
     )
-    MESES_ES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
-    meses_map = {item['mes'].date().replace(day=1): item['n'] for item in meses_raw}
-    tendencia_labels, tendencia_data = [], []
+    hist_raw = (
+        PrestamoHistorico.objects.filter(fecha__gte=hace_12_meses.date())
+        .annotate(mes=TruncMonth('fecha'))
+        .values('mes').annotate(n=Count('id')).order_by('mes')
+    )
+    ev_map   = {item['mes'].date().replace(day=1): item['n'] for item in ev_raw}
+    hist_map = {item['mes'].date().replace(day=1): item['n'] for item in hist_raw}
+
+    tendencia_labels, tendencia_ev, tendencia_hist = [], [], []
     cursor = hace_12_meses.date().replace(day=1)
     while cursor <= hoy.date().replace(day=1):
         tendencia_labels.append(f"{MESES_ES[cursor.month - 1]} {cursor.year}")
-        tendencia_data.append(meses_map.get(cursor, 0))
-        # avanzar un mes
-        if cursor.month == 12:
-            cursor = cursor.replace(year=cursor.year + 1, month=1)
-        else:
-            cursor = cursor.replace(month=cursor.month + 1)
+        tendencia_ev.append(ev_map.get(cursor, 0))
+        tendencia_hist.append(hist_map.get(cursor, 0))
+        cursor = cursor.replace(month=cursor.month + 1) if cursor.month < 12 \
+            else cursor.replace(year=cursor.year + 1, month=1)
 
     # 2. Por área — cantidad de solicitudes (doughnut, últimos 2 meses)
     tipos_raw = (
@@ -114,7 +120,8 @@ def dashboard(request):
         'mes_nombre': hoy.strftime('%B %Y'),
         # Gráficas
         'chart_tendencia_labels': json.dumps(tendencia_labels),
-        'chart_tendencia_data':   json.dumps(tendencia_data),
+        'chart_tendencia_ev':     json.dumps(tendencia_ev),
+        'chart_tendencia_hist':   json.dumps(tendencia_hist),
         'chart_tipos_labels':     json.dumps(tipos_labels),
         'chart_tipos_cantidad':   json.dumps(tipos_cantidad),
         'chart_decision_data':    json.dumps(decision_data),

@@ -242,7 +242,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
 const TENDENCIA_LABELS = {{ chart_tendencia_labels|safe }};
-const TENDENCIA_DATA   = {{ chart_tendencia_data|safe }};
+const TENDENCIA_EV     = {{ chart_tendencia_ev|safe }};
+const TENDENCIA_HIST   = {{ chart_tendencia_hist|safe }};
 const TIPOS_LABELS     = {{ chart_tipos_labels|safe }};
 const TIPOS_CANTIDAD   = {{ chart_tipos_cantidad|safe }};
 const DECISION_DATA    = {{ chart_decision_data|safe }};
@@ -262,33 +263,39 @@ const NARANJA = 'rgba(253,126,20,0.85)';
 const ROSA    = 'rgba(214,51,132,0.85)';
 const PALETA  = [AZUL, VERDE, AMARILLO, NARANJA, CELESTE, VIOLETA, ROJO, ROSA];
 
-// 1 ─ Tendencia mensual (barras + línea superpuesta)
+// 1 ─ Tendencia mensual (barras apiladas: evaluaciones + histórico Excel)
+const tendenciaTotal = TENDENCIA_EV.map((v, i) => v + TENDENCIA_HIST[i]);
 new Chart(document.getElementById('chartTendencia'), {
   type: 'bar',
   data: {
     labels: TENDENCIA_LABELS,
     datasets: [
       {
-        type: 'line',
-        label: 'Tendencia',
-        data: TENDENCIA_DATA,
-        borderColor: AZUL,
-        backgroundColor: 'transparent',
-        borderWidth: 2,
-        pointRadius: 3,
-        pointHoverRadius: 5,
-        tension: 0.35,
-        order: 1,
+        label: 'Evaluaciones',
+        data: TENDENCIA_EV,
+        backgroundColor: AZUL,
+        borderRadius: 0,
+        stack: 'total',
       },
       {
-        type: 'bar',
-        label: 'Solicitudes',
-        data: TENDENCIA_DATA,
-        backgroundColor: 'rgba(13,110,253,0.15)',
-        borderColor: 'rgba(13,110,253,0.4)',
-        borderWidth: 1,
+        label: 'Histórico Excel',
+        data: TENDENCIA_HIST,
+        backgroundColor: CELESTE,
         borderRadius: 4,
-        order: 2,
+        stack: 'total',
+      },
+      {
+        type: 'line',
+        label: 'Total',
+        data: tendenciaTotal,
+        borderColor: 'rgba(0,0,0,0.35)',
+        backgroundColor: 'transparent',
+        borderWidth: 1.5,
+        borderDash: [4, 3],
+        pointRadius: 2,
+        pointHoverRadius: 4,
+        tension: 0.35,
+        stack: null,
       }
     ]
   },
@@ -297,15 +304,16 @@ new Chart(document.getElementById('chartTendencia'), {
     maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
     plugins: {
-      legend: { display: false },
+      legend: { position: 'top', labels: { boxWidth: 12, padding: 12 } },
       tooltip: {
-        callbacks: { label: ctx => ctx.datasetIndex === 0 ? ` ${ctx.raw} solicitud${ctx.raw !== 1 ? 'es' : ''}` : null },
-        filter: item => item.datasetIndex === 0,
+        callbacks: {
+          footer: items => `Total: ${items.reduce((s, i) => s + (i.datasetIndex < 2 ? i.raw : 0), 0)}`
+        }
       }
     },
     scales: {
-      x: { grid: { display: false }, ticks: { maxRotation: 45 } },
-      y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } }
+      x: { grid: { display: false }, ticks: { maxRotation: 45 }, stacked: true },
+      y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' }, stacked: true }
     }
   }
 });
