@@ -17,12 +17,15 @@ class LoginForm(AuthenticationForm):
 class UsuarioCrearForm(UserCreationForm):
     class Meta:
         model = Usuario
-        fields = ['username', 'first_name', 'last_name', 'email', 'telefono', 'rol', 'password1', 'password2']
+        fields = ['username', 'first_name', 'last_name', 'email', 'telefono', 'rol', 'es_admin_polla', 'password1', 'password2']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
+        for name, field in self.fields.items():
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs['class'] = 'form-check-input'
+            else:
+                field.widget.attrs['class'] = 'form-control'
 
 
 class UsuarioEditarForm(UserChangeForm):
@@ -30,7 +33,7 @@ class UsuarioEditarForm(UserChangeForm):
 
     class Meta:
         model = Usuario
-        fields = ['username', 'first_name', 'last_name', 'email', 'telefono', 'rol', 'activo']
+        fields = ['username', 'first_name', 'last_name', 'email', 'telefono', 'rol', 'es_admin_polla', 'activo']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
