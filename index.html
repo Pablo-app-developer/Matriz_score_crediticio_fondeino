@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fondeino - Fondo de Empleados</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #343465;
+      --blue: #3e4095;
+      --cyan: #00afef;
+      --navy-dark: #27275a;
+      --white: #ffffff;
+      --gray-light: #f4f6fb;
+      --gray-mid: #e2e8f0;
+      --text-dark: #1a1a3e;
+      --text-body: #4a4a6a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-body);
+      background: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: var(--navy-dark);
+      padding: 8px 40px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 24px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .topbar a { color: rgba(255,255,255,0.75); text-decoration: none; transition: color .2s; }
+    .topbar a:hover { color: var(--cyan); }
+
+    .topbar-zona {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--cyan);
+      color: var(--white) !important;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 4px;
+      transition: background .2s, transform .15s;
+    }
+    .topbar-zona:hover { background: #0099d4 !important; transform: translateY(-1px); }
+    .topbar-zona svg { flex-shrink: 0; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      box-shadow: 0 2px 12px rgba(52,52,101,.10);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .nav-logo img { height: 48px; object-fit: contain; }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-dark);
+      transition: color .2s;
+      position: relative;
+      padding-bottom: 4px;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 2px;
+      background: var(--cyan);
+      transition: width .25s;
+    }
+
+    .nav-links a:hover { color: var(--blue); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s, transform .15s;
+    }
+    .nav-cta:hover { background: var(--navy); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 560px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 55%, #2a6eb5 100%);
+    }
+
+    .hero-bg-img {
+      position: absolute;
+      inset: 0;
+      background-image: url('IMAGENES/pexels-cottonbro-3943715.jpg');
+      background-size: cover;
+      background-position: center 30%;
+      opacity: .18;
+      pointer-events: none;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(52,52,101,.95) 40%, transparent 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 80px 40px 80px 80px;
+      max-width: 660px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,175,239,.18);
+      border: 1px solid rgba(0,175,239,.4);
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span { color: var(--cyan); }
+
+    .hero p {
+      font-size: 17px;
+      color: rgba(255,255,255,.82);
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 520px;
+    }
+
+    .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--cyan);
+      color: var(--white);
+      font-weight: 700;
+      font-size: 15px;
+      padding: 14px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      box-shadow: 0 4px 18px rgba(0,175,239,.35);
+    }
+    .btn-primary:hover { background: #0099d4; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,175,239,.45); }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 2px solid rgba(255,255,255,.5);
+      color: var(--white);
+      font-weight: 600;
+      font-size: 15px;
+      padding: 12px 26px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: border-color .2s, background .2s;
+    }
+    .btn-outline:hover { border-color: var(--cyan); background: rgba(0,175,239,.12); }
+
+    /* ── SERVICES ── */
+    .section { padding: 80px 40px; }
+    .section-header { text-align: center; margin-bottom: 56px; }
+    .section-tag {
+      display: inline-block;
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 800;
+      color: var(--text-dark);
+      line-height: 1.2;
+    }
+
+    .section-sub {
+      font-size: 16px;
+      color: var(--text-body);
+      margin-top: 12px;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 28px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .service-card {
+      background: var(--white);
+      border: 1px solid var(--gray-mid);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform .25s, box-shadow .25s;
+      box-shadow: 0 2px 8px rgba(52,52,101,.06);
+    }
+
+    .service-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(52,52,101,.14);
+    }
+
+    .card-img {
+      height: 180px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .4s;
+    }
+
+    .service-card:hover .card-img img { transform: scale(1.06); }
+
+    .card-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(52,52,101,.55) 100%);
+    }
+
+    .card-icon {
+      position: absolute;
+      bottom: 16px;
+      left: 20px;
+      width: 44px;
+      height: 44px;
+      background: var(--cyan);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+
+    .card-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .card-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-body);
+      flex: 1;
+      margin-bottom: 20px;
+    }
+
+    .card-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      border-top: 1px solid var(--gray-mid);
+      padding-top: 16px;
+      transition: color .2s, gap .2s;
+    }
+    .card-btn:hover { color: var(--cyan); gap: 10px; }
+
+    /* ── ZONA TRANSACCIONAL CTA BAND ── */
+    .zona-band {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+      padding: 60px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .zona-band-text h2 {
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+
+    .zona-band-text p {
+      font-size: 16px;
+      color: rgba(255,255,255,.78);
+      max-width: 500px;
+    }
+
+    .zona-band-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--cyan);
+      color: var(--white);
+      font-weight: 700;
+      font-size: 16px;
+      padding: 16px 36px;
+      border-radius: 8px;
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: 0 6px 24px rgba(0,175,239,.35);
+      transition: background .2s, transform .15s;
+      flex-shrink: 0;
+    }
+    .zona-band-btn:hover { background: #0099d4; transform: translateY(-2px); }
+
+    /* ── BENEFITS ── */
+    .benefits { background: var(--gray-light); }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .benefit-item {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 28px 24px;
+      text-align: center;
+      border: 1px solid var(--gray-mid);
+      transition: box-shadow .2s, transform .2s;
+    }
+    .benefit-item:hover { box-shadow: 0 8px 24px rgba(52,52,101,.1); transform: translateY(-3px); }
+
+    .benefit-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .benefit-title { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+    .benefit-text { font-size: 13px; color: var(--text-body); line-height: 1.6; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy-dark);
+      color: rgba(255,255,255,.7);
+      padding: 56px 80px 32px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 40px;
+    }
+
+    .footer-brand img { height: 44px; margin-bottom: 16px; }
+    .footer-brand p { font-size: 13px; line-height: 1.7; max-width: 300px; }
+
+    .footer-col h4 {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul a { color: rgba(255,255,255,.65); text-decoration: none; font-size: 13px; transition: color .2s; }
+    .footer-col ul a:hover { color: var(--cyan); }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+    }
+
+    /* ── FLOATING ZONA BTN ── */
+    .float-zona {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .float-zona a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--blue);
+      color: var(--white);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 14px 20px;
+      border-radius: 50px;
+      text-decoration: none;
+      box-shadow: 0 6px 24px rgba(62,64,149,.4);
+      transition: background .2s, transform .2s, box-shadow .2s;
+      white-space: nowrap;
+    }
+
+    .float-zona a:hover {
+      background: var(--navy);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(62,64,149,.5);
+    }
+
+    .float-pulse {
+      width: 10px;
+      height: 10px;
+      background: var(--cyan);
+      border-radius: 50%;
+      animation: pulse 1.8s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,175,239,.6); }
+      50% { box-shadow: 0 0 0 6px rgba(0,175,239,0); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .hero-content { padding: 60px 24px; }
+      .section { padding: 56px 24px; }
+      .footer-grid { grid-template-columns: 1fr; }
+      footer { padding: 48px 24px 28px; }
+      .zona-band { padding: 48px 24px; justify-content: center; text-align: center; }
+      .topbar { padding: 8px 20px; }
+      .stat-item { padding: 20px 24px; }
+      .float-zona { bottom: 20px; right: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <a href="#">Contáctenos</a>
+    <a href="#">Sede principal</a>
+    <a href="/login/" class="topbar-zona">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
+      </svg>
+      Accede a la Zona Transaccional
+    </a>
+  </div>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">
+      <img src="IMAGENES/Logotipo FondeINO 2026-10.png" alt="Fondeino" />
+    </a>
+    <ul class="nav-links">
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#beneficios">Beneficios</a></li>
+      <li><a href="#">Nosotros</a></li>
+      <li><a href="#">Normatividad</a></li>
+      <li><a href="#">Contacto</a></li>
+    </ul>
+    <a href="/login/" class="nav-cta">Zona Transaccional</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-img"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Fondo de Empleados Fondeino
+      </div>
+      <h1>Tu bienestar y el de tu familia,<br /><span>nuestra razón de ser.</span></h1>
+      <p>Somos el fondo de empleados que trabaja para que tú y tus seres queridos cuenten con ahorro, crédito y beneficios diseñados a tu medida.</p>
+      <div class="hero-btns">
+        <a href="#servicios" class="btn-primary">
+          Conoce nuestros servicios
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="/login/" class="btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Zona Transaccional
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="section" id="servicios">
+    <div class="section-header">
+      <div class="section-tag">Nuestros servicios</div>
+      <h2 class="section-title">Todo lo que necesitas,<br />en un solo lugar</h2>
+      <p class="section-sub">Diseñamos cada producto pensando en el bienestar real de nuestros asociados y sus familias.</p>
+    </div>
+
+    <div class="services-grid">
+
+      <!-- AHORRO -->
+      <div class="service-card">
+        <div class="card-img">
+          <img src="IMAGENES/imagen ahorro.jpg" alt="Ahorro" />
+          <div class="card-img-overlay"></div>
+          <div class="card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 1 0 20A10 10 0 0 1 12 2z"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-tag">Tu futuro seguro</div>
+          <h3 class="card-title">Tu ahorro, el primer paso hacia tus sueños.</h3>
+          <p class="card-text">En Fondeino, valoramos tu esfuerzo. Construye un respaldo sólido para ti y tu familia con nuestras modalidades de ahorro programado y permanente.</p>
+          <a href="#" class="card-btn">
+            Empieza a ahorrar hoy
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- LIBRE INVERSIÓN -->
+      <div class="service-card">
+        <div class="card-img">
+          <img src="IMAGENES/imagen viajes (1).jpg" alt="Préstamos" />
+          <div class="card-img-overlay"></div>
+          <div class="card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-tag">Flexibilidad</div>
+          <h3 class="card-title">El impulso que necesitas para lo que quieras.</h3>
+          <p class="card-text">¿Remodelar tu hogar, el viaje que siempre soñaste o simplemente organizar tus finanzas? Nuestros préstamos de libre inversión tienen tasas competitivas y plazos que se ajustan a tu bolsillo.</p>
+          <a href="#" class="card-btn">
+            Solicita tu crédito aquí
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- EDUCATIVO -->
+      <div class="service-card">
+        <div class="card-img">
+          <img src="IMAGENES/imagen estudios.jpg" alt="Crédito Educativo" />
+          <div class="card-img-overlay"></div>
+          <div class="card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-tag">Crecimiento</div>
+          <h3 class="card-title">Apostamos por tu conocimiento y el de los tuyos.</h3>
+          <p class="card-text">Que el costo de la matrícula no sea un obstáculo. Financia estudios técnicos, profesionales o de posgrado con beneficios exclusivos para asociados.</p>
+          <a href="#" class="card-btn">
+            Ver requisitos de estudio
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- LENTES -->
+      <div class="service-card">
+        <div class="card-img">
+          <img src="IMAGENES/imagen lentes.jpg" alt="Convenio Lentes" />
+          <div class="card-img-overlay"></div>
+          <div class="card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-tag">Salud Visual</div>
+          <h3 class="card-title">Claridad para tu vida y bienestar para tus ojos.</h3>
+          <p class="card-text">Gracias a nuestros convenios especiales, acceder a lentes y monturas de alta calidad es más fácil. Protege tu salud visual con descuentos directos por nómina.</p>
+          <a href="#" class="card-btn">
+            Conocer ópticas en convenio
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ZONA TRANSACCIONAL BAND -->
+  <div class="zona-band">
+    <div class="zona-band-text">
+      <h2>Gestiona tus productos desde donde estés.</h2>
+      <p>Consulta saldos, solicita créditos, realiza transacciones y mucho más en nuestra plataforma en línea. Segura, rápida y disponible las 24 horas.</p>
+    </div>
+    <a href="/login/" class="zona-band-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Ingresar a la Zona Transaccional
+    </a>
+  </div>
+
+  <!-- BENEFITS -->
+  <section class="section benefits" id="beneficios">
+    <div class="section-header">
+      <div class="section-tag">Por qué elegirnos</div>
+      <h2 class="section-title">Los beneficios de ser<br />parte de Fondeino</h2>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="benefit-title">Sin ánimo de lucro</div>
+        <div class="benefit-text">Todos los excedentes se reinvierten en beneficios para nuestros asociados.</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="benefit-title">Comunidad sólida</div>
+        <div class="benefit-text">Más de 500 asociados respaldándonos mutuamente cada día.</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="benefit-title">Tasas competitivas</div>
+        <div class="benefit-text">Créditos con intereses muy por debajo del mercado financiero.</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="benefit-title">Plataforma digital</div>
+        <div class="benefit-text">Gestiona tus productos en línea, seguro y disponible 24/7.</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div class="benefit-title">Bienestar familiar</div>
+        <div class="benefit-text">Convenios y beneficios que llegan a toda tu familia.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="IMAGENES/Logotipo FondeINO 2026-11.png" alt="Fondeino" />
+        <p>Somos el fondo de empleados comprometido con el bienestar y el progreso de nuestros asociados y sus familias. Unidos somos más.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Servicios</h4>
+        <ul>
+          <li><a href="#">Ahorro programado</a></li>
+          <li><a href="#">Libre inversión</a></li>
+          <li><a href="#">Crédito educativo</a></li>
+          <li><a href="#">Convenio lentes</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Institucional</h4>
+        <ul>
+          <li><a href="#">Quiénes somos</a></li>
+          <li><a href="#">Normatividad</a></li>
+          <li><a href="#">Estatutos</a></li>
+          <li><a href="#">Contáctenos</a></li>
+          <li><a href="/login/">Zona Transaccional</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Fondeino. Todos los derechos reservados.</span>
+      <span>Vigilado por la Superintendencia de la Economía Solidaria</span>
+    </div>
+  </footer>
+
+  <!-- POPUP WHATSAPP ──────────────────────────────────────────────────── -->
+  <div id="wa-backdrop" style="
+    display:none; position:fixed; inset:0; z-index:900;
+    background:rgba(0,0,0,.55); backdrop-filter:blur(3px);
+    cursor:pointer;
+  "></div>
+
+  <div id="wa-popup" style="
+    display:none; position:fixed; z-index:901;
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    width:min(420px,92vw); background:#fff; border-radius:18px;
+    box-shadow:0 24px 64px rgba(0,0,0,.28);
+    overflow:hidden; cursor:pointer;
+    font-family:'Segoe UI',system-ui,sans-serif;
+  ">
+    <!-- Cabecera verde WhatsApp -->
+    <div style="background:#25D366; padding:22px 24px 18px; position:relative;">
+      <button id="wa-close" title="Cerrar" style="
+        position:absolute; top:12px; right:14px;
+        background:rgba(255,255,255,.25); border:none; color:#fff;
+        width:28px; height:28px; border-radius:50%;
+        font-size:16px; line-height:1; cursor:pointer;
+        display:flex; align-items:center; justify-content:center;
+      " onclick="cerrarPopup(event)">&#x2715;</button>
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="background:#fff; border-radius:50%; width:52px; height:52px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg viewBox="0 0 32 32" width="32" height="32" fill="none">
+            <path fill="#25D366" d="M16 2C8.27 2 2 8.27 2 16c0 2.48.66 4.8 1.8 6.82L2 30l7.38-1.76A13.93 13.93 0 0 0 16 30c7.73 0 14-6.27 14-14S23.73 2 16 2z"/>
+            <path fill="#fff" d="M23.5 20.1c-.3-.15-1.77-.87-2.04-.97-.28-.1-.48-.15-.68.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.76-1.66-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.68-1.63-.93-2.23-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.87 1.22 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z"/>
+          </svg>
+        </div>
+        <div>
+          <div style="color:#fff; font-weight:700; font-size:16px;">Fondeino</div>
+          <div style="color:rgba(255,255,255,.85); font-size:13px;">&#x25CF; En línea</div>
+        </div>
+      </div>
+    </div>
+    <!-- Cuerpo -->
+    <div style="padding:22px 24px 26px;">
+      <p style="margin:0 0 6px; font-size:15px; font-weight:600; color:#111;">¡Hola! ¿En qué podemos ayudarte?</p>
+      <p style="margin:0 0 20px; font-size:14px; color:#555; line-height:1.5;">
+        Escríbenos por WhatsApp y un asesor te atenderá de inmediato. Consulta sobre créditos, ahorros o servicios para asociados.
+      </p>
+      <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px 16px; font-size:13px; color:#166534;">
+        <strong>Horario de atención:</strong> Lunes a viernes, 8:00 a.m. – 5:00 p.m.
+      </div>
+    </div>
+    <!-- Footer -->
+    <div style="background:#f9f9f9; border-top:1px solid #eee; padding:14px 24px; display:flex; align-items:center; gap:10px;">
+      <svg viewBox="0 0 32 32" width="20" height="20" fill="none" style="flex-shrink:0">
+        <path fill="#25D366" d="M16 2C8.27 2 2 8.27 2 16c0 2.48.66 4.8 1.8 6.82L2 30l7.38-1.76A13.93 13.93 0 0 0 16 30c7.73 0 14-6.27 14-14S23.73 2 16 2z"/>
+        <path fill="#fff" d="M23.5 20.1c-.3-.15-1.77-.87-2.04-.97-.28-.1-.48-.15-.68.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.76-1.66-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.68-1.63-.93-2.23-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.87 1.22 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z"/>
+      </svg>
+      <span style="font-size:13px; color:#25D366; font-weight:600;">Toca aquí para abrir WhatsApp</span>
+    </div>
+  </div>
+
+  <script>
+    const WA_URL = 'https://wa.me/573167522664';
+
+    function abrirPopup() {
+      document.getElementById('wa-backdrop').style.display = 'block';
+      document.getElementById('wa-popup').style.display    = 'block';
+    }
+    function cerrarPopup(e) {
+      e.stopPropagation();
+      document.getElementById('wa-backdrop').style.display = 'none';
+      document.getElementById('wa-popup').style.display    = 'none';
+    }
+
+    // Clic en el popup (o backdrop) → WhatsApp, salvo el botón X
+    document.getElementById('wa-popup').addEventListener('click', function(e) {
+      window.open(WA_URL, '_blank');
+    });
+    document.getElementById('wa-backdrop').addEventListener('click', function() {
+      window.open(WA_URL, '_blank');
+    });
+
+    // Mostrar tras 4 segundos, solo una vez por sesión
+    if (!sessionStorage.getItem('wa_popup_shown')) {
+      setTimeout(function() {
+        abrirPopup();
+        sessionStorage.setItem('wa_popup_shown', '1');
+      }, 4000);
+    }
+  </script>
+
+  <!-- FLOATING ZONA TRANSACCIONAL BUTTON -->
+  <div class="float-zona">
+    <a href="/login/">
+      <div class="float-pulse"></div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Zona Transaccional
+    </a>
+  </div>
+
+</body>
+</html>
