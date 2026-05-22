@@ -138,35 +138,52 @@
       </thead>
       <tbody>
         {% for fila in filas %}
-        <tr {% if fila.es_historico %}class="table-light"{% endif %}>
+        <tr {% if fila.anulado %}class="table-danger opacity-75" title="ANULADA — {{ fila.motivo_anulacion }}"
+            {% elif fila.es_historico %}class="table-light"{% endif %}>
           <td class="text-center small fw-bold">
-            {% if fila.pk %}<span class="text-primary">#{{ fila.pk }}</span>{% else %}<span class="text-muted">—</span>{% endif %}
+            {% if fila.pk %}
+              <span class="{% if fila.anulado %}text-danger text-decoration-line-through{% else %}text-primary{% endif %}">#{{ fila.pk }}</span>
+              {% if fila.anulado %}<span class="badge bg-danger ms-1" style="font-size:.6rem">ANULADA</span>{% endif %}
+            {% else %}<span class="text-muted">—</span>{% endif %}
           </td>
-          <td class="small text-nowrap">{{ fila.fecha|date:"d/m/Y" }}</td>
-          <td><code>{{ fila.cedula }}</code></td>
-          <td>{{ fila.nombre_completo }}</td>
-          <td class="small">{{ fila.modalidad }}</td>
-          <td class="small">{{ fila.proceso }}</td>
-          <td class="text-end">${{ fila.monto|cop }}</td>
+          <td class="small text-nowrap {% if fila.anulado %}text-decoration-line-through{% endif %}">{{ fila.fecha|date:"d/m/Y" }}</td>
+          <td class="{% if fila.anulado %}text-decoration-line-through{% endif %}"><code>{{ fila.cedula }}</code></td>
+          <td class="{% if fila.anulado %}text-decoration-line-through text-muted{% endif %}">
+            {{ fila.nombre_completo }}
+            {% if fila.anulado and fila.motivo_anulacion %}
+            <br><small class="text-danger"><i class="bi bi-slash-circle me-1"></i>{{ fila.motivo_anulacion|truncatechars:60 }}</small>
+            {% endif %}
+          </td>
+          <td class="small {% if fila.anulado %}text-muted{% endif %}">{{ fila.modalidad }}</td>
+          <td class="small {% if fila.anulado %}text-muted{% endif %}">{{ fila.proceso }}</td>
+          <td class="text-end {% if fila.anulado %}text-muted text-decoration-line-through{% endif %}">${{ fila.monto|cop }}</td>
           <td class="text-center fw-bold">
             {% if fila.score is not None %}{{ fila.score }}{% else %}<span class="text-muted">—</span>{% endif %}
           </td>
           <td class="text-center">
-            {% if fila.clasificacion %}
-            <span class="badge bg-{{ fila.clasificacion_color }}">{{ fila.clasificacion }}</span>
+            {% if fila.anulado %}
+              <span class="text-muted small">—</span>
+            {% elif fila.clasificacion %}
+              <span class="badge bg-{{ fila.clasificacion_color }}">{{ fila.clasificacion }}</span>
             {% else %}
-            <span class="text-muted small">—</span>
+              <span class="text-muted small">—</span>
             {% endif %}
           </td>
           <td class="text-center">
-            <span class="badge bg-{{ fila.decision_color }}">
-              {% if 'APROBAR' in fila.decision or fila.decision == 'APROBADO' %}APROBADO
-              {% elif 'NO APROBADO' in fila.decision %}NO APROBADO
-              {% else %}REVISAR{% endif %}
-            </span>
+            {% if fila.anulado %}
+              <span class="badge bg-secondary">ANULADA</span>
+            {% else %}
+              <span class="badge bg-{{ fila.decision_color }}">
+                {% if 'APROBAR' in fila.decision or fila.decision == 'APROBADO' %}APROBADO
+                {% elif 'NO APROBADO' in fila.decision %}NO APROBADO
+                {% else %}REVISAR{% endif %}
+              </span>
+            {% endif %}
           </td>
           <td class="text-center">
-            {% if fila.decision_comite %}
+            {% if fila.anulado %}
+              <span class="text-muted small">—</span>
+            {% elif fila.decision_comite %}
               <span class="badge bg-{{ fila.decision_comite_color }}">
                 {% if fila.decision_comite|slice:":8" == "Aprobado" %}APROBADO
                 {% elif fila.decision_comite|slice:":11" == "No aprobado" %}NO APROBADO
@@ -178,18 +195,23 @@
               <span class="text-muted small">—</span>
             {% endif %}
           </td>
-          <td class="small">{{ fila.usuario }}</td>
+          <td class="small {% if fila.anulado %}text-muted{% endif %}">
+            {{ fila.usuario }}
+            {% if fila.anulado and fila.anulado_por_nombre %}
+            <br><small class="text-danger">Anuló: {{ fila.anulado_por_nombre }}</small>
+            {% endif %}
+          </td>
           <td class="text-nowrap">
             {% if fila.pk %}
             <a href="{% url 'credito:detalle' fila.pk %}" class="btn btn-sm btn-outline-primary" title="Ver detalle">
               <i class="bi bi-eye"></i>
             </a>
-            {% if user.es_admin %}
+            {% if user.es_admin and not fila.anulado %}
             <a href="{% url 'credito:evaluacion_editar' fila.pk %}" class="btn btn-sm btn-outline-warning" title="Editar">
               <i class="bi bi-pencil"></i>
             </a>
-            <a href="{% url 'credito:evaluacion_eliminar' fila.pk %}" class="btn btn-sm btn-outline-danger" title="Eliminar">
-              <i class="bi bi-trash"></i>
+            <a href="{% url 'credito:evaluacion_eliminar' fila.pk %}" class="btn btn-sm btn-outline-danger" title="Anular">
+              <i class="bi bi-slash-circle"></i>
             </a>
             {% endif %}
             {% endif %}

@@ -1,16 +1,15 @@
 {% extends 'base.html' %}
 {% load credito_tags %}
-{% block title %}Eliminar Evaluación — FONDEINO{% endblock %}
+{% block title %}Anular Evaluación — FONDEINO{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center mt-4">
-  <div class="col-md-5">
+  <div class="col-md-6">
     <div class="card shadow border-danger">
       <div class="card-header bg-danger text-white">
-        <h5 class="mb-0"><i class="bi bi-trash me-2"></i>Confirmar Eliminación</h5>
+        <h5 class="mb-0"><i class="bi bi-slash-circle me-2"></i>Anular Evaluación #{{ ev.pk }}</h5>
       </div>
       <div class="card-body">
-        <p>¿Estás seguro de que deseas eliminar esta evaluación?</p>
         <div class="alert alert-light border mb-3">
           <strong>{{ ev.nombre_completo }}</strong><br>
           <span class="text-muted small">
@@ -20,13 +19,34 @@
           </span><br>
           <span class="badge bg-{{ ev.decision_color }} mt-1">{{ ev.decision }}</span>
         </div>
-        <p class="text-danger small"><i class="bi bi-exclamation-circle me-1"></i>Esta acción no se puede deshacer.</p>
-        <form method="post" class="d-flex gap-2">
+
+        <div class="alert alert-warning small">
+          <i class="bi bi-info-circle me-1"></i>
+          El registro <strong>no se borrará</strong> — quedará marcado como <em>Anulado</em>
+          con el consecutivo <strong>#{{ ev.pk }}</strong> visible para auditoría.
+        </div>
+
+        <form method="post">
           {% csrf_token %}
-          <button type="submit" class="btn btn-danger">
-            <i class="bi bi-trash me-1"></i>Sí, eliminar
-          </button>
-          <a href="{% url 'credito:historico' %}" class="btn btn-outline-secondary">Cancelar</a>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Motivo de anulación <span class="text-danger">*</span></label>
+            <textarea name="motivo_anulacion" class="form-control" rows="3"
+              placeholder="Ej: Solicitud duplicada, datos erróneos, desistimiento del asociado..." required></textarea>
+            <div class="form-text">Este motivo quedará registrado en la auditoría junto con su usuario y fecha.</div>
+          </div>
+          {% if messages %}
+            {% for msg in messages %}
+              {% if 'motivo' in msg.message %}
+              <div class="alert alert-danger small py-2">{{ msg }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-danger">
+              <i class="bi bi-slash-circle me-1"></i>Anular evaluación
+            </button>
+            <a href="{% url 'credito:historico' %}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
         </form>
       </div>
     </div>

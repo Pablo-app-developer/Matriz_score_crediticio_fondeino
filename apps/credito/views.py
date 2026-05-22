@@ -18,8 +18,8 @@ def dashboard(request):
     hoy = timezone.now()
     inicio_mes = hoy.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-    qs_mes = EvaluacionCredito.objects.filter(fecha_evaluacion__gte=inicio_mes)
-    qs_total = EvaluacionCredito.objects.all()
+    qs_mes = EvaluacionCredito.objects.filter(fecha_evaluacion__gte=inicio_mes, anulado=False)
+    qs_total = EvaluacionCredito.objects.filter(anulado=False)
 
     total_mes = qs_mes.count()
     aprobadas_mes = qs_mes.filter(decision__icontains='APROBAR').count()
@@ -332,7 +332,10 @@ def historico(request):
     fecha_hasta = request.GET.get('fecha_hasta', '')
 
     # ── Evaluaciones formales ──────────────────────────────────────────────
-    qs_ev = EvaluacionCredito.objects.select_related('evaluado_por', 'modalidad')
+    qs_ev = EvaluacionCredito.objects.select_related('evaluado_por', 'modalidad', 'anulado_por')
+    # Admin ve anuladas (para trazabilidad de consecutivos); otros usuarios no las ven
+    if not request.user.es_admin:
+        qs_ev = qs_ev.filter(anulado=False)
     if q:
         qs_ev = qs_ev.filter(Q(cedula__icontains=q) | Q(nombre_completo__icontains=q))
     if decision:
@@ -361,6 +364,10 @@ def historico(request):
             'usuario': ev.evaluado_por.get_full_name() or ev.evaluado_por.username,
             'pk': ev.pk,
             'es_historico': False,
+            'anulado': ev.anulado,
+            'motivo_anulacion': ev.motivo_anulacion,
+            'anulado_por_nombre': (ev.anulado_por.get_full_name() or ev.anulado_por.username) if ev.anulado_por else '',
+            'fecha_anulacion': ev.fecha_anulacion,
         })
 
     # ── Préstamos históricos importados (solo si no se filtra por RECHAZAR/REVISAR) ──
@@ -392,6 +399,10 @@ def historico(request):
                 'usuario': 'Administrador',
                 'pk': None,
                 'es_historico': True,
+                'anulado': False,
+                'motivo_anulacion': '',
+                'anulado_por_nombre': '',
+                'fecha_anulacion': None,
             })
 
     # Ordenar por fecha descendente y limitar
@@ -608,9 +619,16 @@ def evaluacion_eliminar(request, pk):
         return HttpResponseForbidden()
 
     if request.method == 'POST':
-        nombre = ev.nombre_completo
-        ev.delete()
-        messages.success(request, f'Evaluación de {nombre} eliminada.')
+        motivo = request.POST.get('motivo_anulacion', '').strip()
+        if not motivo:
+            messages.error(request, 'Debe indicar el motivo de anulación.')
+            return render(request, 'credito/evaluacion_confirmar_eliminar.html', {'ev': ev})
+        ev.anulado = True
+        ev.fecha_anulacion = timezone.now()
+        ev.anulado_por = request.user
+        ev.motivo_anulacion = motivo
+        ev.save(update_fields=['anulado', 'fecha_anulacion', 'anulado_por', 'motivo_anulacion'])
+        messages.success(request, f'Evaluación #{ev.pk} de {ev.nombre_completo} anulada. El consecutivo queda registrado.')
         return redirect('credito:historico')
 
     return render(request, 'credito/evaluacion_confirmar_eliminar.html', {'ev': ev})

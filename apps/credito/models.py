@@ -202,6 +202,15 @@ class EvaluacionCredito(models.Model):
         help_text="Permite editar la evaluación aunque el comité ya tomó una decisión."
     )
 
+    # Anulación (borrado lógico — preserva consecutivo para trazabilidad)
+    anulado = models.BooleanField(default=False)
+    fecha_anulacion = models.DateTimeField(null=True, blank=True)
+    anulado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True,
+        on_delete=models.SET_NULL, related_name='evaluaciones_anuladas'
+    )
+    motivo_anulacion = models.TextField(blank=True)
+
     class Meta:
         verbose_name = 'Evaluación de Crédito'
         verbose_name_plural = 'Evaluaciones de Crédito'
