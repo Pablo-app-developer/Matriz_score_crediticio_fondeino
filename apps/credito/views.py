@@ -52,10 +52,8 @@ def dashboard(request):
     recientes = qs_total.select_related('evaluado_por', 'modalidad').order_by('-fecha_evaluacion')[:8]
 
     # ── Datos para gráficas ───────────────────────────────────────────────────
-    hace_2_meses = hoy - timedelta(days=60)
-    qs_2m = EvaluacionCredito.objects.filter(fecha_evaluacion__gte=hace_2_meses, anulado=False)
 
-    # 1. Tendencia mensual — últimos 12 meses (evaluaciones + histórico Excel)
+    # 1. Tendencia mensual — últimos 12 meses (evaluaciones plataforma + histórico Excel)
     hace_12_meses = hoy - timedelta(days=365)
     MESES_ES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
@@ -70,7 +68,7 @@ def dashboard(request):
         .values('mes').annotate(n=Count('id')).order_by('mes')
     )
     ev_map   = {item['mes'].date().replace(day=1): item['n'] for item in ev_raw}
-    hist_map = {item['mes'].date().replace(day=1): item['n'] for item in hist_raw}
+    hist_map = {item['mes'].replace(day=1): item['n'] for item in hist_raw}
 
     tendencia_labels, tendencia_ev, tendencia_hist = [], [], []
     cursor = hace_12_meses.date().replace(day=1)
@@ -81,25 +79,25 @@ def dashboard(request):
         cursor = cursor.replace(month=cursor.month + 1) if cursor.month < 12 \
             else cursor.replace(year=cursor.year + 1, month=1)
 
-    # 2. Por área — cantidad de solicitudes (doughnut, últimos 2 meses)
+    # 2. Por área — todo el histórico de la plataforma
     tipos_raw = (
-        qs_2m.values('area')
+        qs_total.values('area')
         .annotate(n=Count('id'))
         .order_by('-n')
     )
     tipos_labels   = [t['area'] or 'Sin especificar' for t in tipos_raw]
     tipos_cantidad = [t['n'] for t in tipos_raw]
 
-    # 3. Distribución por decisión — últimos 2 meses (doughnut)
+    # 3. Distribución por decisión — todo el histórico de la plataforma
     decision_data = [
-        qs_2m.filter(decision__icontains='APROBAR').count(),
-        qs_2m.filter(decision__icontains='REVISAR').count(),
-        qs_2m.filter(decision__icontains='NO APROBADO').count(),
+        qs_total.filter(decision__icontains='APROBAR').count(),
+        qs_total.filter(decision__icontains='REVISAR').count(),
+        qs_total.filter(decision__icontains='NO APROBADO').count(),
     ]
 
-    # 4. Cantidad de créditos por modalidad — últimos 2 meses (barras horizontales)
+    # 4. Créditos por modalidad — todo el histórico de la plataforma
     score_modalidad_raw = (
-        qs_2m.values('modalidad__nombre')
+        qs_total.values('modalidad__nombre')
         .annotate(n=Count('id'))
         .order_by('-n')
     )
@@ -119,15 +117,15 @@ def dashboard(request):
         'recientes': recientes,
         'mes_nombre': hoy.strftime('%B %Y'),
         # Gráficas
-        'chart_tendencia_labels': json.dumps(tendencia_labels),
-        'chart_tendencia_ev':     json.dumps(tendencia_ev),
-        'chart_tendencia_hist':   json.dumps(tendencia_hist),
-        'chart_tipos_labels':     json.dumps(tipos_labels),
-        'chart_tipos_cantidad':   json.dumps(tipos_cantidad),
-        'chart_decision_data':    json.dumps(decision_data),
+        'chart_tendencia_labels':   json.dumps(tendencia_labels),
+        'chart_tendencia_ev':       json.dumps(tendencia_ev),
+        'chart_tendencia_hist':     json.dumps(tendencia_hist),
+        'chart_tipos_labels':       json.dumps(tipos_labels),
+        'chart_tipos_cantidad':     json.dumps(tipos_cantidad),
+        'chart_decision_data':      json.dumps(decision_data),
         'chart_score_modal_labels': json.dumps(score_modal_labels),
         'chart_score_modal_data':   json.dumps(score_modal_data),
-        'total_2meses': qs_2m.count(),
+        'total_plataforma':         qs_total.count(),
     })
 
 
