@@ -150,7 +150,7 @@
   <div class="col-md-8">
     <div class="card shadow-sm border-0 h-100">
       <div class="card-header border-0 bg-transparent pt-3 pb-0">
-        <h6 class="fw-bold mb-0"><i class="bi bi-bar-chart-horizontal me-2 text-primary"></i>Score promedio por modalidad <small class="text-muted fw-normal">(2 meses)</small></h6>
+        <h6 class="fw-bold mb-0"><i class="bi bi-bar-chart-horizontal me-2 text-primary"></i>Créditos por modalidad <small class="text-muted fw-normal">(2 meses)</small></h6>
       </div>
       <div class="card-body" style="height:260px">
         <canvas id="chartScore"></canvas>
@@ -375,11 +375,9 @@ if (SCORE_LABELS.length > 0) {
     data: {
       labels: SCORE_LABELS,
       datasets: [{
-        label: 'Score promedio',
+        label: 'Solicitudes',
         data: SCORE_DATA,
-        backgroundColor: SCORE_DATA.map(v =>
-          v >= 80 ? VERDE : v >= 60 ? AZUL : v >= 40 ? AMARILLO : ROJO
-        ),
+        backgroundColor: PALETA.slice(0, SCORE_DATA.length),
         borderRadius: 4,
       }]
     },
@@ -389,13 +387,13 @@ if (SCORE_LABELS.length > 0) {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ` ${ctx.raw} pts` } }
+        tooltip: { callbacks: { label: ctx => ` ${ctx.raw} solicitud${ctx.raw !== 1 ? 'es' : ''}` } }
       },
       scales: {
         x: {
-          beginAtZero: true, max: 100,
-          grid: { color: 'rgba(0,0,0,0.05)' },
-          ticks: { callback: v => v + ' pts' }
+          beginAtZero: true,
+          ticks: { stepSize: 1 },
+          grid: { color: 'rgba(0,0,0,0.05)' }
         },
         y: { grid: { display: false } }
       }

@@ -91,14 +91,14 @@ def dashboard(request):
         qs_2m.filter(decision__icontains='NO APROBADO').count(),
     ]
 
-    # 4. Score promedio por modalidad — últimos 2 meses (barras horizontales)
+    # 4. Cantidad de créditos por modalidad — últimos 2 meses (barras horizontales)
     score_modalidad_raw = (
         qs_2m.values('modalidad__nombre')
-        .annotate(avg=Avg('score_total'), n=Count('id'))
-        .order_by('-avg')
+        .annotate(n=Count('id'))
+        .order_by('-n')
     )
     score_modal_labels = [s['modalidad__nombre'] for s in score_modalidad_raw]
-    score_modal_data   = [round(float(s['avg'] or 0), 1) for s in score_modalidad_raw]
+    score_modal_data   = [s['n'] for s in score_modalidad_raw]
 
     return render(request, 'credito/dashboard.html', {
         'total_mes': total_mes,
