@@ -75,13 +75,13 @@ def dashboard(request):
         else:
             cursor = cursor.replace(month=cursor.month + 1)
 
-    # 2. Por tipo de crédito — solo cantidad (doughnut, últimos 2 meses)
+    # 2. Por área — cantidad de solicitudes (doughnut, últimos 2 meses)
     tipos_raw = (
-        qs_2m.values('tipo_credito')
+        qs_2m.values('area')
         .annotate(n=Count('id'))
         .order_by('-n')
     )
-    tipos_labels   = [t['tipo_credito'] or 'Sin especificar' for t in tipos_raw]
+    tipos_labels   = [t['area'] or 'Sin especificar' for t in tipos_raw]
     tipos_cantidad = [t['n'] for t in tipos_raw]
 
     # 3. Distribución por decisión — últimos 2 meses (doughnut)
