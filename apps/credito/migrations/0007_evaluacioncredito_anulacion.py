@@ -6,7 +6,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('credito', '0004_evaluacioncredito_comite_tracking'),
+        ('credito', '0006_evaluacioncredito_tipo_credito'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
