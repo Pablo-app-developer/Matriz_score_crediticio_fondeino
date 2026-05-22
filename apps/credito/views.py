@@ -1,10 +1,11 @@
 import json
-from datetime import date
+from datetime import date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponseForbidden
 from django.db.models import Q, Count, Sum, Avg
+from django.db.models.functions import TruncDate
 from django.utils import timezone
 
 from .models import EvaluacionCredito, Configuracion, Modalidad, PrestamoHistorico
@@ -50,6 +51,51 @@ def dashboard(request):
     # Últimas 8 evaluaciones
     recientes = qs_total.select_related('evaluado_por', 'modalidad').order_by('-fecha_evaluacion')[:8]
 
+    # ── Datos para gráficas (últimos 2 meses) ────────────────────────────────
+    hace_2_meses = hoy - timedelta(days=60)
+    qs_2m = EvaluacionCredito.objects.filter(
+        fecha_evaluacion__gte=hace_2_meses, anulado=False
+    )
+
+    # 1. Tendencia diaria de solicitudes (línea)
+    tendencia_raw = (
+        qs_2m.annotate(dia=TruncDate('fecha_evaluacion'))
+        .values('dia').annotate(n=Count('id')).order_by('dia')
+    )
+    # Rellena días sin datos con 0
+    dias_map = {item['dia']: item['n'] for item in tendencia_raw}
+    tendencia_labels, tendencia_data = [], []
+    for i in range(60):
+        d = (hace_2_meses + timedelta(days=i+1)).date()
+        tendencia_labels.append(d.strftime('%d/%m'))
+        tendencia_data.append(dias_map.get(d, 0))
+
+    # 2. Por tipo de crédito — cantidad y monto (últimos 2 meses)
+    tipos_raw = (
+        qs_2m.values('tipo_credito')
+        .annotate(n=Count('id'), monto=Sum('monto_solicitado'))
+        .order_by('-n')
+    )
+    tipos_labels = [t['tipo_credito'] or 'Sin especificar' for t in tipos_raw]
+    tipos_cantidad = [t['n'] for t in tipos_raw]
+    tipos_monto = [float(t['monto'] or 0) / 1_000_000 for t in tipos_raw]  # en millones
+
+    # 3. Distribución por decisión — últimos 2 meses (doughnut)
+    decision_data = [
+        qs_2m.filter(decision__icontains='APROBAR').count(),
+        qs_2m.filter(decision__icontains='REVISAR').count(),
+        qs_2m.filter(decision__icontains='NO APROBADO').count(),
+    ]
+
+    # 4. Score promedio por modalidad — últimos 2 meses (barras horizontales)
+    score_modalidad_raw = (
+        qs_2m.values('modalidad__nombre')
+        .annotate(avg=Avg('score_total'), n=Count('id'))
+        .order_by('-avg')
+    )
+    score_modal_labels = [s['modalidad__nombre'] for s in score_modalidad_raw]
+    score_modal_data = [round(float(s['avg'] or 0), 1) for s in score_modalidad_raw]
+
     return render(request, 'credito/dashboard.html', {
         'total_mes': total_mes,
         'aprobadas_mes': aprobadas_mes,
@@ -62,6 +108,16 @@ def dashboard(request):
         'por_clasificacion': list(por_clasificacion),
         'recientes': recientes,
         'mes_nombre': hoy.strftime('%B %Y'),
+        # Gráficas
+        'chart_tendencia_labels': json.dumps(tendencia_labels),
+        'chart_tendencia_data': json.dumps(tendencia_data),
+        'chart_tipos_labels': json.dumps(tipos_labels),
+        'chart_tipos_cantidad': json.dumps(tipos_cantidad),
+        'chart_tipos_monto': json.dumps(tipos_monto),
+        'chart_decision_data': json.dumps(decision_data),
+        'chart_score_modal_labels': json.dumps(score_modal_labels),
+        'chart_score_modal_data': json.dumps(score_modal_data),
+        'total_2meses': qs_2m.count(),
     })
 
 
