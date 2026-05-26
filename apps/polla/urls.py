@@ -13,6 +13,7 @@ urlpatterns = [
 
     # Afiliado (requiere login + afiliado activo)
     path('autorizar/', views.autorizar_descuento, name='autorizar_descuento'),
+    path('logout/', views.logout_polla, name='logout_polla'),
     path('activar/', views.activar_cuenta, name='activar_cuenta'),
     path('pronosticos/', views.pronosticos, name='pronosticos'),
     path('pronosticos/guardar/', views.guardar_pronostico, name='guardar_pronostico'),
