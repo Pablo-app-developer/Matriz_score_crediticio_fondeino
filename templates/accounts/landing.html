@@ -701,102 +701,61 @@
       .polla-inner { flex-direction: column; align-items: flex-start; gap: 36px; }
       .polla-countdown { width: 100%; min-width: unset; }
       .polla-stats { max-width: 100%; }
-      .nosotros-grid { grid-template-columns: 1fr; }
       .nosotros-hitos { grid-template-columns: 1fr 1fr; }
     }
   </style>
 
   <style>
     /* ── NOSOTROS ── */
-    .nosotros-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
-      max-width: 1100px;
-      margin: 0 auto;
-      align-items: center;
+    .nosotros-section {
+      background: var(--gray-light);
     }
-    .nosotros-label {
-      display: inline-block;
-      background: var(--cyan);
-      color: var(--white);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      padding: 4px 14px;
-      border-radius: 100px;
-      margin-bottom: 18px;
+    .nosotros-body-wrap {
+      max-width: 760px;
+      margin: 0 auto 48px;
+      text-align: center;
     }
-    .nosotros-title {
-      font-size: clamp(24px, 2.8vw, 36px);
-      font-weight: 800;
-      color: var(--text-dark);
-      line-height: 1.2;
-      margin-bottom: 20px;
-    }
-    .nosotros-body {
+    .nosotros-body-wrap p {
       font-size: 16px;
-      line-height: 1.75;
+      line-height: 1.8;
       color: var(--text-body);
-      margin-bottom: 32px;
+      margin-bottom: 16px;
     }
     .nosotros-hitos {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-top: 8px;
+      gap: 24px;
+      max-width: 860px;
+      margin: 0 auto;
     }
     .hito {
-      background: var(--gray-light);
-      border-radius: 14px;
-      padding: 22px 18px;
+      background: var(--white);
+      border-radius: 16px;
+      padding: 32px 20px 28px;
       text-align: center;
+      box-shadow: 0 4px 24px rgba(52,52,101,.08);
+      border-top: 4px solid var(--cyan);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
     .hito-num {
-      font-size: 28px;
-      font-weight: 800;
+      display: block;
+      font-size: 32px;
+      font-weight: 900;
       color: var(--navy);
       line-height: 1;
     }
     .hito-label {
+      display: block;
       font-size: 13px;
+      font-weight: 600;
       color: var(--text-body);
-      margin-top: 6px;
-      line-height: 1.3;
-    }
-    .nosotros-visual {
-      position: relative;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 24px 60px rgba(52,52,101,.18);
-      aspect-ratio: 4/3;
-      background: linear-gradient(135deg, var(--navy) 0%, var(--cyan) 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .nosotros-visual-inner {
-      text-align: center;
-      color: white;
-      padding: 40px;
-    }
-    .nosotros-visual-icon {
-      font-size: 72px;
-      line-height: 1;
-      margin-bottom: 16px;
-      opacity: .9;
-    }
-    .nosotros-visual-text {
-      font-size: 18px;
-      font-weight: 700;
       line-height: 1.4;
-      opacity: .92;
     }
-    .nosotros-visual-sub {
-      font-size: 13px;
-      opacity: .7;
-      margin-top: 8px;
+    @media (max-width: 640px) {
+      .nosotros-hitos { grid-template-columns: 1fr; max-width: 340px; }
     }
   </style>
 </head>
@@ -1082,43 +1041,39 @@
     <div class="section-header">
       <div class="section-tag">Quiénes somos</div>
       <h2 class="section-title">El fondo de empleados que<br />trabaja para ti</h2>
-      <p class="section-sub">Creado por los empleados del Instituto Neumológico del Oriente, para los empleados del Instituto Neumológico del Oriente.</p>
     </div>
 
-    <div class="nosotros-grid">
-      <div class="nosotros-texto">
-        <p>
-          <strong>FONDEINO</strong> es el fondo de empleados del
-          <strong>Instituto Neumológico del Oriente (INO)</strong>, la institución de salud especializada
-          en enfermedades respiratorias más importante del nororiente colombiano.
-        </p>
-        <p>
-          Nacimos en <strong>2025</strong> con una misión clara: construir un espacio de solidaridad
-          económica donde cada asociado pueda acceder a créditos, ahorro y bienestar en condiciones
-          justas, sin intermediarios externos y sin ánimo de lucro.
-        </p>
-        <p>
-          Como fondo de empleados, somos de nuestros asociados y para nuestros asociados.
-          Cada peso aportado se reinvierte en mejores beneficios, tasas preferenciales y programas
-          de bienestar para los trabajadores y sus familias.
-        </p>
+    <div class="nosotros-body-wrap">
+      <p>
+        <strong>FONDEINO</strong> es el fondo de empleados del
+        <strong>Instituto Neumológico del Oriente (INO)</strong>, la institución de salud especializada
+        en enfermedades respiratorias más importante del nororiente colombiano.
+      </p>
+      <p>
+        Nacimos en <strong>2025</strong> con una misión clara: construir un espacio de solidaridad
+        económica donde cada asociado pueda acceder a créditos, ahorro y bienestar en condiciones
+        justas, sin intermediarios externos y sin ánimo de lucro.
+      </p>
+      <p>
+        Somos de nuestros asociados y para nuestros asociados.
+        Cada peso aportado se reinvierte en mejores beneficios, tasas preferenciales y programas
+        de bienestar para los trabajadores y sus familias.
+      </p>
+    </div>
 
-        <div class="nosotros-hitos">
-          <div class="hito">
-            <span class="hito-num">2025</span>
-            <span class="hito-label">Año de fundación</span>
-          </div>
-          <div class="hito">
-            <span class="hito-num">INO</span>
-            <span class="hito-label">Instituto Neumológico del Oriente</span>
-          </div>
-          <div class="hito">
-            <span class="hito-num">BGA</span>
-            <span class="hito-label">Bucaramanga, Colombia</span>
-          </div>
-        </div>
+    <div class="nosotros-hitos">
+      <div class="hito">
+        <span class="hito-num">2025</span>
+        <span class="hito-label">Año de fundación</span>
       </div>
-
+      <div class="hito">
+        <span class="hito-num">INO</span>
+        <span class="hito-label">Instituto Neumológico del Oriente</span>
+      </div>
+      <div class="hito">
+        <span class="hito-num">BGA</span>
+        <span class="hito-label">Bucaramanga, Colombia</span>
+      </div>
     </div>
   </section>
 
