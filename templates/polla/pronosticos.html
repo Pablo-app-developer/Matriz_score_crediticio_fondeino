@@ -69,16 +69,6 @@ body { background: #0d1b2a !important; }
   </div>
 
   <div class="d-flex align-items-center gap-2 flex-wrap">
-    {% if inscripciones|length > 1 %}
-    <div class="pn-switch">
-      {% for insc in inscripciones %}
-      <a href="?polla={{ insc.numero_polla }}"
-         class="pn-switch-a {% if insc.numero_polla == polla_sel %}on{% endif %}">
-        Polla {{ insc.label }}
-      </a>
-      {% endfor %}
-    </div>
-    {% endif %}
     {% if pendientes > 0 %}
     <div class="pn-counter"><b>{{ pendientes }}</b> pendiente{% if pendientes != 1 %}s{% endif %}</div>
     {% endif %}

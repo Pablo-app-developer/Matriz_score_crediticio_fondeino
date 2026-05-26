@@ -132,8 +132,6 @@ def registro_polla(request):
         afiliado.user = user
         afiliado.save()
         InscripcionPolla.objects.get_or_create(afiliado=afiliado, numero_polla=1)
-        if afiliado.cantidad_pollas == 2:
-            InscripcionPolla.objects.get_or_create(afiliado=afiliado, numero_polla=2)
 
         auth_login(request, user)
         messages.success(request, f'¡Bienvenido, {afiliado.nombre_completo}! Tu cuenta esta lista.')
@@ -206,23 +204,7 @@ def _procesar_excel_afiliados(df):
             if area:
                 afiliado.area = area
 
-            # Lógica de pollas
-            if cantidad_pollas == 2 and afiliado.cantidad_pollas == 1:
-                afiliado.cantidad_pollas = 2
-                afiliado.motivo_doble_polla = motivo_doble
-                afiliado.save()
-                InscripcionPolla.objects.get_or_create(
-                    afiliado=afiliado, numero_polla=2
-                )
-                nuevas_pollas.append(f'{nombre} ({cedula}) — motivo: {motivo_doble}')
-            elif cantidad_pollas == 1 and afiliado.cantidad_pollas == 2:
-                warnings.append(
-                    f'{nombre} ({cedula}): el Excel dice 1 polla pero ya tiene 2. '
-                    'No se redujo. Cámbialo manualmente si es necesario.'
-                )
-                afiliado.save()
-            else:
-                afiliado.save()
+            afiliado.save()
 
             actualizados.append(f'{nombre} ({cedula})')
 
@@ -233,12 +215,8 @@ def _procesar_excel_afiliados(df):
                 correo=correo,
                 telefono=telefono,
                 area=area,
-                cantidad_pollas=cantidad_pollas,
-                motivo_doble_polla=motivo_doble if cantidad_pollas == 2 else None,
             )
             InscripcionPolla.objects.create(afiliado=afiliado, numero_polla=1)
-            if cantidad_pollas == 2:
-                InscripcionPolla.objects.create(afiliado=afiliado, numero_polla=2)
             creados.append(f'{nombre} ({cedula})')
 
         except Exception as e:
@@ -467,10 +445,7 @@ def activar_cuenta(request):
                 afiliado.user = request.user
                 afiliado.acepto_reglamento = True
                 afiliado.save()
-                # Crear inscripciones si no existen (por si acaso)
                 InscripcionPolla.objects.get_or_create(afiliado=afiliado, numero_polla=1)
-                if afiliado.cantidad_pollas == 2:
-                    InscripcionPolla.objects.get_or_create(afiliado=afiliado, numero_polla=2)
                 messages.success(
                     request,
                     f'¡Bienvenido, {afiliado.nombre_completo}! Tu cuenta de la Polla Mundialista está activa.'
@@ -496,8 +471,8 @@ def pronosticos(request):
     config = ConfiguracionPolla.get()
     inscripciones = afiliado.inscripciones.filter(activa=True).order_by('numero_polla')
 
-    polla_sel = _int_param(request.GET, 'polla', 1)
-    inscripcion_activa = next((i for i in inscripciones if i.numero_polla == polla_sel), inscripciones.first())
+    polla_sel = 1
+    inscripcion_activa = inscripciones.first()
 
     ORDEN_FASES = ['GRUPOS', 'TREINTA_DOS', 'OCTAVOS', 'CUARTOS', 'SEMIS', 'TERCERO', 'FINAL']
     FASE_LABEL = dict(FASE_CHOICES)
@@ -664,9 +639,7 @@ def guardar_pronostico(request):
 def campeon(request):
     afiliado = request.user.afiliado
     config = ConfiguracionPolla.get()
-    inscripciones = afiliado.inscripciones.filter(activa=True).order_by('numero_polla')
-    polla_sel = _int_param(request.GET, 'polla', 1)
-    inscripcion = get_object_or_404(InscripcionPolla, afiliado=afiliado, numero_polla=polla_sel)
+    inscripcion = afiliado.inscripciones.filter(activa=True).order_by('numero_polla').first()
 
     try:
         pronostico_campeon = inscripcion.pronostico_campeon
@@ -691,9 +664,7 @@ def campeon(request):
 
     return render(request, 'polla/campeon.html', {
         'afiliado': afiliado,
-        'inscripciones': inscripciones,
         'inscripcion': inscripcion,
-        'polla_sel': polla_sel,
         'form': form,
         'pronostico_campeon': pronostico_campeon,
         'cerrado': cerrado,
@@ -704,9 +675,7 @@ def campeon(request):
 @afiliado_activo
 def mis_pronosticos(request):
     afiliado = request.user.afiliado
-    inscripciones = afiliado.inscripciones.filter(activa=True).order_by('numero_polla')
-    polla_sel = _int_param(request.GET, 'polla', 1)
-    inscripcion = get_object_or_404(InscripcionPolla, afiliado=afiliado, numero_polla=polla_sel)
+    inscripcion = afiliado.inscripciones.filter(activa=True).order_by('numero_polla').first()
 
     pronosticos_qs = inscripcion.pronosticos.select_related(
         'partido__equipo_local', 'partido__equipo_visitante'
@@ -714,9 +683,7 @@ def mis_pronosticos(request):
 
     return render(request, 'polla/mis_pronosticos.html', {
         'afiliado': afiliado,
-        'inscripciones': inscripciones,
         'inscripcion': inscripcion,
-        'polla_sel': polla_sel,
         'pronosticos': pronosticos_qs,
     })
 
@@ -724,12 +691,8 @@ def mis_pronosticos(request):
 @login_required
 def perfil_afiliado(request, afiliado_id):
     afiliado = get_object_or_404(Afiliado, pk=afiliado_id, activo=True)
-    inscripciones = afiliado.inscripciones.filter(activa=True).order_by('numero_polla')
-    polla_sel = _int_param(request.GET, 'polla', 1)
-    inscripcion = get_object_or_404(InscripcionPolla, afiliado=afiliado, numero_polla=polla_sel)
+    inscripcion = afiliado.inscripciones.filter(activa=True).order_by('numero_polla').first()
 
-    # Mostrar pronósticos de partidos ya finalizados (el admin cargó el resultado)
-    # O partidos cuya hora ya pasó aunque no estén marcados como finalizados
     pronosticos_qs = inscripcion.pronosticos.select_related(
         'partido__equipo_local', 'partido__equipo_visitante'
     ).filter(
@@ -738,9 +701,7 @@ def perfil_afiliado(request, afiliado_id):
 
     return render(request, 'polla/perfil_afiliado.html', {
         'afiliado': afiliado,
-        'inscripciones': inscripciones,
         'inscripcion': inscripcion,
-        'polla_sel': polla_sel,
         'pronosticos': pronosticos_qs,
     })
 
@@ -779,8 +740,6 @@ def admin_afiliado_nuevo(request):
     if request.method == 'POST' and form.is_valid():
         afiliado = form.save()
         InscripcionPolla.objects.get_or_create(afiliado=afiliado, numero_polla=1)
-        if afiliado.cantidad_pollas == 2:
-            InscripcionPolla.objects.get_or_create(afiliado=afiliado, numero_polla=2)
         messages.success(request, f'Afiliado {afiliado.nombre_completo} creado correctamente.')
         return redirect('polla:admin_afiliados')
     return render(request, 'polla/admin/afiliado_form.html', {
@@ -793,35 +752,11 @@ def admin_afiliado_nuevo(request):
 @admin_polla_required
 def admin_afiliado_editar(request, afiliado_id):
     afiliado = get_object_or_404(Afiliado, pk=afiliado_id)
-    cantidad_pollas_anterior = afiliado.cantidad_pollas
     form = AfiliadoManualForm(request.POST or None, instance=afiliado)
 
     if request.method == 'POST' and form.is_valid():
-        afiliado_guardado = form.save()
-        nueva_cantidad = afiliado_guardado.cantidad_pollas
-
-        if nueva_cantidad == 2 and cantidad_pollas_anterior == 1:
-            InscripcionPolla.objects.get_or_create(afiliado=afiliado_guardado, numero_polla=2)
-            messages.success(request, 'Afiliado actualizado. Se creó la Polla B.')
-        elif nueva_cantidad == 1 and cantidad_pollas_anterior == 2:
-            tiene_pronosticos_b = Pronostico.objects.filter(
-                inscripcion__afiliado=afiliado_guardado, inscripcion__numero_polla=2
-            ).exists()
-            if tiene_pronosticos_b:
-                messages.warning(
-                    request,
-                    'No se puede reducir a 1 polla porque ya hay pronósticos en la Polla B. '
-                    'Desactiva la inscripción manualmente si es necesario.'
-                )
-                afiliado_guardado.cantidad_pollas = 2
-                afiliado_guardado.save(update_fields=['cantidad_pollas'])
-            else:
-                InscripcionPolla.objects.filter(
-                    afiliado=afiliado_guardado, numero_polla=2
-                ).delete()
-                messages.success(request, 'Afiliado actualizado. Se eliminó la Polla B (sin pronósticos).')
-        else:
-            messages.success(request, 'Afiliado actualizado correctamente.')
+        form.save()
+        messages.success(request, 'Afiliado actualizado correctamente.')
         return redirect('polla:admin_afiliados')
 
     return render(request, 'polla/admin/afiliado_form.html', {

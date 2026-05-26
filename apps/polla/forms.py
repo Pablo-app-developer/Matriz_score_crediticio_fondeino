@@ -118,21 +118,16 @@ class CargarAfiliadosForm(forms.Form):
 class AfiliadoManualForm(forms.ModelForm):
     class Meta:
         model = Afiliado
-        fields = ['cedula', 'nombre_completo', 'correo', 'telefono', 'area',
-                  'cantidad_pollas', 'motivo_doble_polla', 'activo']
+        fields = ['cedula', 'nombre_completo', 'correo', 'telefono', 'area', 'activo']
         widgets = {
             'cedula': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 1098765432'}),
             'nombre_completo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Juan Pérez López'}),
             'correo': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'correo@empresa.com'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '3167522664'}),
             'area': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Contabilidad'}),
-            'cantidad_pollas': forms.Select(attrs={'class': 'form-select'}),
-            'motivo_doble_polla': forms.Select(attrs={'class': 'form-select'}),
             'activo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
         help_texts = {
-            'cantidad_pollas': 'Nuevos asociados o quienes aumentaron aportes reciben 2 pollas.',
-            'motivo_doble_polla': 'Solo obligatorio si cantidad de pollas es 2.',
             'cedula': 'Identificador único del afiliado. No se puede cambiar después.',
         }
 

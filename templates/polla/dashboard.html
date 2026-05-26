@@ -9,42 +9,27 @@
     <i class="bi bi-globe2 me-1"></i>Copa Mundial FIFA 2026 · FONDEINO
   </p>
   <h1 class="pk-hero-title">¡Hola, {{ afiliado.nombre_completo|truncatechars:28 }}!</h1>
-  <p class="pk-hero-meta">
-    {% if afiliado.area %}{{ afiliado.area }} · {% endif %}
-    {% if afiliado.cantidad_pollas == 2 %}
-      <span class="badge badge-doble"><i class="bi bi-stars me-1"></i>Doble Polla</span>
-    {% else %}
-      <span class="badge bg-secondary">Polla única</span>
-    {% endif %}
-  </p>
+  {% if afiliado.area %}<p class="pk-hero-meta">{{ afiliado.area }}</p>{% endif %}
 
+  {% with insc=inscripciones.0 %}
   <div class="d-flex flex-wrap gap-2 mt-2">
-    {% for insc in inscripciones %}
-      {% if inscripciones|length > 1 %}
-      <div class="pk-chip" style="min-width:55px;">
-        <div class="pk-chip-label">Polla {{ insc.label }}</div>
+    <div class="pk-chip">
+      <div class="pk-chip-value">{{ insc.puntos_totales }}</div>
+      <div class="pk-chip-label">Puntos</div>
+      <div class="pk-chip-sub">
+        {% for k,v in posiciones.items %}{% if k == insc.pk %}Pos. #{{ v }}{% endif %}{% endfor %}
       </div>
-      {% endif %}
-      <div class="pk-chip">
-        <div class="pk-chip-value">{{ insc.puntos_totales }}</div>
-        <div class="pk-chip-label">Puntos</div>
-        <div class="pk-chip-sub">
-          {% for k,v in posiciones.items %}{% if k == insc.pk %}Pos. #{{ v }}{% endif %}{% endfor %}
-        </div>
-      </div>
-      <div class="pk-chip">
-        <div class="pk-chip-value">{{ insc.aciertos_resultado }}</div>
-        <div class="pk-chip-label">Resultados</div>
-      </div>
-      <div class="pk-chip">
-        <div class="pk-chip-value">{{ insc.aciertos_marcador }}</div>
-        <div class="pk-chip-label">Exactos</div>
-      </div>
-      {% if not forloop.last %}
-        <div style="width:1px;background:rgba(255,255,255,.15);margin:0 .2rem;"></div>
-      {% endif %}
-    {% endfor %}
+    </div>
+    <div class="pk-chip">
+      <div class="pk-chip-value">{{ insc.aciertos_resultado }}</div>
+      <div class="pk-chip-label">Resultados</div>
+    </div>
+    <div class="pk-chip">
+      <div class="pk-chip-value">{{ insc.aciertos_marcador }}</div>
+      <div class="pk-chip-label">Exactos</div>
+    </div>
   </div>
+  {% endwith %}
 </div>
 
 {# ══ PROGRESO ══════════════════════════════════════════════ #}
