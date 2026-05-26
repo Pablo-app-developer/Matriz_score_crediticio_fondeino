@@ -197,9 +197,9 @@
     .section-tag {
       display: inline-block;
       color: var(--cyan);
-      font-size: 12px;
+      font-size: 16px;
       font-weight: 700;
-      letter-spacing: .1em;
+      letter-spacing: .08em;
       text-transform: uppercase;
       margin-bottom: 12px;
     }
@@ -209,6 +209,7 @@
       color: var(--text-dark);
       line-height: 1.2;
     }
+    .section-title.small { font-size: clamp(16px, 1.8vw, 22px); font-weight: 700; }
     .section-sub {
       font-size: 16px;
       color: var(--text-body);
@@ -235,7 +236,7 @@
       box-shadow: 0 2px 8px rgba(52,52,101,.06);
     }
     .service-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(52,52,101,.14); }
-    .card-img { height: 180px; overflow: hidden; position: relative; }
+    .card-img { height: 220px; overflow: hidden; position: relative; }
     .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
     .service-card:hover .card-img img { transform: scale(1.06); }
     .card-img-overlay {
@@ -696,6 +697,102 @@
       .polla-inner { flex-direction: column; align-items: flex-start; gap: 36px; }
       .polla-countdown { width: 100%; min-width: unset; }
       .polla-stats { max-width: 100%; }
+      .nosotros-grid { grid-template-columns: 1fr; }
+      .nosotros-hitos { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+
+  <style>
+    /* ── NOSOTROS ── */
+    .nosotros-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      max-width: 1100px;
+      margin: 0 auto;
+      align-items: center;
+    }
+    .nosotros-label {
+      display: inline-block;
+      background: var(--cyan);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 100px;
+      margin-bottom: 18px;
+    }
+    .nosotros-title {
+      font-size: clamp(24px, 2.8vw, 36px);
+      font-weight: 800;
+      color: var(--text-dark);
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .nosotros-body {
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--text-body);
+      margin-bottom: 32px;
+    }
+    .nosotros-hitos {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 8px;
+    }
+    .hito {
+      background: var(--gray-light);
+      border-radius: 14px;
+      padding: 22px 18px;
+      text-align: center;
+    }
+    .hito-num {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1;
+    }
+    .hito-label {
+      font-size: 13px;
+      color: var(--text-body);
+      margin-top: 6px;
+      line-height: 1.3;
+    }
+    .nosotros-visual {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(52,52,101,.18);
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--cyan) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nosotros-visual-inner {
+      text-align: center;
+      color: white;
+      padding: 40px;
+    }
+    .nosotros-visual-icon {
+      font-size: 72px;
+      line-height: 1;
+      margin-bottom: 16px;
+      opacity: .9;
+    }
+    .nosotros-visual-text {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.4;
+      opacity: .92;
+    }
+    .nosotros-visual-sub {
+      font-size: 13px;
+      opacity: .7;
+      margin-top: 8px;
     }
   </style>
 </head>
@@ -723,7 +820,7 @@
     <ul class="nav-links">
       <li><a href="#servicios">Servicios</a></li>
       <li><a href="#beneficios">Beneficios</a></li>
-      <li><a href="#">Nosotros</a></li>
+      <li><a href="#nosotros">Nosotros</a></li>
       <li><a href="#">Normatividad</a></li>
       <li><a href="#contacto">Contacto</a></li>
     </ul>
@@ -760,7 +857,7 @@
   <section class="section" id="servicios">
     <div class="section-header">
       <div class="section-tag">Nuestros servicios</div>
-      <h2 class="section-title">Todo lo que necesitas,<br />en un solo lugar</h2>
+      <h2 class="section-title small">Todo lo que necesitas,<br />en un solo lugar</h2>
       <p class="section-sub">Diseñamos cada producto pensando en el bienestar real de nuestros asociados y sus familias.</p>
     </div>
 
@@ -973,6 +1070,58 @@
         </div>
       </div>
 
+    </div>
+  </section>
+
+  <!-- NOSOTROS -->
+  <section class="section nosotros-section" id="nosotros">
+    <div class="section-header">
+      <div class="section-tag">Quiénes somos</div>
+      <h2 class="section-title">El fondo de empleados que<br />trabaja para ti</h2>
+      <p class="section-sub">Creado por los empleados del Instituto Neumológico del Oriente, para los empleados del Instituto Neumológico del Oriente.</p>
+    </div>
+
+    <div class="nosotros-grid">
+      <div class="nosotros-texto">
+        <p>
+          <strong>FONDEINO</strong> es el fondo de empleados del
+          <strong>Instituto Neumológico del Oriente (INO)</strong>, la institución de salud especializada
+          en enfermedades respiratorias más importante del nororiente colombiano.
+        </p>
+        <p>
+          Nacimos en <strong>2025</strong> con una misión clara: construir un espacio de solidaridad
+          económica donde cada asociado pueda acceder a créditos, ahorro y bienestar en condiciones
+          justas, sin intermediarios externos y sin ánimo de lucro.
+        </p>
+        <p>
+          Como fondo de empleados, somos de nuestros asociados y para nuestros asociados.
+          Cada peso aportado se reinvierte en mejores beneficios, tasas preferenciales y programas
+          de bienestar para los trabajadores y sus familias.
+        </p>
+
+        <div class="nosotros-hitos">
+          <div class="hito">
+            <span class="hito-num">2025</span>
+            <span class="hito-label">Año de fundación</span>
+          </div>
+          <div class="hito">
+            <span class="hito-num">INO</span>
+            <span class="hito-label">Instituto Neumológico del Oriente</span>
+          </div>
+          <div class="hito">
+            <span class="hito-num">BGA</span>
+            <span class="hito-label">Bucaramanga, Colombia</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nosotros-visual">
+        <div class="nosotros-visual-inner">
+          <div class="nosotros-visual-icon">🏥</div>
+          <div class="nosotros-visual-text">Solidaridad & Bienestar<br/>para los empleados del INO</div>
+          <div class="nosotros-visual-sub">Sin fines de lucro · Regulado · Ley 79 de 1988</div>
+        </div>
+      </div>
     </div>
   </section>
 
