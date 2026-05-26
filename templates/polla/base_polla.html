@@ -83,11 +83,13 @@
           </a>
         </li>
 
+        {% if request.user.is_authenticated and request.user.es_admin or request.user.is_authenticated and request.user.es_admin_polla %}
         <li class="nav-item">
           <a class="nav-link {% block nav_analisis %}{% endblock %}" href="{% url 'polla:analisis' %}">
-            <i class="bi bi-graph-up-arrow me-1"></i>¿Es emocionante?
+            <i class="bi bi-graph-up-arrow me-1"></i>Análisis
           </a>
         </li>
+        {% endif %}
       </ul>
 
       <!-- Usuario -->

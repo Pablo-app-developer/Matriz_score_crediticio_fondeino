@@ -378,6 +378,7 @@ def reglamento(request):
     return render(request, 'polla/reglamento.html', {'config': config})
 
 
+@admin_polla_required
 def analisis(request):
     return render(request, 'polla/analisis.html')
 
