@@ -1,0 +1,69 @@
+{% extends "polla/base_polla.html" %}
+
+{% block polla_content %}
+<div class="container" style="max-width:700px;">
+  <div class="card shadow mt-4">
+    <div class="card-header bg-dark text-white fw-bold">
+      <i class="bi bi-file-earmark-check me-2"></i>Autorización de descuento por nómina
+    </div>
+    <div class="card-body p-4">
+
+      <div class="alert alert-warning small mb-3">
+        <i class="bi bi-info-circle me-1"></i>
+        Para participar en la <strong>Polla Mundialista FONDEINO 2026</strong> debes autorizar
+        el descuento de <strong>$5.000</strong> de tu nómina por concepto de inscripción.
+        Esta autorización se registra <strong>una única vez</strong>.
+      </div>
+
+      <div class="border rounded p-3 mb-4 bg-light" style="font-size:.82rem; line-height:1.7; max-height:360px; overflow-y:auto;">
+        <p>
+          Acepto y autorizo expresa e irrevocablemente que me sea descontado de mi sueldo y/o honorarios,
+          asignación de retiro, pensión, cesantías, primas y demás bonificaciones especiales,
+          ocasionales o permanentes, que se causen a mi favor como trabajador o prestador de servicio
+          de conformidad con los artículos 55 y 56 del Decreto 1481 de 1989, el valor correspondiente
+          a la inscripción en la <strong>Polla Mundialista FONDEINO 2026</strong>, equivalente a
+          <strong>$5.000</strong> (cinco mil pesos colombianos), como actividad recreativa organizada
+          por FONDEINO, Fondo de Empleados, en beneficio de sus asociados.
+        </p>
+        <p>
+          Declaro que la suma que autorizo mediante el presente documento para que me sea descontada
+          estará libre de toda afectación o gravamen, y entiendo que dicho descuento se trasladará
+          directamente a la cuenta de FONDEINO por concepto de la inscripción aquí indicada.
+        </p>
+        <p>
+          En cumplimiento de los artículos 55 y 56 del Decreto 1481 de 1989 y la Ley 1527 de 2012,
+          autorizo de manera expresa que, mientras exista vínculo que dé origen a mi asociación con
+          FONDEINO, se realice el descuento de <strong>$5.000</strong> correspondiente a la
+          participación en esta actividad recreativa.
+        </p>
+        <p>
+          En cumplimiento de la <strong>Ley 1581 de 2012</strong> y el Decreto 1377 de 2013,
+          autorizo el tratamiento de mis datos personales (nombre, cédula, área, correo y teléfono)
+          exclusivamente para los fines de la Polla Mundialista FONDEINO 2026 y la gestión del
+          descuento por nómina aquí autorizado.
+        </p>
+        <p class="mb-0 text-muted">
+          Participante: <strong>{{ afiliado.nombre_completo }}</strong> — Cédula: <strong>{{ afiliado.cedula }}</strong>
+        </p>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="checkbox" name="acepto" id="acepto" required>
+          <label class="form-check-label fw-bold" for="acepto">
+            He leído, entiendo y acepto la autorización de descuento por nómina de $5.000
+            para participar en la Polla Mundialista FONDEINO 2026.
+          </label>
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-success btn-lg fw-bold">
+            <i class="bi bi-check-circle me-2"></i>Autorizar y continuar
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

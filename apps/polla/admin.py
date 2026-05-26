@@ -1,6 +1,8 @@
 from django.contrib import admin
+from django.utils.html import format_html
+from django.urls import reverse
 from .models import (
-    Afiliado, Equipo, Partido, InscripcionPolla,
+    Afiliado, AutorizacionDescuento, Equipo, Partido, InscripcionPolla,
     Pronostico, PronosticoCampeon, ConfiguracionPolla,
 )
 
@@ -74,4 +76,32 @@ class ConfiguracionPollaAdmin(admin.ModelAdmin):
         return not ConfiguracionPolla.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(AutorizacionDescuento)
+class AutorizacionDescuentoAdmin(admin.ModelAdmin):
+    list_display = ['afiliado_nombre', 'afiliado_cedula', 'afiliado_area', 'fecha', 'ip', 'descargar_csv']
+    search_fields = ['afiliado__nombre_completo', 'afiliado__cedula']
+    readonly_fields = ['afiliado', 'fecha', 'ip']
+    ordering = ['afiliado__nombre_completo']
+
+    def afiliado_nombre(self, obj):
+        return obj.afiliado.nombre_completo
+    afiliado_nombre.short_description = 'Nombre'
+
+    def afiliado_cedula(self, obj):
+        return obj.afiliado.cedula
+    afiliado_cedula.short_description = 'Cédula'
+
+    def afiliado_area(self, obj):
+        return obj.afiliado.area or '—'
+    afiliado_area.short_description = 'Área'
+
+    def descargar_csv(self, obj):
+        url = reverse('polla:admin_export_autorizaciones')
+        return format_html('<a href="{}">Descargar todo</a>', url)
+    descargar_csv.short_description = 'Exportar'
+
+    def has_add_permission(self, request):
         return False

@@ -1,3 +1,4 @@
+import csv
 import io
 import json
 import random
@@ -12,7 +13,7 @@ from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import Coalesce
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -30,6 +31,7 @@ from .forms import (
 )
 from .models import (
     Afiliado,
+    AutorizacionDescuento,
     ConfiguracionPolla,
     Equipo,
     FASE_CHOICES,
@@ -417,6 +419,53 @@ def index(request):
                 'afiliado'
             ).order_by('-puntos_totales')[:10],
         })
+
+
+@login_required
+def autorizar_descuento(request):
+    """Pantalla de autorización de descuento por nómina. Obligatoria antes de jugar."""
+    try:
+        afiliado = request.user.afiliado
+    except Exception:
+        return redirect('polla:index')
+
+    if hasattr(afiliado, 'autorizacion_descuento'):
+        return redirect('polla:index')
+
+    if request.method == 'POST' and request.POST.get('acepto'):
+        ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', ''))
+        ip = ip.split(',')[0].strip() if ip else None
+        AutorizacionDescuento.objects.create(afiliado=afiliado, ip=ip)
+        messages.success(request, 'Autorización registrada. ¡Bienvenido a la Polla Mundialista!')
+        return redirect('polla:index')
+
+    return render(request, 'polla/autorizar_descuento.html', {'afiliado': afiliado})
+
+
+@admin_polla_required
+def admin_export_autorizaciones(request):
+    """Descarga CSV con los datos de afiliados que autorizaron el descuento por nómina."""
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="autorizaciones_descuento.csv"'
+    response.write('﻿')  # BOM para Excel
+
+    writer = csv.writer(response)
+    writer.writerow(['Nombre completo', 'Cédula', 'Área', 'Correo', 'Teléfono', 'Fecha autorización', 'IP'])
+
+    autorizaciones = AutorizacionDescuento.objects.select_related('afiliado').order_by('afiliado__nombre_completo')
+    for a in autorizaciones:
+        af = a.afiliado
+        writer.writerow([
+            af.nombre_completo,
+            af.cedula,
+            af.area or '',
+            af.correo or '',
+            af.telefono or '',
+            a.fecha.strftime('%d/%m/%Y %H:%M'),
+            a.ip or '',
+        ])
+
+    return response
 
 
 @login_required

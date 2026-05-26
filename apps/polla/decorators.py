@@ -18,6 +18,8 @@ def afiliado_activo(func):
         if not afiliado.activo:
             messages.warning(request, 'Tu cuenta de afiliado está desactivada.')
             return redirect('polla:index')
+        if not hasattr(afiliado, 'autorizacion_descuento'):
+            return redirect('polla:autorizar_descuento')
         return func(request, *args, **kwargs)
     return inner
 

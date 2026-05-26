@@ -12,6 +12,7 @@ urlpatterns = [
     path('analisis/', views.analisis, name='analisis'),
 
     # Afiliado (requiere login + afiliado activo)
+    path('autorizar/', views.autorizar_descuento, name='autorizar_descuento'),
     path('activar/', views.activar_cuenta, name='activar_cuenta'),
     path('pronosticos/', views.pronosticos, name='pronosticos'),
     path('pronosticos/guardar/', views.guardar_pronostico, name='guardar_pronostico'),
@@ -38,4 +39,5 @@ urlpatterns = [
     path('admin/afiliados/<int:afiliado_id>/reset/', views.admin_reset_pronosticos, name='admin_reset_pronosticos'),
     path('admin/eliminatorias/', views.admin_asignar_eliminatorias, name='admin_asignar_eliminatorias'),
     path('admin/sync-api/', views.admin_sync_api_football, name='admin_sync_api_football'),
+    path('admin/autorizaciones/export/', views.admin_export_autorizaciones, name='admin_export_autorizaciones'),
 ]

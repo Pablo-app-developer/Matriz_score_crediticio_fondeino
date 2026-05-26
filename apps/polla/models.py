@@ -333,3 +333,20 @@ class ConfiguracionPolla(models.Model):
         if self.fecha_cierre_pronostico_campeon is None:
             return False
         return timezone.now() >= self.fecha_cierre_pronostico_campeon
+
+
+class AutorizacionDescuento(models.Model):
+    """Registro de aceptación del descuento por nómina de $5.000 para la polla."""
+    afiliado = models.OneToOneField(
+        Afiliado, on_delete=models.CASCADE, related_name='autorizacion_descuento'
+    )
+    fecha = models.DateTimeField(auto_now_add=True)
+    ip = models.GenericIPAddressField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Autorización de descuento'
+        verbose_name_plural = 'Autorizaciones de descuento'
+        ordering = ['-fecha']
+
+    def __str__(self):
+        return f'{self.afiliado.nombre_completo} — {self.fecha.strftime("%d/%m/%Y %H:%M")}'
