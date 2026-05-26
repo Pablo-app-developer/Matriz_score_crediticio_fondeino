@@ -71,15 +71,13 @@
 
       <h6 class="text-success fw-bold border-bottom pb-1 mb-3">🏆 Premios</h6>
 
-      <div class="card border-warning mb-2">
-        <div class="card-header bg-warning text-dark fw-bold small py-2">
-          🎽 Premio A — Sorteo del Campeón
+      <div class="card border-success mb-2">
+        <div class="card-header bg-success text-white fw-bold small py-2">
+          🏅 Premio A — Top 3 General
         </div>
         <div class="card-body small">
-          Antes del inicio del Mundial, cada polla inscrita puede elegir al equipo campeón.
-          Entre todos los que acierten se realiza un <strong>sorteo transparente y auditable</strong>.
-          <br><strong>Premio:</strong> {{ config.premio_campeon_sorteo }}
-          <br><em>Si nadie acierta, el premio queda desierto o se redefine según criterio del administrador.</em>
+          Los 3 participantes con más puntos en todas las fases (incluyendo la final).
+          <br><strong>Premios:</strong> {{ config.premios_top5_general }}
         </div>
       </div>
 
@@ -93,13 +91,15 @@
         </div>
       </div>
 
-      <div class="card border-success mb-3">
-        <div class="card-header bg-success text-white fw-bold small py-2">
-          🏅 Premio C — Top 5 General
+      <div class="card border-warning mb-3">
+        <div class="card-header bg-warning text-dark fw-bold small py-2">
+          🎽 Premio C — Sorteo del Campeón
         </div>
         <div class="card-body small">
-          Los 5 participantes con más puntos en todas las fases (incluyendo la final).
-          <br><strong>Premios:</strong> {{ config.premios_top5_general }}
+          Antes del inicio del Mundial, cada participante puede elegir al equipo campeón.
+          Entre todos los que acierten se realiza un <strong>sorteo transparente y auditable</strong>.
+          <br><strong>Premio:</strong> {{ config.premio_campeon_sorteo }}
+          <br><em>Si nadie acierta, el premio queda desierto o se redefine según criterio del administrador.</em>
         </div>
       </div>
 
