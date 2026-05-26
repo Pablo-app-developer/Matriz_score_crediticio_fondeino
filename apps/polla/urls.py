@@ -9,6 +9,7 @@ urlpatterns = [
     path('registro/', views.registro_polla, name='registro'),
     path('ranking/', views.ranking, name='ranking'),
     path('reglamento/', views.reglamento, name='reglamento'),
+    path('analisis/', views.analisis, name='analisis'),
 
     # Afiliado (requiere login + afiliado activo)
     path('activar/', views.activar_cuenta, name='activar_cuenta'),

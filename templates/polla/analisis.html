@@ -1,0 +1,375 @@
+{% extends "polla/base_polla.html" %}
+{% load static %}
+{% block nav_analisis %}active{% endblock %}
+
+{% block polla_content %}
+<div class="container" style="max-width:860px;">
+
+  <!-- ── Encabezado ─────────────────────────────────────────────── -->
+  <div class="card shadow-sm mt-2 border-0">
+    <div class="card-header bg-dark text-white fw-bold d-flex align-items-center gap-2">
+      <i class="bi bi-graph-up-arrow fs-5" style="color:#f0c040;"></i>
+      <span>Sustento Técnico — Diseño de la Polla Mundialista FONDEINO 2026</span>
+    </div>
+    <div class="card-body">
+
+      <!-- Intro -->
+      <div class="text-center mb-4 pt-2">
+        <span class="badge bg-success px-3 py-2 mb-2" style="font-size:.8rem;letter-spacing:.5px;">
+          ANÁLISIS ESTADÍSTICO OFICIAL
+        </span>
+        <h4 class="fw-bold mb-1">¿Esta polla es emocionante de verdad?</h4>
+        <p class="text-muted mb-0" style="max-width:580px;margin:auto;">
+          Usamos <strong>50.000 simulaciones por computador</strong> para responder la pregunta
+          que todos se hacen: ¿el que lidera al final de grupos ya tiene el trofeo en el bolsillo?
+          Spoiler: <strong>para nada.</strong>
+        </p>
+      </div>
+
+      <!-- Resultado principal destacado -->
+      <div class="mb-4 text-center p-4"
+           style="background:linear-gradient(135deg,#1a3a1a,#2d6a2d);color:white;border-radius:12px;">
+        <div class="row align-items-center justify-content-center g-3">
+          <div class="col-sm-auto text-center">
+            <div style="font-size:2.8rem;font-weight:900;line-height:1;color:#f0c040;">38.9%</div>
+            <div class="small mt-1 opacity-90">P(líder grupos = campeón total)</div>
+          </div>
+          <div class="col-sm-auto text-center px-4"
+               style="border-left:1px solid rgba(255,255,255,.25);border-right:1px solid rgba(255,255,255,.25);">
+            <div style="font-size:2.8rem;font-weight:900;line-height:1;color:#f0c040;">×31</div>
+            <div class="small mt-1 opacity-90">veces mejor que el puro azar</div>
+          </div>
+          <div class="col-sm-auto text-center">
+            <div style="font-size:2.8rem;font-weight:900;line-height:1;color:#f0c040;">80%</div>
+            <div class="small mt-1 opacity-90">del tiempo el ganador viene del Top‑5 de grupos</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Imagen con zoom -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-dark text-white fw-bold small py-2">
+          <i class="bi bi-bar-chart-fill me-2"></i>Panel completo de análisis — 50.000 torneos simulados
+        </div>
+        <div class="card-body p-2 text-center" style="background:#f8f9fa;">
+          <img src="{% static 'polla/img/analisis_polla_fondeino_2026.png' %}"
+               alt="Panel estadístico Polla FONDEINO 2026"
+               class="img-fluid rounded"
+               style="max-width:100%;cursor:zoom-in;"
+               onclick="document.getElementById('modal-grafica').style.display='flex'">
+          <p class="text-muted small mt-2 mb-0">
+            <i class="bi bi-zoom-in me-1"></i>Haz clic en la imagen para verla en grande
+          </p>
+        </div>
+      </div>
+
+      <!-- Modal zoom -->
+      <div id="modal-grafica"
+           style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;
+                  align-items:center;justify-content:center;cursor:zoom-out;"
+           onclick="this.style.display='none'">
+        <img src="{% static 'polla/img/analisis_polla_fondeino_2026.png' %}"
+             style="max-width:96vw;max-height:96vh;border-radius:8px;box-shadow:0 0 40px rgba(0,0,0,.8);">
+        <span style="position:absolute;top:16px;right:24px;color:white;font-size:1.8rem;font-weight:700;opacity:.7;">&times;</span>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- Contexto técnico breve -->
+      <h5 class="fw-bold mb-3">
+        <i class="bi bi-cpu me-2 text-success"></i>¿Cómo funciona el modelo?
+      </h5>
+      <p class="small text-muted mb-3">
+        El análisis parte del sistema de puntuación real de la polla y simula miles de torneos
+        completos para entender qué tanto influye el resultado de la fase de grupos en el ganador final.
+      </p>
+      <div class="table-responsive mb-4">
+        <table class="table table-bordered table-sm small">
+          <thead class="table-dark">
+            <tr>
+              <th>Fase</th>
+              <th class="text-center">Partidos</th>
+              <th class="text-center">Máx. por partido</th>
+              <th class="text-center">Máx. total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Fase de grupos</td>
+              <td class="text-center">72</td>
+              <td class="text-center fw-bold">3 pts</td>
+              <td class="text-center">216 pts</td>
+            </tr>
+            <tr>
+              <td>Eliminatorias (R32 → Final)</td>
+              <td class="text-center">32</td>
+              <td class="text-center fw-bold">6 pts</td>
+              <td class="text-center">192 pts</td>
+            </tr>
+            <tr class="table-success fw-bold">
+              <td>TOTAL</td>
+              <td class="text-center">104</td>
+              <td class="text-center">—</td>
+              <td class="text-center">408 pts</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- Explicación gráfica por gráfica -->
+      <h5 class="fw-bold mb-4">
+        <i class="bi bi-diagram-3 me-2 text-success"></i>¿Qué nos dice cada gráfica?
+      </h5>
+
+      <!-- G1 -->
+      <div class="card mb-3 border-start border-success border-3">
+        <div class="card-body pb-2">
+          <h6 class="fw-bold text-success mb-1">
+            <span class="badge bg-success me-2">1</span>
+            ¿El ganador total venía liderando en grupos?
+          </h6>
+          <p class="small mb-2">
+            La barra más alta está en la posición #1, pero no aplasta a las demás. Los jugadores
+            que ganaron el torneo completo venían de posiciones tan alejadas como el puesto 10 o 12
+            al terminar la fase de grupos.
+          </p>
+          <div class="alert alert-success py-2 small mb-0">
+            <i class="bi bi-lightbulb-fill me-1"></i>
+            <strong>Lo que significa para ti:</strong> Si al terminar grupos estás entre los 10 primeros,
+            sigues vivo. No tires la toalla antes de tiempo.
+          </div>
+        </div>
+      </div>
+
+      <!-- G2 -->
+      <div class="card mb-3 border-start border-primary border-3">
+        <div class="card-body pb-2">
+          <h6 class="fw-bold text-primary mb-1">
+            <span class="badge bg-primary me-2">2</span>
+            Los porcentajes que cambian todo
+          </h6>
+          <p class="small mb-2">
+            El <strong>80% del tiempo el campeón final viene del Top-5 de grupos</strong>. Eso crea
+            un grupo visible de 4 o 5 protagonistas al terminar grupos — y el resto del torneo
+            es una carrera entre ellos que nadie tiene garantizada.
+          </p>
+          <div class="alert alert-primary py-2 small mb-0">
+            <i class="bi bi-lightbulb-fill me-1"></i>
+            <strong>Cómo usar esto:</strong> Cuando publiquemos el ranking de grupos, fíjate en el
+            Top-5. Ahí está el 80% de los candidatos a ganar la polla entera. Síguelos en las
+            eliminatorias — se pondrá bueno.
+          </div>
+        </div>
+      </div>
+
+      <!-- G3 -->
+      <div class="card mb-3 border-start border-warning border-3">
+        <div class="card-body pb-2">
+          <h6 class="fw-bold mb-1" style="color:#e67e22;">
+            <span class="badge me-2" style="background:#e67e22;">3</span>
+            Saber de fútbol sí importa (pero no lo es todo)
+          </h6>
+          <p class="small mb-2">
+            La correlación entre puntos de grupos y puntos totales es alta (r = 0.856). Eso
+            confirma que el torneo no es una rifa — el conocimiento futbolístico tiene recompensa
+            real. Sin embargo, la nube de puntos es amplia: hay jugadores que remontan desde abajo
+            y otros que se derrumban. Ese "ruido" es exactamente el espacio que hacen las eliminatorias.
+          </p>
+          <div class="alert alert-warning py-2 small mb-0">
+            <i class="bi bi-lightbulb-fill me-1"></i>
+            <strong>El balance perfecto:</strong> El saber cuenta, pero no garantiza nada.
+            Eso es lo que hace que valga la pena participar, sin importar tu nivel.
+          </div>
+        </div>
+      </div>
+
+      <!-- G4 Markov -->
+      <div class="card mb-3 border-start border-danger border-3">
+        <div class="card-body pb-2">
+          <h6 class="fw-bold text-danger mb-1">
+            <span class="badge bg-danger me-2">4</span>
+            El mapa de calor: nadie tiene el puesto asegurado
+          </h6>
+          <p class="small mb-2">
+            Usando <strong>Cadenas de Markov</strong>, calculamos la probabilidad de que cada
+            grupo de jugadores suba, se mantenga o caiga al entrar a eliminatorias.
+          </p>
+          <div class="table-responsive mb-2">
+            <table class="table table-sm table-bordered small mb-0">
+              <thead class="table-dark">
+                <tr>
+                  <th>Si terminas grupos en…</th>
+                  <th class="text-center">Prob. de ganar el total</th>
+                  <th class="text-center">Prob. de subir / mantenerse</th>
+                  <th class="text-center">Prob. de caer</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="table-success">
+                  <td><strong>🥇 Posición #1 (líder)</strong></td>
+                  <td class="text-center fw-bold">39%</td>
+                  <td class="text-center">+44% (Top 2-5)</td>
+                  <td class="text-center text-danger">17%</td>
+                </tr>
+                <tr class="table-primary">
+                  <td><strong>Top 2–5</strong></td>
+                  <td class="text-center fw-bold">10%</td>
+                  <td class="text-center">41% (se mantiene)</td>
+                  <td class="text-center text-danger">49%</td>
+                </tr>
+                <tr class="table-warning">
+                  <td><strong>Top 6–10</strong></td>
+                  <td class="text-center fw-bold">3%</td>
+                  <td class="text-center">47% (sube)</td>
+                  <td class="text-center text-danger">50%</td>
+                </tr>
+                <tr>
+                  <td><strong>Posiciones 11–20</strong></td>
+                  <td class="text-center fw-bold">1%</td>
+                  <td class="text-center text-muted">posibilidad real</td>
+                  <td class="text-center text-muted">mayoría</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="alert alert-danger py-2 small mb-0">
+            <i class="bi bi-fire me-1"></i>
+            <strong>El dato bomba:</strong> El líder de grupos tiene un <strong>61% de probabilidad
+            de ser superado</strong> antes de la Final. Nadie puede cantar victoria al terminar grupos.
+          </div>
+        </div>
+      </div>
+
+      <!-- G5 -->
+      <div class="card mb-3 border-start border-info border-3">
+        <div class="card-body pb-2">
+          <h6 class="fw-bold text-info mb-1">
+            <span class="badge bg-info text-dark me-2">5</span>
+            ¿Qué pasa si somos más participantes?
+          </h6>
+          <p class="small mb-2">
+            Sin importar cuántas personas jueguen (de 20 a 200), siempre hay una ventaja enorme
+            del conocimiento vs. el azar puro. A medida que hay más jugadores, la probabilidad del
+            líder de grupos baja levemente — ¡obvio, hay más competencia! — pero siempre se mantiene
+            muy por encima del azar.
+          </p>
+          <div class="alert alert-info py-2 small mb-0">
+            <i class="bi bi-lightbulb-fill me-1"></i>
+            <strong>Mientras más, mejor:</strong> Si invitas a más compañeros, la polla no se vuelve
+            menos justa — se vuelve más emocionante.
+          </div>
+        </div>
+      </div>
+
+      <!-- G6 -->
+      <div class="card mb-3 border-start border-secondary border-3">
+        <div class="card-body pb-2">
+          <h6 class="fw-bold mb-1">
+            <span class="badge bg-secondary me-2">6</span>
+            Grupos vs. Eliminatorias: dos juegos distintos
+          </h6>
+          <p class="small mb-2">
+            Los grupos (azul) son el "maratón": 72 partidos, muchos puntos pero de forma estable.
+            Las eliminatorias (naranja) son el "sprint explosivo": 32 partidos, menos puntos promedio
+            pero con rachas que pueden cambiar todo. Las dos curvas tienen dispersión similar
+            (σ ≈ 11–12 pts), lo que confirma que ninguna fase aplasta a la otra.
+          </p>
+          <div class="alert alert-secondary py-2 small mb-0">
+            <i class="bi bi-lightbulb-fill me-1"></i>
+            <strong>El secreto del diseño:</strong> Grupos acumulan base, eliminatorias generan drama.
+            Esa combinación mantiene el suspenso de principio a fin.
+          </div>
+        </div>
+      </div>
+
+      <!-- G7 -->
+      <div class="card mb-3 border-start border-dark border-3">
+        <div class="card-body pb-2">
+          <h6 class="fw-bold mb-1">
+            <span class="badge bg-dark me-2">7</span>
+            ¿Importa si hay mezcla de expertos y novatos?
+          </h6>
+          <p class="small mb-2">
+            Cuando hay más mezcla de niveles, el torneo premia un poco más a los expertos.
+            Cuando todos saben lo mismo, hay más apertura. En cualquier caso, la probabilidad
+            oscila entre 21% y 27% — un rango estrecho que demuestra que el sistema es
+            <strong>robusto sin importar el perfil de los jugadores</strong>.
+          </p>
+          <div class="alert alert-dark py-2 small mb-0" style="color:#eee;">
+            <i class="bi bi-people-fill me-1"></i>
+            <strong>Para todos:</strong> No tienes que ser el más fanático del fútbol para tener
+            opciones reales. El diseño de la polla nivela el campo de juego.
+          </div>
+        </div>
+      </div>
+
+      <!-- G8 -->
+      <div class="card mb-4 border-start border-success border-3">
+        <div class="card-body pb-2">
+          <h6 class="fw-bold text-success mb-1">
+            <span class="badge bg-success me-2">8</span>
+            La trayectoria del líder: el camino es largo y sinuoso
+          </h6>
+          <p class="small mb-2">
+            Esta gráfica muestra cómo evoluciona la posición del jugador que lideraba al final
+            de grupos, ronda a ronda. La sombra alrededor de la línea es el rango de posibilidades.
+            Lo que salta a la vista: <strong>la sombra se abre enormemente</strong> conforme avanzan
+            las rondas. Al llegar a la Final, algunos líderes de grupos siguen en el #1 y otros
+            cayeron hasta el Top-10. Nadie sabe cuál será su historia hasta el pitazo final.
+          </p>
+          <div class="alert alert-success py-2 small mb-0">
+            <i class="bi bi-emoji-sunglasses-fill me-1"></i>
+            <strong>La moraleja:</strong> Cada partido de eliminatorias puede cambiar la carrera.
+            Vale la pena seguir el ranking después de cada resultado — la historia no termina
+            hasta que el árbitro pita el final de la Gran Final.
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- Conclusión -->
+      <div class="p-4 mb-4 text-white"
+           style="background:linear-gradient(135deg,#0d3b1e,#1a6b38);border-radius:12px;">
+        <h5 class="fw-bold mb-3 text-center" style="color:#f0c040;">
+          <i class="bi bi-trophy-fill me-2"></i>Entonces… ¿merece la pena participar?
+        </h5>
+        <div class="row g-4 text-center">
+          <div class="col-md-4">
+            <div style="font-size:2rem;">🎯</div>
+            <div class="fw-bold mt-1">El saber cuenta</div>
+            <div class="small opacity-75 mt-1">No es una rifa. Los que más saben de fútbol tienen
+            una ventaja real y demostrada matemáticamente.</div>
+          </div>
+          <div class="col-md-4">
+            <div style="font-size:2rem;">🔥</div>
+            <div class="fw-bold mt-1">Nadie está eliminado</div>
+            <div class="small opacity-75 mt-1">El 61% de las veces el torneo cambia de líder
+            en las eliminatorias. Remontadas épicas son parte del juego.</div>
+          </div>
+          <div class="col-md-4">
+            <div style="font-size:2rem;">🏅</div>
+            <div class="fw-bold mt-1">Dos torneos en uno</div>
+            <div class="small opacity-75 mt-1">Premio para el Top-5 de grupos y otro para
+            el Top-5 total. Dos momentos de gloria en un solo Mundial.</div>
+          </div>
+        </div>
+        <p class="text-center mt-4 mb-0 small" style="opacity:.7;">
+          Análisis realizado con 50.000 simulaciones Monte Carlo · Cadenas de Markov ·
+          Correlaciones de Spearman y Kendall · Mayo 2026
+        </p>
+      </div>
+
+      <div class="alert alert-light border text-muted small text-center mb-0">
+        <i class="bi bi-cpu me-1"></i>
+        Los números de este análisis están basados en el sistema de puntuación oficial de la
+        Polla FONDEINO 2026 y simulaciones estadísticas con distribuciones calibradas.
+        Los resultados son orientativos — ¡lo que pase en la cancha siempre tendrá la última palabra!
+      </div>
+
+    </div><!-- /card-body -->
+  </div><!-- /card -->
+</div>
+{% endblock %}

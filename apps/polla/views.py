@@ -378,6 +378,10 @@ def reglamento(request):
     return render(request, 'polla/reglamento.html', {'config': config})
 
 
+def analisis(request):
+    return render(request, 'polla/analisis.html')
+
+
 # ─────────────────────────────────────────────
 # Flujo de activación / index
 # ─────────────────────────────────────────────
