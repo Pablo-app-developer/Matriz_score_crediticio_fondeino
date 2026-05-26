@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.auth.password_validation import validate_password
 from .models import Afiliado, Pronostico, PronosticoCampeon, Equipo
 
 
@@ -30,8 +29,8 @@ class RegistroPollaForm(forms.Form):
 
     def clean_password1(self):
         pwd = self.cleaned_data.get('password1')
-        if pwd:
-            validate_password(pwd)
+        if pwd and len(pwd) < 4:
+            raise forms.ValidationError('La contraseña debe tener al menos 4 caracteres.')
         return pwd
 
     def clean(self):
