@@ -374,6 +374,9 @@ def index(request):
     config = ConfiguracionPolla.get()
 
     if afiliado and afiliado.activo:
+        if not hasattr(afiliado, 'autorizacion_descuento'):
+            return redirect('polla:autorizar_descuento')
+
         # Dashboard
         inscripciones = afiliado.inscripciones.filter(activa=True).order_by('numero_polla')
 
