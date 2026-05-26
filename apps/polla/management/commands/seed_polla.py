@@ -50,7 +50,7 @@ class Command(BaseCommand):
         # Captación
         config.mensaje_no_afiliado = (
             '¡Afíliate a FONDEINO y participa en la Polla Mundialista 2026! '
-            'La participación tiene un valor de $5.000 por polla.'
+            'La participación tiene un valor de $5.000 por asociado.'
             'Los nuevos asociados y quienes aumenten sus aportes durante la campaña '
             'reciben DOBLE POLLA como beneficio promocional. '
             '¡Dos oportunidades de ganar los premios!'

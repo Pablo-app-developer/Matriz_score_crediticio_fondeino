@@ -305,7 +305,7 @@ class ConfiguracionPolla(models.Model):
 
     mensaje_no_afiliado = models.TextField(
         default='¡Afíliate a FONDEINO y participa en la Polla Mundialista! '
-                'Valor: $5.000 por polla.'
+                'Valor: $5.000 por asociado.'
                 'Los nuevos asociados reciben DOBLE POLLA como beneficio promocional.'
     )
     enlace_afiliacion = models.URLField(default='https://www.fondeino.com/')
