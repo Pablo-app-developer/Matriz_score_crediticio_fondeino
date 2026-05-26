@@ -52,7 +52,7 @@ class Command(BaseCommand):
             '¡Afíliate a FONDEINO y participa en la Polla Mundialista 2026! '
             'La participación tiene un valor de $5.000 COP por polla. '
             'Los nuevos asociados y quienes aumenten sus aportes durante la campaña '
-            'reciben DOBLE POLLA como beneficio promocional (pagando sus $5.000 como todos). '
+            'reciben DOBLE POLLA como beneficio promocional. '
             '¡Dos oportunidades de ganar los premios!'
         )
         config.enlace_afiliacion = 'https://www.fondeino.com/'
