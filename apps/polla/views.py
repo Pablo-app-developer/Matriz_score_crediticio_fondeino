@@ -2,6 +2,7 @@ import io
 import json
 import random
 from collections import defaultdict
+from datetime import timedelta
 
 import pandas as pd
 from django.contrib import messages
@@ -510,10 +511,7 @@ def pronosticos(request):
     }
 
     ahora = timezone.now()
-
-    fase_sel = request.GET.get('fase', 'GRUPOS')
-    if fase_sel not in FASE_LABEL:
-        fase_sel = 'GRUPOS'
+    ventana_proximos = ahora + timedelta(days=3)
 
     # Fases que tienen al menos un partido cargado
     fases_con_partidos = set(Partido.objects.values_list('fase', flat=True).distinct())
@@ -537,19 +535,51 @@ def pronosticos(request):
     ]
     pendientes = sum(pend_por_fase.values())
 
-    # Partidos solo de la fase seleccionada
-    partidos = Partido.objects.filter(fase=fase_sel).select_related(
-        'equipo_local', 'equipo_visitante'
-    ).order_by('fecha_hora', 'numero')
+    # Tab especial "Próximos": partidos en las próximas 72h
+    proximos_qs = Partido.objects.filter(
+        fecha_hora__gt=ahora, fecha_hora__lte=ventana_proximos, finalizado=False,
+    )
+    hay_proximos = proximos_qs.exists()
+    if hay_proximos:
+        pend_proximos = proximos_qs.exclude(pk__in=pronosticos_ids).count()
+        fases_tabs = [
+            {'key': 'HOY', 'label': 'Próximos', 'pendientes': pend_proximos, 'icon': 'bi-clock-history'}
+        ] + fases_tabs
 
-    pronosticos_dict = {}
-    if inscripcion_activa:
-        pronosticos_dict = {
-            p.partido_id: p
-            for p in inscripcion_activa.pronosticos.filter(
-                partido__fase=fase_sel
-            ).select_related('partido').all()
-        }
+    # Determinar fase seleccionada
+    fase_raw = request.GET.get('fase')
+    if fase_raw is None:
+        fase_sel = 'HOY' if hay_proximos else 'GRUPOS'
+    else:
+        valid_fases = set(ORDEN_FASES) | {'HOY'}
+        fase_sel = fase_raw if fase_raw in valid_fases else 'GRUPOS'
+
+    # Obtener partidos según pestaña activa
+    if fase_sel == 'HOY':
+        partidos = proximos_qs.select_related(
+            'equipo_local', 'equipo_visitante'
+        ).order_by('fecha_hora', 'numero')
+        ids_proximos = list(partidos.values_list('pk', flat=True))
+        pronosticos_dict = {}
+        if inscripcion_activa:
+            pronosticos_dict = {
+                p.partido_id: p
+                for p in inscripcion_activa.pronosticos.filter(
+                    partido_id__in=ids_proximos
+                ).select_related('partido').all()
+            }
+    else:
+        partidos = Partido.objects.filter(fase=fase_sel).select_related(
+            'equipo_local', 'equipo_visitante'
+        ).order_by('fecha_hora', 'numero')
+        pronosticos_dict = {}
+        if inscripcion_activa:
+            pronosticos_dict = {
+                p.partido_id: p
+                for p in inscripcion_activa.pronosticos.filter(
+                    partido__fase=fase_sel
+                ).select_related('partido').all()
+            }
 
     partidos_por_fecha = defaultdict(list)
     for partido in partidos:

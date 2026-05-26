@@ -22,6 +22,32 @@ body { background: #0d1b2a !important; }
   background: #e05050; color: #fff; font-size: .52rem; font-weight: 900;
   padding: .1rem .28rem; border-radius: 10px; min-width: 15px; text-align: center;
 }
+
+/* Botón guardar todos */
+.pk-save-all {
+  background: #f0c040; color: #1a1200; border: none;
+  font-weight: 700; font-size: .78rem; padding: .42rem 1rem;
+  border-radius: 7px; cursor: pointer; transition: opacity .15s;
+  white-space: nowrap;
+}
+.pk-save-all:disabled { opacity: .5; cursor: not-allowed; }
+.pk-save-all:hover:not(:disabled) { opacity: .85; }
+
+/* Countdown de cierre */
+.pn-countdown {
+  font-size: .6rem; font-weight: 700;
+  background: rgba(240,192,64,.12); border: 1px solid rgba(240,192,64,.3);
+  color: #f0c040; padding: .1rem .45rem; border-radius: 5px; white-space: nowrap;
+}
+.pn-countdown.urgent {
+  color: #e05050; background: rgba(224,80,80,.12); border-color: rgba(224,80,80,.3);
+}
+
+/* Botones +/− más grandes en móvil */
+@media (max-width: 576px) {
+  .pn-spin-btn { width: 38px !important; height: 38px !important; font-size: 1.1rem !important; }
+  .pn-inp      { font-size: 1.1rem !important; width: 50px !important; }
+}
 </style>
 {% endblock %}
 
@@ -55,6 +81,11 @@ body { background: #0d1b2a !important; }
     {% endif %}
     {% if pendientes > 0 %}
     <div class="pn-counter"><b>{{ pendientes }}</b> pendiente{% if pendientes != 1 %}s{% endif %}</div>
+    {% endif %}
+    {% if pendientes > 0 and not config.polla_cerrada %}
+    <button class="pk-save-all" id="pkSaveAll" type="button">
+      <i class="bi bi-cloud-arrow-up-fill me-1"></i>Guardar todos
+    </button>
     {% endif %}
   </div>
 </div>
@@ -98,7 +129,8 @@ body { background: #0d1b2a !important; }
   {% for item in partidos %}
   {% with p=item.partido pr=item.pronostico %}
   <div id="partido-{{ p.pk }}"
-       class="pn-card {% if p.finalizado %}done{% elif item.cerrado and not pr %}miss{% elif item.cerrado %}lock{% else %}open{% endif %}">
+       class="pn-card {% if p.finalizado %}done{% elif item.cerrado and not pr %}miss{% elif item.cerrado %}lock{% else %}open{% endif %}"
+       {% if not item.cerrado and not p.finalizado %}data-cierre="{{ p.fecha_hora|date:'U' }}"{% endif %}>
 
     {# Top #}
     <div class="pn-top">
@@ -111,6 +143,9 @@ body { background: #0d1b2a !important; }
       <div class="pn-meta">
         <span class="pn-phase">{{ p.get_fase_display }}</span>
         <span class="pn-time">{{ p.fecha_hora|date:"h:i a" }} COL</span>
+        {% if not item.cerrado and not p.finalizado %}
+          <span class="pn-countdown" id="cd-{{ p.pk }}"></span>
+        {% endif %}
       </div>
     </div>
 
@@ -257,6 +292,79 @@ body { background: #0d1b2a !important; }
 {% block polla_scripts %}
 <script>
 const CSRF = '{{ csrf_token }}';
+
+/* ── Guardar todos ─────────────────────────────────────── */
+const pkSaveAllBtn = document.getElementById('pkSaveAll');
+if (pkSaveAllBtn) {
+  pkSaveAllBtn.addEventListener('click', async function () {
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span>Guardando…';
+
+    const openCards = [...document.querySelectorAll('.pn-card.open')];
+    let ok = 0, fail = 0;
+
+    await Promise.all(openCards.map(async card => {
+      const container = card.querySelector('[data-partido-id]');
+      if (!container) return;
+      const gl = parseInt(container.querySelector('.pk-gl').value || '0');
+      const gv = parseInt(container.querySelector('.pk-gv').value || '0');
+      if (isNaN(gl) || isNaN(gv) || gl < 0 || gv < 0) return;
+
+      try {
+        const r = await fetch('/polla/pronosticos/guardar/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+          body: JSON.stringify({
+            partido_id: parseInt(container.dataset.partidoId),
+            polla_num:  parseInt(container.dataset.pollaNum),
+            goles_local: gl, goles_visitante: gv,
+          })
+        });
+        const data = await r.json();
+        if (data.ok) {
+          ok++;
+          const saveBtn = card.querySelector('.pk-save-btn');
+          if (saveBtn) saveBtn.textContent = 'Actualizar';
+          const msg = document.getElementById('msg-' + container.dataset.partidoId);
+          if (msg) { msg.innerHTML = '<span style="color:#78d860;">✓</span>'; setTimeout(() => msg.innerHTML = '', 3000); }
+        } else { fail++; }
+      } catch { fail++; }
+    }));
+
+    btn.disabled = false;
+    if (ok > 0) {
+      btn.innerHTML = `<i class="bi bi-check-circle-fill me-1" style="color:#78d860;"></i>${ok} guardado${ok !== 1 ? 's' : ''}`;
+    } else {
+      btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-1"></i>Guardar todos';
+    }
+    if (fail > 0) btn.innerHTML += ` <span style="color:#e05050;font-size:.7rem;">(${fail} error${fail !== 1 ? 'es' : ''})</span>`;
+    setTimeout(() => {
+      if (!btn.disabled) btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-1"></i>Guardar todos';
+    }, 5000);
+  });
+}
+
+/* ── Countdown de cierre ────────────────────────────────── */
+function actualizarCountdowns() {
+  const ahora = Date.now();
+  document.querySelectorAll('[data-cierre]').forEach(card => {
+    const el = card.querySelector('.pn-countdown');
+    if (!el) return;
+    const diff = parseInt(card.dataset.cierre) * 1000 - ahora;
+    if (diff <= 0) { el.textContent = ''; return; }
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    let txt;
+    if (h >= 48) { txt = `Cierra en ${Math.floor(h / 24)}d`; }
+    else if (h >= 1) { txt = `Cierra en ${h}h ${m}m`; }
+    else { txt = `Cierra en ${m}m`; }
+    el.textContent = txt;
+    el.classList.toggle('urgent', h < 2);
+  });
+}
+actualizarCountdowns();
+setInterval(actualizarCountdowns, 60000);
 
 /* ── Colapsar / expandir día ────────────────────────────── */
 function pnDay(hd) {
