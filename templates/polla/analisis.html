@@ -433,6 +433,98 @@
     </div>
   </div>
 
+  <!-- GRÁFICA 9 -->
+  <div class="card shadow-sm mb-4 border-0">
+    <div class="card-header bg-dark text-white fw-bold small py-2">
+      <i class="bi bi-arrow-left-right me-2" style="color:#f0c040;"></i>
+      Gráfica 9 — Evaluación alternativa: ¿conviene separar grupos de eliminatorias?
+    </div>
+    <div class="card-body">
+      <div class="text-center bg-light rounded p-2 mb-3">
+        <img src="{% static 'polla/img/analisis/g09_comparacion_sistemas.png' %}"
+             alt="Gráfica 9" class="img-fluid" style="max-height:420px;cursor:zoom-in;"
+             onclick="abrirModal(this.src)">
+      </div>
+      <h6 class="fw-bold mb-2">Contexto del análisis</h6>
+      <p class="small mb-3">
+        Se evaluaron tres esquemas alternativos de puntuación sobre las mismas 50.000 simulaciones
+        para determinar si separar la Fase de Grupos de las eliminatorias mejoraría la experiencia
+        de juego o ampliaría el número de participantes con opciones reales de victoria:
+      </p>
+      <div class="table-responsive mb-3">
+        <table class="table table-bordered table-sm small">
+          <thead class="table-dark">
+            <tr>
+              <th>Esquema</th>
+              <th>Definición</th>
+              <th class="text-center">P(líder grupos = ganador)</th>
+              <th class="text-center">P(ganador ∈ Top-5 grupos)</th>
+              <th class="text-center">Jugadores con >1% prob.</th>
+              <th class="text-center">Top-5 acaparan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="table-success">
+              <td><strong>Acumulado (actual)</strong></td>
+              <td>Grupos + Eliminatorias</td>
+              <td class="text-center fw-bold">38.8%</td>
+              <td class="text-center fw-bold">80.0%</td>
+              <td class="text-center fw-bold">80 / 80</td>
+              <td class="text-center">7%</td>
+            </tr>
+            <tr class="table-danger">
+              <td><strong>Reset (solo elim.)</strong></td>
+              <td>Puntos grupos ignorados</td>
+              <td class="text-center">10.8%</td>
+              <td class="text-center">36.3%</td>
+              <td class="text-center">80 / 80</td>
+              <td class="text-center">7%</td>
+            </tr>
+            <tr class="table-warning">
+              <td><strong>Mixto (30% + 100%)</strong></td>
+              <td>30% pts grupos + 100% elim.</td>
+              <td class="text-center">19.1%</td>
+              <td class="text-center">53.1%</td>
+              <td class="text-center">80 / 80</td>
+              <td class="text-center">7%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h6 class="fw-bold mb-2">Interpretación</h6>
+      <p class="small mb-2">
+        El hallazgo central es que <strong>los tres esquemas producen exactamente el mismo número
+        de jugadores con probabilidad mayor al 1% de ganar: los 80 participantes</strong>.
+        La distribución de victorias entre el Top-20 de jugadores (panel derecho) es
+        prácticamente idéntica en ambos sistemas — el "campo democratizador" que se buscaba
+        con el reset no existe en la práctica, porque la habilidad individual determina
+        los resultados en cualquiera de los esquemas.
+      </p>
+      <p class="small mb-2">
+        Lo que sí cambia significativamente es la <strong>predictibilidad del torneo</strong>:
+        el sistema acumulado mantiene una señal clara de grupos hacia el total (38.8%), lo que
+        genera una narrativa sostenida — hay líderes identificables, perseguidores, y remontadas
+        con significado. El sistema reset reduce esa señal a 10.8%, lo que equivale a decir que
+        la Fase de Grupos, con sus 72 partidos y 216 puntos en juego, <em>pierde relevancia
+        estratégica para el premio principal</em>. Los participantes lo perciben rápidamente
+        y tienden a comprometerse menos con los pronósticos de grupos.
+      </p>
+      <p class="small mb-2">
+        El sistema mixto (30% grupos + 100% eliminatorias) ocupa un punto intermedio sin
+        ventaja real: reduce la señal a 19.1% sin aumentar la apertura, y añade complejidad
+        al sistema de puntuación sin beneficio medible.
+      </p>
+      <div class="alert alert-dark py-2 small mb-0" style="color:#eee;">
+        <strong>Conclusión:</strong> El sistema acumulado actual es óptimo. El reset no amplía
+        el campo competitivo real — los 80 jugadores ya tienen opciones en todos los esquemas.
+        Lo que el reset sí hace es <em>destruir la narrativa de grupos</em>, que es
+        precisamente el elemento que genera engagement durante el primer mes del torneo.
+        <strong>No se recomienda modificar el esquema de puntuación.</strong>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Conclusiones y recomendaciones ────────────────────────────── -->
   <div class="card shadow-sm mb-4 border-0">
     <div class="card-header fw-bold py-3" style="background:#0d3b1e;color:white;">
@@ -466,6 +558,13 @@
           <strong>El sistema es escalable y robusto.</strong> La sensibilidad al tamaño del
           grupo (N=20 a N=200) y a la heterogeneidad de habilidades (α=1.0 a α=5.0) se
           mantiene dentro de rangos que no alteran las conclusiones estratégicas.
+        </li>
+        <li class="mb-2">
+          <strong>El esquema acumulado es superior a las alternativas evaluadas.</strong>
+          La comparación entre sistema acumulado, reset (solo eliminatorias) y mixto (30%+100%)
+          demuestra que los tres esquemas producen el mismo número de jugadores con opciones
+          reales (80/80 con P&gt;1%), pero el reset destruye la narrativa de grupos — 72 partidos
+          quedan sin peso estratégico para el premio principal. No se recomienda ningún cambio.
         </li>
       </ol>
 
