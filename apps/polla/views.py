@@ -425,6 +425,13 @@ def index(request):
 
 
 @login_required
+def logout_polla(request):
+    from django.contrib.auth import logout
+    logout(request)
+    return redirect('accounts:landing')
+
+
+@login_required
 def autorizar_descuento(request):
     """Pantalla de autorización de descuento por nómina. Obligatoria antes de jugar."""
     try:
