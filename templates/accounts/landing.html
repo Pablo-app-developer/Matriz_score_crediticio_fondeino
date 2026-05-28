@@ -757,6 +757,9 @@
     @media (max-width: 640px) {
       .nosotros-hitos { grid-template-columns: 1fr; max-width: 340px; }
     }
+    @media (max-width: 700px) {
+      .mision-vision-grid { grid-template-columns: 1fr !important; }
+    }
   </style>
 </head>
 <body>
@@ -800,10 +803,14 @@
         </svg>
         Fondo de Empleados Fondeino
       </div>
-      <h1>Tu bienestar y el de tu familia,<br /><span>nuestra razón de ser.</span></h1>
-      <p>Somos el fondo de empleados que trabaja para que tú y tus seres queridos cuenten con ahorro, crédito y beneficios diseñados a tu medida.</p>
+      <h1>¡Únete a FONDEINO!<br /><span>Tu bienestar financiero empieza aquí.</span></h1>
+      <p>Impulsamos tus metas a través del ahorro y crédito solidario. Somos la organización solidaria del Instituto Neumológico del Oriente, construida sobre la confianza, la ayuda mutua y la responsabilidad.</p>
       <div class="hero-btns">
-        <a href="#servicios" class="btn-primary">
+        <a href="https://wa.me/573167522664" target="_blank" class="btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Asóciate ahora
+        </a>
+        <a href="#servicios" class="btn-outline">
           Conoce nuestros servicios
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
@@ -831,9 +838,16 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="card-tag">Ahorro</div>
+          <div class="card-tag">Líneas de Ahorro</div>
           <h3 class="card-title">Tu dinero, seguro y trabajando para ti.</h3>
-          <p class="card-text">Ahorra de forma permanente, a la vista o a término — tú eliges la modalidad que mejor se adapta a tu momento. Sin intermediarios y con los rendimientos reinvertidos en los mismos asociados.</p>
+          <p class="card-text">Promovemos el hábito del ahorro con modalidades que se adaptan a tus objetivos:</p>
+          <ul style="font-size:13px;color:var(--text-body);line-height:1.9;padding-left:18px;margin-bottom:16px;flex:1;">
+            <li><strong>Ahorro Permanente Obligatorio</strong> — Base de tu vinculación al Fondo.</li>
+            <li><strong>Ahorro Voluntario</strong> — Flexible, según tu capacidad y metas.</li>
+            <li><strong>Ahorro Programado / Navideño</strong> — Para gastos especiales o metas de corto plazo.</li>
+            <li><strong>Ahorro Educativo</strong> — Apoya la formación del asociado y su familia.</li>
+            <li><strong>INO Ahorrito</strong> — Fomenta la cultura del ahorro en tus hijos.</li>
+          </ul>
           <a href="https://wa.me/573167522664" target="_blank" class="card-btn">
             Empieza a ahorrar hoy
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -851,9 +865,16 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="card-tag">Crédito solidario</div>
+          <div class="card-tag">Líneas de Crédito</div>
           <h3 class="card-title">Financia lo que necesitas, con tasas que te respetan.</h3>
-          <p class="card-text">Créditos de libre inversión y por libranza — con descuento automático de nómina — para un viaje, una emergencia, mejoras en tu hogar o lo que decidas. Tasas preferenciales, muy por debajo del mercado financiero.</p>
+          <p class="card-text">Soluciones financieras oportunas con tasas preferenciales y pago por descuento de nómina:</p>
+          <ul style="font-size:13px;color:var(--text-body);line-height:1.9;padding-left:18px;margin-bottom:16px;flex:1;">
+            <li><strong>Libre Inversión</strong> — Para proyectos, gastos o imprevistos.</li>
+            <li><strong>Educativo</strong> — Matrícula, carreras técnicas, universitarias y posgrados.</li>
+            <li><strong>Salud</strong> — Tratamientos, exámenes y servicios no cubiertos por el sistema.</li>
+            <li><strong>Calamidad Doméstica</strong> — Respuesta rápida ante emergencias familiares.</li>
+            <li><strong>Emprendimiento</strong> · <strong>Credi-Prima</strong> · <strong>Credi-Convenios</strong></li>
+          </ul>
           <a href="https://wa.me/573167522664" target="_blank" class="card-btn">
             Solicita tu crédito aquí
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1038,24 +1059,91 @@
       <h2 class="section-title">El fondo de empleados que<br />trabaja para ti</h2>
     </div>
 
-    <div class="nosotros-body-wrap">
-      <p>
-        <strong>FONDEINO</strong> — Fondo de Empleados INO — es la organización de economía solidaria
-        constituida el <strong>9 de junio de 2025</strong> para los trabajadores del
-        <strong>Instituto Neumológico del Oriente (INO)</strong>, la institución de salud especializada
-        en enfermedades respiratorias más importante del nororiente colombiano.
-      </p>
-      <p>
-        Operamos <strong>sin ánimo de lucro</strong> bajo los principios de la economía solidaria,
-        conforme a la Ley 454 de 1998 y el Decreto Ley 1481 de 1989, con inspección y vigilancia
-        de la <strong>Superintendencia de la Economía Solidaria</strong>.
-        Todo excedente se reinvierte en beneficios reales para nuestros asociados — nunca en utilidades privadas.
-      </p>
-      <p>
-        Fomentamos el ahorro, facilitamos el acceso a crédito en condiciones justas y desarrollamos
-        programas de bienestar, recreación y educación que llegan a los trabajadores y a sus familias.
-        Somos de nuestros asociados y existimos para ellos.
-      </p>
+    <!-- MISIÓN Y VISIÓN -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:960px;margin:0 auto 48px;">
+      <div class="hito" style="border-top-color:var(--cyan);align-items:flex-start;text-align:left;gap:14px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+          <div style="width:36px;height:36px;background:var(--cyan);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);">Misión</span>
+        </div>
+        <p style="font-size:14px;line-height:1.8;color:var(--text-body);margin:0;">
+          FONDEINO es un Fondo de Empleados de carácter solidario que promueve el bienestar integral de sus asociados y sus familias, mediante la prestación eficiente, transparente y responsable de servicios de ahorro, crédito y beneficios sociales, fortaleciendo la cultura del ahorro, la ayuda mutua y la solidaridad, en cumplimiento de la normatividad vigente y de los principios del cooperativismo y la economía solidaria.
+        </p>
+      </div>
+      <div class="hito" style="border-top-color:var(--blue);align-items:flex-start;text-align:left;gap:14px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+          <div style="width:36px;height:36px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6l11-4 11 4-11 4z"/><path d="M1 12l11 4 11-4"/><path d="M1 18l11 4 11-4"/></svg>
+          </div>
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);">Visión</span>
+        </div>
+        <p style="font-size:14px;line-height:1.8;color:var(--text-body);margin:0;">
+          Al 2030, FONDEINO será reconocido como un Fondo de Empleados sólido, confiable y sostenible, destacado por su buen gobierno, transparencia y eficiencia administrativa, así como por la calidad y oportunidad de sus servicios financieros y sociales, líder en el fortalecimiento del ahorro y el bienestar de sus asociados.
+        </p>
+      </div>
+    </div>
+
+    <!-- PRINCIPIOS -->
+    <div style="max-width:960px;margin:0 auto 36px;">
+      <div style="text-align:center;margin-bottom:28px;">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);">Nuestros principios</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+        <div style="background:var(--white);border:1px solid var(--gray-mid);border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(52,52,101,.05);">
+          <div style="font-size:20px;margin-bottom:8px;">🤝</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">Solidaridad</div>
+          <div style="font-size:12px;color:var(--text-body);line-height:1.6;">Ayuda mutua y cooperación para el beneficio colectivo.</div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--gray-mid);border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(52,52,101,.05);">
+          <div style="font-size:20px;margin-bottom:8px;">⚖️</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">Equidad</div>
+          <div style="font-size:12px;color:var(--text-body);line-height:1.6;">Trato justo e igualitario a todos los asociados.</div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--gray-mid);border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(52,52,101,.05);">
+          <div style="font-size:20px;margin-bottom:8px;">🔍</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">Transparencia</div>
+          <div style="font-size:12px;color:var(--text-body);line-height:1.6;">Actuación clara y honesta en la administración de recursos.</div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--gray-mid);border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(52,52,101,.05);">
+          <div style="font-size:20px;margin-bottom:8px;">🛡️</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">Confianza</div>
+          <div style="font-size:12px;color:var(--text-body);line-height:1.6;">Credibilidad institucional y gestión responsable.</div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--gray-mid);border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(52,52,101,.05);">
+          <div style="font-size:20px;margin-bottom:8px;">✅</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">Responsabilidad</div>
+          <div style="font-size:12px;color:var(--text-body);line-height:1.6;">Cumplimiento riguroso de obligaciones legales y éticas.</div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--gray-mid);border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(52,52,101,.05);">
+          <div style="font-size:20px;margin-bottom:8px;">⚡</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">Oportunidad</div>
+          <div style="font-size:12px;color:var(--text-body);line-height:1.6;">Atención ágil y eficiente cuando el asociado lo necesita.</div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--gray-mid);border-radius:12px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(52,52,101,.05);">
+          <div style="font-size:20px;margin-bottom:8px;">🏛️</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-dark);margin-bottom:6px;">Buen Gobierno</div>
+          <div style="font-size:12px;color:var(--text-body);line-height:1.6;">Prácticas éticas y eficientes en la gestión institucional.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REQUISITOS PARA ASOCIARSE -->
+    <div style="max-width:680px;margin:0 auto;background:var(--white);border:1px solid var(--gray-mid);border-radius:18px;padding:36px 40px;box-shadow:0 4px 24px rgba(52,52,101,.08);text-align:center;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);margin-bottom:10px;">¿Cómo asociarte?</div>
+      <h3 style="font-size:20px;font-weight:800;color:var(--text-dark);margin-bottom:20px;">Afiliarte es sencillo</h3>
+      <ol style="text-align:left;font-size:14px;color:var(--text-body);line-height:2;padding-left:20px;margin-bottom:24px;">
+        <li>Tener vínculo laboral, contractual o pensional con el <strong>Instituto Neumológico del Oriente</strong>.</li>
+        <li>Diligenciar el <strong>formulario de afiliación</strong>.</li>
+        <li>Autorizar el <strong>descuento de la cuota periódica</strong>.</li>
+        <li>Aceptar el <strong>Estatuto y los Reglamentos</strong> del Fondo.</li>
+      </ol>
+      <p style="font-size:13px;color:var(--text-body);margin-bottom:24px;">Una vez afiliado, podrás acceder de inmediato a los servicios de ahorro y crédito.</p>
+      <a href="https://wa.me/573167522664" target="_blank" class="btn-primary" style="display:inline-flex;justify-content:center;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Solicitar afiliación
+      </a>
     </div>
 
   </section>
