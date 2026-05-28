@@ -2,6 +2,7 @@ import csv
 import io
 import json
 import random
+import re
 from collections import defaultdict
 from datetime import timedelta
 
@@ -161,7 +162,7 @@ def _procesar_excel_afiliados(df):
                 val = row.get(col_map[n], '')
                 if pd.isna(val):
                     return ''
-                return str(val).strip()
+                return re.sub(r'_x[0-9A-Fa-f]{4}_|\x00', '', str(val)).strip()
         return ''
 
     for idx, row in df.iterrows():

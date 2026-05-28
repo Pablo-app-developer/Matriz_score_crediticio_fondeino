@@ -10,6 +10,8 @@ Comportamiento:
     de 1 a 2, se crea la Polla B. Nunca se reduce de 2 a 1 (solo warning).
 """
 
+import re
+
 import pandas as pd
 from django.core.management.base import BaseCommand, CommandError
 
@@ -49,7 +51,7 @@ class Command(BaseCommand):
                     val = row.get(col_map[n], '')
                     if pd.isna(val):
                         return ''
-                    return str(val).strip()
+                    return re.sub(r'_x[0-9A-Fa-f]{4}_|\x00', '', str(val)).strip()
             return ''
 
         creados, actualizados, nuevas_pollas, warnings, errores = [], [], [], [], []

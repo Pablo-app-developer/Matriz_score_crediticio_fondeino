@@ -1,3 +1,5 @@
+import re
+
 import pandas as pd
 from datetime import datetime
 from django.shortcuts import render, redirect
@@ -68,6 +70,9 @@ def upload_nomina(request):
                 cargado_por=request.user,
             )
 
+            def _clean(val):
+                return re.sub(r'_x[0-9A-Fa-f]{4}_|\x00', '', str(val)).strip()
+
             empleados = []
             for _, row in df.iterrows():
                 cedula = str(row.get(COL_CEDULA, '')).strip()
@@ -83,10 +88,10 @@ def upload_nomina(request):
                 empleados.append(Empleado(
                     carga=carga,
                     cedula=cedula,
-                    nombre=str(row.get(COL_NOMBRE, '')).strip(),
-                    estado=str(row.get(COL_ESTADO, '')).strip() if COL_ESTADO in df.columns else '',
-                    area=str(row.get(COL_AREA, '')).strip() if COL_AREA in df.columns else '',
-                    cargo=str(row.get(COL_CARGO, '')).strip() if COL_CARGO in df.columns else '',
+                    nombre=_clean(row.get(COL_NOMBRE, '')),
+                    estado=_clean(row.get(COL_ESTADO, '')) if COL_ESTADO in df.columns else '',
+                    area=_clean(row.get(COL_AREA, '')) if COL_AREA in df.columns else '',
+                    cargo=_clean(row.get(COL_CARGO, '')) if COL_CARGO in df.columns else '',
                     fecha_ingreso=_parse_date(row.get(COL_FECHA_INGRESO)) if COL_FECHA_INGRESO in df.columns else None,
                     fecha_retiro=_parse_date(row.get(COL_FECHA_RETIRO)) if COL_FECHA_RETIRO in df.columns else None,
                     fecha_contrato_hasta=_parse_date(row.get(COL_FECHA_CONTRATO)) if COL_FECHA_CONTRATO in df.columns else None,
