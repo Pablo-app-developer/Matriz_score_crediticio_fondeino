@@ -357,8 +357,8 @@
     }
     .footer-grid {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 48px;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
       margin-bottom: 40px;
     }
     .footer-brand img { height: 64px; margin-bottom: 16px; object-fit: contain; }
@@ -687,7 +687,8 @@
       .section { padding: 52px 24px; }
       .zona-band { padding: 44px 24px; justify-content: center; text-align: center; }
       footer { padding: 44px 24px 24px; }
-      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
+      .footer-brand { grid-column: 1 / -1; }
       .topbar { padding: 7px 20px; }
       .float-zona { bottom: 18px; right: 18px; }
       .benefits-grid { grid-template-columns: 1fr; }
@@ -1231,19 +1232,34 @@
         </p>
       </div>
       <div class="footer-col">
-        <h4>Servicios</h4>
+        <h4>Ahorro</h4>
         <ul>
-          <li><a href="#">Ahorro programado</a></li>
-          <li><a href="#">Libre inversión</a></li>
-          <li><a href="#">Crédito educativo</a></li>
-          <li><a href="#">Convenio lentes</a></li>
+          <li><a href="#servicios">Ahorro Permanente Obligatorio</a></li>
+          <li><a href="#servicios">Ahorro Voluntario</a></li>
+          <li><a href="#servicios">Ahorro Programado / Navideño</a></li>
+          <li><a href="#servicios">Ahorro Educativo</a></li>
+          <li><a href="#servicios">INO Ahorrito</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Crédito</h4>
+        <ul>
+          <li><a href="#servicios">Libre Inversión</a></li>
+          <li><a href="#servicios">Educativo</a></li>
+          <li><a href="#servicios">Salud</a></li>
+          <li><a href="#servicios">Calamidad Doméstica</a></li>
+          <li><a href="#servicios">Emprendimiento</a></li>
+          <li><a href="#servicios">Credi-Prima</a></li>
+          <li><a href="#servicios">Credi-Convenios</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>Institucional</h4>
         <ul>
-          <li><a href="#">Quiénes somos</a></li>
-          <li><a href="#">Estatutos</a></li>
+          <li><a href="#nosotros">Quiénes somos</a></li>
+          <li><a href="#nosotros">Misión y Visión</a></li>
+          <li><a href="#nosotros">Principios y Valores</a></li>
+          <li><a href="#nosotros">Cómo asociarse</a></li>
           <li><a href="#contacto">Contáctenos</a></li>
           <li><a href="{% url 'accounts:login' %}">Zona Transaccional</a></li>
         </ul>
