@@ -67,10 +67,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'fondeino_web.wsgi.application'
 
-_NEON_URL = 'postgresql://neondb_owner:npg_QIULTem45pcC@ep-super-recipe-amv3qw0r.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require'
-DATABASE_URL = os.environ.get('DATABASE_URL') or (_NEON_URL if ON_VERCEL else f'sqlite:///{BASE_DIR}/db.sqlite3')
+_NEON_DIRECT = 'postgresql://neondb_owner:npg_QIULTem45pcC@ep-super-recipe-amv3qw0r.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require'
+_NEON_POOLER = 'postgresql://neondb_owner:npg_QIULTem45pcC@ep-super-recipe-amv3qw0r-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require'
+DATABASE_URL = os.environ.get('DATABASE_URL') or (_NEON_POOLER if ON_VERCEL else f'sqlite:///{BASE_DIR}/db.sqlite3')
 DATABASES = {
-    'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+    'default': dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=0,          # serverless: cerrar conexión al terminar el request
+        conn_health_checks=True,
+    )
 }
 
 AUTH_USER_MODEL = 'accounts.Usuario'

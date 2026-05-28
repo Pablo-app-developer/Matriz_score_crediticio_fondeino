@@ -9,11 +9,13 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.views.decorators.cache import cache_control
 
 from .models import Usuario
 from .forms import LoginForm, UsuarioCrearForm, UsuarioEditarForm, CambiarPasswordForm
 
 
+@cache_control(public=True, max_age=300, s_maxage=300)
 def landing(request):
     if request.user.is_authenticated:
         return redirect('accounts:panel_selector')
