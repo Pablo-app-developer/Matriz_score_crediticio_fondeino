@@ -25,6 +25,9 @@ def landing(request):
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('accounts:panel_selector')
+    next_url = request.GET.get('next', '')
+    if next_url.startswith('/polla/'):
+        return redirect('/polla/')
     form = LoginForm(request, data=request.POST or None)
     if request.method == 'POST' and form.is_valid():
         user = form.get_user()
