@@ -369,7 +369,6 @@ def analisis(request):
 # Flujo de activación / index
 # ─────────────────────────────────────────────
 
-@login_required
 def index(request):
     afiliado = _get_afiliado(request.user)
     config = ConfiguracionPolla.get()
