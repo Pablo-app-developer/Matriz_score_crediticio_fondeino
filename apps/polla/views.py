@@ -19,7 +19,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from apps.accounts.forms import LoginForm
 from .decorators import admin_polla_required, afiliado_activo
 from .forms import (
     AfiliadoManualForm,
@@ -418,6 +417,7 @@ def index(request):
         })
     else:
         # Landing con login integrado
+        from apps.accounts.forms import LoginForm
         login_form = LoginForm(request, data=request.POST or None)
         if request.method == 'POST':
             if login_form.is_valid():
