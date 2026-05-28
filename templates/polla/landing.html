@@ -23,9 +23,36 @@
         <i class="bi bi-key-fill me-2"></i>Activar mi cuenta
       </a>
     {% else %}
-      <a href="/login/?next=/polla/" class="btn btn-warning btn-lg px-5 fw-bold shadow">
-        <i class="bi bi-box-arrow-in-right me-2"></i>Ingresar para participar
-      </a>
+      <!-- Login inline -->
+      <div class="polla-login-card mx-auto mt-3">
+        <p class="polla-login-label">
+          <i class="bi bi-lock-fill me-1"></i>Ingresa para ver tus pronósticos
+        </p>
+        <form method="post" action="{% url 'polla:index' %}">
+          {% csrf_token %}
+          <div class="polla-login-fields">
+            <input type="text" name="username" class="polla-input" placeholder="Usuario" autocomplete="username" required>
+            <div class="polla-pass-wrap">
+              <input type="password" name="password" id="polla-pass" class="polla-input" placeholder="Contraseña" autocomplete="current-password" required>
+              <button type="button" class="polla-eye" onclick="togglePollaPass()" title="Mostrar/ocultar">
+                <i class="bi bi-eye" id="polla-eye-icon"></i>
+              </button>
+            </div>
+            <button type="submit" class="btn btn-warning fw-bold px-4">
+              <i class="bi bi-box-arrow-in-right me-1"></i>Entrar
+            </button>
+          </div>
+          {% if login_form.non_field_errors %}
+          <div class="polla-login-error">{{ login_form.non_field_errors|join:", " }}</div>
+          {% endif %}
+          {% for field in login_form %}{% if field.errors %}
+          <div class="polla-login-error">{{ field.errors|join:", " }}</div>
+          {% endif %}{% endfor %}
+        </form>
+        <div class="mt-2" style="font-size:.78rem;opacity:.45;">
+          <a href="{% url 'accounts:password_reset' %}" style="color:inherit;">¿Olvidaste tu contraseña?</a>
+        </div>
+      </div>
     {% endif %}
   </div>
 
@@ -162,6 +189,74 @@
 {% block extra_css %}
 {{ block.super }}
 <style>
+/* ── Login inline polla ── */
+.polla-login-card {
+  max-width: 420px;
+  background: rgba(0,0,0,.45);
+  border: 1px solid rgba(240,192,64,.25);
+  border-radius: 16px;
+  padding: 1.2rem 1.4rem 1rem;
+  backdrop-filter: blur(6px);
+}
+.polla-login-label {
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.45);
+  margin-bottom: .75rem;
+}
+.polla-login-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+  justify-content: center;
+}
+.polla-pass-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 140px;
+}
+.polla-input {
+  width: 100%;
+  flex: 1;
+  min-width: 140px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(240,192,64,.2);
+  border-radius: 8px;
+  color: #fff;
+  padding: .5rem .75rem;
+  font-size: .9rem;
+  outline: none;
+  transition: border-color .2s;
+}
+.polla-input::placeholder { color: rgba(255,255,255,.3); }
+.polla-input:focus { border-color: rgba(240,192,64,.55); background: rgba(255,255,255,.12); }
+.polla-pass-wrap .polla-input { padding-right: 2.4rem; }
+.polla-eye {
+  position: absolute;
+  right: .5rem; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none;
+  color: rgba(255,255,255,.4);
+  cursor: pointer; padding: 0; line-height: 1;
+  font-size: 1rem;
+}
+.polla-eye:hover { color: #f0c040; }
+.polla-login-error {
+  margin-top: .6rem;
+  font-size: .8rem;
+  color: #ff7c7c;
+  background: rgba(255,60,60,.12);
+  border-radius: 6px;
+  padding: .4rem .7rem;
+}
+@media (max-width: 480px) {
+  .polla-login-fields { flex-direction: column; align-items: stretch; }
+  .polla-input { min-width: unset; }
+}
+
 .wc-cd-wrap {
   background: linear-gradient(135deg, #0b1623 0%, #14263a 60%, #091320 100%);
   border: 1px solid #1e3a5f;
@@ -265,6 +360,20 @@
 {% endblock %}
 
 {% block polla_scripts %}
+<script>
+function togglePollaPass() {
+  const inp = document.getElementById('polla-pass');
+  const ico = document.getElementById('polla-eye-icon');
+  if (!inp) return;
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    ico.className = 'bi bi-eye-slash';
+  } else {
+    inp.type = 'password';
+    ico.className = 'bi bi-eye';
+  }
+}
+</script>
 <script>
 (function () {
   /* Primer partido: 11 jun 2026 18:00 COT (UTC-5) → 23:00 UTC */

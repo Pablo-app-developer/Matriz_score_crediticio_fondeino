@@ -19,6 +19,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
+from apps.accounts.forms import LoginForm
 from .decorators import admin_polla_required, afiliado_activo
 from .forms import (
     AfiliadoManualForm,
@@ -416,9 +417,19 @@ def index(request):
             'pronosticos_hechos': pronosticos_hechos,
         })
     else:
-        # Landing / Activar
+        # Landing con login integrado
+        login_form = LoginForm(request, data=request.POST or None)
+        if request.method == 'POST':
+            if login_form.is_valid():
+                user = login_form.get_user()
+                if not user.activo:
+                    login_form.add_error(None, 'Tu cuenta está desactivada.')
+                else:
+                    auth_login(request, user)
+                    return redirect('polla:index')
         return render(request, 'polla/landing.html', {
             'config': config,
+            'login_form': login_form,
             'ranking_preview': InscripcionPolla.objects.filter(activa=True).select_related(
                 'afiliado'
             ).order_by('-puntos_totales')[:10],

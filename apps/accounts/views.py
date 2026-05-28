@@ -87,6 +87,10 @@ def logout_view(request):
     return redirect('accounts:login')
 
 
+def olvide_password(request):
+    return render(request, 'accounts/olvide_password.html')
+
+
 @login_required
 def dashboard(request):
     return redirect('accounts:panel_selector')
