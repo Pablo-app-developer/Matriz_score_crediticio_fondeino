@@ -1,21 +1,38 @@
-# FONDEINO — Sistema de Evaluación Crediticia
+# FONDEINO — Plataforma Web
 
-Aplicación web que digitaliza y automatiza la **Matriz de Riesgo Crediticio** del Fondo de Empleados FONDEINO, reemplazando el archivo Excel `Plantilla_Fondeino_V4.xlsm` con una plataforma multiusuario, con historial, exportación PDF y carga de nómina.
+Plataforma web del **Fondo de Empleados FONDEINO** que integra evaluación crediticia, gestión de nómina, landing pública y sistema de polla deportiva para afiliados.
 
 ---
 
-## Características principales
+## Módulos
 
-- **Evaluación de crédito automatizada** — scoring de 6 factores, 100 puntos, decisión automática (APROBAR / REVISAR / RECHAZAR)
-- **Plan de pagos** — tabla de amortización con método DAYS360, igual al Excel original
-- **Panel de control** — KPIs del mes: total, aprobadas, rechazadas, en revisión, score promedio, montos
-- **Historial** — búsqueda por nombre, cédula, decisión y fecha
-- **Búsqueda de empleado** — autocompletado AJAX desde la base de nómina cargada
-- **Exportación PDF** — página optimizada para A4 con plan de pagos completo
-- **Carga de nómina** — upload de Excel (`.xlsx`) procesado en memoria
-- **Gestión de usuarios** — roles Admin y Comité, activación/desactivación
-- **Configuración del scoring** — todos los umbrales y pesos ajustables por el administrador
-- **Modalidades de crédito** — tasas configurables por tipo de crédito
+### Crédito
+- Scoring automatizado de 6 factores (100 pts) — decisión APROBAR / REVISAR / RECHAZAR
+- Plan de pagos con amortización método DAYS360
+- Panel de control con KPIs del mes
+- Historial con búsqueda por nombre, cédula, decisión y fecha
+- Exportación PDF optimizada para A4
+- Modalidades de crédito con tasas configurables
+- Configuración de umbrales y pesos desde el panel admin
+
+### Nómina
+- Carga de nómina desde Excel (`.xlsx`)
+- Autocompletado AJAX de empleados en el formulario de crédito
+
+### Cuentas y autenticación
+- Roles: Admin y Comité
+- Bloqueo por fuerza bruta (django-axes, 5 intentos)
+- Cambio de contraseña obligatorio al primer ingreso
+- Recuperación de contraseña por correo
+- Cierre de sesión automático por inactividad (30 min)
+
+### Landing pública
+- Página principal de fondeino.com con información del fondo
+
+### Polla deportiva
+- Sistema de predicciones de partidos para afiliados
+- Ranking público
+- Autorización de descuento por nómina
 
 ---
 
@@ -29,21 +46,21 @@ Aplicación web que digitaliza y automatiza la **Matriz de Riesgo Crediticio** d
 | Archivos estáticos | WhiteNoise |
 | Deploy | Vercel (serverless Python) |
 | Excel / Nómina | pandas + openpyxl |
+| Seguridad | django-axes |
 
 ---
 
 ## Estructura del proyecto
 
 ```
-fondeino/
 ├── apps/
-│   ├── accounts/          # Usuarios y autenticación
+│   ├── accounts/          # Usuarios, autenticación, landing, middleware
 │   ├── credito/           # Evaluaciones, scoring, dashboard, PDF
-│   │   ├── scoring.py     # Motor de scoring (replica exacta del Excel)
+│   │   ├── scoring.py     # Motor de scoring
 │   │   ├── models.py      # EvaluacionCredito, Modalidad, Configuracion
-│   │   ├── views.py       # Vistas y APIs AJAX
 │   │   └── templatetags/  # Filtros: cop (formato COP), sum_field
-│   └── nomina/            # Carga y consulta de nómina
+│   ├── nomina/            # Carga y consulta de nómina
+│   └── polla/             # Sistema de polla deportiva
 ├── templates/             # Plantillas HTML por app
 ├── static/css/main.css    # Estilos globales
 ├── fondeino_web/
@@ -55,7 +72,7 @@ fondeino/
 
 ---
 
-## Factores del scoring (100 puntos)
+## Factores del scoring crediticio (100 puntos)
 
 | Factor | Peso máximo |
 |---|---|
@@ -66,8 +83,6 @@ fondeino/
 | Garantías acumuladas (aportes + ahorros) | 15 pts |
 | Historial crédito activo FONDEINO | 10 pts |
 
-### Clasificaciones y decisiones
-
 | Score | Clasificación | Decisión |
 |---|---|---|
 | 80 – 100 | EXCELENTE | APROBAR |
@@ -75,7 +90,7 @@ fondeino/
 | 40 – 59 | REGULAR | REVISAR / CODEUDOR |
 | 0 – 39 | ALTO RIESGO | RECHAZAR |
 
-> Si la cuota supera el mínimo vital (50% del salario neto), se rechaza automáticamente independiente del score.
+> Si la cuota supera el 50% del salario neto se rechaza automáticamente, sin importar el score.
 
 ---
 
@@ -83,28 +98,23 @@ fondeino/
 
 ### Requisitos
 - Python 3.11+
-- pip
-
-### Pasos
 
 ```bash
 # 1. Clonar el repositorio
 git clone https://github.com/Pablo-app-developer/Matriz_score_crediticio_fondeino.git
-cd Matriz_score_crediticio_fondeino/fondeino
+cd Matriz_score_crediticio_fondeino
 
 # 2. Crear entorno virtual
 python -m venv venv
-source venv/bin/activate        # Linux/Mac
 venv\Scripts\activate           # Windows
+source venv/bin/activate        # Linux/Mac
 
 # 3. Instalar dependencias
 pip install -r requirements.txt
 
 # 4. Configurar variables de entorno
-# Crear archivo .env en la raíz con:
-SECRET_KEY=tu-clave-secreta
-DEBUG=True
-DATABASE_URL=sqlite:///db.sqlite3   # o URL de PostgreSQL
+# Copiar .env.example como .env y completar los valores
+cp .env.example .env
 
 # 5. Migraciones
 python manage.py migrate
@@ -116,19 +126,15 @@ python manage.py seed_data
 python manage.py runserver
 ```
 
-Acceder a `http://127.0.0.1:8000` con usuario `admin` / contraseña `Admin1234`.
+Acceder a `http://127.0.0.1:8000`.
 
 ---
 
 ## Despliegue en Vercel
 
-1. Hacer fork del repositorio en GitHub
-2. Importar el proyecto en [vercel.com](https://vercel.com)
-3. Configurar variables de entorno en el dashboard de Vercel:
-   - `SECRET_KEY` — clave secreta Django
-   - `DATABASE_URL` — URL de conexión PostgreSQL (Neon.tech)
-   - `DEBUG` — `False`
-4. El archivo `vercel.json` y `build_files.sh` manejan el resto automáticamente
+1. Importar el repositorio en [vercel.com](https://vercel.com)
+2. Configurar las variables de entorno en el dashboard de Vercel (ver tabla abajo)
+3. El archivo `vercel.json` y `build_files.sh` manejan el build automáticamente
 
 ---
 
@@ -137,9 +143,14 @@ Acceder a `http://127.0.0.1:8000` con usuario `admin` / contraseña `Admin1234`.
 | Variable | Descripción | Requerida |
 |---|---|---|
 | `SECRET_KEY` | Clave secreta Django | Sí |
-| `DATABASE_URL` | URL PostgreSQL completa | Sí (producción) |
-| `DEBUG` | `True` / `False` | No (default False en Vercel) |
+| `DATABASE_URL` | URL de conexión PostgreSQL (Neon.tech) | Sí |
+| `DEBUG` | `True` / `False` | No (default `False` en Vercel) |
 | `ALLOWED_HOSTS` | Hosts permitidos separados por coma | No |
+| `EMAIL_HOST_USER` | Correo Gmail para envío de notificaciones | No |
+| `EMAIL_HOST_PASSWORD` | Contraseña de aplicación Gmail | No |
+| `API_FOOTBALL_KEY` | API key de api-football.com (polla) | No |
+
+Las credenciales **nunca deben hardcodearse** en `settings.py`. Usar siempre `.env` en local y variables de entorno en Vercel.
 
 ---
 
@@ -155,7 +166,7 @@ python manage.py seed_data
 # Recolectar archivos estáticos
 python manage.py collectstatic
 
-# Acceder al shell de Django
+# Shell de Django
 python manage.py shell
 ```
 
