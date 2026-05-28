@@ -5,9 +5,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fondeino — Fondo de Empleados</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" /></noscript>
+  <link rel="preload" href="{% static 'img/familia2.jpg' %}" as="image" fetchpriority="high" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -832,7 +834,7 @@
       <!-- AHORRO -->
       <div class="service-card">
         <div class="card-img">
-          <img src="{% static 'img/img-ahorro.jpg' %}" alt="Ahorro" />
+          <img src="{% static 'img/img-ahorro.jpg' %}" alt="Ahorro" loading="lazy" />
           <div class="card-img-overlay"></div>
           <div class="card-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 1 0 20A10 10 0 0 1 12 2z"/><path d="M12 6v6l4 2"/></svg>
@@ -859,7 +861,7 @@
       <!-- LIBRE INVERSIÓN -->
       <div class="service-card">
         <div class="card-img">
-          <img src="{% static 'img/img-viajes.jpg' %}" alt="Préstamos" />
+          <img src="{% static 'img/img-viajes.jpg' %}" alt="Préstamos" loading="lazy" />
           <div class="card-img-overlay"></div>
           <div class="card-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -888,7 +890,7 @@
       <!-- EDUCATIVO -->
       <div class="service-card">
         <div class="card-img">
-          <img src="{% static 'img/img-estudios.jpg' %}" alt="Crédito Educativo" />
+          <img src="{% static 'img/img-estudios.jpg' %}" alt="Crédito Educativo" loading="lazy" />
           <div class="card-img-overlay"></div>
           <div class="card-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
@@ -908,7 +910,7 @@
       <!-- LENTES -->
       <div class="service-card">
         <div class="card-img">
-          <img src="{% static 'img/img-lentes.jpg' %}" alt="Convenio Lentes" />
+          <img src="{% static 'img/img-lentes.jpg' %}" alt="Convenio Lentes" loading="lazy" />
           <div class="card-img-overlay"></div>
           <div class="card-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>
