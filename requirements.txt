@@ -9,3 +9,4 @@ python-dotenv
 python-dateutil
 Pillow
 requests
+django-axes

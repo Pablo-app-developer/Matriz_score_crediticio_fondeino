@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'axes',
     'apps.accounts',
     'apps.credito',
     'apps.nomina',
@@ -40,6 +41,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'axes.middleware.AxesMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'apps.accounts.middleware.ModuloAccesoMiddleware',
@@ -123,3 +125,26 @@ API_FOOTBALL_KEY = os.environ.get('API_FOOTBALL_KEY', '')
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
+
+# ── Seguridad HTTP (solo en producción Vercel) ──
+SECURE_CONTENT_TYPE_NOSNIFF   = True
+SECURE_REFERRER_POLICY        = 'strict-origin-when-cross-origin'
+X_FRAME_OPTIONS               = 'DENY'
+SESSION_COOKIE_HTTPONLY       = True
+CSRF_COOKIE_HTTPONLY          = True
+SESSION_COOKIE_SECURE         = ON_VERCEL
+CSRF_COOKIE_SECURE            = ON_VERCEL
+SECURE_HSTS_SECONDS           = 31536000 if ON_VERCEL else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = ON_VERCEL
+SECURE_HSTS_PRELOAD           = ON_VERCEL
+
+# ── django-axes: bloqueo por fuerza bruta ──
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+AXES_FAILURE_LIMIT      = 5       # bloquear tras 5 intentos fallidos
+AXES_COOLOFF_TIME       = 1       # bloqueo de 1 hora
+AXES_RESET_ON_SUCCESS   = True    # reinicia contador al iniciar sesión exitosamente
+AXES_LOCKOUT_TEMPLATE   = None    # usa respuesta 403 por defecto
+AXES_ENABLE_ADMIN       = True    # ver intentos en /admin/
