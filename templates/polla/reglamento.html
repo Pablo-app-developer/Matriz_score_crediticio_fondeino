@@ -9,13 +9,27 @@
     </div>
     <div class="card-body">
 
-      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">¿Qué es la Polla Mundialista?</h6>
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">⚽ ¿Qué es la Polla Mundialista?</h6>
       <p>Es una actividad recreativa <strong>exclusiva para los asociados activos de FONDEINO</strong>,
-      organizada como beneficio de bienestar por el fondo de empleados.
-      La inscripción tiene un valor de <strong>$5.000 por asociado</strong>.
-      No constituye un juego de azar con apuesta.</p>
+      organizada como beneficio de bienestar por el Fondo de Empleados.
+      La inscripción tiene un valor de <strong>$5.000 por asociado activo</strong> y
+      <strong>no constituye un juego de azar con apuesta</strong>.</p>
 
-      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">Sistema de puntuación</h6>
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">👥 Participantes</h6>
+      <p>La actividad está dirigida exclusivamente a <strong>asociados activos de FONDEINO</strong>
+      al momento de realizar la inscripción.</p>
+
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">📅 Vigencia de participación</h6>
+      <p>La participación estará habilitada únicamente hasta <strong>10 minutos antes del inicio
+      del primer partido oficial del Mundial</strong>. Una vez iniciado el torneo no se permitirán
+      nuevas inscripciones.</p>
+
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">💳 Forma de pago de inscripción</h6>
+      <p>El valor de inscripción será <strong>descontado directamente por nómina</strong> a través
+      del Fondo de Empleados FONDEINO. Al momento de inscribirse, el asociado autoriza
+      automáticamente el descuento correspondiente.</p>
+
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">📌 Sistema de puntuación</h6>
       <div class="table-responsive mb-3">
         <table class="table table-bordered table-sm">
           <thead class="table-dark">
@@ -28,13 +42,13 @@
           <tbody>
             <tr>
               <td>Acertar resultado (G/E/P)</td>
-              <td class="text-center fw-bold">+{{ config.pts_resultado_grupos }} pt</td>
-              <td class="text-center fw-bold">+{{ config.pts_resultado_eliminatoria }} pts</td>
+              <td class="text-center fw-bold">+{{ config.pts_resultado_grupos }} punto</td>
+              <td class="text-center fw-bold">+{{ config.pts_resultado_eliminatoria }} puntos</td>
             </tr>
             <tr>
               <td>Acertar marcador exacto <em>(incluye punto de resultado)</em></td>
-              <td class="text-center fw-bold text-success">+{{ config.pts_marcador_grupos }} pts adicionales (total 3)</td>
-              <td class="text-center fw-bold text-success">+{{ config.pts_marcador_eliminatoria }} pts adicionales (total 6)</td>
+              <td class="text-center fw-bold text-success">+{{ config.pts_marcador_grupos }} puntos adicionales (total 3)</td>
+              <td class="text-center fw-bold text-success">+{{ config.pts_marcador_eliminatoria }} puntos adicionales (total 6)</td>
             </tr>
             <tr>
               <td>No acertar</td>
@@ -48,70 +62,76 @@
       <div class="alert alert-light border mb-3">
         <strong>Ejemplos:</strong>
         <ul class="mb-0 small mt-1">
-          <li>Colombia 2–1 Argentina. Pronóstico 2–1 → 1 pt resultado + 2 pts marcador = <strong>3 pts</strong> (grupos)</li>
-          <li>Colombia 2–1 Argentina. Pronóstico 1–0 → 1 pt (acertaste que ganaba Colombia, marcador falla)</li>
-          <li>Colombia 2–1 Argentina. Pronóstico 0–2 → <strong>0 pts</strong> (fallaste resultado y marcador)</li>
+          <li>Colombia 2–1 Argentina. Pronóstico <strong>2–1</strong> → 1 pt resultado + 2 pts marcador = <strong>3 pts</strong></li>
+          <li>Colombia 2–1 Argentina. Pronóstico <strong>1–0</strong> → 1 pt (acertaste ganador, marcador falla)</li>
+          <li>Colombia 2–1 Argentina. Pronóstico <strong>0–2</strong> → <strong>0 pts</strong></li>
           <li>Eliminatoria acertada exacta → <strong>6 pts</strong> (2 resultado + 4 marcador)</li>
         </ul>
       </div>
 
       <div class="alert alert-warning small">
         <i class="bi bi-info-circle me-1"></i>
-        <strong>Eliminatorias:</strong> Se puntúa con el resultado a los <strong>90 minutos reglamentarios</strong>.
-        Los tiempos extra y penales no se tienen en cuenta para el pronóstico.
+        <strong>Fase eliminatoria:</strong> se puntúa únicamente con el resultado a los
+        <strong>90 minutos reglamentarios</strong>. Los tiempos extra y penales no aplican.
       </div>
 
-      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">Desempate</h6>
-      <ol>
-        <li>Mayor cantidad de puntos totales</li>
-        <li>Mayor cantidad de marcadores exactos acertados</li>
-        <li>Mayor cantidad de resultados acertados</li>
-        <li>Sorteo</li>
-      </ol>
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">🔒 Bloqueo de pronósticos</h6>
+      <p class="small">Los pronósticos se bloquean automáticamente al iniciar cada partido.
+      No es posible crear ni modificar pronósticos una vez iniciado el encuentro.</p>
 
       <h6 class="text-success fw-bold border-bottom pb-1 mb-3">🏆 Premios</h6>
 
       <div class="card border-success mb-2">
         <div class="card-header bg-success text-white fw-bold small py-2">
-          Premio A — Top 3 General
+          🥇 Premio 1 — Campeón General de la Polla
         </div>
         <div class="card-body small">
-          Los 3 participantes con más puntos en todas las fases (incluyendo la final).
-          <br><strong>Premios:</strong> {{ config.premios_top5_general }}
+          Se otorgará al participante con el <strong>primer lugar de la tabla general</strong>
+          al finalizar todas las fases del Mundial.
+          <br><strong>Premio:</strong> {{ config.premios_top5_general }}
         </div>
       </div>
 
       <div class="card border-primary mb-2">
         <div class="card-header bg-primary text-white fw-bold small py-2">
-          Premio B — Ganador Fase de Grupos
+          🌎 Premio 2 — Acierto del Campeón Mundial
         </div>
         <div class="card-body small">
-          El participante con más puntos acumulados <strong>solo en la fase de grupos</strong>.
-          <br><strong>Premio:</strong> {{ config.premios_top5_grupos }}
+          Antes del inicio del Mundial, cada participante podrá seleccionar qué selección
+          considera que será campeona.
+          <br><strong>Premio:</strong> {{ config.premio_campeon_sorteo }}
+          <br><em class="text-muted">En caso de que varias personas acierten, el desempate se define
+          por clasificación general y criterios de desempate de este reglamento.</em>
         </div>
       </div>
 
       <div class="card border-warning mb-3">
         <div class="card-header bg-warning text-dark fw-bold small py-2">
-          Premio C — Sorteo del Campeón
+          🇨🇴 Premios 3, 4 y 5 — Partidos de Colombia en fase de grupos
         </div>
         <div class="card-body small">
-          Antes del inicio del Mundial, cada participante puede elegir al equipo campeón.
-          Entre todos los que acierten se realiza un <strong>sorteo transparente y auditable</strong>.
-          <br><strong>Premio:</strong> {{ config.premio_campeon_sorteo }}
-          <br><em>Si nadie acierta, el premio queda desierto o se redefine según criterio del administrador.</em>
+          Durante los <strong>tres partidos de Colombia en la fase de grupos</strong>,
+          se reconocerá al participante con <strong>mayor puntaje obtenido en ese partido específico</strong>.
+          <br><strong>Premio por cada partido:</strong> {{ config.premios_top5_grupos }}
+          <br><em class="text-muted">En caso de empate, el ganador se define mediante sorteo aleatorio
+          realizado de manera transparente.</em>
         </div>
       </div>
 
-      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">Bloqueo de pronósticos</h6>
-      <p class="small">Los pronósticos se bloquean automáticamente en el momento en que inicia el partido.
-      No se pueden crear ni modificar pronósticos de partidos que ya comenzaron.</p>
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">📊 Desempates</h6>
+      <ol class="small">
+        <li>Mayor cantidad de puntos totales</li>
+        <li>Mayor cantidad de marcadores exactos acertados</li>
+        <li>Mayor cantidad de resultados acertados</li>
+        <li>Posición en la clasificación general</li>
+        <li>Sorteo</li>
+      </ol>
 
-      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">Tratamiento de datos personales</h6>
-      <p class="small">Los datos personales (cédula, nombre, correo) son recopilados exclusivamente para
-      la gestión de la Polla Mundialista FONDEINO 2026, de conformidad con la
-      <strong>Ley 1581 de 2012</strong> y el Decreto 1377 de 2013 (Colombia).
-      La participación es voluntaria.</p>
+      <h6 class="text-success fw-bold border-bottom pb-1 mb-3">🔐 Tratamiento de datos personales</h6>
+      <p class="small">Los datos personales recopilados (nombre, cédula y correo electrónico) serán
+      utilizados exclusivamente para la gestión y desarrollo de la Polla Mundialista FONDEINO 2026,
+      de conformidad con la <strong>Ley 1581 de 2012</strong> y el Decreto 1377 de 2013.
+      La participación en esta actividad es voluntaria.</p>
 
       <div class="alert alert-light border small mb-0">
         <i class="bi bi-building me-1"></i>

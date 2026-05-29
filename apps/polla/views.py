@@ -1078,19 +1078,57 @@ def admin_reporte(request):
         .order_by('equipo__nombre', 'inscripcion__afiliado__nombre_completo')
     )
 
+    # Partidos de Colombia en fase de grupos con el líder de puntos por partido
+    try:
+        colombia = Equipo.objects.get(codigo_fifa='COL')
+        partidos_colombia = list(
+            Partido.objects.filter(
+                fase='GRUPOS',
+            ).filter(
+                Q(equipo_local=colombia) | Q(equipo_visitante=colombia)
+            ).select_related('equipo_local', 'equipo_visitante').order_by('fecha_hora')
+        )
+    except Equipo.DoesNotExist:
+        colombia = None
+        partidos_colombia = []
+
+    partidos_colombia_info = []
+    for partido in partidos_colombia:
+        lider = None
+        empate_lider = False
+        if partido.finalizado:
+            top = list(
+                Pronostico.objects.filter(
+                    partido=partido,
+                    inscripcion__activa=True,
+                )
+                .select_related('inscripcion__afiliado')
+                .order_by('-puntos_obtenidos', '-inscripcion__puntos_totales', '-inscripcion__aciertos_marcador')
+                [:2]
+            )
+            if top:
+                lider = top[0]
+                empate_lider = len(top) > 1 and top[1].puntos_obtenidos == top[0].puntos_obtenidos
+        partidos_colombia_info.append({
+            'partido': partido,
+            'lider': lider,
+            'empate_lider': empate_lider,
+        })
+
     return render(request, 'polla/admin/reporte.html', {
         'config': config,
-        'total_afiliados':    total_afiliados,
-        'total_doble':        total_doble,
-        'total_vinculados':   total_vinculados,
-        'total_inscripciones': total_inscripciones,
-        'total_pronosticos':  total_pronosticos,
+        'total_afiliados':       total_afiliados,
+        'total_doble':           total_doble,
+        'total_vinculados':      total_vinculados,
+        'total_inscripciones':   total_inscripciones,
+        'total_pronosticos':     total_pronosticos,
         'partidos_jugados':      partidos_jugados,
         'partidos_total':        partidos_total,
         'total_autorizaciones':  total_autorizaciones,
         'top5_general':          top5_general,
         'top5_grupos':           top5_grupos,
-        'pronosticos_campeon': pronosticos_campeon,
+        'pronosticos_campeon':   pronosticos_campeon,
+        'partidos_colombia_info': partidos_colombia_info,
     })
 
 
