@@ -109,8 +109,9 @@ body { background:#0f172a !important; }
   padding:.5rem .6rem .4rem;
   gap:.4rem;
 }
-.m-team-local { grid-column:1; grid-row:1; font-size:.82rem; font-weight:700; color:#e2e8f0; line-height:1.25; }
-.m-team-away  { grid-column:2; grid-row:1; font-size:.82rem; font-weight:700; color:#e2e8f0; line-height:1.25; text-align:right; }
+.m-team-local { grid-column:1; grid-row:1; display:flex; align-items:center; gap:.35rem; font-size:.82rem; font-weight:700; color:#e2e8f0; line-height:1.25; }
+.m-team-away  { grid-column:2; grid-row:1; display:flex; align-items:center; justify-content:flex-end; gap:.35rem; font-size:.82rem; font-weight:700; color:#e2e8f0; line-height:1.25; text-align:right; }
+.m-flag { width:26px; height:18px; object-fit:cover; border-radius:3px; flex-shrink:0; }
 .m-inputs, .m-score-final, .m-score-locked {
   grid-column:1 / -1; grid-row:2; justify-self:center;
 }
@@ -238,8 +239,14 @@ body { background:#0f172a !important; }
     </div>
 
     <div class="m-card-body">
-      <div class="m-team-local">{{ p.nombre_local_display }}</div>
-      <div class="m-team-away">{{ p.nombre_visitante_display }}</div>
+      <div class="m-team-local">
+        {% if p.bandera_url_local %}<img class="m-flag" src="{{ p.bandera_url_local }}" alt="">{% endif %}
+        {{ p.nombre_local_display }}
+      </div>
+      <div class="m-team-away">
+        {{ p.nombre_visitante_display }}
+        {% if p.bandera_url_visitante %}<img class="m-flag" src="{{ p.bandera_url_visitante }}" alt="">{% endif %}
+      </div>
 
       {% if p.finalizado %}
         <div class="m-score-final">{{ p.goles_local }} – {{ p.goles_visitante }}</div>
