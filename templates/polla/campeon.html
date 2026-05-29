@@ -2,12 +2,13 @@
 {% block nav_campeon %}active{% endblock %}
 
 {% block polla_content %}
-<div class="container" style="max-width:600px;">
+<div class="container" style="max-width:700px;">
   <div class="card shadow mt-2">
     <div class="card-header bg-warning text-dark fw-bold">
       <i class="bi bi-star-fill me-2"></i>Pronóstico del Campeón
     </div>
     <div class="card-body">
+
       <div class="alert alert-light border mb-3">
         <p class="mb-1 small">
           <i class="bi bi-info-circle me-1 text-primary"></i>
@@ -31,29 +32,65 @@
           <h4 class="fw-bold mb-0">{{ pronostico_campeon.equipo.nombre }}</h4>
         </div>
         {% endif %}
+
       {% else %}
         {% if pronostico_campeon %}
-        <div class="alert alert-success text-center mb-3">
+        <div class="alert alert-success d-flex align-items-center gap-3 mb-3">
           <img src="{{ pronostico_campeon.equipo.bandera_url }}"
                alt="{{ pronostico_campeon.equipo.nombre }}"
-               style="width:96px;height:64px;object-fit:cover;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.25);"
-               class="me-2 align-middle">
-          <strong class="align-middle">{{ pronostico_campeon.equipo.nombre }}</strong>
-          <br><small class="text-muted">Puedes cambiarla hasta el cierre.</small>
+               style="width:56px;height:38px;object-fit:cover;border-radius:6px;flex-shrink:0;">
+          <div>
+            <strong>{{ pronostico_campeon.equipo.nombre }}</strong> — tu selección actual
+            <br><small class="text-muted">Puedes cambiarla hasta el cierre.</small>
+          </div>
         </div>
         {% endif %}
 
-        <form method="post">
+        <form method="post" id="form-campeon">
           {% csrf_token %}
+          {# Select oculto — lo maneja el JS #}
+          <select name="equipo" id="equipo-hidden" style="display:none;" required>
+            <option value="">---------</option>
+            {% for e in equipos %}
+            <option value="{{ e.pk }}"
+              {% if pronostico_campeon and pronostico_campeon.equipo.pk == e.pk %}selected{% endif %}>
+              {{ e.nombre }}
+            </option>
+            {% endfor %}
+          </select>
+
+          <p class="small text-muted mb-2">
+            <i class="bi bi-hand-index me-1"></i>Toca el equipo que crees que será campeón:
+          </p>
+
+          {# Grid visual de equipos por grupo #}
+          {% regroup equipos by grupo as grupos_list %}
+          {% for grupo in grupos_list %}
           <div class="mb-3">
-            <label class="form-label fw-bold">Selecciona el equipo campeón</label>
-            {{ form.equipo }}
-            {% if form.equipo.errors %}
-              <div class="invalid-feedback d-block">{{ form.equipo.errors }}</div>
-            {% endif %}
+            <div class="small fw-bold text-muted mb-1 px-1">Grupo {{ grupo.grouper }}</div>
+            <div class="row g-2">
+              {% for e in grupo.list %}
+              <div class="col-4 col-sm-3">
+                <div class="campeon-card {% if pronostico_campeon and pronostico_campeon.equipo.pk == e.pk %}selected{% endif %}"
+                     data-pk="{{ e.pk }}"
+                     onclick="elegirEquipo({{ e.pk }}, this)">
+                  <img src="{{ e.bandera_url }}"
+                       alt="{{ e.nombre }}"
+                       onerror="this.style.display='none'">
+                  <span>{{ e.nombre }}</span>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
           </div>
+          {% endfor %}
+
+          <div id="seleccion-actual" class="alert alert-warning text-center small py-2 mb-3" style="display:none;">
+            <i class="bi bi-check-circle me-1"></i>Seleccionado: <strong id="seleccion-nombre"></strong>
+          </div>
+
           <div class="d-grid">
-            <button type="submit" class="btn btn-warning fw-bold btn-lg">
+            <button type="submit" class="btn btn-warning fw-bold btn-lg" id="btn-guardar" disabled>
               <i class="bi bi-check-circle me-2"></i>
               {% if pronostico_campeon %}Actualizar selección{% else %}Guardar selección{% endif %}
             </button>
@@ -67,7 +104,73 @@
         </div>
         {% endif %}
       {% endif %}
+
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+.campeon-card {
+  cursor: pointer;
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  padding: 6px 4px 5px;
+  text-align: center;
+  background: #fff;
+  transition: border-color .15s, box-shadow .15s, transform .1s;
+  user-select: none;
+}
+.campeon-card:hover {
+  border-color: #f0c040;
+  box-shadow: 0 2px 8px rgba(240,192,64,.35);
+  transform: translateY(-2px);
+}
+.campeon-card.selected {
+  border-color: #198754;
+  background: #d1e7dd;
+  box-shadow: 0 2px 10px rgba(25,135,84,.3);
+}
+.campeon-card img {
+  display: block;
+  width: 100%;
+  height: 38px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-bottom: 4px;
+}
+.campeon-card span {
+  font-size: .68rem;
+  font-weight: 600;
+  line-height: 1.2;
+  display: block;
+  color: #333;
+}
+</style>
+{% endblock %}
+
+{% block polla_scripts %}
+<script>
+{% if pronostico_campeon %}
+// Si ya hay pronóstico, habilitar el botón desde el inicio
+document.getElementById('btn-guardar').disabled = false;
+{% endif %}
+
+function elegirEquipo(pk, card) {
+  // Deseleccionar todos
+  document.querySelectorAll('.campeon-card').forEach(c => c.classList.remove('selected'));
+  // Seleccionar el clicado
+  card.classList.add('selected');
+  // Actualizar el select oculto
+  document.getElementById('equipo-hidden').value = pk;
+  // Mostrar nombre seleccionado
+  const nombre = card.querySelector('span').textContent.trim();
+  document.getElementById('seleccion-nombre').textContent = nombre;
+  document.getElementById('seleccion-actual').style.display = 'block';
+  // Habilitar botón
+  document.getElementById('btn-guardar').disabled = false;
+}
+</script>
 {% endblock %}

@@ -732,6 +732,8 @@ def campeon(request):
     else:
         form = CampeonForm(instance=pronostico_campeon)
 
+    equipos = list(Equipo.objects.order_by('grupo', 'nombre'))
+
     return render(request, 'polla/campeon.html', {
         'afiliado': afiliado,
         'inscripcion': inscripcion,
@@ -739,6 +741,7 @@ def campeon(request):
         'pronostico_campeon': pronostico_campeon,
         'cerrado': cerrado,
         'config': config,
+        'equipos': equipos,
     })
 
 
