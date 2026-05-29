@@ -50,6 +50,11 @@ from apps.nomina.models import Empleado, CargaNomina
 # Utilidades internas
 # ─────────────────────────────────────────────
 
+def _is_mobile(request):
+    ua = request.META.get('HTTP_USER_AGENT', '').lower()
+    return any(k in ua for k in ('android', 'iphone', 'ipod', 'mobile', 'blackberry', 'windows phone'))
+
+
 def _get_partidos_colombia():
     try:
         col = Equipo.objects.get(codigo_fifa='COL')
@@ -624,7 +629,8 @@ def pronosticos(request):
     partidos_por_fecha_ord = dict(sorted(partidos_por_fecha.items()))
     pendientes_por_fase = {FASE_LABEL[f]: pend_por_fase.get(f, 0) for f in ORDEN_FASES if f in pend_por_fase}
 
-    return render(request, 'polla/pronosticos.html', {
+    template = 'polla/pronosticos_mobile.html' if _is_mobile(request) else 'polla/pronosticos.html'
+    return render(request, template, {
         'afiliado': afiliado,
         'inscripciones': inscripciones,
         'inscripcion_activa': inscripcion_activa,
@@ -637,7 +643,11 @@ def pronosticos(request):
         'fase_sel': fase_sel,
         'fases_tabs': fases_tabs,
         'colombia_partidos': _get_partidos_colombia(),
+        'es_movil': _is_mobile(request),
     })
+
+
+
 
 
 @login_required
