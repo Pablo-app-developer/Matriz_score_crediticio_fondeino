@@ -50,6 +50,19 @@ from apps.nomina.models import Empleado, CargaNomina
 # Utilidades internas
 # ─────────────────────────────────────────────
 
+def _get_partidos_colombia():
+    try:
+        col = Equipo.objects.get(codigo_fifa='COL')
+        return list(
+            Partido.objects.filter(fase='GRUPOS')
+            .filter(Q(equipo_local=col) | Q(equipo_visitante=col))
+            .select_related('equipo_local', 'equipo_visitante')
+            .order_by('fecha_hora')
+        )
+    except Equipo.DoesNotExist:
+        return []
+
+
 def _get_afiliado(user):
     try:
         return user.afiliado
@@ -637,6 +650,7 @@ def pronosticos(request):
         'pendientes_por_fase': pendientes_por_fase,
         'fase_sel': fase_sel,
         'fases_tabs': fases_tabs,
+        'colombia_partidos': _get_partidos_colombia(),
     })
 
 
@@ -1266,6 +1280,34 @@ def admin_sync_api_football(request):
         'tiene_key': tiene_key,
         'con_id': con_id,
         'total_equipos': total_equipos,
+    })
+
+
+@admin_polla_required
+@require_POST
+def admin_resultado_colombia(request):
+    """Guardar resultado de un partido de Colombia desde el modal de pronósticos."""
+    partido_id = request.POST.get('partido_id')
+    try:
+        gl = int(request.POST.get('goles_local', 0))
+        gv = int(request.POST.get('goles_visitante', 0))
+        finalizado = request.POST.get('finalizado') == '1'
+    except (ValueError, TypeError):
+        return JsonResponse({'ok': False, 'error': 'Datos inválidos'}, status=400)
+
+    partido = get_object_or_404(Partido, pk=partido_id)
+    partido.goles_local = gl
+    partido.goles_visitante = gv
+    partido.finalizado = finalizado
+    partido.save(update_fields=['goles_local', 'goles_visitante', 'finalizado'])
+
+    if finalizado:
+        config = ConfiguracionPolla.get()
+        recalcular_todo(config)
+
+    return JsonResponse({
+        'ok': True,
+        'mensaje': f'Resultado guardado: {partido.nombre_local_display} {gl}–{gv} {partido.nombre_visitante_display}',
     })
 
 

@@ -266,6 +266,69 @@ body { background: #0d1b2a !important; }
 </div>{# /pn-day #}
 {% endfor %}
 
+{# ── Botón flotante Colombia (solo admin) ─────────────────── #}
+{% if request.user.es_admin or request.user.es_admin_polla %}
+{% if colombia_partidos %}
+<button type="button"
+        data-bs-toggle="modal" data-bs-target="#modalColombia"
+        style="position:fixed;bottom:1.2rem;right:1.2rem;z-index:1050;
+               background:#f0c040;color:#1a1200;border:none;border-radius:50px;
+               font-weight:700;font-size:.78rem;padding:.55rem 1.1rem;
+               box-shadow:0 4px 16px rgba(0,0,0,.5);cursor:pointer;">
+  🇨🇴 Resultado Colombia
+</button>
+
+<div class="modal fade" id="modalColombia" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
+    <div class="modal-content" style="background:#0d1b2a;border-color:#1e3050;color:#dde8f6;">
+      <div class="modal-header py-2" style="background:#162030;border-color:#1e3050;">
+        <h6 class="modal-title fw-bold" style="color:#f0c040;">🇨🇴 Partidos de Colombia — Fase de Grupos</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3">
+        {% for p in colombia_partidos %}
+        <div class="mb-3 p-3 rounded" style="background:#162030;border:1px solid #1e3050;" id="col-partido-{{ p.pk }}">
+          <div class="small fw-bold mb-2 d-flex justify-content-between align-items-center">
+            <span>
+              {% if p.bandera_url_local %}<img src="{{ p.bandera_url_local }}" style="width:20px;height:14px;object-fit:cover;border-radius:2px;margin-right:4px;">{% endif %}
+              {{ p.nombre_local_display }}
+              <span style="color:#3e5e7c;margin:0 .4rem;">vs</span>
+              {% if p.bandera_url_visitante %}<img src="{{ p.bandera_url_visitante }}" style="width:20px;height:14px;object-fit:cover;border-radius:2px;margin-right:4px;">{% endif %}
+              {{ p.nombre_visitante_display }}
+            </span>
+            {% if p.finalizado %}
+              <span class="badge bg-success">Final: {{ p.goles_local }}–{{ p.goles_visitante }}</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ p.fecha_hora|date:"d/m H:i" }}</span>
+            {% endif %}
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <input type="number" class="form-control form-control-sm text-center fw-bold col-gl"
+                   min="0" max="20" value="{{ p.goles_local|default:0 }}"
+                   style="width:60px;background:#0d1b2a;color:#dde8f6;border-color:#1e3050;">
+            <span style="color:#3e5e7c;font-weight:900;">–</span>
+            <input type="number" class="form-control form-control-sm text-center fw-bold col-gv"
+                   min="0" max="20" value="{{ p.goles_visitante|default:0 }}"
+                   style="width:60px;background:#0d1b2a;color:#dde8f6;border-color:#1e3050;">
+            <label class="d-flex align-items-center gap-1 small ms-2" style="cursor:pointer;">
+              <input type="checkbox" class="form-check-input col-fin" {% if p.finalizado %}checked{% endif %}>
+              Finalizado
+            </label>
+            <button class="btn btn-sm btn-warning fw-bold ms-auto col-guardar"
+                    data-pk="{{ p.pk }}">
+              Guardar
+            </button>
+          </div>
+          <div class="col-msg small mt-1" style="min-height:1.2rem;"></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endif %}
+
 {# ── Modal estadísticas ───────────────────────────────────── #}
 <div class="modal fade" id="modalStats" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
@@ -468,6 +531,45 @@ if (_modalEl) {
     });
   });
 }
+
+/* ── Guardar resultado Colombia ─────────────────────────── */
+document.querySelectorAll('.col-guardar').forEach(btn => {
+  btn.addEventListener('click', function () {
+    const box   = this.closest('[id^="col-partido-"]');
+    const pk    = this.dataset.pk;
+    const gl    = parseInt(box.querySelector('.col-gl').value || '0');
+    const gv    = parseInt(box.querySelector('.col-gv').value || '0');
+    const fin   = box.querySelector('.col-fin').checked ? '1' : '0';
+    const msg   = box.querySelector('.col-msg');
+
+    this.disabled = true;
+    this.textContent = '…';
+
+    const fd = new FormData();
+    fd.append('csrfmiddlewaretoken', CSRF);
+    fd.append('partido_id', pk);
+    fd.append('goles_local', gl);
+    fd.append('goles_visitante', gv);
+    fd.append('finalizado', fin);
+
+    fetch('{% url "polla:admin_resultado_colombia" %}', { method: 'POST', body: fd })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok) {
+          msg.innerHTML = `<span style="color:#78d860;">✓ ${data.mensaje}</span>`;
+          this.textContent = 'Guardar';
+        } else {
+          msg.innerHTML = `<span style="color:#e05050;">${data.error}</span>`;
+          this.textContent = 'Guardar';
+        }
+      })
+      .catch(() => {
+        msg.innerHTML = '<span style="color:#e05050;">Error de red.</span>';
+        this.textContent = 'Guardar';
+      })
+      .finally(() => { this.disabled = false; });
+  });
+});
 
 function _renderStats(d) {
   let html = '';
