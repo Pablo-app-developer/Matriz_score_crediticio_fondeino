@@ -1,5 +1,5 @@
 from django import forms
-from .models import Afiliado, Pronostico, PronosticoCampeon, Equipo
+from .models import Afiliado, Partido, Pronostico, PronosticoCampeon, Equipo
 
 
 def _iso2_to_flag(iso2):
@@ -217,7 +217,6 @@ class ConfiguracionPollaForm(forms.ModelForm):
 
 class PartidoEditarForm(forms.ModelForm):
     class Meta:
-        from .models import Partido
         model = Partido
         fields = ['fecha_hora', 'estadio', 'ciudad']
         widgets = {
@@ -236,11 +235,9 @@ class PartidoEditarForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.fecha_hora:
-            from django.utils import timezone
-            import pytz
-            bogota = pytz.timezone('America/Bogota')
-            local_dt = self.instance.fecha_hora.astimezone(bogota)
+        if self.instance and self.instance.pk and self.instance.fecha_hora:
+            from zoneinfo import ZoneInfo
+            local_dt = self.instance.fecha_hora.astimezone(ZoneInfo('America/Bogota'))
             self.initial['fecha_hora'] = local_dt.strftime('%Y-%m-%dT%H:%M')
 
 
