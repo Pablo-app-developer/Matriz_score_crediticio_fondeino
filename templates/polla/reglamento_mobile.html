@@ -6,106 +6,212 @@ body { background:#0f172a !important; }
 .container-fluid { padding-left:4px !important; padding-right:4px !important; }
 .pk-nav { padding:.3rem .75rem !important; }
 
-.rg-wrap { padding:.45rem .5rem 1.5rem; color:#e2e8f0; font-size:.82rem; line-height:1.6; }
-.rg-titulo { color:#94a3b8; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:.75rem; display:block; }
+/* ── Contenedor ── */
+.rg { padding:.5rem .5rem 2rem; }
 
-.rg-seccion { margin-bottom:1.1rem; }
-.rg-h { font-size:.82rem; font-weight:800; color:#fbbf24; margin-bottom:.4rem; display:flex; align-items:center; gap:.35rem; }
-.rg-p { color:#94a3b8; margin:0; font-size:.8rem; }
+/* ── Encabezado ── */
+.rg-header { padding:.5rem .25rem .8rem; }
+.rg-eyebrow { color:#475569; font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; }
+.rg-main-title { color:#f1f5f9; font-size:1.05rem; font-weight:800; margin-top:.2rem; line-height:1.2; }
 
-/* Tabla de puntos */
-.rg-tabla { width:100%; border-collapse:collapse; margin:.5rem 0; font-size:.75rem; }
-.rg-tabla th { background:#1e293b; color:#94a3b8; font-weight:700; padding:.4rem .5rem; text-align:center; font-size:.68rem; text-transform:uppercase; letter-spacing:.5px; }
-.rg-tabla th:first-child { text-align:left; }
-.rg-tabla td { padding:.4rem .5rem; border-bottom:1px solid #1e293b; color:#e2e8f0; }
-.rg-tabla td:first-child { color:#94a3b8; }
-.rg-tabla .pts { text-align:center; font-weight:800; color:#fbbf24; }
-.rg-tabla .pts2 { text-align:center; font-weight:800; color:#34d399; }
+/* ── Sección ── */
+.rg-sec { margin-bottom:.6rem; background:#1e293b; border-radius:10px; overflow:hidden; }
+.rg-sec-hd {
+  display:flex; align-items:center; gap:.5rem;
+  padding:.6rem .85rem; background:#1e293b;
+  border-bottom:1px solid #0f172a;
+}
+.rg-sec-icon { font-size:.95rem; flex-shrink:0; }
+.rg-sec-title { font-size:.8rem; font-weight:800; color:#f1f5f9; }
+.rg-sec-body { padding:.65rem .85rem; }
 
-/* Premios */
-.rg-premio { background:#1e293b; border-radius:8px; padding:.6rem .75rem; margin:.3rem 0; border-left:3px solid #334155; }
-.rg-premio.gold { border-left-color:#fbbf24; }
-.rg-premio.blue { border-left-color:#60a5fa; }
-.rg-premio.green { border-left-color:#34d399; }
-.rg-premio-titulo { font-size:.75rem; font-weight:800; color:#f1f5f9; margin-bottom:.2rem; }
-.rg-premio-val { font-size:.82rem; font-weight:800; color:#fbbf24; }
-.rg-premio-desc { font-size:.72rem; color:#475569; margin-top:.2rem; }
+/* ── Párrafo ── */
+.rg-txt { font-size:.8rem; color:#cbd5e1; line-height:1.65; margin:0; }
+.rg-txt strong { color:#f1f5f9; font-weight:700; }
+.rg-txt .hl { color:#fbbf24; font-weight:700; }
 
-/* Desempates */
-.rg-ol { padding-left:1.25rem; margin:0; color:#94a3b8; font-size:.78rem; }
-.rg-ol li { padding:.15rem 0; }
+/* ── Sistema de puntos ── */
+.rg-pts-grid { display:grid; grid-template-columns:1fr 1fr; gap:.4rem; }
+.rg-pts-bloque {
+  background:#0f172a; border-radius:8px; padding:.6rem .7rem;
+  border-top:2px solid #334155;
+}
+.rg-pts-bloque.grupos { border-top-color:#60a5fa; }
+.rg-pts-bloque.elim   { border-top-color:#a78bfa; }
+.rg-pts-fase { font-size:.62rem; font-weight:800; text-transform:uppercase; letter-spacing:.8px; margin-bottom:.5rem; }
+.rg-pts-bloque.grupos .rg-pts-fase { color:#60a5fa; }
+.rg-pts-bloque.elim   .rg-pts-fase { color:#a78bfa; }
+.rg-pts-fila { display:flex; justify-content:space-between; align-items:center; padding:.2rem 0; border-bottom:1px solid #1e293b; }
+.rg-pts-fila:last-child { border-bottom:none; }
+.rg-pts-lbl { font-size:.72rem; color:#94a3b8; }
+.rg-pts-val { font-size:.82rem; font-weight:800; }
+.rg-pts-val.result { color:#fbbf24; }
+.rg-pts-val.exact  { color:#34d399; }
 
-/* Nota */
-.rg-nota { background:#1e293b; border-radius:8px; padding:.55rem .75rem; font-size:.72rem; color:#475569; margin-top:.75rem; }
+.rg-nota-pts {
+  margin-top:.5rem; padding:.45rem .6rem;
+  background:#0f172a; border-radius:6px; border-left:2px solid #f59e0b;
+  font-size:.72rem; color:#94a3b8; line-height:1.5;
+}
+.rg-nota-pts strong { color:#f1f5f9; }
+
+/* ── Premios ── */
+.rg-premio { padding:.6rem .85rem; border-bottom:1px solid #0f172a; }
+.rg-premio:last-child { border-bottom:none; }
+.rg-premio-hd { display:flex; justify-content:space-between; align-items:flex-start; gap:.5rem; margin-bottom:.2rem; }
+.rg-premio-nombre { font-size:.78rem; font-weight:800; color:#f1f5f9; }
+.rg-premio-monto { font-size:.82rem; font-weight:800; color:#fbbf24; white-space:nowrap; flex-shrink:0; }
+.rg-premio-desc { font-size:.72rem; color:#64748b; line-height:1.45; }
+
+/* ── Desempates ── */
+.rg-ol { padding-left:1.2rem; margin:0; }
+.rg-ol li { font-size:.78rem; color:#cbd5e1; padding:.22rem 0; line-height:1.4; }
+.rg-ol li::marker { color:#475569; }
+
+/* ── Nota pie ── */
+.rg-footer-nota {
+  margin-top:.6rem; padding:.55rem .85rem;
+  background:#1e293b; border-radius:10px;
+  font-size:.7rem; color:#475569; line-height:1.5; text-align:center;
+}
 </style>
 {% endblock %}
 
 {% block polla_content %}
-<div class="rg-wrap">
-  <span class="rg-titulo">Reglamento — Polla Mundialista FONDEINO 2026</span>
+<div class="rg">
 
-  <div class="rg-seccion">
-    <div class="rg-h">⚽ ¿Qué es?</div>
-    <p class="rg-p">Actividad recreativa exclusiva para <strong style="color:#e2e8f0;">asociados activos de FONDEINO</strong>. Inscripción: <strong style="color:#fbbf24;">$5.000</strong> descontados por nómina. No es juego de azar.</p>
+  <div class="rg-header">
+    <div class="rg-eyebrow">Polla Mundialista · FONDEINO 2026</div>
+    <div class="rg-main-title">Reglamento</div>
   </div>
 
-  <div class="rg-seccion">
-    <div class="rg-h">📌 Puntuación</div>
-    <table class="rg-tabla">
-      <thead>
-        <tr><th>Acierto</th><th>Grupos</th><th>Elim.</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Resultado (G/E/P)</td><td class="pts">+{{ config.pts_resultado_grupos }}</td><td class="pts">+{{ config.pts_resultado_eliminatoria }}</td></tr>
-        <tr><td>Marcador exacto <em style="font-size:.65rem;">(incluye resultado)</em></td><td class="pts2">+{{ config.pts_marcador_grupos }} (total 3)</td><td class="pts2">+{{ config.pts_marcador_eliminatoria }} (total 6)</td></tr>
-        <tr><td>No acertar</td><td class="pts" style="color:#334155;">0</td><td class="pts" style="color:#334155;">0</td></tr>
-      </tbody>
-    </table>
-    <p class="rg-p" style="font-size:.72rem;">⚠️ Eliminatorias: solo resultado a los 90 min reglamentarios. Prórrogas y penales no cuentan.</p>
-  </div>
-
-  <div class="rg-seccion">
-    <div class="rg-h">🏆 Premios</div>
-    <div class="rg-premio gold">
-      <div class="rg-premio-titulo">🥇 Premio 1 — Campeón General</div>
-      <div class="rg-premio-val">{{ config.premios_top5_general }}</div>
-      <div class="rg-premio-desc">Al participante con más puntos al finalizar el Mundial.</div>
+  <!-- ¿Qué es? -->
+  <div class="rg-sec">
+    <div class="rg-sec-hd">
+      <span class="rg-sec-icon">⚽</span>
+      <span class="rg-sec-title">¿Qué es la Polla Mundialista?</span>
     </div>
-    <div class="rg-premio blue">
-      <div class="rg-premio-titulo">🌎 Premio 2 — Acierto al Campeón</div>
-      <div class="rg-premio-val">{{ config.premio_campeon_sorteo }}</div>
-      <div class="rg-premio-desc">Sorteo entre quienes acierten al campeón del mundo.</div>
-    </div>
-    <div class="rg-premio green">
-      <div class="rg-premio-titulo">🇨🇴 Premios 3, 4 y 5 — Partidos de Colombia</div>
-      <div class="rg-premio-val">{{ config.premios_top5_grupos }}</div>
-      <div class="rg-premio-desc">Por cada partido de Colombia en grupos, sorteo entre quienes acierten el marcador exacto.</div>
+    <div class="rg-sec-body">
+      <p class="rg-txt">Actividad recreativa exclusiva para <strong>asociados activos de FONDEINO</strong>, organizada como beneficio de bienestar. La inscripción tiene un valor de <span class="hl">$5.000</span> descontados directamente por nómina. <strong>No es un juego de azar.</strong></p>
     </div>
   </div>
 
-  <div class="rg-seccion">
-    <div class="rg-h">📊 Desempates</div>
-    <ol class="rg-ol">
-      <li>Mayor puntaje total</li>
-      <li>Más marcadores exactos</li>
-      <li>Más resultados acertados</li>
-      <li>Posición en clasificación general</li>
-      <li>Sorteo</li>
-    </ol>
+  <!-- Puntuación -->
+  <div class="rg-sec">
+    <div class="rg-sec-hd">
+      <span class="rg-sec-icon">📌</span>
+      <span class="rg-sec-title">Sistema de puntuación</span>
+    </div>
+    <div class="rg-sec-body">
+      <div class="rg-pts-grid">
+        <div class="rg-pts-bloque grupos">
+          <div class="rg-pts-fase">Fase de grupos</div>
+          <div class="rg-pts-fila">
+            <span class="rg-pts-lbl">Resultado</span>
+            <span class="rg-pts-val result">+{{ config.pts_resultado_grupos }} pt</span>
+          </div>
+          <div class="rg-pts-fila">
+            <span class="rg-pts-lbl">Marcador exacto</span>
+            <span class="rg-pts-val exact">+3 pts</span>
+          </div>
+          <div class="rg-pts-fila">
+            <span class="rg-pts-lbl">Fallo</span>
+            <span class="rg-pts-val" style="color:#334155;">0</span>
+          </div>
+        </div>
+        <div class="rg-pts-bloque elim">
+          <div class="rg-pts-fase">Eliminatorias</div>
+          <div class="rg-pts-fila">
+            <span class="rg-pts-lbl">Resultado</span>
+            <span class="rg-pts-val result">+{{ config.pts_resultado_eliminatoria }} pts</span>
+          </div>
+          <div class="rg-pts-fila">
+            <span class="rg-pts-lbl">Marcador exacto</span>
+            <span class="rg-pts-val exact">+6 pts</span>
+          </div>
+          <div class="rg-pts-fila">
+            <span class="rg-pts-lbl">Fallo</span>
+            <span class="rg-pts-val" style="color:#334155;">0</span>
+          </div>
+        </div>
+      </div>
+      <div class="rg-nota-pts">
+        ⚠️ Eliminatorias: solo se cuenta el resultado a los <strong>90 minutos reglamentarios</strong>. Prórrogas y penales no aplican.
+      </div>
+    </div>
   </div>
 
-  <div class="rg-seccion">
-    <div class="rg-h">🔒 Cierre</div>
-    <p class="rg-p">Los pronósticos se bloquean automáticamente al iniciar cada partido. El sistema no permite modificarlos una vez comenzado el encuentro.</p>
+  <!-- Premios -->
+  <div class="rg-sec">
+    <div class="rg-sec-hd">
+      <span class="rg-sec-icon">🏆</span>
+      <span class="rg-sec-title">Premios</span>
+    </div>
+    <div class="rg-premio">
+      <div class="rg-premio-hd">
+        <span class="rg-premio-nombre">🥇 Campeón General</span>
+        <span class="rg-premio-monto">{{ config.premios_top5_general }}</span>
+      </div>
+      <div class="rg-premio-desc">Al participante con más puntos al finalizar todas las fases del Mundial.</div>
+    </div>
+    <div class="rg-premio">
+      <div class="rg-premio-hd">
+        <span class="rg-premio-nombre">🌎 Acierto al Campeón</span>
+        <span class="rg-premio-monto">{{ config.premio_campeon_sorteo }}</span>
+      </div>
+      <div class="rg-premio-desc">Sorteo entre todos los participantes que acierten al campeón del mundo.</div>
+    </div>
+    <div class="rg-premio">
+      <div class="rg-premio-hd">
+        <span class="rg-premio-nombre">🇨🇴 Partidos Colombia (×3)</span>
+        <span class="rg-premio-monto">{{ config.premios_top5_grupos }}</span>
+      </div>
+      <div class="rg-premio-desc">Por cada partido de Colombia en fase de grupos, sorteo entre quienes acierten el marcador exacto.</div>
+    </div>
   </div>
 
-  <div class="rg-seccion">
-    <div class="rg-h">🔐 Datos personales</div>
-    <p class="rg-p">Tus datos se usan únicamente para la gestión de la Polla Mundialista FONDEINO 2026 · Ley 1581 de 2012 · Participación voluntaria.</p>
+  <!-- Desempates -->
+  <div class="rg-sec">
+    <div class="rg-sec-hd">
+      <span class="rg-sec-icon">📊</span>
+      <span class="rg-sec-title">Criterios de desempate</span>
+    </div>
+    <div class="rg-sec-body">
+      <ol class="rg-ol">
+        <li>Mayor cantidad de puntos totales</li>
+        <li>Mayor cantidad de marcadores exactos</li>
+        <li>Mayor cantidad de resultados acertados</li>
+        <li>Posición en la clasificación general</li>
+        <li>Sorteo</li>
+      </ol>
+    </div>
   </div>
 
-  <div class="rg-nota">
-    Actividad recreativa interna · FONDEINO, Fondo de Empleados · No aplica regulación de Coljuegos.
+  <!-- Cierre + Datos -->
+  <div class="rg-sec">
+    <div class="rg-sec-hd">
+      <span class="rg-sec-icon">🔒</span>
+      <span class="rg-sec-title">Cierre de pronósticos</span>
+    </div>
+    <div class="rg-sec-body">
+      <p class="rg-txt">Los pronósticos se bloquean <strong>automáticamente</strong> al iniciar cada partido. No es posible crearlos ni modificarlos una vez comenzado el encuentro.</p>
+    </div>
   </div>
+
+  <div class="rg-sec">
+    <div class="rg-sec-hd">
+      <span class="rg-sec-icon">🔐</span>
+      <span class="rg-sec-title">Datos personales</span>
+    </div>
+    <div class="rg-sec-body">
+      <p class="rg-txt">Tus datos (nombre, cédula, correo) se usan exclusivamente para la gestión de esta actividad · <strong>Ley 1581 de 2012</strong> · Participación voluntaria.</p>
+    </div>
+  </div>
+
+  <div class="rg-footer-nota">
+    Actividad recreativa interna · FONDEINO, Fondo de Empleados<br>
+    Valor inscripción: $5.000 · No aplica regulación de Coljuegos
+  </div>
+
 </div>
 {% endblock %}
