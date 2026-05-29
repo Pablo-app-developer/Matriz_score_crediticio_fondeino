@@ -2,6 +2,25 @@ from django import forms
 from .models import Afiliado, Pronostico, PronosticoCampeon, Equipo
 
 
+def _iso2_to_flag(iso2):
+    """Convierte código ISO2 a emoji de bandera (Regional Indicator letters)."""
+    if not iso2:
+        return ''
+    # Subdivisiones como gb-eng, gb-sct — usar bandera negra genérica
+    if '-' in iso2:
+        return '🏴'
+    try:
+        return ''.join(chr(0x1F1E6 + ord(c.upper()) - ord('A')) for c in iso2[:2])
+    except Exception:
+        return ''
+
+
+class EquipoChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        flag = _iso2_to_flag(obj.iso2)
+        return f'{flag} {obj.nombre}' if flag else obj.nombre
+
+
 class RegistroPollaForm(forms.Form):
     cedula = forms.CharField(
         max_length=20,
@@ -85,17 +104,16 @@ class PronosticoForm(forms.ModelForm):
 
 
 class CampeonForm(forms.ModelForm):
+    equipo = EquipoChoiceField(
+        queryset=Equipo.objects.order_by('grupo', 'nombre'),
+        widget=forms.Select(attrs={'class': 'form-select form-select-lg'}),
+        label='Selecciona el campeón del Mundial',
+        empty_label='— Selecciona un equipo —',
+    )
+
     class Meta:
         model = PronosticoCampeon
         fields = ['equipo']
-        widgets = {
-            'equipo': forms.Select(attrs={'class': 'form-select form-select-lg'}),
-        }
-        labels = {'equipo': 'Selecciona el campeón del Mundial'}
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['equipo'].queryset = Equipo.objects.order_by('nombre')
 
 
 class CargarAfiliadosForm(forms.Form):
