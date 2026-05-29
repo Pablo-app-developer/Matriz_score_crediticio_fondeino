@@ -376,44 +376,7 @@ def index(request):
     if afiliado and afiliado.activo:
         if not hasattr(afiliado, 'autorizacion_descuento'):
             return redirect('polla:autorizar_descuento')
-
-        # Dashboard
-        inscripciones = afiliado.inscripciones.filter(activa=True).order_by('numero_polla')
-
-        # Ranking actual de las inscripciones del usuario
-        ranking_qs = InscripcionPolla.objects.filter(activa=True).order_by(
-            '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'afiliado__nombre_completo'
-        )
-        posiciones = {}
-        for pos, insc in enumerate(ranking_qs, 1):
-            posiciones[insc.pk] = pos
-
-        # Próximos partidos abiertos
-        ahora = timezone.now()
-        proximos = Partido.objects.filter(
-            fecha_hora__gt=ahora, finalizado=False
-        ).order_by('fecha_hora')[:3]
-
-        # Últimos 3 partidos finalizados con pronósticos
-        ultimos = Partido.objects.filter(finalizado=True).order_by('-fecha_hora')[:3]
-
-        # Conteo de pronósticos completados
-        partidos_abiertos = Partido.objects.filter(fecha_hora__gt=ahora).count()
-        pronosticos_hechos = Pronostico.objects.filter(
-            inscripcion__in=inscripciones,
-            partido__fecha_hora__gt=ahora,
-        ).values('partido').distinct().count()
-
-        return render(request, 'polla/dashboard.html', {
-            'afiliado': afiliado,
-            'inscripciones': inscripciones,
-            'posiciones': posiciones,
-            'proximos': proximos,
-            'ultimos': ultimos,
-            'config': config,
-            'partidos_abiertos': partidos_abiertos,
-            'pronosticos_hechos': pronosticos_hechos,
-        })
+        return redirect('polla:pronosticos')
     else:
         # Landing con login integrado
         from apps.accounts.forms import LoginForm
