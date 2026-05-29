@@ -1,0 +1,135 @@
+{% extends "polla/base_polla.html" %}
+
+{% block polla_content %}
+<div class="container" style="max-width:700px;">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0"><i class="bi bi-gear-fill text-warning me-2"></i>Configuración de la Polla</h5>
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {# ── Torneo ── #}
+    <div class="card shadow-sm mb-3">
+      <div class="card-header fw-bold small py-2 bg-dark text-white">
+        <i class="bi bi-trophy me-2"></i>Torneo
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">{{ form.nombre_torneo.label }}</label>
+          {{ form.nombre_torneo }}
+          {% if form.nombre_torneo.errors %}<div class="text-danger small mt-1">{{ form.nombre_torneo.errors }}</div>{% endif %}
+        </div>
+        <div class="mb-0">
+          <div class="form-check">
+            {{ form.polla_cerrada }}
+            <label class="form-check-label small fw-semibold text-danger" for="{{ form.polla_cerrada.id_for_label }}">
+              {{ form.polla_cerrada.label }}
+            </label>
+          </div>
+          <div class="text-muted" style="font-size:.75rem;">Activa esto solo al terminar el torneo o para mantenimiento.</div>
+        </div>
+      </div>
+    </div>
+
+    {# ── Puntos ── #}
+    <div class="card shadow-sm mb-3">
+      <div class="card-header fw-bold small py-2 bg-dark text-white">
+        <i class="bi bi-bar-chart me-2"></i>Sistema de puntuación
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-6">
+            <label class="form-label small fw-semibold">{{ form.pts_resultado_grupos.label }}</label>
+            {{ form.pts_resultado_grupos }}
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">{{ form.pts_marcador_grupos.label }}</label>
+            {{ form.pts_marcador_grupos }}
+            <div class="text-muted" style="font-size:.72rem;">Total grupos: {{ config.pts_resultado_grupos|add:config.pts_marcador_grupos }} pts</div>
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">{{ form.pts_resultado_eliminatoria.label }}</label>
+            {{ form.pts_resultado_eliminatoria }}
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">{{ form.pts_marcador_eliminatoria.label }}</label>
+            {{ form.pts_marcador_eliminatoria }}
+            <div class="text-muted" style="font-size:.72rem;">Total elim.: {{ config.pts_resultado_eliminatoria|add:config.pts_marcador_eliminatoria }} pts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ── Cierre pronósticos ── #}
+    <div class="card shadow-sm mb-3">
+      <div class="card-header fw-bold small py-2 bg-dark text-white">
+        <i class="bi bi-lock me-2"></i>Cierre de pronósticos
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-6">
+            <label class="form-label small fw-semibold">{{ form.minutos_cierre_pronosticos.label }}</label>
+            {{ form.minutos_cierre_pronosticos }}
+            <div class="text-muted" style="font-size:.72rem;">Actualmente: {{ config.minutos_cierre_pronosticos }} minutos antes de cada partido.</div>
+            {% if form.minutos_cierre_pronosticos.errors %}<div class="text-danger small mt-1">{{ form.minutos_cierre_pronosticos.errors }}</div>{% endif %}
+          </div>
+          <div class="col-6">
+            <label class="form-label small fw-semibold">{{ form.fecha_cierre_pronostico_campeon.label }}</label>
+            {{ form.fecha_cierre_pronostico_campeon }}
+            <div class="text-muted" style="font-size:.72rem;">Hora Colombia (UTC-5)</div>
+            {% if form.fecha_cierre_pronostico_campeon.errors %}<div class="text-danger small mt-1">{{ form.fecha_cierre_pronostico_campeon.errors }}</div>{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ── Premios ── #}
+    <div class="card shadow-sm mb-3">
+      <div class="card-header fw-bold small py-2 bg-dark text-white">
+        <i class="bi bi-award me-2"></i>Premios
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">{{ form.premios_top5_general.label }}</label>
+          {{ form.premios_top5_general }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">{{ form.premio_campeon_sorteo.label }}</label>
+          {{ form.premio_campeon_sorteo }}
+        </div>
+        <div class="mb-0">
+          <label class="form-label small fw-semibold">{{ form.premios_top5_grupos.label }}</label>
+          {{ form.premios_top5_grupos }}
+        </div>
+      </div>
+    </div>
+
+    {# ── Afiliación ── #}
+    <div class="card shadow-sm mb-4">
+      <div class="card-header fw-bold small py-2 bg-dark text-white">
+        <i class="bi bi-people me-2"></i>Mensaje para no afiliados
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">{{ form.mensaje_no_afiliado.label }}</label>
+          {{ form.mensaje_no_afiliado }}
+        </div>
+        <div class="mb-0">
+          <label class="form-label small fw-semibold">{{ form.enlace_afiliacion.label }}</label>
+          {{ form.enlace_afiliacion }}
+          {% if form.enlace_afiliacion.errors %}<div class="text-danger small mt-1">{{ form.enlace_afiliacion.errors }}</div>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="d-grid">
+      <button type="submit" class="btn btn-warning fw-bold btn-lg">
+        <i class="bi bi-floppy me-2"></i>Guardar configuración
+      </button>
+    </div>
+
+  </form>
+</div>
+{% endblock %}

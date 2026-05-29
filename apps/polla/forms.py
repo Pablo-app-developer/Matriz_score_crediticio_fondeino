@@ -159,6 +159,62 @@ class AfiliadoManualForm(forms.ModelForm):
         }
 
 
+class ConfiguracionPollaForm(forms.ModelForm):
+    class Meta:
+        from .models import ConfiguracionPolla
+        model = ConfiguracionPolla
+        fields = [
+            'nombre_torneo',
+            'pts_resultado_grupos', 'pts_marcador_grupos',
+            'pts_resultado_eliminatoria', 'pts_marcador_eliminatoria',
+            'minutos_cierre_pronosticos',
+            'premios_top5_general', 'premio_campeon_sorteo', 'premios_top5_grupos',
+            'fecha_cierre_pronostico_campeon',
+            'mensaje_no_afiliado', 'enlace_afiliacion',
+            'polla_cerrada',
+        ]
+        widgets = {
+            'nombre_torneo': forms.TextInput(attrs={'class': 'form-control'}),
+            'pts_resultado_grupos': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+            'pts_marcador_grupos': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+            'pts_resultado_eliminatoria': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+            'pts_marcador_eliminatoria': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+            'minutos_cierre_pronosticos': forms.NumberInput(attrs={'class': 'form-control', 'min': 0, 'max': 60}),
+            'premios_top5_general': forms.TextInput(attrs={'class': 'form-control'}),
+            'premio_campeon_sorteo': forms.TextInput(attrs={'class': 'form-control'}),
+            'premios_top5_grupos': forms.TextInput(attrs={'class': 'form-control'}),
+            'fecha_cierre_pronostico_campeon': forms.DateTimeInput(
+                attrs={'class': 'form-control', 'type': 'datetime-local'},
+                format='%Y-%m-%dT%H:%M',
+            ),
+            'mensaje_no_afiliado': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'enlace_afiliacion': forms.URLInput(attrs={'class': 'form-control'}),
+            'polla_cerrada': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'nombre_torneo': 'Nombre del torneo',
+            'pts_resultado_grupos': 'Puntos por resultado (grupos)',
+            'pts_marcador_grupos': 'Puntos adicionales por marcador exacto (grupos)',
+            'pts_resultado_eliminatoria': 'Puntos por resultado (eliminatorias)',
+            'pts_marcador_eliminatoria': 'Puntos adicionales por marcador exacto (eliminatorias)',
+            'minutos_cierre_pronosticos': 'Minutos de cierre antes del partido',
+            'premios_top5_general': 'Premio 1 — Campeón general',
+            'premio_campeon_sorteo': 'Premio 2 — Acierto al campeón',
+            'premios_top5_grupos': 'Premios 3-5 — Partidos Colombia (fase de grupos)',
+            'fecha_cierre_pronostico_campeon': 'Cierre pronóstico de campeón',
+            'mensaje_no_afiliado': 'Mensaje para no afiliados',
+            'enlace_afiliacion': 'Enlace de afiliación',
+            'polla_cerrada': 'Polla cerrada (bloquea toda participación)',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.fecha_cierre_pronostico_campeon:
+            self.initial['fecha_cierre_pronostico_campeon'] = (
+                self.instance.fecha_cierre_pronostico_campeon.strftime('%Y-%m-%dT%H:%M')
+            )
+
+
 class ResultadoPartidoForm(forms.Form):
     goles_local = forms.IntegerField(
         min_value=0, max_value=20,

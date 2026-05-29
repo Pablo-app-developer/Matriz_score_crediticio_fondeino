@@ -25,6 +25,7 @@ from .forms import (
     ActivarCuentaForm,
     CampeonForm,
     CargarAfiliadosForm,
+    ConfiguracionPollaForm,
     PronosticoForm,
     RegistroPollaForm,
     ResultadoPartidoForm,
@@ -1264,4 +1265,18 @@ def admin_sync_api_football(request):
         'tiene_key': tiene_key,
         'con_id': con_id,
         'total_equipos': total_equipos,
+    })
+
+
+@admin_polla_required
+def admin_configuracion(request):
+    config = ConfiguracionPolla.get()
+    form = ConfiguracionPollaForm(request.POST or None, instance=config)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Configuración guardada correctamente.')
+        return redirect('polla:admin_configuracion')
+    return render(request, 'polla/admin/configuracion_polla.html', {
+        'form': form,
+        'config': config,
     })
