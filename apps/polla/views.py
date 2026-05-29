@@ -136,7 +136,7 @@ def registro_polla(request):
         afiliado.save()
         InscripcionPolla.objects.get_or_create(afiliado=afiliado, numero_polla=1)
 
-        auth_login(request, user)
+        auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         messages.success(request, f'¡Bienvenido, {afiliado.nombre_completo}! Tu cuenta esta lista.')
         return redirect('polla:index')
 
