@@ -137,6 +137,11 @@ body { background: #0d1b2a !important; }
           <span class="pn-countdown" id="cd-{{ p.pk }}"></span>
         {% endif %}
       </div>
+      {% if p.estadio or p.ciudad %}
+      <div class="pn-stadium">
+        <i class="bi bi-geo-alt me-1"></i>{% if p.estadio %}{{ p.estadio }}{% if p.ciudad %} · {% endif %}{% endif %}{% if p.ciudad %}{{ p.ciudad }}{% endif %}
+      </div>
+      {% endif %}
     </div>
 
     {# Body #}
