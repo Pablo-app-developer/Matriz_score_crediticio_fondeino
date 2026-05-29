@@ -7,14 +7,17 @@
 /* ── Reset global ── */
 body { background:#0f172a !important; }
 
-/* Navbar más compacta en móvil */
+/* Eliminar padding del container de Bootstrap */
+.container-fluid { padding-left:4px !important; padding-right:4px !important; }
+
+/* Navbar más compacta */
 .pk-nav { padding:.3rem .75rem !important; }
 .pk-nav .navbar-brand { font-size:.88rem !important; }
 
 /* ── Cabecera mínima ── */
 .m-bar {
   display:flex; align-items:center; justify-content:space-between;
-  padding:.55rem .75rem .4rem;
+  padding:.4rem .5rem .3rem;
 }
 .m-bar-left { display:flex; align-items:center; gap:.5rem; }
 .m-pending-badge {
@@ -27,8 +30,8 @@ body { background:#0f172a !important; }
 /* ── Guardar todos ── */
 .m-save-all {
   display:flex; align-items:center; justify-content:center; gap:.4rem;
-  margin:.2rem .5rem .5rem;
-  padding:.6rem .75rem; border-radius:10px; border:none;
+  margin:.15rem .3rem .4rem;
+  padding:.55rem .75rem; border-radius:10px; border:none;
   background:#fbbf24; color:#111827;
   font-weight:700; font-size:.82rem; cursor:pointer;
   -webkit-tap-highlight-color:transparent; touch-action:manipulation;
@@ -37,7 +40,7 @@ body { background:#0f172a !important; }
 
 /* ── Tabs ── */
 .m-tabs {
-  display:flex; gap:.3rem; padding:.3rem .5rem .5rem;
+  display:flex; gap:.3rem; padding:.25rem .3rem .45rem;
   overflow-x:auto; flex-wrap:nowrap;
   -webkit-overflow-scrolling:touch; scrollbar-width:none;
 }
@@ -61,14 +64,14 @@ body { background:#0f172a !important; }
 /* ── Separador de día ── */
 .m-day-hd {
   display:flex; align-items:center; justify-content:space-between;
-  padding:.45rem .75rem .3rem;
+  padding:.35rem .4rem .25rem;
   cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
 .m-day-lbl { color:#475569; font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; }
 .m-day-cnt { color:#334155; font-size:.62rem; margin-left:.4rem; }
 .m-day-btn { color:#fbbf24; font-size:1rem; font-weight:900; background:none; border:none; padding:0 .2rem; line-height:1; }
 
-.m-day-lista { display:flex; flex-direction:column; gap:.3rem; padding:0 .4rem .3rem; }
+.m-day-lista { display:flex; flex-direction:column; gap:.25rem; padding:0 .15rem .2rem; }
 .m-day-lista.cerrado { display:none; }
 
 /* ── Tarjeta de partido ── */
@@ -84,7 +87,7 @@ body { background:#0f172a !important; }
 /* Fila superior: estado + hora */
 .m-card-top {
   display:flex; justify-content:space-between; align-items:center;
-  padding:.35rem .65rem; border-bottom:1px solid #0f172a;
+  padding:.3rem .6rem; border-bottom:1px solid #0f172a;
 }
 .m-estado {
   font-size:.58rem; font-weight:800; text-transform:uppercase;
@@ -103,7 +106,7 @@ body { background:#0f172a !important; }
 .m-card-body {
   display:grid;
   grid-template-columns:1fr 1fr;
-  padding:.55rem .65rem .4rem;
+  padding:.5rem .6rem .4rem;
   gap:.4rem;
 }
 .m-team-local { grid-column:1; grid-row:1; font-size:.82rem; font-weight:700; color:#e2e8f0; line-height:1.25; }
@@ -144,7 +147,7 @@ body { background:#0f172a !important; }
 /* Footer */
 .m-card-foot {
   display:flex; align-items:center; justify-content:space-between;
-  padding:.35rem .65rem; border-top:1px solid #0f172a; gap:.4rem; min-height:36px;
+  padding:.3rem .6rem; border-top:1px solid #0f172a; gap:.4rem; min-height:34px;
 }
 .m-msg { font-size:.68rem; color:#475569; font-weight:600; flex:1; }
 .m-msg.ok  { color:#34d399; }
