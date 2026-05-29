@@ -18,6 +18,8 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .decorators import admin_polla_required, afiliado_activo
 from .forms import (
@@ -378,6 +380,8 @@ def analisis(request):
 # Flujo de activación / index
 # ─────────────────────────────────────────────
 
+@never_cache
+@ensure_csrf_cookie
 def index(request):
     afiliado = _get_afiliado(request.user)
     config = ConfiguracionPolla.get()
