@@ -82,7 +82,7 @@ body { background: #0d1b2a !important; }
 
 {# ── Tabs de fase ────────────────────────────────────────── #}
 {% if fases_tabs %}
-<div class="d-flex gap-1 flex-wrap mb-3">
+<div class="pn-tabs-bar mb-3">
   {% for tab in fases_tabs %}
   <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
      class="pn-tab {% if tab.key == fase_sel %}on{% endif %}"

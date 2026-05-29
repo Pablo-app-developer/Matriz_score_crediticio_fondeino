@@ -323,13 +323,75 @@ body { background-color: var(--pk-bg) !important; font-family: 'Montserrat', san
 }
 .pn-btn-stats:hover { background: #162030; color: #5a85a8; border-color: #243855; }
 
+/* ── Mejoras táctiles globales ───────────────────────────── */
+.pn-spin-btn, .pn-btn-save, .pk-save-all, .pn-day-hd, .pn-tab {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+/* Evitar zoom en iOS al hacer foco en inputs */
+.pn-inp { font-size: max(1.35rem, 16px); }
+
+/* Tabs con scroll horizontal en lugar de wrap */
+.pn-tabs-bar {
+  display: flex; gap: .4rem;
+  overflow-x: auto; overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; padding-bottom: 2px;
+  flex-wrap: nowrap !important;
+}
+.pn-tabs-bar::-webkit-scrollbar { display: none; }
+
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 575px) {
-  .pn-body     { padding: .75rem .8rem; gap: .35rem; }
-  .pn-inp      { width: 44px; height: 44px; font-size: 1.15rem; }
-  .pn-spin-btn { width: 24px; height: 44px; font-size: .95rem; }
-  .pn-flag     { width: 40px; height: 27px; }
-  .pn-name     { font-size: .88rem; }
-  .pn-score    { font-size: 1.25rem; padding: .2rem .9rem; }
-  .pn-top, .pn-foot { padding: .35rem .8rem; }
+
+  /* Cabecera y contadores */
+  .pn-head    { margin-bottom: 1rem; }
+  .pn-title   { font-size: .62rem; }
+  .pn-sub     { font-size: .82rem; }
+  .pn-counter { font-size: .7rem; padding: .22rem .7rem; }
+
+  /* Sección de día */
+  .pn-day-hd  { padding: .6rem .9rem; }
+  .pn-day-lbl { font-size: .65rem; letter-spacing: 1.5px; }
+  .pn-day-body { padding: .4rem; gap: .4rem; }
+
+  /* Top de la tarjeta */
+  .pn-top     { padding: .35rem .75rem; flex-wrap: wrap; gap: .25rem; }
+  .pn-phase   { font-size: .55rem; }
+  .pn-time    { font-size: .65rem; }
+
+  /* ─── CUERPO: equipos arriba, inputs abajo ─── */
+  .pn-body {
+    flex-wrap: wrap;
+    padding: .75rem .75rem .5rem;
+    row-gap: .65rem;
+    column-gap: .3rem;
+  }
+  /* Equipo local: mitad izquierda */
+  .pn-team      { flex: 1 1 44%; order: 1; min-width: 0; }
+  /* Equipo visitante: mitad derecha */
+  .pn-team.away { order: 2; justify-content: flex-end; }
+  /* Inputs: fila completa debajo */
+  .pn-mid       { order: 3; flex: 0 0 100%; justify-content: center; }
+
+  /* Banderas y nombres */
+  .pn-flag { width: 38px; height: 26px; }
+  .pn-name { font-size: .88rem; white-space: normal; line-height: 1.2; }
+
+  /* Inputs más grandes y fáciles de tocar */
+  .pn-inp      { width: 58px; height: 58px; font-size: 1.5rem; }
+  .pn-spin-btn { width: 44px; height: 58px; font-size: 1.2rem; }
+  .pn-dash     { font-size: 1.2rem; margin: 0 .4rem; }
+
+  /* Score finalizado/bloqueado */
+  .pn-score { font-size: 1.3rem; padding: .3rem 1rem; }
+
+  /* Footer: botón guardar más grande */
+  .pn-foot    { padding: .4rem .75rem; }
+  .pn-btn-save {
+    padding: .55rem 1.4rem;
+    font-size: .82rem;
+  }
+  .pn-info { font-size: .66rem; }
+  .pn-pts  { font-size: .66rem; }
 }
