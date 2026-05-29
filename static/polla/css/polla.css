@@ -245,7 +245,7 @@ body { background-color: var(--pk-bg) !important; font-family: 'Montserrat', san
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .pn-stadium {
-  font-size: .62rem; color: #3e5e7c; margin-top: .15rem;
+  font-size: .62rem; color: #7aaac8; margin-top: .15rem;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
