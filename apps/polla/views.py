@@ -732,7 +732,12 @@ def campeon(request):
     else:
         form = CampeonForm(instance=pronostico_campeon)
 
-    equipos = list(Equipo.objects.order_by('grupo', 'nombre'))
+    # Solo equipos que aparecen en partidos de la fase de grupos (fixture real)
+    ids_en_fixture = set()
+    for local_id, vis_id in Partido.objects.filter(fase='GRUPOS').values_list('equipo_local_id', 'equipo_visitante_id'):
+        ids_en_fixture.add(local_id)
+        ids_en_fixture.add(vis_id)
+    equipos = list(Equipo.objects.filter(pk__in=ids_en_fixture).order_by('grupo', 'nombre'))
 
     return render(request, 'polla/campeon.html', {
         'afiliado': afiliado,

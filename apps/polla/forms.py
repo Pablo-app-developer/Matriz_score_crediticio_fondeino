@@ -105,7 +105,7 @@ class PronosticoForm(forms.ModelForm):
 
 class CampeonForm(forms.ModelForm):
     equipo = EquipoChoiceField(
-        queryset=Equipo.objects.order_by('grupo', 'nombre'),
+        queryset=Equipo.objects.none(),
         widget=forms.Select(attrs={'class': 'form-select form-select-lg'}),
         label='Selecciona el campeón del Mundial',
         empty_label='— Selecciona un equipo —',
@@ -114,6 +114,15 @@ class CampeonForm(forms.ModelForm):
     class Meta:
         model = PronosticoCampeon
         fields = ['equipo']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from .models import Partido
+        ids = set()
+        for lid, vid in Partido.objects.filter(fase='GRUPOS').values_list('equipo_local_id', 'equipo_visitante_id'):
+            ids.add(lid)
+            ids.add(vid)
+        self.fields['equipo'].queryset = Equipo.objects.filter(pk__in=ids).order_by('grupo', 'nombre')
 
 
 class CargarAfiliadosForm(forms.Form):
