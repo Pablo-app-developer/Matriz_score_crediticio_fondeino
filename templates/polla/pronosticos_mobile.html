@@ -2,353 +2,312 @@
 {% load static %}
 {% block nav_pronosticos %}active{% endblock %}
 
-{% block extra_css %}
-{{ block.super }}
+{% block extra_css %}{{ block.super }}
 <style>
-/* ══ PRONOSTICOS MOBILE ══════════════════════════════════ */
-body { background: #0d1b2a !important; }
+/* ── Reset de fondo ── */
+body { background:#111827 !important; }
 
-/* Cabecera */
-.pm-head { padding: .75rem 1rem .5rem; }
-.pm-title { color: #f0c040; font-size: .65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
-.pm-sub   { color: #5a7fa0; font-size: .9rem; margin-top: .2rem; }
+/* ── Cabecera de página ── */
+.m-head {
+  padding: 1rem 1rem .5rem;
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.m-title { color:#9ca3af; font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; }
+.m-sub   { color:#f9fafb; font-size:.95rem; font-weight:600; margin-top:.25rem; }
+.m-sub b { color:#fbbf24; }
 
-/* Barra de tabs — scroll horizontal */
-.pm-tabs {
-  display: flex; gap: .4rem; padding: 0 .75rem .75rem;
-  overflow-x: auto; overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; flex-wrap: nowrap;
+/* ── Botón guardar todos ── */
+.m-btn-all {
+  display:block; width:calc(100% - 2rem); margin:.25rem 1rem .75rem;
+  padding:.9rem; background:#fbbf24; color:#111827;
+  font-weight:800; font-size:1rem; border:none; border-radius:12px;
+  cursor:pointer; text-align:center;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
 }
-.pm-tabs::-webkit-scrollbar { display: none; }
-.pm-tab {
-  display: inline-flex; align-items: center; gap: .3rem;
-  background: #162030; border: 1px solid #1e3050; color: #4e6e8c;
-  font-weight: 700; font-size: .72rem; padding: .5rem 1rem;
-  border-radius: 20px; text-decoration: none; white-space: nowrap;
-  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-  position: relative; flex-shrink: 0;
-}
-.pm-tab.activo { background: #f0c040; color: #1a1200; border-color: #f0c040; }
-.pm-dot {
-  position: absolute; top: -5px; right: -5px;
-  background: #e05050; color: #fff; font-size: .5rem; font-weight: 900;
-  padding: .1rem .28rem; border-radius: 10px; min-width: 16px; text-align: center;
-}
+.m-btn-all:disabled { background:#374151; color:#6b7280; }
 
-/* Guardar todos */
-.pm-save-all {
-  display: flex; align-items: center; justify-content: center; gap: .5rem;
-  margin: 0 .75rem .75rem; padding: .85rem;
-  background: #f0c040; color: #1a1200; border: none; border-radius: 14px;
-  font-weight: 800; font-size: 1rem; cursor: pointer; width: calc(100% - 1.5rem);
-  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-  box-shadow: 0 4px 16px rgba(240,192,64,.35);
+/* ── Tabs ── */
+.m-tabs {
+  display:flex; gap:.4rem; padding:.5rem 1rem .75rem;
+  overflow-x:auto; flex-wrap:nowrap;
+  -webkit-overflow-scrolling:touch; scrollbar-width:none;
 }
-.pm-save-all:disabled { background: #1e3050; color: #2a4060; box-shadow: none; }
-
-/* Grupo de día */
-.pm-day { margin: 0 .6rem .75rem; }
-.pm-day-hd {
-  display: flex; justify-content: space-between; align-items: center;
-  background: #111e2e; border: 1px solid #1e3050; border-radius: 12px;
-  padding: .7rem 1rem; cursor: pointer; user-select: none;
-  -webkit-tap-highlight-color: transparent;
+.m-tabs::-webkit-scrollbar { display:none; }
+.m-tab {
+  display:inline-flex; align-items:center; gap:.3rem;
+  padding:.45rem .9rem; border-radius:20px; white-space:nowrap;
+  font-size:.72rem; font-weight:700; text-decoration:none; flex-shrink:0;
+  border:1px solid #374151; color:#6b7280; background:#1f2937;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  position:relative;
 }
-.pm-day-hd.open { border-radius: 12px 12px 0 0; border-bottom-color: transparent; }
-.pm-day-lbl { color: #c0d4e8; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; }
-.pm-day-cnt { color: #3e5e7c; font-size: .68rem; margin-top: .1rem; }
-.pm-day-btn { color: #f0c040; font-weight: 900; font-size: 1.4rem; background: none; border: none; }
-.pm-day-body {
-  background: #111e2e; border: 1px solid #1e3050; border-top: none;
-  border-radius: 0 0 12px 12px; padding: .5rem; display: flex; flex-direction: column; gap: .5rem;
-}
-.pm-day-body.cerrado { display: none; }
-
-/* ── TARJETA DE PARTIDO (corazón del diseño) ── */
-.pm-card {
-  background: #182438; border-radius: 14px;
-  border-left: 4px solid #243855; overflow: hidden;
-}
-.pm-card.open { border-left-color: #3cba6a; }
-.pm-card.lock { border-left-color: #f0a030; }
-.pm-card.miss { border-left-color: #e05050; }
-.pm-card.done { border-left-color: #2a4060; }
-
-/* Top: estado + hora */
-.pm-card-top {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: .5rem .9rem; border-bottom: 1px solid #1e3050;
-}
-.pm-estado {
-  font-size: .6rem; font-weight: 800; text-transform: uppercase;
-  letter-spacing: .8px; padding: .22rem .65rem; border-radius: 4px;
-}
-.pm-card.open .pm-estado { background: rgba(60,186,106,.12); color: #3cba6a; border: 1px solid rgba(60,186,106,.25); }
-.pm-card.lock .pm-estado { background: rgba(240,160,48,.12);  color: #f0a030; border: 1px solid rgba(240,160,48,.25); }
-.pm-card.miss .pm-estado { background: rgba(224,80,80,.12);   color: #e05050; border: 1px solid rgba(224,80,80,.25); }
-.pm-card.done .pm-estado { background: rgba(36,56,85,.5);     color: #3e5e7c; border: 1px solid #243855; }
-.pm-card-meta { display: flex; align-items: center; gap: .4rem; }
-.pm-hora  { color: #4e6e8c; font-size: .72rem; font-weight: 700; }
-.pm-cd    { font-size: .62rem; font-weight: 700; padding: .12rem .45rem; border-radius: 4px;
-            background: rgba(240,192,64,.1); border: 1px solid rgba(240,192,64,.25); color: #f0c040; }
-.pm-cd.urgent { background: rgba(224,80,80,.1); border-color: rgba(224,80,80,.25); color: #e05050; }
-
-/* Cuerpo: equipo local - inputs - equipo visitante */
-.pm-body { padding: .8rem .9rem; }
-
-.pm-equipo {
-  display: flex; align-items: center; gap: .65rem; margin-bottom: .7rem;
-}
-.pm-equipo.visitante { flex-direction: row-reverse; text-align: right; justify-content: flex-start; }
-.pm-bandera {
-  width: 48px; height: 32px; object-fit: cover;
-  border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.5); flex-shrink: 0;
-}
-.pm-nombre { font-size: 1.05rem; font-weight: 700; color: #dde8f6; line-height: 1.2; }
-
-/* Inputs centrados entre los dos equipos */
-.pm-inputs {
-  display: flex; align-items: center; justify-content: center;
-  gap: .5rem; margin: .2rem 0;
-}
-.pm-spinner { display: flex; align-items: center; }
-.pm-btn {
-  width: 48px; height: 60px; background: #1e3050; color: #f0c040;
-  border: 1px solid #243855; font-size: 1.4rem; font-weight: 900;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-  user-select: none; transition: background .1s;
-}
-.pm-btn:first-child { border-radius: 10px 0 0 10px; border-right: none; }
-.pm-btn:last-child  { border-radius: 0 10px 10px 0; border-left: none; }
-.pm-btn:active { background: #243855; }
-.pm-num {
-  width: 60px; height: 60px; font-size: 1.6rem; font-weight: 800;
-  text-align: center; background: #0f1e30; color: #dde8f6;
-  border: 1px solid #243855; border-left: none; border-right: none;
-  border-radius: 0; outline: none; font-family: 'Montserrat', sans-serif;
-  -moz-appearance: textfield;
-}
-.pm-num::-webkit-inner-spin-button,
-.pm-num::-webkit-outer-spin-button { -webkit-appearance: none; }
-.pm-num:focus { background: #111e2e; color: #f0c040; }
-.pm-vs { color: #1e3050; font-size: 1.1rem; font-weight: 900; margin: 0 .2rem; user-select: none; }
-
-/* Score resultado final */
-.pm-score-final {
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2rem; font-weight: 900; letter-spacing: 4px;
-  color: #dde8f6; background: #0f1e30;
-  border: 2px solid #f0c040; border-radius: 12px;
-  padding: .4rem 1.5rem; margin: .3rem auto;
-}
-.pm-score-locked {
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.8rem; font-weight: 900; letter-spacing: 3px;
-  color: #2e4e6e; background: #0f1e30;
-  border: 2px solid #1e3050; border-radius: 12px;
-  padding: .4rem 1.5rem; margin: .3rem auto;
+.m-tab.activo { background:#fbbf24; color:#111827; border-color:#fbbf24; }
+.m-tab .dot {
+  position:absolute; top:-5px; right:-5px;
+  background:#ef4444; color:#fff; font-size:.5rem; font-weight:900;
+  padding:.1rem .3rem; border-radius:10px; min-width:16px; text-align:center;
 }
 
-/* Estadio */
-.pm-estadio { font-size: .65rem; color: #fff; text-align: center; margin-top: .4rem; opacity: .75; }
+/* ── Grupo de día ── */
+.m-day { margin-bottom:.75rem; }
+.m-day-hd {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:.7rem 1rem; cursor:pointer; user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.m-day-lbl { color:#9ca3af; font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; }
+.m-day-cnt { color:#6b7280; font-size:.65rem; margin-top:.1rem; }
+.m-day-btn { color:#fbbf24; font-size:1.2rem; font-weight:900; background:none; border:none; padding:0 .25rem; }
 
-/* Footer: estado + botón guardar */
-.pm-footer {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: .55rem .9rem; border-top: 1px solid #1e3050; gap: .5rem;
+.m-day-lista { display:flex; flex-direction:column; gap:.5rem; padding:0 .75rem .25rem; }
+.m-day-lista.cerrado { display:none; }
+
+/* ── Tarjeta de partido ── */
+.m-card {
+  background:#1f2937; border-radius:14px;
+  border-left:4px solid #374151; overflow:hidden;
 }
-.pm-footer-msg { font-size: .72rem; color: #3e5e7c; font-weight: 600; flex: 1; }
-.pm-footer-msg.ok { color: #3cba6a; }
-.pm-footer-msg.err { color: #e05050; }
-.pm-btn-save {
-  background: linear-gradient(135deg, #f5c842, #d49010); color: #1a1000;
-  font-weight: 800; font-size: .88rem; border: none; border-radius: 10px;
-  padding: .6rem 1.5rem; cursor: pointer;
-  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-  box-shadow: 0 2px 10px rgba(240,192,64,.3); white-space: nowrap;
+.m-card.open { border-left-color:#34d399; }
+.m-card.lock { border-left-color:#fbbf24; }
+.m-card.miss { border-left-color:#f87171; }
+.m-card.done { border-left-color:#4b5563; }
+
+/* Top de la tarjeta */
+.m-card-top {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:.5rem .9rem; border-bottom:1px solid #374151;
 }
-.pm-btn-save:disabled { background: #1e3050; color: #2a4060; box-shadow: none; }
-.pm-pts {
-  font-size: .72rem; font-weight: 700; padding: .2rem .65rem;
-  border-radius: 20px; white-space: nowrap;
+.m-estado {
+  font-size:.6rem; font-weight:800; text-transform:uppercase;
+  letter-spacing:.8px; padding:.2rem .6rem; border-radius:4px;
 }
-.pm-pts.win { background: rgba(60,186,106,.12); border: 1px solid rgba(60,186,106,.3); color: #3cba6a; }
-.pm-pts.zero { background: #182438; border: 1px solid #243855; color: #3e5e7c; }
+.m-card.open .m-estado { color:#34d399; background:rgba(52,211,153,.1); }
+.m-card.lock .m-estado { color:#fbbf24; background:rgba(251,191,36,.1); }
+.m-card.miss .m-estado { color:#f87171; background:rgba(248,113,113,.1); }
+.m-card.done .m-estado { color:#6b7280; background:rgba(75,85,99,.2); }
+
+.m-hora { color:#6b7280; font-size:.72rem; font-weight:600; }
+.m-cd   { font-size:.62rem; font-weight:700; padding:.1rem .4rem; border-radius:4px;
+           color:#fbbf24; background:rgba(251,191,36,.1); }
+.m-cd.urgent { color:#f87171; background:rgba(248,113,113,.1); }
+
+/* Cuerpo: una fila con nombre — inputs — nombre */
+.m-card-body {
+  display:grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items:center;
+  padding:.85rem .9rem;
+  gap:.5rem;
+}
+.m-team-local  { font-size:.95rem; font-weight:700; color:#f9fafb; line-height:1.2; }
+.m-team-away   { font-size:.95rem; font-weight:700; color:#f9fafb; line-height:1.2; text-align:right; }
+
+/* Área de inputs / score */
+.m-inputs {
+  display:flex; align-items:center; gap:.3rem;
+  flex-shrink:0;
+}
+.m-spinner { display:flex; align-items:center; }
+.m-btn-num {
+  width:40px; height:52px;
+  background:#374151; color:#d1d5db; border:none;
+  font-size:1.2rem; font-weight:900; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  user-select:none;
+}
+.m-btn-num:first-child { border-radius:8px 0 0 8px; }
+.m-btn-num:last-child  { border-radius:0 8px 8px 0; }
+.m-btn-num:active { background:#4b5563; color:#fbbf24; }
+
+.m-num {
+  width:48px; height:52px; text-align:center;
+  background:#111827; color:#f9fafb;
+  border:none; border-top:1px solid #374151; border-bottom:1px solid #374151;
+  font-size:1.5rem; font-weight:800; outline:none;
+  font-family:'Montserrat', sans-serif;
+  -moz-appearance:textfield;
+}
+.m-num::-webkit-inner-spin-button,
+.m-num::-webkit-outer-spin-button { -webkit-appearance:none; }
+.m-num:focus { color:#fbbf24; background:#0f172a; }
+
+.m-sep { color:#4b5563; font-size:1rem; font-weight:900; user-select:none; }
+
+/* Score resultado ya jugado */
+.m-score-result {
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.6rem; font-weight:800; letter-spacing:3px;
+  color:#f9fafb; white-space:nowrap; flex-shrink:0;
+}
+.m-score-result.final  { color:#fbbf24; }
+.m-score-result.locked { color:#4b5563; }
+
+/* Footer: mensaje + guardar */
+.m-card-foot {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.5rem .9rem; border-top:1px solid #374151; gap:.5rem;
+  min-height:40px;
+}
+.m-msg { font-size:.72rem; color:#6b7280; font-weight:600; flex:1; }
+.m-msg.ok  { color:#34d399; }
+.m-msg.err { color:#f87171; }
+.m-msg.pts { color:#fbbf24; }
+
+.m-btn-save {
+  padding:.55rem 1.25rem; border-radius:9px; border:none;
+  background:#fbbf24; color:#111827;
+  font-weight:800; font-size:.85rem; cursor:pointer;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  white-space:nowrap; flex-shrink:0;
+}
+.m-btn-save:disabled { background:#374151; color:#4b5563; }
+
+/* Vacío */
+.m-empty { text-align:center; padding:3rem 1rem; color:#4b5563; font-size:.9rem; }
 </style>
 {% endblock %}
 
 {% block polla_content %}
 
-{# Cabecera #}
-<div class="pm-head">
-  <div class="pm-title">Tus pronósticos</div>
-  {% if config.polla_cerrada %}
-    <div class="pm-sub">La polla está cerrada.</div>
-  {% elif pendientes > 0 %}
-    <div class="pm-sub">Te faltan <b style="color:#dde8f6;">{{ pendientes }}</b> partido{% if pendientes != 1 %}s{% endif %} por pronosticar.</div>
-  {% elif partidos_por_fecha %}
-    <div class="pm-sub" style="color:#78d860;">¡Todos los partidos pronosticados!</div>
-  {% else %}
-    <div class="pm-sub">No hay partidos cargados todavía.</div>
-  {% endif %}
+{# ── Cabecera ── #}
+<div class="m-head">
+  <div>
+    <div class="m-title">Mis pronósticos</div>
+    {% if config.polla_cerrada %}
+      <div class="m-sub">La polla está cerrada.</div>
+    {% elif pendientes > 0 %}
+      <div class="m-sub">Faltan <b>{{ pendientes }}</b> por pronosticar</div>
+    {% elif partidos_por_fecha %}
+      <div class="m-sub" style="color:#34d399;">¡Todo pronosticado!</div>
+    {% else %}
+      <div class="m-sub">Sin partidos cargados.</div>
+    {% endif %}
+  </div>
 </div>
 
-{# Botón guardar todos #}
+{# ── Guardar todos ── #}
 {% if pendientes > 0 and not config.polla_cerrada %}
-<button class="pm-save-all" id="pmSaveAll" type="button">
-  <i class="bi bi-cloud-arrow-up-fill"></i> Guardar todos ({{ pendientes }})
+<button class="m-btn-all" id="mSaveAll">
+  Guardar todos los pendientes
 </button>
 {% endif %}
 
-{# Tabs de fase #}
-<div class="pm-tabs">
+{# ── Tabs de fase ── #}
+<div class="m-tabs">
   {% for tab in fases_tabs %}
   <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
-     class="pm-tab {% if tab.key == fase_sel %}activo{% endif %}"
-     {% if tab.colombia %}style="{% if tab.key == fase_sel %}background:#f0c040;color:#1a1200;border-color:#f0c040;{% else %}background:rgba(240,192,64,.08);color:#f0c040;border-color:rgba(240,192,64,.3);{% endif %}"{% endif %}>
+     class="m-tab {% if tab.key == fase_sel %}activo{% endif %}"
+     {% if tab.colombia and tab.key != fase_sel %}style="color:#fbbf24;border-color:rgba(251,191,36,.4);"{% endif %}>
     {% if tab.colombia %}
-      <img src="https://flagcdn.com/w20/co.png" style="width:16px;height:11px;object-fit:cover;border-radius:2px;">
+      🇨🇴
     {% else %}
       <i class="bi {{ tab.icon }}"></i>
     {% endif %}
     {{ tab.label }}
-    {% if tab.pendientes > 0 and tab.key != fase_sel %}<span class="pm-dot">{{ tab.pendientes }}</span>{% endif %}
+    {% if tab.pendientes > 0 and tab.key != fase_sel %}<span class="dot">{{ tab.pendientes }}</span>{% endif %}
   </a>
   {% endfor %}
 </div>
 
-{# Sin partidos #}
+{# ── Sin partidos ── #}
 {% if not partidos_por_fecha %}
-<div style="color:#3e5e7c;text-align:center;padding:4rem 1rem;">
-  <i class="bi bi-calendar-x" style="font-size:2.5rem;display:block;margin-bottom:.8rem;opacity:.35;"></i>
-  No hay partidos en esta fase todavía.
-</div>
+<div class="m-empty">No hay partidos en esta sección.</div>
 {% endif %}
 
-{# Partidos agrupados por fecha #}
+{# ── Partidos por día ── #}
 {% for fecha, partidos in partidos_por_fecha.items %}
-<div class="pm-day">
+<div class="m-day">
 
-  <div class="pm-day-hd open" onclick="pmDia(this)">
+  <div class="m-day-hd" onclick="mDia(this)">
     <div>
-      <div class="pm-day-lbl">{{ fecha|date:"l, d \d\e F"|upper }}</div>
-      <div class="pm-day-cnt">{{ partidos|length }} partido{% if partidos|length != 1 %}s{% endif %}</div>
+      <div class="m-day-lbl">{{ fecha|date:"l d \d\e F"|upper }}</div>
+      <div class="m-day-cnt">{{ partidos|length }} partido{% if partidos|length != 1 %}s{% endif %}</div>
     </div>
-    <button class="pm-day-btn" type="button">−</button>
+    <button class="m-day-btn" type="button">−</button>
   </div>
 
-  <div class="pm-day-body">
-  {% for item in partidos %}
-  {% with p=item.partido pr=item.pronostico %}
+  <div class="m-day-lista">
+  {% for item in partidos %}{% with p=item.partido pr=item.pronostico %}
 
-  <div id="pm-{{ p.pk }}"
-       class="pm-card {% if p.finalizado %}done{% elif item.cerrado and not pr %}miss{% elif item.cerrado %}lock{% else %}open{% endif %}"
+  <div id="mc-{{ p.pk }}"
+       class="m-card {% if p.finalizado %}done{% elif item.cerrado and not pr %}miss{% elif item.cerrado %}lock{% else %}open{% endif %}"
        {% if not item.cerrado and not p.finalizado %}data-cierre="{{ p.fecha_hora|date:'U' }}"{% endif %}>
 
     {# Top #}
-    <div class="pm-card-top">
-      <span class="pm-estado">
+    <div class="m-card-top">
+      <span class="m-estado">
         {% if p.finalizado %}Finalizado
         {% elif item.cerrado and not pr %}Sin pronóstico
         {% elif item.cerrado %}Cerrado
         {% else %}Pendiente{% endif %}
       </span>
-      <div class="pm-card-meta">
-        <span class="pm-hora">{{ p.fecha_hora|date:"h:i a" }}</span>
+      <div style="display:flex;align-items:center;gap:.4rem;">
+        <span class="m-hora">{{ p.fecha_hora|date:"h:i a" }}</span>
         {% if not item.cerrado and not p.finalizado %}
-          <span class="pm-cd" id="pmcd-{{ p.pk }}"></span>
+          <span class="m-cd" id="mcd-{{ p.pk }}"></span>
         {% endif %}
       </div>
     </div>
 
     {# Cuerpo #}
-    <div class="pm-body">
-
-      {# Equipo local #}
-      <div class="pm-equipo">
-        {% if p.bandera_url_local %}
-          <img class="pm-bandera" src="{{ p.bandera_url_local }}" alt="{{ p.nombre_local_display }}">
-        {% endif %}
-        <span class="pm-nombre">{{ p.nombre_local_display }}</span>
-      </div>
+    <div class="m-card-body">
+      <div class="m-team-local">{{ p.nombre_local_display }}</div>
 
       {# Inputs o score #}
       {% if p.finalizado %}
-        <div class="pm-score-final">{{ p.goles_local }} – {{ p.goles_visitante }}</div>
+        <div class="m-score-result final">{{ p.goles_local }} – {{ p.goles_visitante }}</div>
       {% elif item.cerrado %}
-        <div class="pm-score-locked">
+        <div class="m-score-result locked">
           {% if pr %}{{ pr.goles_local }} – {{ pr.goles_visitante }}{% else %}? – ?{% endif %}
         </div>
       {% else %}
-        <div class="pm-inputs" data-partido-id="{{ p.pk }}" data-polla-num="{{ polla_sel }}">
-          <div class="pm-spinner">
-            <button class="pm-btn" type="button" data-dir="-1">−</button>
-            <input type="number" class="pm-num pm-gl" min="0" max="20" inputmode="numeric"
+        <div class="m-inputs" data-partido-id="{{ p.pk }}" data-polla-num="{{ polla_sel }}">
+          <div class="m-spinner">
+            <button class="m-btn-num" type="button" data-dir="-1">−</button>
+            <input class="m-num m-gl" type="number" min="0" max="20" inputmode="numeric"
                    value="{% if pr %}{{ pr.goles_local }}{% endif %}" placeholder="0">
-            <button class="pm-btn" type="button" data-dir="1">+</button>
+            <button class="m-btn-num" type="button" data-dir="1">+</button>
           </div>
-          <span class="pm-vs">–</span>
-          <div class="pm-spinner">
-            <button class="pm-btn" type="button" data-dir="-1">−</button>
-            <input type="number" class="pm-num pm-gv" min="0" max="20" inputmode="numeric"
+          <span class="m-sep">–</span>
+          <div class="m-spinner">
+            <button class="m-btn-num" type="button" data-dir="-1">−</button>
+            <input class="m-num m-gv" type="number" min="0" max="20" inputmode="numeric"
                    value="{% if pr %}{{ pr.goles_visitante }}{% endif %}" placeholder="0">
-            <button class="pm-btn" type="button" data-dir="1">+</button>
+            <button class="m-btn-num" type="button" data-dir="1">+</button>
           </div>
         </div>
       {% endif %}
 
-      {# Equipo visitante #}
-      <div class="pm-equipo visitante" style="margin-top:.7rem;margin-bottom:0;">
-        {% if p.bandera_url_visitante %}
-          <img class="pm-bandera" src="{{ p.bandera_url_visitante }}" alt="{{ p.nombre_visitante_display }}">
-        {% endif %}
-        <span class="pm-nombre">{{ p.nombre_visitante_display }}</span>
-      </div>
-
-      {# Estadio #}
-      {% if p.estadio or p.ciudad %}
-      <div class="pm-estadio">
-        <i class="bi bi-geo-alt me-1"></i>{% if p.estadio %}{{ p.estadio }}{% if p.ciudad %} · {% endif %}{% endif %}{% if p.ciudad %}{{ p.ciudad }}{% endif %}
-      </div>
-      {% endif %}
-
-    </div>{# /pm-body #}
-
-    {# Footer #}
-    <div class="pm-footer">
-      <div class="pm-footer-msg" id="pmmsg-{{ p.pk }}">
-        {% if p.finalizado and pr %}
-          {% if pr.acerto_marcador %}🎯 Marcador exacto
-          {% elif pr.acerto_resultado %}✅ Resultado correcto
-          {% else %}❌ Fallaste{% endif %}
-        {% elif item.cerrado and pr %}
-          <i class="bi bi-lock-fill me-1" style="color:#f0c040;"></i>Guardado
-        {% elif item.cerrado and not pr %}
-          <span style="color:#e05050;"><i class="bi bi-lock-fill me-1"></i>Sin pronóstico</span>
-        {% elif pr %}
-          <span class="ok"><i class="bi bi-check-circle me-1"></i>Guardado</span>
-        {% endif %}
-      </div>
-      <div style="display:flex;align-items:center;gap:.4rem;">
-        {% if p.finalizado and pr %}
-          <span class="pm-pts {% if pr.puntos_obtenidos > 0 %}win{% else %}zero{% endif %}">
-            {% if pr.puntos_obtenidos > 0 %}+{% endif %}{{ pr.puntos_obtenidos }} pts
-          </span>
-        {% elif not item.cerrado and not p.finalizado %}
-          <button class="pm-btn-save pm-guardar" data-target="{{ p.pk }}">
-            {% if pr %}Actualizar{% else %}Guardar{% endif %}
-          </button>
-        {% endif %}
-      </div>
+      <div class="m-team-away">{{ p.nombre_visitante_display }}</div>
     </div>
 
-  </div>{# /pm-card #}
-  {% endwith %}
-  {% endfor %}
-  </div>{# /pm-day-body #}
-</div>{# /pm-day #}
+    {# Footer #}
+    <div class="m-card-foot">
+      <div class="m-msg {% if p.finalizado and pr %}pts{% endif %}" id="mmsg-{{ p.pk }}">
+        {% if p.finalizado and pr %}
+          {% if pr.acerto_marcador %}🎯 +{{ pr.puntos_obtenidos }} pts
+          {% elif pr.acerto_resultado %}✅ +{{ pr.puntos_obtenidos }} pts
+          {% else %}❌ 0 pts{% endif %}
+        {% elif item.cerrado and pr %}
+          🔒 {{ pr.goles_local }}–{{ pr.goles_visitante }}
+        {% elif item.cerrado %}
+          <span style="color:#f87171;">Sin pronóstico</span>
+        {% elif pr %}
+          <span class="ok">✓ Guardado</span>
+        {% endif %}
+      </div>
+      {% if not item.cerrado and not p.finalizado %}
+      <button class="m-btn-save m-guardar" data-target="{{ p.pk }}">
+        {% if pr %}Actualizar{% else %}Guardar{% endif %}
+      </button>
+      {% endif %}
+    </div>
+
+  </div>{# /m-card #}
+  {% endwith %}{% endfor %}
+  </div>{# /m-day-lista #}
+</div>{# /m-day #}
 {% endfor %}
 
 {% endblock %}
@@ -357,136 +316,110 @@ body { background: #0d1b2a !important; }
 <script>
 const CSRF = '{{ csrf_token }}';
 
-/* ── Spinner +/− ─────────────────────────────────────── */
-document.querySelectorAll('.pm-btn[data-dir]').forEach(btn => {
-  btn.addEventListener('click', function () {
+/* Spinners +/− */
+document.querySelectorAll('.m-btn-num').forEach(btn => {
+  btn.addEventListener('click', function() {
     const inp = this.parentElement.querySelector('input');
-    this.dataset.dir === '1'
-      ? inp.value = Math.min(20, (parseInt(inp.value) || 0) + 1)
-      : inp.value = Math.max(0,  (parseInt(inp.value) || 0) - 1);
+    const dir = parseInt(this.dataset.dir);
+    inp.value = Math.max(0, Math.min(20, (parseInt(inp.value) || 0) + dir));
   });
 });
 
-/* ── Guardar pronóstico ──────────────────────────────── */
-async function guardarPronostico(pk, pollaNum, gl, gv) {
-  const r = await fetch('/polla/pronosticos/guardar/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
-    body: JSON.stringify({ partido_id: pk, polla_num: pollaNum, goles_local: gl, goles_visitante: gv }),
-  });
-  return r.json();
-}
+/* Guardar un pronóstico */
+async function mGuardar(pk) {
+  const card = document.getElementById('mc-' + pk);
+  const box  = card.querySelector('[data-partido-id]');
+  const msg  = document.getElementById('mmsg-' + pk);
+  const btn  = card.querySelector('.m-guardar');
+  const gl   = parseInt(box.querySelector('.m-gl').value || '0');
+  const gv   = parseInt(box.querySelector('.m-gv').value || '0');
+  const pn   = parseInt(box.dataset.pollaNum);
 
-document.querySelectorAll('.pm-guardar').forEach(btn => {
-  btn.addEventListener('click', async function () {
-    const pk       = parseInt(this.dataset.target);
-    const card     = document.getElementById('pm-' + pk);
-    const inputs   = card.querySelector('[data-partido-id]');
-    const msg      = document.getElementById('pmmsg-' + pk);
-    const gl       = parseInt(inputs.querySelector('.pm-gl').value || '0');
-    const gv       = parseInt(inputs.querySelector('.pm-gv').value || '0');
-    const pollaNum = parseInt(inputs.dataset.pollaNum);
-
-    this.disabled = true; this.textContent = '…';
-
-    try {
-      const data = await guardarPronostico(pk, pollaNum, gl, gv);
-      if (data.ok) {
-        this.textContent = 'Actualizar';
-        msg.className = 'pm-footer-msg ok';
-        msg.innerHTML = '<i class="bi bi-check-circle me-1"></i>Guardado';
-      } else {
-        this.textContent = 'Guardar';
-        msg.className = 'pm-footer-msg err';
-        msg.textContent = data.error || 'Error';
-        setTimeout(() => { msg.className = 'pm-footer-msg'; msg.textContent = ''; }, 4000);
-      }
-    } catch {
-      this.textContent = 'Guardar';
-      msg.className = 'pm-footer-msg err';
-      msg.textContent = 'Error de red';
-      setTimeout(() => { msg.className = 'pm-footer-msg'; msg.textContent = ''; }, 4000);
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    const r = await fetch('/polla/pronosticos/guardar/', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-CSRFToken':CSRF},
+      body:JSON.stringify({partido_id:pk, polla_num:pn, goles_local:gl, goles_visitante:gv})
+    });
+    const d = await r.json();
+    if (d.ok) {
+      btn.textContent = 'Actualizar';
+      msg.className = 'm-msg ok'; msg.innerHTML = '✓ Guardado';
+    } else {
+      btn.textContent = 'Guardar';
+      msg.className = 'm-msg err'; msg.textContent = d.error || 'Error';
+      setTimeout(() => { msg.className = 'm-msg'; msg.textContent = ''; }, 3000);
     }
-    this.disabled = false;
-  });
+  } catch {
+    btn.textContent = 'Guardar';
+    msg.className = 'm-msg err'; msg.textContent = 'Error de red';
+    setTimeout(() => { msg.className = 'm-msg'; msg.textContent = ''; }, 3000);
+  }
+  btn.disabled = false;
+}
+
+document.querySelectorAll('.m-guardar').forEach(btn => {
+  btn.addEventListener('click', () => mGuardar(parseInt(btn.dataset.target)));
 });
 
-/* ── Guardar todos ───────────────────────────────────── */
-const saveAllBtn = document.getElementById('pmSaveAll');
-if (saveAllBtn) {
-  saveAllBtn.addEventListener('click', async function () {
-    this.disabled = true;
-    this.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Guardando…';
-
-    const cards = [...document.querySelectorAll('.pm-card.open')];
-    let ok = 0, fail = 0;
-
+/* Guardar todos */
+const saveAll = document.getElementById('mSaveAll');
+if (saveAll) {
+  saveAll.addEventListener('click', async function() {
+    this.disabled = true; this.textContent = 'Guardando…';
+    const cards = [...document.querySelectorAll('.m-card.open')];
+    let ok = 0;
     await Promise.all(cards.map(async card => {
-      const inputs = card.querySelector('[data-partido-id]');
-      if (!inputs) return;
-      const gl = parseInt(inputs.querySelector('.pm-gl').value || '0');
-      const gv = parseInt(inputs.querySelector('.pm-gv').value || '0');
-      const pk = parseInt(inputs.dataset.partidoId);
-      const pn = parseInt(inputs.dataset.pollaNum);
+      const pk = parseInt(card.id.replace('mc-', ''));
+      const box = card.querySelector('[data-partido-id]');
+      if (!box) return;
+      const gl = parseInt(box.querySelector('.m-gl').value || '0');
+      const gv = parseInt(box.querySelector('.m-gv').value || '0');
+      const pn = parseInt(box.dataset.pollaNum);
       try {
-        const data = await guardarPronostico(pk, pn, gl, gv);
-        if (data.ok) {
+        const r = await fetch('/polla/pronosticos/guardar/', {
+          method:'POST',
+          headers:{'Content-Type':'application/json','X-CSRFToken':CSRF},
+          body:JSON.stringify({partido_id:pk, polla_num:pn, goles_local:gl, goles_visitante:gv})
+        });
+        const d = await r.json();
+        if (d.ok) {
           ok++;
-          const btn = card.querySelector('.pm-guardar');
+          const btn = card.querySelector('.m-guardar');
           if (btn) btn.textContent = 'Actualizar';
-          const msg = document.getElementById('pmmsg-' + pk);
-          if (msg) { msg.className = 'pm-footer-msg ok'; msg.innerHTML = '<i class="bi bi-check-circle me-1"></i>Guardado'; }
-        } else { fail++; }
-      } catch { fail++; }
+          const msg = document.getElementById('mmsg-' + pk);
+          if (msg) { msg.className = 'm-msg ok'; msg.innerHTML = '✓ Guardado'; }
+        }
+      } catch {}
     }));
-
     this.disabled = false;
-    this.innerHTML = ok > 0
-      ? `<i class="bi bi-check-circle-fill me-2" style="color:#1a1200;"></i>${ok} guardado${ok !== 1 ? 's' : ''}`
-      : '<i class="bi bi-cloud-arrow-up-fill me-2"></i>Guardar todos';
-    setTimeout(() => {
-      if (!this.disabled)
-        this.innerHTML = `<i class="bi bi-cloud-arrow-up-fill me-2"></i>Guardar todos`;
-    }, 4000);
+    this.textContent = ok > 0 ? `✓ ${ok} guardado${ok !== 1 ? 's' : ''}` : 'Guardar todos los pendientes';
+    setTimeout(() => { if (!this.disabled) this.textContent = 'Guardar todos los pendientes'; }, 4000);
   });
 }
 
-/* ── Countdown ───────────────────────────────────────── */
-function tickCd() {
-  const ahora = Date.now();
+/* Countdown */
+function tick() {
+  const now = Date.now();
   document.querySelectorAll('[data-cierre]').forEach(card => {
-    const el   = card.querySelector('[id^="pmcd-"]');
+    const el = card.querySelector('[id^="mcd-"]');
     if (!el) return;
-    const diff = parseInt(card.dataset.cierre) * 1000 - ahora;
+    const diff = parseInt(card.dataset.cierre) * 1000 - now;
     if (diff <= 0) { el.textContent = ''; return; }
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    el.textContent = h >= 48 ? `${Math.floor(h/24)}d` : h >= 1 ? `${h}h ${m}m` : `${m}m`;
+    const h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000);
+    el.textContent = h >= 48 ? Math.floor(h/24)+'d' : h >= 1 ? h+'h '+m+'m' : m+'m';
     el.classList.toggle('urgent', h < 2);
   });
 }
-tickCd();
-setInterval(tickCd, 60000);
+tick(); setInterval(tick, 60000);
 
-/* ── Colapsar día ────────────────────────────────────── */
-function pmDia(hd) {
-  const body = hd.nextElementSibling;
-  const btn  = hd.querySelector('.pm-day-btn');
-  const shut = body.classList.toggle('cerrado');
+/* Colapsar día */
+function mDia(hd) {
+  const lista = hd.nextElementSibling;
+  const btn   = hd.querySelector('.m-day-btn');
+  const shut  = lista.classList.toggle('cerrado');
   btn.textContent = shut ? '+' : '−';
-  hd.classList.toggle('open', !shut);
 }
-
-/* ── Enter entre inputs ──────────────────────────────── */
-document.querySelectorAll('.pm-gl').forEach(inp => {
-  inp.addEventListener('keydown', e => {
-    if (e.key === 'Enter') inp.closest('[data-partido-id]').querySelector('.pm-gv')?.focus();
-  });
-});
-document.querySelectorAll('.pm-gv').forEach(inp => {
-  inp.addEventListener('keydown', e => {
-    if (e.key === 'Enter') inp.closest('.pm-card')?.querySelector('.pm-guardar')?.click();
-  });
-});
 </script>
 {% endblock %}
