@@ -82,7 +82,7 @@ body { background: #0d1b2a !important; }
 
 {# ── Tabs de fase ────────────────────────────────────────── #}
 {% if fases_tabs %}
-<div class="pn-tabs-bar mb-3" style="display:flex;gap:.4rem;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap;padding-bottom:2px;">
+<div class="d-flex gap-1 flex-wrap mb-3">
   {% for tab in fases_tabs %}
   <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
      class="pn-tab {% if tab.key == fase_sel %}on{% endif %}"
@@ -138,11 +138,6 @@ body { background: #0d1b2a !important; }
           <span class="pn-countdown" id="cd-{{ p.pk }}"></span>
         {% endif %}
       </div>
-      {% if p.estadio or p.ciudad %}
-      <div class="pn-stadium" style="color:#fff;">
-        <i class="bi bi-geo-alt me-1"></i>{% if p.estadio %}{{ p.estadio }}{% if p.ciudad %} · {% endif %}{% endif %}{% if p.ciudad %}{{ p.ciudad }}{% endif %}
-      </div>
-      {% endif %}
     </div>
 
     {# Body #}

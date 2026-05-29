@@ -237,15 +237,11 @@ body { background-color: var(--pk-bg) !important; font-family: 'Montserrat', san
 .pn-team.away { justify-content: flex-end; }
 
 .pn-flag {
-  width: 52px; height: 35px; object-fit: cover; flex-shrink: 0;
-  border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,.6);
+  width: 40px; height: 27px; object-fit: cover; flex-shrink: 0;
+  border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,.6);
 }
 .pn-name {
-  font-size: 1rem; font-weight: 700; color: #c8ddf0;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.pn-stadium {
-  font-size: .62rem; color: #fff; margin-top: .15rem;
+  font-size: .88rem; font-weight: 700; color: #c8ddf0;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
@@ -323,70 +319,13 @@ body { background-color: var(--pk-bg) !important; font-family: 'Montserrat', san
 }
 .pn-btn-stats:hover { background: #162030; color: #5a85a8; border-color: #243855; }
 
-/* ── Mejoras táctiles globales ───────────────────────────── */
-.pn-spin-btn, .pn-btn-save, .pk-save-all, .pn-day-hd, .pn-tab {
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-/* Evitar zoom en iOS al hacer foco en inputs */
-.pn-inp { font-size: max(1.35rem, 16px); }
-
-/* Tabs con scroll horizontal en lugar de wrap */
-.pn-tabs-bar {
-  display: flex; gap: .4rem;
-  overflow-x: auto; overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; padding-bottom: 2px;
-  flex-wrap: nowrap !important;
-}
-.pn-tabs-bar::-webkit-scrollbar { display: none; }
-
 /* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 575px) {
-
-  /* Cabecera */
-  .pn-head    { margin-bottom: .9rem; }
-  .pn-sub     { font-size: .82rem; }
-  .pn-counter { font-size: .7rem; padding: .22rem .7rem; }
-
-  /* Sección de día */
-  .pn-day-hd   { padding: .6rem .9rem; }
-  .pn-day-lbl  { font-size: .65rem; letter-spacing: 1.5px; }
-  .pn-day-body { padding: .4rem; gap: .4rem; }
-
-  /* Top: fase no debe romper línea */
-  .pn-top   { padding: .35rem .75rem; }
-  .pn-phase { font-size: .55rem; white-space: nowrap; }
-  .pn-time  { font-size: .62rem; }
-
-  /* ── CUERPO: CSS Grid — equipos arriba, inputs abajo ── */
-  .pn-body {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    padding: .75rem .75rem .55rem;
-    gap: .65rem .4rem;
-    align-items: center;
-  }
-  .pn-team.home { grid-column: 1; grid-row: 1; }
-  .pn-team.away { grid-column: 2; grid-row: 1; justify-content: flex-end; }
-  .pn-mid       { grid-column: 1 / -1; grid-row: 2; justify-content: center; }
-
-  /* Banderas y nombres */
-  .pn-flag { width: 38px; height: 26px; }
-  .pn-name { font-size: .85rem; white-space: normal; line-height: 1.2; }
-
-  /* Inputs táctiles grandes */
-  .pn-inp      { width: 56px; height: 56px; font-size: 1.45rem; }
-  .pn-spin-btn { width: 42px; height: 56px; font-size: 1.15rem; }
-  .pn-dash     { font-size: 1.1rem; margin: 0 .35rem; }
-
-  /* Score finalizado */
-  .pn-score { font-size: 1.3rem; padding: .3rem 1rem; }
-
-  /* Footer */
-  .pn-foot     { padding: .4rem .75rem; }
-  .pn-btn-save { padding: .55rem 1.3rem; font-size: .82rem; }
-  .pn-info     { font-size: .66rem; }
-  .pn-pts      { font-size: .66rem; }
+  .pn-body     { padding: .75rem .8rem; gap: .35rem; }
+  .pn-inp      { width: 44px; height: 44px; font-size: 1.15rem; }
+  .pn-spin-btn { width: 24px; height: 44px; font-size: .95rem; }
+  .pn-flag     { width: 32px; height: 22px; }
+  .pn-name     { font-size: .78rem; }
+  .pn-score    { font-size: 1.25rem; padding: .2rem .9rem; }
+  .pn-top, .pn-foot { padding: .35rem .8rem; }
 }
