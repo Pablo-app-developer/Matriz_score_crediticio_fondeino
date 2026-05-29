@@ -58,9 +58,8 @@ body { background:#0f172a !important; }
 /* ── Premios ── */
 .rg-premio { padding:.6rem .85rem; border-bottom:1px solid #0f172a; }
 .rg-premio:last-child { border-bottom:none; }
-.rg-premio-hd { display:flex; justify-content:space-between; align-items:flex-start; gap:.5rem; margin-bottom:.2rem; }
-.rg-premio-nombre { font-size:.78rem; font-weight:800; color:#f1f5f9; }
-.rg-premio-monto { font-size:.82rem; font-weight:800; color:#fbbf24; white-space:nowrap; flex-shrink:0; }
+.rg-premio-nombre { font-size:.78rem; font-weight:800; color:#f1f5f9; margin-bottom:.25rem; }
+.rg-premio-monto { font-size:.8rem; font-weight:600; color:#fbbf24; margin-bottom:.2rem; }
 .rg-premio-desc { font-size:.72rem; color:#64748b; line-height:1.45; }
 
 /* ── Desempates ── */
@@ -148,24 +147,18 @@ body { background:#0f172a !important; }
       <span class="rg-sec-title">Premios</span>
     </div>
     <div class="rg-premio">
-      <div class="rg-premio-hd">
-        <span class="rg-premio-nombre">🥇 Campeón General</span>
-        <span class="rg-premio-monto">{{ config.premios_top5_general }}</span>
-      </div>
+      <div class="rg-premio-nombre">🥇 Campeón General</div>
+      <div class="rg-premio-monto">{{ config.premios_top5_general }}</div>
       <div class="rg-premio-desc">Al participante con más puntos al finalizar todas las fases del Mundial.</div>
     </div>
     <div class="rg-premio">
-      <div class="rg-premio-hd">
-        <span class="rg-premio-nombre">🌎 Acierto al Campeón</span>
-        <span class="rg-premio-monto">{{ config.premio_campeon_sorteo }}</span>
-      </div>
+      <div class="rg-premio-nombre">🌎 Acierto al Campeón</div>
+      <div class="rg-premio-monto">{{ config.premio_campeon_sorteo }}</div>
       <div class="rg-premio-desc">Sorteo entre todos los participantes que acierten al campeón del mundo.</div>
     </div>
     <div class="rg-premio">
-      <div class="rg-premio-hd">
-        <span class="rg-premio-nombre">🇨🇴 Partidos Colombia (×3)</span>
-        <span class="rg-premio-monto">{{ config.premios_top5_grupos }}</span>
-      </div>
+      <div class="rg-premio-nombre">🇨🇴 Partidos Colombia (×3)</div>
+      <div class="rg-premio-monto">{{ config.premios_top5_grupos }}</div>
       <div class="rg-premio-desc">Por cada partido de Colombia en fase de grupos, sorteo entre quienes acierten el marcador exacto.</div>
     </div>
   </div>
