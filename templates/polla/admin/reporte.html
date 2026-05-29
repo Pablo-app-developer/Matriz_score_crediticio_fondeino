@@ -206,21 +206,18 @@
         {% elif info.candidatos %}
           <p class="small text-muted mb-1">
             <strong>{{ info.candidatos|length }} candidato{{ info.candidatos|length|pluralize }}</strong>
-            al sorteo (obtuvieron puntos en este partido):
+            al sorteo (acertaron marcador exacto):
           </p>
           <div class="d-flex flex-wrap gap-2">
             {% for c in info.candidatos %}
-            <span class="badge {% if c.puntos_obtenidos == 3 %}bg-success{% else %}bg-primary{% endif %} px-2 py-1" style="font-size:.8rem;">
+            <span class="badge bg-success px-2 py-1" style="font-size:.8rem;">
               {{ c.inscripcion.afiliado.nombre_completo }}
-              <span class="opacity-75 ms-1">{{ c.puntos_obtenidos }}pts · {{ c.goles_local }}-{{ c.goles_visitante }}</span>
+              <span class="opacity-75 ms-1">{{ c.goles_local }}-{{ c.goles_visitante }}</span>
             </span>
             {% endfor %}
           </div>
-          <p class="text-muted mt-1 mb-0" style="font-size:.75rem;">
-            Verde = marcador exacto (3 pts) · Azul = resultado acertado (1 pt)
-          </p>
         {% else %}
-          <p class="text-muted small mb-0">Nadie acertó resultado ni marcador en este partido.</p>
+          <p class="text-muted small mb-0">Nadie acertó el marcador exacto en este partido.</p>
         {% endif %}
       </div>
       {% endwith %}

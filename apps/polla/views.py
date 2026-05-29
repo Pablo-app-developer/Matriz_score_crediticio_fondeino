@@ -1100,10 +1100,10 @@ def admin_reporte(request):
                 Pronostico.objects.filter(
                     partido=partido,
                     inscripcion__activa=True,
-                    puntos_obtenidos__gt=0,
+                    acerto_marcador=True,
                 )
                 .select_related('inscripcion__afiliado')
-                .order_by('-puntos_obtenidos', '-inscripcion__aciertos_marcador', '-inscripcion__puntos_totales', 'inscripcion__afiliado__nombre_completo')
+                .order_by('-inscripcion__puntos_totales', '-inscripcion__aciertos_marcador', 'inscripcion__afiliado__nombre_completo')
             )
         partidos_colombia_info.append({
             'partido': partido,
