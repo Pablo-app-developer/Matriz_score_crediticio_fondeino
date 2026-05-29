@@ -187,7 +187,9 @@ class Partido(models.Model):
 
     @property
     def cerrado_para_pronosticos(self):
-        return timezone.now() >= self.fecha_hora
+        from datetime import timedelta
+        minutos = ConfiguracionPolla.get().minutos_cierre_pronosticos
+        return timezone.now() >= self.fecha_hora - timedelta(minutes=minutos)
 
     @property
     def resultado_texto(self):
@@ -310,6 +312,11 @@ class ConfiguracionPolla(models.Model):
     )
     enlace_afiliacion = models.URLField(default='https://www.fondeino.com/')
 
+    minutos_cierre_pronosticos = models.IntegerField(
+        default=10,
+        verbose_name='Minutos de cierre antes del partido',
+        help_text='Los pronósticos se bloquean este número de minutos antes de la hora del partido.',
+    )
     polla_cerrada = models.BooleanField(default=False)
 
     class Meta:
