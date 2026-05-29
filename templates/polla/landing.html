@@ -52,6 +52,16 @@
         <div class="mt-2" style="font-size:.78rem;opacity:.45;">
           <a href="{% url 'accounts:password_reset' %}" style="color:inherit;">¿Olvidaste tu contraseña?</a>
         </div>
+        {% if login_form.errors %}
+        <div class="mt-3 p-2 rounded" style="background:rgba(240,192,64,.12);border:1px solid rgba(240,192,64,.3);font-size:.78rem;text-align:center;">
+          ¿Aún no tienes cuenta?
+          <a href="{% url 'polla:registro' %}" style="color:#f0c040;font-weight:700;">Regístrate aquí →</a>
+        </div>
+        {% else %}
+        <div class="mt-2" style="font-size:.75rem;opacity:.35;text-align:center;">
+          ¿Sin cuenta? <a href="{% url 'polla:registro' %}" style="color:inherit;">Regístrate</a>
+        </div>
+        {% endif %}
       </div>
     {% endif %}
   </div>
