@@ -580,6 +580,16 @@ def pronosticos(request):
     ]
     pendientes = sum(pend_por_fase.values())
 
+    # Tab Colombia: partidos de Colombia en grupos
+    colombia_ids = set(p.pk for p in _get_partidos_colombia())
+    if colombia_ids:
+        pend_colombia = Partido.objects.filter(
+            pk__in=colombia_ids, fecha_hora__gt=ahora, finalizado=False,
+        ).exclude(pk__in=pronosticos_ids).count()
+        fases_tabs = fases_tabs + [
+            {'key': 'COLOMBIA', 'label': 'Colombia', 'pendientes': pend_colombia, 'icon': 'bi-flag-fill', 'colombia': True}
+        ]
+
     # Tab especial "Próximos": partidos en las próximas 72h
     proximos_qs = Partido.objects.filter(
         fecha_hora__gt=ahora, fecha_hora__lte=ventana_proximos, finalizado=False,
@@ -596,11 +606,24 @@ def pronosticos(request):
     if fase_raw is None:
         fase_sel = 'HOY' if hay_proximos else 'GRUPOS'
     else:
-        valid_fases = set(ORDEN_FASES) | {'HOY'}
+        valid_fases = set(ORDEN_FASES) | {'HOY', 'COLOMBIA'}
         fase_sel = fase_raw if fase_raw in valid_fases else 'GRUPOS'
 
     # Obtener partidos según pestaña activa
-    if fase_sel == 'HOY':
+    if fase_sel == 'COLOMBIA':
+        partidos = Partido.objects.filter(pk__in=colombia_ids).select_related(
+            'equipo_local', 'equipo_visitante'
+        ).order_by('fecha_hora', 'numero')
+        ids_col = list(partidos.values_list('pk', flat=True))
+        pronosticos_dict = {}
+        if inscripcion_activa:
+            pronosticos_dict = {
+                p.partido_id: p
+                for p in inscripcion_activa.pronosticos.filter(
+                    partido_id__in=ids_col
+                ).select_related('partido').all()
+            }
+    elif fase_sel == 'HOY':
         partidos = proximos_qs.select_related(
             'equipo_local', 'equipo_visitante'
         ).order_by('fecha_hora', 'numero')
