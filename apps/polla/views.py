@@ -273,7 +273,8 @@ def ranking(request):
         pronosticos_campeon = PronosticoCampeon.objects.select_related(
             'inscripcion__afiliado', 'equipo'
         ).order_by('equipo__nombre', 'inscripcion__afiliado__nombre_completo')
-        return render(request, 'polla/ranking.html', {
+        tpl = 'polla/ranking_mobile.html' if _is_mobile(request) else 'polla/ranking.html'
+        return render(request, tpl, {
             'tipo': tipo,
             'pronosticos_campeon': pronosticos_campeon,
             'config': config,
@@ -296,7 +297,8 @@ def ranking(request):
         grp_labels = [i.afiliado.nombre_completo for i in qs_grp]
         grp_values = [int(i.puntos_fase) for i in qs_grp]
 
-        return render(request, 'polla/ranking.html', {
+        tpl = 'polla/ranking_mobile.html' if _is_mobile(request) else 'polla/ranking.html'
+        return render(request, tpl, {
             'tipo': tipo,
             'config': config,
             'titulo': 'Gráfica de puntos',
@@ -344,7 +346,8 @@ def ranking(request):
     chart_labels_json = _json.dumps(chart_labels)
     chart_values_json = _json.dumps(chart_values)
 
-    return render(request, 'polla/ranking.html', {
+    template = 'polla/ranking_mobile.html' if _is_mobile(request) else 'polla/ranking.html'
+    return render(request, template, {
         'tipo': tipo,
         'ranking': ranking_pagina,
         'titulo': titulo,
@@ -362,7 +365,8 @@ def ranking(request):
 
 def reglamento(request):
     config = ConfiguracionPolla.get()
-    return render(request, 'polla/reglamento.html', {'config': config})
+    template = 'polla/reglamento_mobile.html' if _is_mobile(request) else 'polla/reglamento.html'
+    return render(request, template, {'config': config})
 
 
 @admin_polla_required
@@ -736,7 +740,8 @@ def campeon(request):
         ids_en_fixture.add(vis_id)
     equipos = list(Equipo.objects.filter(pk__in=ids_en_fixture).order_by('grupo', 'nombre'))
 
-    return render(request, 'polla/campeon.html', {
+    template = 'polla/campeon_mobile.html' if _is_mobile(request) else 'polla/campeon.html'
+    return render(request, template, {
         'afiliado': afiliado,
         'inscripcion': inscripcion,
         'form': form,
@@ -756,7 +761,8 @@ def mis_pronosticos(request):
         'partido__equipo_local', 'partido__equipo_visitante'
     ).order_by('partido__fecha_hora')
 
-    return render(request, 'polla/mis_pronosticos.html', {
+    template = 'polla/mis_pronosticos_mobile.html' if _is_mobile(request) else 'polla/mis_pronosticos.html'
+    return render(request, template, {
         'afiliado': afiliado,
         'inscripcion': inscripcion,
         'pronosticos': pronosticos_qs,

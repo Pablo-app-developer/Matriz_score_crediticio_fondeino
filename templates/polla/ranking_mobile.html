@@ -1,0 +1,149 @@
+{% extends "polla/base_polla.html" %}
+{% block nav_ranking %}active{% endblock %}
+{% block extra_css %}{{ block.super }}
+<style>
+body { background:#0f172a !important; }
+.container-fluid { padding-left:4px !important; padding-right:4px !important; }
+.pk-nav { padding:.3rem .75rem !important; }
+
+.rm-head { padding:.45rem .5rem .3rem; display:flex; align-items:center; justify-content:space-between; }
+.rm-title { color:#94a3b8; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; }
+.rm-pts-badge { color:#fbbf24; font-size:.68rem; font-weight:700; }
+
+/* Tabs */
+.rm-tabs { display:flex; gap:.3rem; padding:.25rem .3rem .45rem; overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.rm-tabs::-webkit-scrollbar { display:none; }
+.rm-tab { display:inline-flex; align-items:center; gap:.25rem; padding:.35rem .75rem; border-radius:16px; white-space:nowrap; flex-shrink:0; font-size:.68rem; font-weight:700; text-decoration:none; border:1px solid #1e293b; color:#64748b; background:#1e293b; -webkit-tap-highlight-color:transparent; }
+.rm-tab.activo { background:#fbbf24; color:#111827; border-color:#fbbf24; }
+
+/* Fila de ranking */
+.rm-list { display:flex; flex-direction:column; padding:0 .2rem; gap:.25rem; }
+.rm-row {
+  display:grid; grid-template-columns:32px 1fr auto;
+  align-items:center; gap:.4rem;
+  background:#1e293b; border-radius:8px;
+  padding:.5rem .65rem; border-left:3px solid #334155;
+}
+.rm-row.yo { border-left-color:#fbbf24; background:#1e2d4a; }
+.rm-row.top1 { border-left-color:#fbbf24; }
+.rm-row.top2 { border-left-color:#94a3b8; }
+.rm-row.top3 { border-left-color:#b87333; }
+
+.rm-pos { font-size:.8rem; font-weight:800; color:#475569; text-align:center; }
+.rm-pos.m1 { color:#fbbf24; font-size:.95rem; }
+.rm-pos.m2 { color:#94a3b8; font-size:.95rem; }
+.rm-pos.m3 { color:#b87333; font-size:.95rem; }
+
+.rm-name { font-size:.82rem; font-weight:600; color:#e2e8f0; line-height:1.2; }
+.rm-name .yo-tag { font-size:.58rem; background:#fbbf24; color:#111827; padding:.1rem .35rem; border-radius:3px; font-weight:800; margin-left:.35rem; vertical-align:middle; }
+.rm-sub { font-size:.62rem; color:#475569; margin-top:.1rem; }
+
+.rm-pts { font-size:.88rem; font-weight:800; color:#fbbf24; white-space:nowrap; text-align:right; }
+.rm-pts span { display:block; font-size:.58rem; color:#475569; font-weight:600; text-align:right; margin-top:.05rem; }
+
+/* Paginación */
+.rm-pag { display:flex; align-items:center; justify-content:center; gap:.25rem; padding:.75rem .5rem; flex-wrap:wrap; }
+.rm-pag a, .rm-pag span {
+  min-width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+  border-radius:7px; font-size:.75rem; font-weight:700; text-decoration:none;
+  background:#1e293b; color:#64748b; border:1px solid #334155;
+  -webkit-tap-highlight-color:transparent;
+}
+.rm-pag .activo { background:#fbbf24; color:#111827; border-color:#fbbf24; }
+
+/* Lista campeón */
+.rc-group { padding:0 .2rem .5rem; }
+.rc-equipo { background:#1e293b; border-radius:8px; margin-bottom:.25rem; overflow:hidden; }
+.rc-eq-hd { display:flex; align-items:center; gap:.5rem; padding:.45rem .65rem; border-bottom:1px solid #0f172a; }
+.rc-eq-name { font-size:.82rem; font-weight:700; color:#f1f5f9; flex:1; }
+.rc-eq-flag { width:24px; height:16px; object-fit:cover; border-radius:2px; flex-shrink:0; }
+.rc-eq-votos { font-size:.65rem; color:#94a3b8; font-weight:600; background:#0f172a; padding:.15rem .45rem; border-radius:10px; }
+.rc-persona { font-size:.72rem; color:#64748b; padding:.3rem .65rem; border-bottom:1px solid #0f172a15; }
+.rc-persona:last-child { border-bottom:none; }
+.rc-persona.acerto { color:#34d399; }
+</style>
+{% endblock %}
+
+{% block polla_content %}
+<div class="rm-head">
+  <span class="rm-title">Ranking</span>
+  {% if tipo == 'general' or tipo == 'grupos' %}
+    <span class="rm-pts-badge">{{ total }} participante{% if total != 1 %}s{% endif %}</span>
+  {% endif %}
+</div>
+
+<div class="rm-tabs">
+  <a href="?tipo=general"  class="rm-tab {% if tipo == 'general' or not tipo %}activo{% endif %}"><i class="bi bi-trophy-fill"></i> General</a>
+  <a href="?tipo=grupos"   class="rm-tab {% if tipo == 'grupos' %}activo{% endif %}"><i class="bi bi-grid-3x3"></i> Grupos</a>
+  <a href="?tipo=campeon"  class="rm-tab {% if tipo == 'campeon' %}activo{% endif %}"><i class="bi bi-star-fill"></i> Campeón</a>
+</div>
+
+{% if tipo == 'campeon' %}
+  {# Lista de pronósticos de campeón agrupados por equipo #}
+  <div class="rc-group">
+    {% regroup pronosticos_campeon by equipo as grupos %}
+    {% for grupo in grupos %}
+    <div class="rc-equipo">
+      <div class="rc-eq-hd">
+        {% if grupo.grouper.bandera_url %}<img class="rc-eq-flag" src="{{ grupo.grouper.bandera_url }}" alt="">{% endif %}
+        <span class="rc-eq-name">{{ grupo.grouper.nombre }}</span>
+        <span class="rc-eq-votos">{{ grupo.list|length }} voto{% if grupo.list|length != 1 %}s{% endif %}</span>
+      </div>
+      {% for pc in grupo.list %}
+      <div class="rc-persona {% if pc.acerto %}acerto{% endif %}">
+        {% if pc.acerto %}🏆 {% endif %}{{ pc.inscripcion.afiliado.nombre_completo }}
+      </div>
+      {% endfor %}
+    </div>
+    {% empty %}
+    <p style="color:#475569;text-align:center;padding:2rem;font-size:.85rem;">Nadie ha pronosticado campeón todavía.</p>
+    {% endfor %}
+  </div>
+
+{% else %}
+  {# Lista de ranking #}
+  <div class="rm-list">
+    {% for insc in ranking %}
+    {% with pos=offset|add:forloop.counter %}
+    <div class="rm-row {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}yo{% elif pos == 1 %}top1{% elif pos == 2 %}top2{% elif pos == 3 %}top3{% endif %}">
+      <div class="rm-pos {% if pos == 1 %}m1{% elif pos == 2 %}m2{% elif pos == 3 %}m3{% endif %}">
+        {% if pos == 1 %}🥇{% elif pos == 2 %}🥈{% elif pos == 3 %}🥉{% else %}{{ pos }}{% endif %}
+      </div>
+      <div>
+        <div class="rm-name">
+          {{ insc.afiliado.nombre_completo }}
+          {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}<span class="yo-tag">TÚ</span>{% endif %}
+        </div>
+        <div class="rm-sub">
+          {% if tipo == 'grupos' %}
+            {{ insc.marcadores_fase }} exactos · {{ insc.resultados_fase }} resultados
+          {% else %}
+            {{ insc.aciertos_marcador }} exactos · {{ insc.aciertos_resultado }} resultados
+          {% endif %}
+        </div>
+      </div>
+      <div class="rm-pts">
+        {% if tipo == 'grupos' %}{{ insc.puntos_fase }}{% else %}{{ insc.puntos_totales }}{% endif %}
+        <span>pts</span>
+      </div>
+    </div>
+    {% endwith %}
+    {% empty %}
+    <p style="color:#475569;text-align:center;padding:2rem;font-size:.85rem;">Sin datos de ranking aún.</p>
+    {% endfor %}
+  </div>
+
+  {# Paginación #}
+  {% if total_paginas > 1 %}
+  <div class="rm-pag">
+    {% if pagina > 1 %}<a href="?tipo={{ tipo }}&pagina={{ pagina|add:'-1' }}">‹</a>{% endif %}
+    {% for p in paginas_rango %}
+      {% if p == pagina %}<span class="activo">{{ p }}</span>
+      {% else %}<a href="?tipo={{ tipo }}&pagina={{ p }}">{{ p }}</a>{% endif %}
+    {% endfor %}
+    {% if pagina < total_paginas %}<a href="?tipo={{ tipo }}&pagina={{ pagina|add:'1' }}">›</a>{% endif %}
+  </div>
+  {% endif %}
+{% endif %}
+
+{% endblock %}

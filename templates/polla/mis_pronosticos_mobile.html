@@ -1,0 +1,132 @@
+{% extends "polla/base_polla.html" %}
+{% block nav_mis_pronosticos %}active{% endblock %}
+{% block extra_css %}{{ block.super }}
+<style>
+body { background:#0f172a !important; }
+.container-fluid { padding-left:4px !important; padding-right:4px !important; }
+.pk-nav { padding:.3rem .75rem !important; }
+
+.mp-head { padding:.45rem .5rem .3rem; display:flex; align-items:center; justify-content:space-between; }
+.mp-title { color:#94a3b8; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; }
+
+/* Resumen */
+.mp-resumen {
+  display:flex; gap:.3rem; padding:.2rem .3rem .45rem; flex-wrap:nowrap;
+  overflow-x:auto; scrollbar-width:none;
+}
+.mp-resumen::-webkit-scrollbar { display:none; }
+.mp-chip {
+  flex-shrink:0; background:#1e293b; border-radius:8px;
+  padding:.4rem .65rem; text-align:center;
+}
+.mp-chip-val { font-size:1rem; font-weight:800; color:#fbbf24; line-height:1; }
+.mp-chip-lbl { font-size:.58rem; color:#475569; font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-top:.15rem; }
+
+/* Lista */
+.mp-list { display:flex; flex-direction:column; gap:.25rem; padding:0 .2rem .5rem; }
+.mp-row {
+  background:#1e293b; border-radius:8px;
+  border-left:3px solid #334155; overflow:hidden;
+}
+.mp-row.exacto  { border-left-color:#34d399; }
+.mp-row.result  { border-left-color:#fbbf24; }
+.mp-row.fallo   { border-left-color:#f87171; }
+.mp-row.pend    { border-left-color:#334155; }
+
+.mp-row-body {
+  display:grid; grid-template-columns:1fr auto;
+  gap:.4rem; padding:.5rem .65rem .35rem; align-items:start;
+}
+.mp-partido { font-size:.8rem; font-weight:700; color:#e2e8f0; line-height:1.3; }
+.mp-flag { width:18px; height:12px; object-fit:cover; border-radius:2px; vertical-align:middle; margin-right:2px; }
+.mp-fecha { font-size:.6rem; color:#475569; margin-top:.15rem; }
+
+.mp-scores { text-align:right; }
+.mp-pron  { font-size:.88rem; font-weight:800; color:#e2e8f0; white-space:nowrap; }
+.mp-real  { font-size:.72rem; color:#475569; margin-top:.1rem; white-space:nowrap; }
+
+.mp-row-foot {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.25rem .65rem; border-top:1px solid #0f172a;
+}
+.mp-icono { font-size:.72rem; }
+.mp-pts   { font-size:.72rem; font-weight:800; color:#fbbf24; }
+.mp-pts.cero { color:#475569; }
+.mp-fase  { font-size:.6rem; color:#334155; }
+
+.mp-empty { text-align:center; padding:2.5rem 1rem; color:#334155; font-size:.85rem; }
+</style>
+{% endblock %}
+
+{% block polla_content %}
+<div class="mp-head">
+  <span class="mp-title">Mis pronósticos</span>
+</div>
+
+{# Resumen chips #}
+<div class="mp-resumen">
+  <div class="mp-chip">
+    <div class="mp-chip-val">{{ inscripcion.puntos_totales }}</div>
+    <div class="mp-chip-lbl">Puntos</div>
+  </div>
+  <div class="mp-chip">
+    <div class="mp-chip-val" style="color:#34d399;">{{ inscripcion.aciertos_marcador }}</div>
+    <div class="mp-chip-lbl">Exactos 🎯</div>
+  </div>
+  <div class="mp-chip">
+    <div class="mp-chip-val" style="color:#94a3b8;">{{ inscripcion.aciertos_resultado }}</div>
+    <div class="mp-chip-lbl">Result. ✅</div>
+  </div>
+  <div class="mp-chip">
+    <div class="mp-chip-val" style="color:#64748b;">{{ pronosticos|length }}</div>
+    <div class="mp-chip-lbl">Jugados</div>
+  </div>
+</div>
+
+<div class="mp-list">
+{% for pron in pronosticos %}
+<div class="mp-row
+  {% if pron.partido.finalizado %}
+    {% if pron.acerto_marcador %}exacto{% elif pron.acerto_resultado %}result{% else %}fallo{% endif %}
+  {% else %}pend{% endif %}">
+
+  <div class="mp-row-body">
+    <div>
+      <div class="mp-partido">
+        {% if pron.partido.bandera_url_local %}<img class="mp-flag" src="{{ pron.partido.bandera_url_local }}" alt="">{% endif %}
+        {{ pron.partido.nombre_local_display }}
+        <span style="color:#334155;font-weight:400;">vs</span>
+        {% if pron.partido.bandera_url_visitante %}<img class="mp-flag" src="{{ pron.partido.bandera_url_visitante }}" alt="">{% endif %}
+        {{ pron.partido.nombre_visitante_display }}
+      </div>
+      <div class="mp-fecha">{{ pron.partido.fecha_hora|date:"d/m H:i" }}</div>
+    </div>
+    <div class="mp-scores">
+      <div class="mp-pron">{{ pron.goles_local }}–{{ pron.goles_visitante }}</div>
+      <div class="mp-real">
+        {% if pron.partido.finalizado %}{{ pron.partido.goles_local }}–{{ pron.partido.goles_visitante }}
+        {% else %}<span style="color:#334155;">pendiente</span>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="mp-row-foot">
+    <span class="mp-icono">
+      {% if pron.partido.finalizado %}
+        {% if pron.acerto_marcador %}🎯 Exacto{% elif pron.acerto_resultado %}✅ Resultado{% else %}❌ Fallaste{% endif %}
+      {% else %}<span style="color:#334155;">En curso</span>{% endif %}
+    </span>
+    <span class="mp-fase" style="color:#334155;">{{ pron.partido.get_fase_display }}</span>
+    <span class="mp-pts {% if not pron.partido.finalizado or pron.puntos_obtenidos == 0 %}cero{% endif %}">
+      {% if pron.partido.finalizado %}+{{ pron.puntos_obtenidos }} pts{% else %}—{% endif %}
+    </span>
+  </div>
+</div>
+{% empty %}
+<div class="mp-empty">
+  Aún no has hecho ningún pronóstico.<br>
+  <a href="{% url 'polla:pronosticos' %}" style="color:#fbbf24;">¡Empieza ahora!</a>
+</div>
+{% endfor %}
+</div>
+{% endblock %}

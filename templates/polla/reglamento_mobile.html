@@ -1,0 +1,111 @@
+{% extends "polla/base_polla.html" %}
+{% block nav_reglamento %}active{% endblock %}
+{% block extra_css %}{{ block.super }}
+<style>
+body { background:#0f172a !important; }
+.container-fluid { padding-left:4px !important; padding-right:4px !important; }
+.pk-nav { padding:.3rem .75rem !important; }
+
+.rg-wrap { padding:.45rem .5rem 1.5rem; color:#e2e8f0; font-size:.82rem; line-height:1.6; }
+.rg-titulo { color:#94a3b8; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:.75rem; display:block; }
+
+.rg-seccion { margin-bottom:1.1rem; }
+.rg-h { font-size:.82rem; font-weight:800; color:#fbbf24; margin-bottom:.4rem; display:flex; align-items:center; gap:.35rem; }
+.rg-p { color:#94a3b8; margin:0; font-size:.8rem; }
+
+/* Tabla de puntos */
+.rg-tabla { width:100%; border-collapse:collapse; margin:.5rem 0; font-size:.75rem; }
+.rg-tabla th { background:#1e293b; color:#94a3b8; font-weight:700; padding:.4rem .5rem; text-align:center; font-size:.68rem; text-transform:uppercase; letter-spacing:.5px; }
+.rg-tabla th:first-child { text-align:left; }
+.rg-tabla td { padding:.4rem .5rem; border-bottom:1px solid #1e293b; color:#e2e8f0; }
+.rg-tabla td:first-child { color:#94a3b8; }
+.rg-tabla .pts { text-align:center; font-weight:800; color:#fbbf24; }
+.rg-tabla .pts2 { text-align:center; font-weight:800; color:#34d399; }
+
+/* Premios */
+.rg-premio { background:#1e293b; border-radius:8px; padding:.6rem .75rem; margin:.3rem 0; border-left:3px solid #334155; }
+.rg-premio.gold { border-left-color:#fbbf24; }
+.rg-premio.blue { border-left-color:#60a5fa; }
+.rg-premio.green { border-left-color:#34d399; }
+.rg-premio-titulo { font-size:.75rem; font-weight:800; color:#f1f5f9; margin-bottom:.2rem; }
+.rg-premio-val { font-size:.82rem; font-weight:800; color:#fbbf24; }
+.rg-premio-desc { font-size:.72rem; color:#475569; margin-top:.2rem; }
+
+/* Desempates */
+.rg-ol { padding-left:1.25rem; margin:0; color:#94a3b8; font-size:.78rem; }
+.rg-ol li { padding:.15rem 0; }
+
+/* Nota */
+.rg-nota { background:#1e293b; border-radius:8px; padding:.55rem .75rem; font-size:.72rem; color:#475569; margin-top:.75rem; }
+</style>
+{% endblock %}
+
+{% block polla_content %}
+<div class="rg-wrap">
+  <span class="rg-titulo">Reglamento — Polla Mundialista FONDEINO 2026</span>
+
+  <div class="rg-seccion">
+    <div class="rg-h">⚽ ¿Qué es?</div>
+    <p class="rg-p">Actividad recreativa exclusiva para <strong style="color:#e2e8f0;">asociados activos de FONDEINO</strong>. Inscripción: <strong style="color:#fbbf24;">$5.000</strong> descontados por nómina. No es juego de azar.</p>
+  </div>
+
+  <div class="rg-seccion">
+    <div class="rg-h">📌 Puntuación</div>
+    <table class="rg-tabla">
+      <thead>
+        <tr><th>Acierto</th><th>Grupos</th><th>Elim.</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Resultado (G/E/P)</td><td class="pts">+{{ config.pts_resultado_grupos }}</td><td class="pts">+{{ config.pts_resultado_eliminatoria }}</td></tr>
+        <tr><td>Marcador exacto <em style="font-size:.65rem;">(incluye resultado)</em></td><td class="pts2">+{{ config.pts_marcador_grupos }} (total 3)</td><td class="pts2">+{{ config.pts_marcador_eliminatoria }} (total 6)</td></tr>
+        <tr><td>No acertar</td><td class="pts" style="color:#334155;">0</td><td class="pts" style="color:#334155;">0</td></tr>
+      </tbody>
+    </table>
+    <p class="rg-p" style="font-size:.72rem;">⚠️ Eliminatorias: solo resultado a los 90 min reglamentarios. Prórrogas y penales no cuentan.</p>
+  </div>
+
+  <div class="rg-seccion">
+    <div class="rg-h">🏆 Premios</div>
+    <div class="rg-premio gold">
+      <div class="rg-premio-titulo">🥇 Premio 1 — Campeón General</div>
+      <div class="rg-premio-val">{{ config.premios_top5_general }}</div>
+      <div class="rg-premio-desc">Al participante con más puntos al finalizar el Mundial.</div>
+    </div>
+    <div class="rg-premio blue">
+      <div class="rg-premio-titulo">🌎 Premio 2 — Acierto al Campeón</div>
+      <div class="rg-premio-val">{{ config.premio_campeon_sorteo }}</div>
+      <div class="rg-premio-desc">Sorteo entre quienes acierten al campeón del mundo.</div>
+    </div>
+    <div class="rg-premio green">
+      <div class="rg-premio-titulo">🇨🇴 Premios 3, 4 y 5 — Partidos de Colombia</div>
+      <div class="rg-premio-val">{{ config.premios_top5_grupos }}</div>
+      <div class="rg-premio-desc">Por cada partido de Colombia en grupos, sorteo entre quienes acierten el marcador exacto.</div>
+    </div>
+  </div>
+
+  <div class="rg-seccion">
+    <div class="rg-h">📊 Desempates</div>
+    <ol class="rg-ol">
+      <li>Mayor puntaje total</li>
+      <li>Más marcadores exactos</li>
+      <li>Más resultados acertados</li>
+      <li>Posición en clasificación general</li>
+      <li>Sorteo</li>
+    </ol>
+  </div>
+
+  <div class="rg-seccion">
+    <div class="rg-h">🔒 Cierre</div>
+    <p class="rg-p">Los pronósticos se bloquean automáticamente al iniciar cada partido. El sistema no permite modificarlos una vez comenzado el encuentro.</p>
+  </div>
+
+  <div class="rg-seccion">
+    <div class="rg-h">🔐 Datos personales</div>
+    <p class="rg-p">Tus datos se usan únicamente para la gestión de la Polla Mundialista FONDEINO 2026 · Ley 1581 de 2012 · Participación voluntaria.</p>
+  </div>
+
+  <div class="rg-nota">
+    Actividad recreativa interna · FONDEINO, Fondo de Empleados · No aplica regulación de Coljuegos.
+  </div>
+</div>
+{% endblock %}
