@@ -26,6 +26,7 @@ from .forms import (
     CampeonForm,
     CargarAfiliadosForm,
     ConfiguracionPollaForm,
+    PartidoEditarForm,
     PronosticoForm,
     RegistroPollaForm,
     ResultadoPartidoForm,
@@ -1265,6 +1266,24 @@ def admin_sync_api_football(request):
         'tiene_key': tiene_key,
         'con_id': con_id,
         'total_equipos': total_equipos,
+    })
+
+
+@admin_polla_required
+def admin_editar_partido(request, partido_id):
+    partido = get_object_or_404(Partido, pk=partido_id)
+    form = PartidoEditarForm(request.POST or None, instance=partido)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(
+            request,
+            f'Partido #{partido.numero} actualizado: {partido.nombre_local_display} vs {partido.nombre_visitante_display} — '
+            f'{partido.fecha_hora.strftime("%d/%m/%Y %H:%M")}'
+        )
+        return redirect('polla:admin_cargar_resultados')
+    return render(request, 'polla/admin/editar_partido.html', {
+        'partido': partido,
+        'form': form,
     })
 
 

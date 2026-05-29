@@ -40,5 +40,6 @@ urlpatterns = [
     path('admin/eliminatorias/', views.admin_asignar_eliminatorias, name='admin_asignar_eliminatorias'),
     path('admin/sync-api/', views.admin_sync_api_football, name='admin_sync_api_football'),
     path('admin/autorizaciones/export/', views.admin_export_autorizaciones, name='admin_export_autorizaciones'),
+    path('admin/partido/<int:partido_id>/editar/', views.admin_editar_partido, name='admin_editar_partido'),
     path('admin/configuracion/', views.admin_configuracion, name='admin_configuracion'),
 ]

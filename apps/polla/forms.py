@@ -215,6 +215,35 @@ class ConfiguracionPollaForm(forms.ModelForm):
             )
 
 
+class PartidoEditarForm(forms.ModelForm):
+    class Meta:
+        from .models import Partido
+        model = Partido
+        fields = ['fecha_hora', 'estadio', 'ciudad']
+        widgets = {
+            'fecha_hora': forms.DateTimeInput(
+                attrs={'class': 'form-control', 'type': 'datetime-local'},
+                format='%Y-%m-%dT%H:%M',
+            ),
+            'estadio': forms.TextInput(attrs={'class': 'form-control'}),
+            'ciudad': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'fecha_hora': 'Fecha y hora (hora Colombia UTC-5)',
+            'estadio': 'Estadio',
+            'ciudad': 'Ciudad',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.fecha_hora:
+            from django.utils import timezone
+            import pytz
+            bogota = pytz.timezone('America/Bogota')
+            local_dt = self.instance.fecha_hora.astimezone(bogota)
+            self.initial['fecha_hora'] = local_dt.strftime('%Y-%m-%dT%H:%M')
+
+
 class ResultadoPartidoForm(forms.Form):
     goles_local = forms.IntegerField(
         min_value=0, max_value=20,
