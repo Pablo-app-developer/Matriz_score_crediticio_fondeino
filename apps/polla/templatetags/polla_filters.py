@@ -4,22 +4,8 @@ register = template.Library()
 
 
 @register.filter
-def polla_label(numero_polla):
-    return 'A' if numero_polla == 1 else 'B'
-
-
-@register.filter
 def medalla(posicion):
     return {1: '🥇', 2: '🥈', 3: '🥉'}.get(posicion, '')
-
-
-@register.filter
-def motivo_badge(motivo):
-    badges = {
-        'NUEVO': '<span class="badge bg-success">NUEVO ASOCIADO</span>',
-        'AUMENTO': '<span class="badge bg-primary">AUMENTÓ APORTES</span>',
-    }
-    return badges.get(motivo, '')
 
 
 @register.filter

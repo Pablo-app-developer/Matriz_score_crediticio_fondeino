@@ -128,7 +128,7 @@ class CampeonForm(forms.ModelForm):
 class CargarAfiliadosForm(forms.Form):
     archivo = forms.FileField(
         label='Archivo Excel (.xlsx)',
-        help_text='Columnas requeridas: cedula, nombre_completo. Opcionales: correo, telefono, area, cantidad_pollas, motivo_doble. Máximo 5 MB.',
+        help_text='Columnas requeridas: cedula, nombre_completo. Opcionales: correo, telefono, area. Máximo 5 MB.',
         widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': '.xlsx,.xls'}),
     )
 
@@ -157,15 +157,6 @@ class AfiliadoManualForm(forms.ModelForm):
         help_texts = {
             'cedula': 'Identificador único del afiliado. No se puede cambiar después.',
         }
-
-
-class AsignarDoblePolla(forms.Form):
-    MOTIVO_CHOICES = [('NUEVO', 'Nuevo asociado'), ('AUMENTO', 'Aumentó aportes')]
-    motivo = forms.ChoiceField(
-        choices=MOTIVO_CHOICES,
-        label='Motivo',
-        widget=forms.Select(attrs={'class': 'form-select'}),
-    )
 
 
 class ResultadoPartidoForm(forms.Form):

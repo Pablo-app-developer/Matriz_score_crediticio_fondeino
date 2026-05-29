@@ -9,10 +9,10 @@ from .models import (
 
 @admin.register(Afiliado)
 class AfiliadoAdmin(admin.ModelAdmin):
-    list_display = ['cedula', 'nombre_completo', 'area', 'cantidad_pollas', 'motivo_doble_polla', 'activo', 'user']
-    list_filter = ['cantidad_pollas', 'motivo_doble_polla', 'activo', 'area']
+    list_display = ['cedula', 'nombre_completo', 'area', 'activo', 'user']
+    list_filter = ['activo', 'area']
     search_fields = ['cedula', 'nombre_completo', 'correo']
-    list_editable = ['cantidad_pollas', 'activo']
+    list_editable = ['activo']
     readonly_fields = ['fecha_registro']
 
 

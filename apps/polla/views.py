@@ -22,7 +22,6 @@ from django.views.decorators.http import require_POST
 from .decorators import admin_polla_required, afiliado_activo
 from .forms import (
     AfiliadoManualForm,
-    AsignarDoblePolla,
     ActivarCuentaForm,
     CampeonForm,
     CargarAfiliadosForm,
@@ -182,19 +181,6 @@ def _procesar_excel_afiliados(df):
         telefono = get_col(row, 'telefono', 'teléfono', 'celular')
         area = get_col(row, 'area', 'área', 'departamento')
 
-        raw_pollas = get_col(row, 'cantidad_pollas', 'pollas', 'num_pollas')
-        try:
-            cantidad_pollas = int(float(raw_pollas)) if raw_pollas else 1
-            if cantidad_pollas not in (1, 2):
-                cantidad_pollas = 1
-        except (ValueError, TypeError):
-            cantidad_pollas = 1
-
-        motivo_raw = get_col(row, 'motivo_doble', 'motivo').upper()
-        motivo_doble = motivo_raw if motivo_raw in ('NUEVO', 'AUMENTO') else None
-        if cantidad_pollas == 2 and not motivo_doble:
-            motivo_doble = 'NUEVO'
-
         try:
             afiliado = Afiliado.objects.get(cedula=cedula)
 
@@ -228,7 +214,6 @@ def _procesar_excel_afiliados(df):
     return {
         'creados': creados,
         'actualizados': actualizados,
-        'nuevas_pollas': nuevas_pollas,
         'warnings': warnings,
         'errores': errores,
     }
@@ -799,9 +784,6 @@ def admin_afiliados(request):
 
     stats = {
         'total': Afiliado.objects.filter(activo=True).count(),
-        'doble_polla': Afiliado.objects.filter(activo=True, cantidad_pollas=2).count(),
-        'nuevos': Afiliado.objects.filter(activo=True, motivo_doble_polla='NUEVO').count(),
-        'aumento': Afiliado.objects.filter(activo=True, motivo_doble_polla='AUMENTO').count(),
         'vinculados': Afiliado.objects.filter(activo=True, user__isnull=False).count(),
     }
 
@@ -901,15 +883,7 @@ def admin_inscripcion_eliminar(request, inscripcion_id):
         return redirect('polla:admin_afiliados')
 
     inscripcion.delete()
-    # Actualizar cantidad_pollas si se eliminó la polla B
-    if numero == 2:
-        afiliado.cantidad_pollas = 1
-        afiliado.motivo_doble_polla = None
-        afiliado.save(update_fields=['cantidad_pollas', 'motivo_doble_polla'])
-    messages.success(
-        request,
-        f'Polla {"A" if numero == 1 else "B"} de {afiliado.nombre_completo} eliminada.'
-    )
+    messages.success(request, f'Inscripción de {afiliado.nombre_completo} eliminada.')
     return redirect('polla:admin_afiliados')
 
 
@@ -927,32 +901,6 @@ def admin_afiliado_eliminar(request, afiliado_id):
     afiliado.delete()
     messages.success(request, f'Afiliado "{nombre}" eliminado correctamente.')
     return redirect('polla:admin_afiliados')
-
-
-@admin_polla_required
-def admin_asignar_doble_polla(request, afiliado_id):
-    afiliado = get_object_or_404(Afiliado, pk=afiliado_id, activo=True)
-    if afiliado.cantidad_pollas == 2:
-        messages.info(request, f'{afiliado.nombre_completo} ya tiene doble polla.')
-        return redirect('polla:admin_afiliados')
-
-    form = AsignarDoblePolla(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        motivo = form.cleaned_data['motivo']
-        afiliado.cantidad_pollas = 2
-        afiliado.motivo_doble_polla = motivo
-        afiliado.save()
-        InscripcionPolla.objects.get_or_create(afiliado=afiliado, numero_polla=2)
-        messages.success(
-            request,
-            f'Doble polla asignada a {afiliado.nombre_completo} (motivo: {motivo}).'
-        )
-        return redirect('polla:admin_afiliados')
-
-    return render(request, 'polla/admin/asignar_pollas.html', {
-        'afiliado': afiliado,
-        'form': form,
-    })
 
 
 @admin_polla_required
@@ -1051,7 +999,6 @@ def admin_reporte(request):
     config = ConfiguracionPolla.get()
 
     total_afiliados   = Afiliado.objects.filter(activo=True).count()
-    total_doble       = Afiliado.objects.filter(activo=True, cantidad_pollas=2).count()
     total_vinculados  = Afiliado.objects.filter(activo=True, user__isnull=False).count()
     total_inscripciones = InscripcionPolla.objects.filter(activa=True).count()
     total_pronosticos = Pronostico.objects.count()
@@ -1121,7 +1068,6 @@ def admin_reporte(request):
     return render(request, 'polla/admin/reporte.html', {
         'config': config,
         'total_afiliados':       total_afiliados,
-        'total_doble':           total_doble,
         'total_vinculados':      total_vinculados,
         'total_inscripciones':   total_inscripciones,
         'total_pronosticos':     total_pronosticos,

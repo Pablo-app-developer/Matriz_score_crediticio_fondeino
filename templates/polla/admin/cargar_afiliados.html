@@ -32,18 +32,14 @@
             <tr><td><code>correo</code></td><td>—</td><td>Email</td><td>juan@empresa.com</td></tr>
             <tr><td><code>telefono</code></td><td>—</td><td>Teléfono/celular</td><td>3167522664</td></tr>
             <tr><td><code>area</code></td><td>—</td><td>Área o departamento</td><td>Contabilidad</td></tr>
-            <tr><td><code>cantidad_pollas</code></td><td>—</td><td>1 o 2 (defecto 1)</td><td>2</td></tr>
-            <tr><td><code>motivo_doble</code></td><td>—</td><td>NUEVO o AUMENTO (si cantidad=2)</td><td>NUEVO</td></tr>
           </tbody>
         </table>
       </div>
       <div class="alert alert-info mb-0 py-2">
         <strong>Comportamiento al subir:</strong>
         <ul class="mb-0 mt-1">
-          <li>Afiliado <strong>nuevo</strong>: se crea con sus inscripciones.</li>
-          <li>Afiliado <strong>ya existente</strong>: se actualizan sus datos y se muestra un aviso.
-            Si subió de 1 a 2 pollas, se crea la Polla B.</li>
-          <li>Nunca se reduce de 2 a 1 polla automáticamente (solo warning).</li>
+          <li>Afiliado <strong>nuevo</strong>: se crea con su inscripción.</li>
+          <li>Afiliado <strong>ya existente</strong>: se actualizan sus datos básicos.</li>
         </ul>
       </div>
     </div>
@@ -90,15 +86,6 @@
         <strong>→ Ya existían (datos actualizados): {{ resultado.actualizados|length }}</strong>
         <ul class="mb-0 mt-1 small">
           {% for item in resultado.actualizados %}<li>{{ item }}</li>{% endfor %}
-        </ul>
-      </div>
-      {% endif %}
-
-      {% if resultado.nuevas_pollas %}
-      <div class="alert alert-warning py-2">
-        <strong>⭐ Nuevas pollas B asignadas: {{ resultado.nuevas_pollas|length }}</strong>
-        <ul class="mb-0 mt-1 small">
-          {% for item in resultado.nuevas_pollas %}<li>{{ item }}</li>{% endfor %}
         </ul>
       </div>
       {% endif %}

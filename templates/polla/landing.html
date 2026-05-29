@@ -88,21 +88,7 @@
   </div>
 
   <div class="row g-3 mb-4">
-    <!-- Beneficio doble polla -->
-    <div class="col-md-4">
-      <div class="card border-success h-100">
-        <div class="card-body text-center">
-          <i class="bi bi-1-circle-fill display-4 text-success mb-2 d-block"></i>
-          <h5 class="card-title text-success">Doble polla</h5>
-          <p class="card-text small">
-            Los <strong>nuevos asociados</strong> o quienes <strong>aumenten sus aportes</strong>
-            reciben una segunda polla como beneficio promocional.
-            Inscripción: <strong>$5.000 por asociado</strong>. ¡Dos oportunidades de ganar!
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
       <div class="card border-primary h-100">
         <div class="card-body text-center">
           <i class="bi bi-award-fill display-4 text-primary mb-2 d-block"></i>
@@ -114,7 +100,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
       <div class="card border-warning h-100">
         <div class="card-body text-center">
           <i class="bi bi-trophy-fill display-4 text-warning mb-2 d-block"></i>
@@ -171,10 +157,7 @@
             </td>
             <td>
               {{ insc.afiliado.nombre_completo }}
-              {% if insc.afiliado.cantidad_pollas == 2 %}
-                <span class="badge bg-warning text-dark ms-1">Polla {{ insc.label }}</span>
-              {% endif %}
-            </td>
+                </td>
             <td class="text-center fw-bold text-success">{{ insc.puntos_totales }}</td>
             <td class="text-center d-none d-md-table-cell">{{ insc.aciertos_marcador }}</td>
           </tr>

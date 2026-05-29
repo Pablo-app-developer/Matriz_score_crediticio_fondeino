@@ -103,9 +103,6 @@
           <span>
             {% if afiliado_nav %}
               {{ afiliado_nav.nombre_completo|truncatechars:20 }}
-              {% if afiliado_nav.cantidad_pollas == 2 %}
-                <span class="badge badge-doble ms-1" style="font-size:.63rem;">⭐×2</span>
-              {% endif %}
             {% else %}
               {{ request.user.get_full_name|default:request.user.username|truncatechars:20 }}
             {% endif %}

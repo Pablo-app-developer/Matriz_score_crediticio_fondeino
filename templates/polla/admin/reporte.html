@@ -31,12 +31,6 @@
       </div>
     </div>
     <div class="col-6 col-sm-4 col-md-2">
-      <div class="card text-center py-2 border-warning">
-        <div class="fs-2 fw-bold text-warning">{{ total_doble }}</div>
-        <div class="small text-muted">Doble polla</div>
-      </div>
-    </div>
-    <div class="col-6 col-sm-4 col-md-2">
       <div class="card text-center py-2 border-info">
         <div class="fs-2 fw-bold text-info">{{ total_vinculados }}</div>
         <div class="small text-muted">Con cuenta</div>
@@ -90,12 +84,7 @@
                   {% elif forloop.counter == 3 %}🥉
                   {% else %}{{ forloop.counter }}{% endif %}
                 </td>
-                <td class="small">
-                  {{ insc.afiliado.nombre_completo }}
-                  {% if insc.afiliado.cantidad_pollas == 2 %}
-                    <span class="badge bg-warning text-dark ms-1" style="font-size:.6rem;">{{ insc.label }}</span>
-                  {% endif %}
-                </td>
+                <td class="small">{{ insc.afiliado.nombre_completo }}</td>
                 <td class="text-center small">{{ insc.aciertos_marcador }}</td>
                 <td class="text-center small">{{ insc.aciertos_resultado }}</td>
                 <td class="text-center fw-bold text-success">{{ insc.puntos_totales }}</td>
@@ -137,12 +126,7 @@
                   {% elif forloop.counter == 3 %}🥉
                   {% else %}{{ forloop.counter }}{% endif %}
                 </td>
-                <td class="small">
-                  {{ insc.afiliado.nombre_completo }}
-                  {% if insc.afiliado.cantidad_pollas == 2 %}
-                    <span class="badge bg-warning text-dark ms-1" style="font-size:.6rem;">{{ insc.label }}</span>
-                  {% endif %}
-                </td>
+                <td class="small">{{ insc.afiliado.nombre_completo }}</td>
                 <td class="text-center fw-bold text-primary">{{ insc.puntos_grupos }}</td>
               </tr>
               {% empty %}
@@ -251,12 +235,7 @@
               {% endif %}
               {{ pc.equipo.nombre }}
             </td>
-            <td class="small">
-              {{ pc.inscripcion.afiliado.nombre_completo }}
-              {% if pc.inscripcion.afiliado.cantidad_pollas == 2 %}
-                <span class="badge bg-warning text-dark ms-1" style="font-size:.6rem;">Polla {{ pc.inscripcion.label }}</span>
-              {% endif %}
-            </td>
+            <td class="small">{{ pc.inscripcion.afiliado.nombre_completo }}</td>
             <td class="text-center">
               {% if pc.acerto %}<span class="badge bg-success">✅ Sí</span>
               {% else %}<span class="text-muted">—</span>{% endif %}

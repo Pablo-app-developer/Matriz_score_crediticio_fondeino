@@ -173,8 +173,7 @@ body { background: #0d1b2a !important; }
       <div class="rk-camp-name">{{ grupo.grouper.nombre }}</div>
       <div class="rk-camp-people">
         {% for pc in grupo.list %}
-          {{ pc.inscripcion.afiliado.nombre_completo }}{% if pc.inscripcion.afiliado.cantidad_pollas == 2 %}
-            <span style="color:#f0c040;font-size:.6rem;">({{ pc.inscripcion.label }})</span>{% endif %}{% if not forloop.last %}, {% endif %}
+          {{ pc.inscripcion.afiliado.nombre_completo }}{% if not forloop.last %}, {% endif %}
         {% endfor %}
       </div>
     </div>
@@ -219,9 +218,6 @@ body { background: #0d1b2a !important; }
     </div>
     {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}
       <span class="rk-badge rk-badge-me">TÚ</span>
-    {% endif %}
-    {% if insc.afiliado.cantidad_pollas == 2 %}
-      <span class="rk-badge rk-badge-dbl">⭐{{ insc.label }}</span>
     {% endif %}
     {% if insc.afiliado.area %}
       <span class="rk-area d-none d-sm-inline">· {{ insc.afiliado.area }}</span>

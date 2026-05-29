@@ -18,11 +18,6 @@ FASES_ELIMINATORIAS = ['TREINTA_DOS', 'OCTAVOS', 'CUARTOS', 'SEMIS', 'TERCERO', 
 
 
 class Afiliado(models.Model):
-    MOTIVO_DOBLE = [
-        ('NUEVO', 'Nuevo asociado'),
-        ('AUMENTO', 'Aumentó aportes'),
-    ]
-
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -36,19 +31,6 @@ class Afiliado(models.Model):
     telefono = models.CharField(max_length=20, blank=True, verbose_name='Teléfono')
     area = models.CharField(max_length=80, blank=True, verbose_name='Área')
 
-    cantidad_pollas = models.IntegerField(
-        default=1,
-        choices=[(1, 'Una polla'), (2, 'Doble polla')],
-        verbose_name='Cantidad de pollas',
-    )
-    motivo_doble_polla = models.CharField(
-        max_length=10,
-        choices=MOTIVO_DOBLE,
-        null=True,
-        blank=True,
-        verbose_name='Motivo de doble polla',
-    )
-
     acepto_reglamento = models.BooleanField(default=False, verbose_name='Aceptó el reglamento')
     activo = models.BooleanField(default=True, verbose_name='Activo')
     fecha_registro = models.DateTimeField(auto_now_add=True)
@@ -59,16 +41,7 @@ class Afiliado(models.Model):
         ordering = ['nombre_completo']
 
     def __str__(self):
-        sufijo = ' ⭐×2' if self.cantidad_pollas == 2 else ''
-        return f'{self.nombre_completo} ({self.cedula}){sufijo}'
-
-    @property
-    def tiene_doble_polla(self):
-        return self.cantidad_pollas == 2
-
-    @property
-    def motivo_doble_label(self):
-        return dict(self.MOTIVO_DOBLE).get(self.motivo_doble_polla, '')
+        return f'{self.nombre_completo} ({self.cedula})'
 
 
 _FIFA_ISO2 = {
@@ -222,12 +195,7 @@ class InscripcionPolla(models.Model):
         verbose_name_plural = 'Inscripciones'
 
     def __str__(self):
-        label = 'A' if self.numero_polla == 1 else 'B'
-        return f'{self.afiliado.nombre_completo} — Polla {label} ({self.puntos_totales} pts)'
-
-    @property
-    def label(self):
-        return 'A' if self.numero_polla == 1 else 'B'
+        return f'{self.afiliado.nombre_completo} ({self.puntos_totales} pts)'
 
 
 class Pronostico(models.Model):
