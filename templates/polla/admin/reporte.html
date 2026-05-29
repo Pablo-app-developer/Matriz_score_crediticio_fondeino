@@ -160,6 +160,23 @@
     </div>
   </div>
 
+  {# ── Autorizaciones de descuento ─────────────────────────── #}
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-dark text-white py-2 d-flex justify-content-between align-items-center">
+      <span class="fw-bold small">
+        <i class="bi bi-file-earmark-check me-2"></i>Autorizaciones de descuento ($5.000)
+        <span class="badge bg-success ms-2">{{ total_autorizaciones }}</span>
+      </span>
+      <a href="{% url 'polla:admin_export_autorizaciones' %}" class="btn btn-sm btn-success">
+        <i class="bi bi-download me-1"></i>Descargar CSV
+      </a>
+    </div>
+    <div class="card-body py-2 text-muted small">
+      {{ total_autorizaciones }} asociado{{ total_autorizaciones|pluralize }} han autorizado el descuento por nómina.
+      El archivo CSV incluye nombre, cédula, área, correo, teléfono, fecha e IP de autorización.
+    </div>
+  </div>
+
   {# ── Pronósticos campeón ──────────────────────────────────── #}
   <div class="card shadow-sm mb-4">
     <div class="card-header bg-warning text-dark py-2 fw-bold small">

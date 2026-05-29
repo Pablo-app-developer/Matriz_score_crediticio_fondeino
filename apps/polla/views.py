@@ -1049,6 +1049,7 @@ def admin_reporte(request):
     total_pronosticos = Pronostico.objects.count()
     partidos_jugados  = Partido.objects.filter(finalizado=True).count()
     partidos_total    = Partido.objects.count()
+    total_autorizaciones = AutorizacionDescuento.objects.count()
 
     top5_general = list(
         InscripcionPolla.objects.filter(activa=True)
@@ -1084,10 +1085,11 @@ def admin_reporte(request):
         'total_vinculados':   total_vinculados,
         'total_inscripciones': total_inscripciones,
         'total_pronosticos':  total_pronosticos,
-        'partidos_jugados':   partidos_jugados,
-        'partidos_total':     partidos_total,
-        'top5_general':       top5_general,
-        'top5_grupos':        top5_grupos,
+        'partidos_jugados':      partidos_jugados,
+        'partidos_total':        partidos_total,
+        'total_autorizaciones':  total_autorizaciones,
+        'top5_general':          top5_general,
+        'top5_grupos':           top5_grupos,
         'pronosticos_campeon': pronosticos_campeon,
     })
 
