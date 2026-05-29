@@ -37,9 +37,9 @@
             <tr>
               <td class="text-center small text-muted">{{ partido.numero }}</td>
               <td class="small fw-bold">
-                {{ partido.bandera_local }} {{ partido.nombre_local_display }}
+                {% if partido.bandera_url_local %}<img src="{{ partido.bandera_url_local }}" style="width:20px;height:14px;object-fit:cover;border-radius:2px;margin-right:4px;">{% endif %}{{ partido.nombre_local_display }}
                 <span class="text-muted fw-normal">vs</span>
-                {{ partido.nombre_visitante_display }} {{ partido.bandera_visitante }}
+                {% if partido.bandera_url_visitante %}<img src="{{ partido.bandera_url_visitante }}" style="width:20px;height:14px;object-fit:cover;border-radius:2px;margin-right:4px;">{% endif %}{{ partido.nombre_visitante_display }}
               </td>
               <td class="text-center small d-none d-md-table-cell">{{ partido.get_fase_display }}</td>
               <td class="text-center small d-none d-md-table-cell">{{ partido.fecha_hora|date:"d/m H:i" }}</td>
@@ -102,9 +102,9 @@
             <tr class="table-light">
               <td class="text-center small text-muted">{{ partido.numero }}</td>
               <td class="small fw-bold">
-                {{ partido.bandera_local }} {{ partido.nombre_local_display }}
+                {% if partido.bandera_url_local %}<img src="{{ partido.bandera_url_local }}" style="width:20px;height:14px;object-fit:cover;border-radius:2px;margin-right:4px;">{% endif %}{{ partido.nombre_local_display }}
                 <span class="text-muted fw-normal">vs</span>
-                {{ partido.nombre_visitante_display }} {{ partido.bandera_visitante }}
+                {% if partido.bandera_url_visitante %}<img src="{{ partido.bandera_url_visitante }}" style="width:20px;height:14px;object-fit:cover;border-radius:2px;margin-right:4px;">{% endif %}{{ partido.nombre_visitante_display }}
               </td>
               <td class="text-center small d-none d-md-table-cell">{{ partido.get_fase_display }}</td>
               <td class="text-center small d-none d-md-table-cell">{{ partido.fecha_hora|date:"d/m H:i" }}</td>
