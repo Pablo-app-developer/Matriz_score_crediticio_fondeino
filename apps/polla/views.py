@@ -1094,25 +1094,20 @@ def admin_reporte(request):
 
     partidos_colombia_info = []
     for partido in partidos_colombia:
-        lider = None
-        empate_lider = False
+        candidatos = []
         if partido.finalizado:
-            top = list(
+            candidatos = list(
                 Pronostico.objects.filter(
                     partido=partido,
                     inscripcion__activa=True,
+                    puntos_obtenidos__gt=0,
                 )
                 .select_related('inscripcion__afiliado')
-                .order_by('-puntos_obtenidos', '-inscripcion__puntos_totales', '-inscripcion__aciertos_marcador')
-                [:2]
+                .order_by('-puntos_obtenidos', '-inscripcion__aciertos_marcador', '-inscripcion__puntos_totales', 'inscripcion__afiliado__nombre_completo')
             )
-            if top:
-                lider = top[0]
-                empate_lider = len(top) > 1 and top[1].puntos_obtenidos == top[0].puntos_obtenidos
         partidos_colombia_info.append({
             'partido': partido,
-            'lider': lider,
-            'empate_lider': empate_lider,
+            'candidatos': candidatos,
         })
 
     return render(request, 'polla/admin/reporte.html', {

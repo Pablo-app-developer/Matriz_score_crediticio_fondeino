@@ -182,68 +182,49 @@
   <div class="card shadow-sm mb-4">
     <div class="card-header bg-warning text-dark py-2 fw-bold small">
       🇨🇴 Premios 3, 4 y 5 — Partidos de Colombia (fase de grupos)
+      <span class="fw-normal ms-2" style="font-size:.8rem;">Premio: {{ config.premios_top5_grupos }} — sorteo entre candidatos</span>
     </div>
-    <div class="table-responsive">
-      <table class="table table-sm mb-0 align-middle">
-        <thead class="table-secondary">
-          <tr>
-            <th>#</th>
-            <th>Partido</th>
-            <th class="text-center">Fecha</th>
-            <th class="text-center">Resultado</th>
-            <th>Líder del partido</th>
-            <th class="text-center">Pts partido</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for info in partidos_colombia_info %}
-          {% with p=info.partido %}
-          <tr>
-            <td class="fw-bold text-warning">{{ forloop.counter }}</td>
-            <td class="small">
-              {{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}
-            </td>
-            <td class="text-center small text-muted">
-              {{ p.fecha_hora|date:"d/m H:i" }}
-            </td>
-            <td class="text-center">
-              {% if p.finalizado %}
-                <span class="badge bg-secondary">{{ p.goles_local }}–{{ p.goles_visitante }}</span>
-              {% else %}
-                <span class="text-muted small">Pendiente</span>
-              {% endif %}
-            </td>
-            <td class="small">
-              {% if info.lider %}
-                <strong>{{ info.lider.inscripcion.afiliado.nombre_completo }}</strong>
-                {% if info.empate_lider %}
-                  <span class="badge bg-secondary ms-1" title="Empate — definir por sorteo">Empate</span>
-                {% else %}
-                  <span class="badge bg-success ms-1">Ganador</span>
-                {% endif %}
-                <div class="text-muted" style="font-size:.75rem;">
-                  Pronóstico: {{ info.lider.goles_local }}–{{ info.lider.goles_visitante }}
-                </div>
-              {% elif p.finalizado %}
-                <span class="text-muted">Sin pronósticos registrados</span>
-              {% else %}
-                <span class="text-muted">Partido no jugado</span>
-              {% endif %}
-            </td>
-            <td class="text-center fw-bold">
-              {% if info.lider %}
-                <span class="text-success">{{ info.lider.puntos_obtenidos }} pts</span>
-              {% else %}—{% endif %}
-            </td>
-          </tr>
-          {% endwith %}
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div class="card-footer py-1 small text-muted">
-      Premio por partido: <strong>{{ config.premios_top5_grupos }}</strong> —
-      En caso de empate, definir por sorteo.
+    <div class="card-body p-0">
+      {% for info in partidos_colombia_info %}
+      {% with p=info.partido %}
+      <div class="border-bottom px-3 py-2">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fw-bold small">
+            Premio {{ forloop.counter }} —
+            {{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}
+            <span class="text-muted fw-normal">({{ p.fecha_hora|date:"d/m H:i" }})</span>
+          </span>
+          {% if p.finalizado %}
+            <span class="badge bg-secondary">{{ p.goles_local }}–{{ p.goles_visitante }}</span>
+          {% else %}
+            <span class="badge bg-light text-dark border">Pendiente</span>
+          {% endif %}
+        </div>
+
+        {% if not p.finalizado %}
+          <p class="text-muted small mb-0">El partido aún no se ha jugado.</p>
+        {% elif info.candidatos %}
+          <p class="small text-muted mb-1">
+            <strong>{{ info.candidatos|length }} candidato{{ info.candidatos|length|pluralize }}</strong>
+            al sorteo (obtuvieron puntos en este partido):
+          </p>
+          <div class="d-flex flex-wrap gap-2">
+            {% for c in info.candidatos %}
+            <span class="badge {% if c.puntos_obtenidos == 3 %}bg-success{% else %}bg-primary{% endif %} px-2 py-1" style="font-size:.8rem;">
+              {{ c.inscripcion.afiliado.nombre_completo }}
+              <span class="opacity-75 ms-1">{{ c.puntos_obtenidos }}pts · {{ c.goles_local }}-{{ c.goles_visitante }}</span>
+            </span>
+            {% endfor %}
+          </div>
+          <p class="text-muted mt-1 mb-0" style="font-size:.75rem;">
+            Verde = marcador exacto (3 pts) · Azul = resultado acertado (1 pt)
+          </p>
+        {% else %}
+          <p class="text-muted small mb-0">Nadie acertó resultado ni marcador en este partido.</p>
+        {% endif %}
+      </div>
+      {% endwith %}
+      {% endfor %}
     </div>
   </div>
   {% endif %}
