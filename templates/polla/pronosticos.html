@@ -87,7 +87,7 @@ body { background: #0d1b2a !important; }
   <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
      class="pn-tab {% if tab.key == fase_sel %}on{% endif %}"
      {% if tab.colombia %}style="border-color:rgba(255,220,0,.5);{% if tab.key == fase_sel %}background:#f0c040;color:#1a1200;{% else %}background:rgba(240,192,64,.08);color:#f0c040;{% endif %}"{% endif %}>
-    {% if tab.colombia %}🇨🇴{% else %}<i class="bi {{ tab.icon }}"></i>{% endif %}{{ tab.label }}
+    {% if tab.colombia %}<img src="https://flagcdn.com/w20/co.png" style="width:18px;height:12px;object-fit:cover;border-radius:2px;flex-shrink:0;">{% else %}<i class="bi {{ tab.icon }}"></i>{% endif %}{{ tab.label }}
     {% if tab.pendientes > 0 and tab.key != fase_sel %}
       <span class="pn-tab-dot">{{ tab.pendientes }}</span>
     {% endif %}
