@@ -135,9 +135,10 @@ body { background: #0d1b2a !important; }
     <a href="?tipo=general" class="rk-tab {% if tipo == 'general' %}on{% endif %}">
       <i class="bi bi-bar-chart-fill me-1"></i>General
     </a>
-    <a href="?tipo=grupos" class="rk-tab {% if tipo == 'grupos' %}on{% endif %}">
+    {# Tab grupos oculto — no se premia fase de grupos #}
+    {# <a href="?tipo=grupos" class="rk-tab {% if tipo == 'grupos' %}on{% endif %}">
       <i class="bi bi-grid me-1"></i>Grupos
-    </a>
+    </a> #}
     <a href="?tipo=campeon" class="rk-tab {% if tipo == 'campeon' %}on{% endif %}">
       <i class="bi bi-star-fill me-1"></i>Campeón
     </a>
