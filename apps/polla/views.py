@@ -628,7 +628,7 @@ def pronosticos(request):
     partidos_por_fecha = defaultdict(list)
     for partido in partidos:
         pronostico = pronosticos_dict.get(partido.pk)
-        partidos_por_fecha[partido.fecha_hora.date()].append({
+        partidos_por_fecha[timezone.localtime(partido.fecha_hora).date()].append({
             'partido': partido,
             'pronostico': pronostico,
             'cerrado': partido.cerrado_para_pronosticos,
