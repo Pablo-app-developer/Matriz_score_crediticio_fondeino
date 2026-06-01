@@ -54,6 +54,61 @@
     }
     .topbar-zona:hover { background: #0099d4 !important; transform: translateY(-1px); }
 
+    /* ── POLLA PROMO BANNER ── */
+    .polla-promo-banner {
+      background: linear-gradient(90deg, #0a2e14 0%, #0f4620 40%, #1a6b2e 70%, #0f4620 100%);
+      border-bottom: 2px solid rgba(240,192,64,.35);
+      padding: 10px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .ppb-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ppb-ball { font-size: 22px; line-height: 1; }
+    .ppb-text { color: #fff; font-size: 14px; line-height: 1.3; }
+    .ppb-text strong { color: #f0c040; font-weight: 700; font-size: 15px; }
+    .ppb-text span { color: rgba(255,255,255,.75); font-size: 12.5px; }
+    .ppb-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ppb-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: transform .15s, background .2s;
+      white-space: nowrap;
+    }
+    .ppb-btn:hover { transform: translateY(-1px); }
+    .ppb-btn-main {
+      background: #f0c040;
+      color: #0a2e14;
+    }
+    .ppb-btn-main:hover { background: #ffd55a; }
+    .ppb-btn-out {
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.25);
+    }
+    .ppb-btn-out:hover { background: rgba(255,255,255,.22); }
+    @media (max-width: 640px) {
+      .polla-promo-banner { padding: 10px 16px; justify-content: center; text-align: center; }
+      .ppb-left { justify-content: center; }
+      .ppb-right { justify-content: center; width: 100%; }
+    }
+
     /* ── NAV ── */
     nav {
       position: sticky;
@@ -779,6 +834,25 @@
       </svg>
       Accede a la Zona Transaccional
     </a>
+  </div>
+
+  <!-- POLLA PROMO BANNER -->
+  <div class="polla-promo-banner">
+    <div class="ppb-left">
+      <span class="ppb-ball">⚽</span>
+      <div class="ppb-text">
+        <strong>Polla Mundialista FONDEINO 2026</strong><br>
+        <span>Pronostica, compite y gana premios reales · Solo para asociados</span>
+      </div>
+    </div>
+    <div class="ppb-right">
+      <a href="{% url 'polla:index' %}" class="ppb-btn ppb-btn-main">
+        Ingresar a mi polla
+      </a>
+      <a href="{% url 'polla:registro' %}" class="ppb-btn ppb-btn-out">
+        Registrarme
+      </a>
+    </div>
   </div>
 
   <!-- NAV -->
