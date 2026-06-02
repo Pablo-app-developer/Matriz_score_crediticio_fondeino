@@ -238,7 +238,7 @@ class EvaluacionCredito(models.Model):
         dc = self.decision_comite.lower()
         if dc.startswith('aprobado'):
             return 'success'
-        if dc.startswith('no aprobado'):
+        if dc.startswith('no aprobado') or dc.startswith('rechazado'):
             return 'danger'
         if 'estudio' in dc or 'pendiente' in dc or 'devuelto' in dc:
             return 'warning'

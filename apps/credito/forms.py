@@ -121,6 +121,8 @@ DECISION_COMITE_CHOICES = [
     ('Aprobado con monto reducido',         'Aprobado con monto reducido'),
     ('Aprobado condicionado - mínimo vital','Aprobado condicionado - mínimo vital'),
     # No aprobaciones
+    ('Rechazado',                           'Rechazado'),
+    ('Rechazado por mínimo vital',          'Rechazado por mínimo vital'),
     ('No aprobado - Score insuficiente',    'No aprobado - Score insuficiente'),
     ('No aprobado - Capacidad de pago',     'No aprobado - Capacidad de pago'),
     ('No aprobado - Historial crediticio',  'No aprobado - Historial crediticio'),
