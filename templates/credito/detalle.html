@@ -80,12 +80,12 @@
       <div class="card-header bg-primary text-white py-2"><strong>Análisis de Ingresos y Mínimo Vital</strong></div>
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
-          <tr><td class="bg-light">Salario Bruto</td><td class="text-end fw-bold">${{ ev.salario_bruto|cop }}</td></tr>
-          <tr><td class="bg-light">(-) Salud 4%</td><td class="text-end">${{ ev.salario_bruto|cop }}</td></tr>
-          <tr><td class="bg-light">(-) Pensión 4%</td><td class="text-end">&nbsp;</td></tr>
-          <tr class="table-success"><td><strong>Salario Neto</strong></td><td class="text-end fw-bold">${{ ev.salario_neto|cop }}</td></tr>
-          <tr><td class="bg-light">% Mínimo Vital</td><td class="text-end">50%</td></tr>
-          <tr class="table-info"><td><strong>Mínimo Vital en $</strong></td><td class="text-end fw-bold">${{ ev.minimo_vital|cop }}</td></tr>
+          <tr><td class="bg-light">Salario Bruto <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Valor ingresado en el formulario. Es el salario antes de cualquier descuento."></i></td><td class="text-end fw-bold">${{ ev.salario_bruto|cop }}</td></tr>
+          <tr><td class="bg-light">(-) Salud 4% <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Descuento obligatorio de ley: 4% del salario bruto para salud."></i></td><td class="text-end">${{ ev.salario_bruto|cop }}</td></tr>
+          <tr><td class="bg-light">(-) Pensión 4% <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Descuento obligatorio de ley: 4% del salario bruto para pensión. Se muestra junto a salud porque ambos suman el 8% descontado."></i></td><td class="text-end">&nbsp;</td></tr>
+          <tr class="table-success"><td><strong>Salario Neto</strong> <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Salario Bruto × 92%. Se descuenta el 8% de ley (4% salud + 4% pensión). Es la base de todos los cálculos siguientes."></i></td><td class="text-end fw-bold">${{ ev.salario_neto|cop }}</td></tr>
+          <tr><td class="bg-light">% Mínimo Vital <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Parámetro configurado en el sistema. Indica el porcentaje máximo del salario neto que puede comprometerse en cuotas de deuda."></i></td><td class="text-end">50%</td></tr>
+          <tr class="table-info"><td><strong>Mínimo Vital en $</strong> <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Salario Neto × 50%. Es el techo máximo permitido en cuotas: el total de obligaciones mensuales no puede superar este valor."></i></td><td class="text-end fw-bold">${{ ev.minimo_vital|cop }}</td></tr>
         </table>
       </div>
     </div>
@@ -106,17 +106,17 @@
             </tr>
             {% endfor %}
             <tr class="table-light">
-              <td class="bg-light fw-semibold small">Subtotal otras entidades</td>
+              <td class="bg-light fw-semibold small">Subtotal otras entidades <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Suma de cuotas mensuales con bancos u otras entidades financieras externas a FONDEINO."></i></td>
               <td class="text-end fw-semibold">${{ ev.cuotas_otras_entidades|cop }}</td>
             </tr>
           {% else %}
-          <tr><td class="bg-light">Cuotas Otras Entidades</td><td class="text-end">${{ ev.cuotas_otras_entidades|cop }}</td></tr>
+          <tr><td class="bg-light">Cuotas Otras Entidades <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Suma de cuotas mensuales con bancos u otras entidades financieras externas a FONDEINO."></i></td><td class="text-end">${{ ev.cuotas_otras_entidades|cop }}</td></tr>
           {% endif %}
-          <tr><td class="bg-light">Cuotas FONDEINO Actuales</td><td class="text-end">${{ ev.cuota_aporte|cop }}</td></tr>
-          <tr><td class="bg-light">Cuota Nueva Estimada ({{ ev.modalidad.nombre }})</td>
+          <tr><td class="bg-light">Cuotas FONDEINO Actuales <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Cuotas de aportes y ahorros que ya paga actualmente con FONDEINO, antes de este crédito."></i></td><td class="text-end">${{ ev.cuota_aporte|cop }}</td></tr>
+          <tr><td class="bg-light">Cuota Nueva Estimada ({{ ev.modalidad.nombre }}) <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Calculada con fórmula de amortización (PMT) según el monto solicitado, el número de cuotas y la tasa mensual de la modalidad. Incluye seguro si aplica."></i></td>
               <td class="text-end">${{ cuota_nueva|cop }}</td>
           </tr>
-          <tr class="table-warning"><td><strong>Total Cuotas</strong></td><td class="text-end fw-bold">${{ ev.total_cuotas|cop }}</td></tr>
+          <tr class="table-warning"><td><strong>Total Cuotas</strong> <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Otras entidades + Cuotas FONDEINO actuales + Cuota nueva estimada. Es el total de obligaciones mensuales que se evalúa contra el Mínimo Vital."></i></td><td class="text-end fw-bold">${{ ev.total_cuotas|cop }}</td></tr>
         </table>
       </div>
     </div>
@@ -129,13 +129,13 @@
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
           <tr>
-            <td class="bg-light">Disponible Final</td>
+            <td class="bg-light">Disponible Final <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Salario Neto − Total Cuotas. Es lo que le queda libre a la persona después de pagar todas sus obligaciones mensuales."></i></td>
             <td class="text-end fw-bold {% if ev.disponible_final >= 0 %}text-success{% else %}text-danger{% endif %}">
               ${{ ev.disponible_final|cop }}
             </td>
           </tr>
           <tr>
-            <td class="bg-light">Cumple Mínimo Vital</td>
+            <td class="bg-light">Cumple Mínimo Vital <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="SÍ si el Total de Cuotas no supera el Mínimo Vital en $. NO si lo supera: en ese caso el crédito queda bloqueado sin importar el score."></i></td>
             <td class="text-end">
               {% if ev.disponible_final >= 0 %}
                 <span class="badge bg-success">SI</span>
@@ -145,11 +145,11 @@
             </td>
           </tr>
           <tr>
-            <td class="bg-light">% Endeudamiento Total</td>
+            <td class="bg-light">% Endeudamiento Total <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Total Cuotas ÷ Salario Neto. Indica qué porcentaje del sueldo neto está comprometido en pagos mensuales. Este valor determina el puntaje de Capacidad de Pago en el scoring."></i></td>
             <td class="text-end">{% widthratio ev.pct_endeudamiento 1 100 %}%</td>
           </tr>
           <tr>
-            <td class="bg-light">Estado</td>
+            <td class="bg-light">Estado <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="OK: cumple el mínimo vital, puede continuar. BLOQUEADO: el total de cuotas supera el techo permitido y el crédito no puede aprobarse."></i></td>
             <td class="text-end"><strong>{{ ev.estado_mv }}</strong></td>
           </tr>
         </table>
@@ -186,32 +186,32 @@
           </thead>
           <tbody>
             <tr>
-              <td>Puntaje DataCrédito ({{ ev.puntaje_datacredito }})</td>
+              <td>Puntaje DataCrédito ({{ ev.puntaje_datacredito }}) <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Puntaje del buró de crédito (0–1000). Según los umbrales configurados se convierte en un puntaje de 0 a 25 pts. Mayor puntaje DataCrédito = mayor score."></i></td>
               <td class="text-center fw-bold">{{ ev.score_datacredito }}</td>
               <td class="text-center text-muted">25</td>
             </tr>
             <tr>
-              <td>Antigüedad Empresa ({{ ev.antiguedad_meses }} meses)</td>
+              <td>Antigüedad Empresa ({{ ev.antiguedad_meses }} meses) <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Tiempo trabajado en la empresa actual. Mayor antigüedad refleja mayor estabilidad laboral. Se evalúa por rangos de meses según la configuración. Max 15 pts."></i></td>
               <td class="text-center fw-bold">{{ ev.score_antiguedad }}</td>
               <td class="text-center text-muted">15</td>
             </tr>
             <tr>
-              <td>Tipo Vinculación ({{ ev.tipo_vinculacion }})</td>
+              <td>Tipo Vinculación ({{ ev.tipo_vinculacion }}) <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Tipo de contrato laboral. Planta (indefinido) recibe el mayor puntaje, seguido de término fijo y por servicios. Refleja la estabilidad del ingreso. Max 10 pts."></i></td>
               <td class="text-center fw-bold">{{ ev.score_vinculacion }}</td>
               <td class="text-center text-muted">10</td>
             </tr>
             <tr>
-              <td>Capacidad de Pago ({% widthratio ev.pct_endeudamiento 1 100 %}% endeudam.)</td>
+              <td>Capacidad de Pago ({% widthratio ev.pct_endeudamiento 1 100 %}% endeudam.) <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Basado en el % de endeudamiento (Total Cuotas ÷ Salario Neto). Por debajo del umbral bueno (30%) → 25 pts. Entre umbrales (30%–50%) → 15 pts. Por encima del umbral regular (50%) → 5 pts. Max 25 pts."></i></td>
               <td class="text-center fw-bold">{{ ev.score_capacidad_pago }}</td>
               <td class="text-center text-muted">25</td>
             </tr>
             <tr>
-              <td>Garantías Acumuladas</td>
+              <td>Garantías Acumuladas <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Saldo de aportes y ahorros acumulados en FONDEINO. A mayor saldo, mayor respaldo ante un eventual incumplimiento, lo que se premia con más puntos. Max 15 pts."></i></td>
               <td class="text-center fw-bold">{{ ev.score_garantias }}</td>
               <td class="text-center text-muted">15</td>
             </tr>
             <tr>
-              <td>Historial Crédito Activo</td>
+              <td>Historial Crédito Activo <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Evalúa si tiene un crédito activo con FONDEINO y qué porcentaje del capital ya ha pagado. Buen comportamiento de pago previo suma puntos. Max 10 pts."></i></td>
               <td class="text-center fw-bold">{{ ev.score_credito_activo }}</td>
               <td class="text-center text-muted">10</td>
             </tr>
@@ -366,4 +366,14 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+    new bootstrap.Tooltip(el, { html: false });
+  });
+});
+</script>
 {% endblock %}
