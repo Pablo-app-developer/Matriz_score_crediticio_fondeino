@@ -97,33 +97,6 @@
     </div>
   </div>
 
-  <div class="row g-3 mb-4">
-    <div class="col-md-6">
-      <div class="card border-primary h-100">
-        <div class="card-body text-center">
-          <i class="bi bi-award-fill display-4 text-primary mb-2 d-block"></i>
-          <h5 class="card-title text-primary">Premios reales</h5>
-          <p class="card-text small">
-            Top 5 en fase de grupos, Top 5 general y sorteo entre quienes
-            acierten al campeón del mundo.
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card border-warning h-100">
-        <div class="card-body text-center">
-          <i class="bi bi-trophy-fill display-4 text-warning mb-2 d-block"></i>
-          <h5 class="card-title text-warning">Sorteo del campeón</h5>
-          <p class="card-text small">
-            {{ config.premio_campeon_sorteo }} para quien acierte al campeón del Mundial.
-            ¡El sorteo es transparente y auditable!
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- CTA afiliación -->
   {% if not request.user.is_authenticated %}
   <div class="alert alert-info d-flex align-items-center gap-3 mb-4">
