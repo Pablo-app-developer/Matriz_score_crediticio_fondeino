@@ -135,10 +135,6 @@ body { background: #0d1b2a !important; }
     <a href="?tipo=general" class="rk-tab {% if tipo == 'general' %}on{% endif %}">
       <i class="bi bi-bar-chart-fill me-1"></i>General
     </a>
-    {# Tab grupos oculto — no se premia fase de grupos #}
-    {# <a href="?tipo=grupos" class="rk-tab {% if tipo == 'grupos' %}on{% endif %}">
-      <i class="bi bi-grid me-1"></i>Grupos
-    </a> #}
     <a href="?tipo=campeon" class="rk-tab {% if tipo == 'campeon' %}on{% endif %}">
       <i class="bi bi-star-fill me-1"></i>Campeón
     </a>
@@ -150,13 +146,9 @@ body { background: #0d1b2a !important; }
 
 {% if tipo == 'grafica' %}
 {# ════ TAB GRÁFICA ════════════════════════════════════════════ #}
-<div class="rk-chart-wrap mb-4">
+<div class="rk-chart-wrap">
   <div class="rk-chart-title"><i class="bi bi-bar-chart-fill me-1"></i>Top 30 — Ranking General</div>
   <canvas id="rkChartGen"></canvas>
-</div>
-<div class="rk-chart-wrap">
-  <div class="rk-chart-title"><i class="bi bi-grid me-1"></i>Top 30 — Fase de Grupos</div>
-  <canvas id="rkChartGrp"></canvas>
 </div>
 
 {% elif tipo == 'campeon' %}
@@ -355,7 +347,6 @@ function buildChart(canvasId, labels, values) {
   });
 }
 buildChart('rkChartGen', {{ gen_labels_json|safe }}, {{ gen_values_json|safe }});
-buildChart('rkChartGrp', {{ grp_labels_json|safe }}, {{ grp_values_json|safe }});
 </script>
 {% endif %}
 {% endblock %}
