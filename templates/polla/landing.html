@@ -184,70 +184,69 @@
 <style>
 /* ── Login inline polla ── */
 .polla-login-card {
-  max-width: 420px;
-  background: rgba(0,0,0,.45);
+  width: 100%;
+  max-width: 400px;
+  background: rgba(0,0,0,.5);
   border: 1px solid rgba(240,192,64,.25);
   border-radius: 16px;
-  padding: 1.2rem 1.4rem 1rem;
+  padding: 1.4rem 1.2rem 1.1rem;
   backdrop-filter: blur(6px);
 }
 .polla-login-label {
-  font-size: .78rem;
+  font-size: .75rem;
   font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
   color: rgba(255,255,255,.45);
-  margin-bottom: .75rem;
+  margin-bottom: .9rem;
 }
 .polla-login-fields {
   display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: .6rem;
 }
 .polla-pass-wrap {
   position: relative;
-  flex: 1;
-  min-width: 140px;
+  width: 100%;
 }
 .polla-input {
   width: 100%;
-  flex: 1;
-  min-width: 140px;
   background: rgba(255,255,255,.08);
   border: 1px solid rgba(240,192,64,.2);
-  border-radius: 8px;
+  border-radius: 10px;
   color: #fff;
-  padding: .5rem .75rem;
-  font-size: .9rem;
+  padding: .7rem .85rem;
+  font-size: 1rem;
   outline: none;
   transition: border-color .2s;
+  -webkit-appearance: none;
 }
 .polla-input::placeholder { color: rgba(255,255,255,.3); }
 .polla-input:focus { border-color: rgba(240,192,64,.55); background: rgba(255,255,255,.12); }
-.polla-pass-wrap .polla-input { padding-right: 2.4rem; }
+.polla-pass-wrap .polla-input { padding-right: 2.6rem; }
 .polla-eye {
   position: absolute;
-  right: .5rem; top: 50%;
+  right: .65rem; top: 50%;
   transform: translateY(-50%);
   background: none; border: none;
   color: rgba(255,255,255,.4);
   cursor: pointer; padding: 0; line-height: 1;
-  font-size: 1rem;
+  font-size: 1.05rem;
 }
 .polla-eye:hover { color: #f0c040; }
+.polla-login-fields .btn {
+  width: 100%;
+  padding: .7rem;
+  font-size: 1rem;
+  border-radius: 10px;
+}
 .polla-login-error {
   margin-top: .6rem;
-  font-size: .8rem;
+  font-size: .82rem;
   color: #ff7c7c;
   background: rgba(255,60,60,.12);
   border-radius: 6px;
   padding: .4rem .7rem;
-}
-@media (max-width: 480px) {
-  .polla-login-fields { flex-direction: column; align-items: stretch; }
-  .polla-input { min-width: unset; }
 }
 
 .wc-cd-wrap {
