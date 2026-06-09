@@ -136,16 +136,8 @@ SECURE_HSTS_SECONDS           = 31536000 if ON_VERCEL else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = ON_VERCEL
 SECURE_HSTS_PRELOAD           = ON_VERCEL
 
-# ── django-axes: bloqueo por fuerza bruta ──
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesStandaloneBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-AXES_FAILURE_LIMIT      = 5       # bloquear tras 5 intentos fallidos
-AXES_COOLOFF_TIME       = 1       # bloqueo de 1 hora
-AXES_RESET_ON_SUCCESS   = True    # reinicia contador al iniciar sesión exitosamente
-AXES_LOCKOUT_TEMPLATE   = None    # usa respuesta 403 por defecto
-AXES_ENABLE_ADMIN       = True    # ver intentos en /admin/
-# En Vercel todos los requests comparten IP del proxy — bloquear solo por usuario
-AXES_ONLY_USER_FAILURES = True
-AXES_LOCK_OUT_BY_COMBINATION_USER_AND_IP = False
+AXES_ENABLED            = False   # sin bloqueo por intentos fallidos
