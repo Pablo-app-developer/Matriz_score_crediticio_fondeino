@@ -23,16 +23,6 @@ body { background: #0d1b2a !important; }
   padding: .1rem .28rem; border-radius: 10px; min-width: 15px; text-align: center;
 }
 
-/* Botón guardar todos */
-.pk-save-all {
-  background: #f0c040; color: #1a1200; border: none;
-  font-weight: 700; font-size: .78rem; padding: .42rem 1rem;
-  border-radius: 7px; cursor: pointer; transition: opacity .15s;
-  white-space: nowrap;
-}
-.pk-save-all:disabled { opacity: .5; cursor: not-allowed; }
-.pk-save-all:hover:not(:disabled) { opacity: .85; }
-
 /* Countdown de cierre */
 .pn-countdown {
   font-size: .6rem; font-weight: 700;
@@ -71,11 +61,6 @@ body { background: #0d1b2a !important; }
   <div class="d-flex align-items-center gap-2 flex-wrap">
     {% if pendientes > 0 %}
     <div class="pn-counter"><b>{{ pendientes }}</b> pendiente{% if pendientes != 1 %}s{% endif %}</div>
-    {% endif %}
-    {% if pendientes > 0 and not config.polla_cerrada %}
-    <button class="pk-save-all" id="pkSaveAll" type="button">
-      <i class="bi bi-cloud-arrow-up-fill me-1"></i>Guardar todos
-    </button>
     {% endif %}
   </div>
 </div>
@@ -289,57 +274,6 @@ body { background: #0d1b2a !important; }
 <script>
 const CSRF = '{{ csrf_token }}';
 
-/* ── Guardar todos ─────────────────────────────────────── */
-const pkSaveAllBtn = document.getElementById('pkSaveAll');
-if (pkSaveAllBtn) {
-  pkSaveAllBtn.addEventListener('click', async function () {
-    const btn = this;
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span>Guardando…';
-
-    const openCards = [...document.querySelectorAll('.pn-card.open')];
-    let ok = 0, fail = 0;
-
-    await Promise.all(openCards.map(async card => {
-      const container = card.querySelector('[data-partido-id]');
-      if (!container) return;
-      const gl = parseInt(container.querySelector('.pk-gl').value || '0');
-      const gv = parseInt(container.querySelector('.pk-gv').value || '0');
-      if (isNaN(gl) || isNaN(gv) || gl < 0 || gv < 0) return;
-
-      try {
-        const r = await fetch('/polla/pronosticos/guardar/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
-          body: JSON.stringify({
-            partido_id: parseInt(container.dataset.partidoId),
-            polla_num:  parseInt(container.dataset.pollaNum),
-            goles_local: gl, goles_visitante: gv,
-          })
-        });
-        const data = await r.json();
-        if (data.ok) {
-          ok++;
-          const saveBtn = card.querySelector('.pk-save-btn');
-          if (saveBtn) saveBtn.textContent = 'Actualizar';
-          const msg = document.getElementById('msg-' + container.dataset.partidoId);
-          if (msg) { msg.innerHTML = '<span style="color:#78d860;">✓</span>'; setTimeout(() => msg.innerHTML = '', 3000); }
-        } else { fail++; }
-      } catch { fail++; }
-    }));
-
-    btn.disabled = false;
-    if (ok > 0) {
-      btn.innerHTML = `<i class="bi bi-check-circle-fill me-1" style="color:#78d860;"></i>${ok} guardado${ok !== 1 ? 's' : ''}`;
-    } else {
-      btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-1"></i>Guardar todos';
-    }
-    if (fail > 0) btn.innerHTML += ` <span style="color:#e05050;font-size:.7rem;">(${fail} error${fail !== 1 ? 'es' : ''})</span>`;
-    setTimeout(() => {
-      if (!btn.disabled) btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-1"></i>Guardar todos';
-    }, 5000);
-  });
-}
 
 /* ── Countdown de cierre ────────────────────────────────── */
 function actualizarCountdowns() {

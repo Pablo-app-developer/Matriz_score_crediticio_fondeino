@@ -27,16 +27,6 @@ body { background:#0f172a !important; }
 }
 .m-bar-title { color:#94a3b8; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; }
 
-/* ── Guardar todos ── */
-.m-save-all {
-  display:flex; align-items:center; justify-content:center; gap:.4rem;
-  margin:.15rem .3rem .4rem;
-  padding:.55rem .75rem; border-radius:10px; border:none;
-  background:#fbbf24; color:#111827;
-  font-weight:700; font-size:.82rem; cursor:pointer;
-  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
-}
-.m-save-all:disabled { background:#1e293b; color:#475569; }
 
 /* ── Tabs ── */
 .m-tabs {
@@ -180,13 +170,6 @@ body { background:#0f172a !important; }
     {% endif %}
   </div>
 </div>
-
-{# Guardar todos #}
-{% if pendientes > 0 and not config.polla_cerrada %}
-<button class="m-save-all" id="mSaveAll">
-  <i class="bi bi-cloud-arrow-up-fill"></i> Guardar todos
-</button>
-{% endif %}
 
 {# Tabs #}
 <div class="m-tabs">
@@ -334,24 +317,6 @@ async function mSave(pk){
 
 document.querySelectorAll('.m-guardar').forEach(b=>b.addEventListener('click',()=>mSave(parseInt(b.dataset.target))));
 
-const sa=document.getElementById('mSaveAll');
-if(sa){sa.addEventListener('click',async function(){
-  this.disabled=true;this.innerHTML='<i class="bi bi-hourglass-split me-1"></i>Guardando…';
-  const cards=[...document.querySelectorAll('.m-card.open')];
-  let ok=0;
-  await Promise.all(cards.map(async c=>{
-    const pk=parseInt(c.id.replace('mc-',''));
-    const box=c.querySelector('[data-partido-id]');if(!box)return;
-    const gl=parseInt(box.querySelector('.m-gl').value||'0');
-    const gv=parseInt(box.querySelector('.m-gv').value||'0');
-    const pn=parseInt(box.dataset.pollaNum);
-    try{const r=await fetch('/polla/pronosticos/guardar/',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':CSRF},body:JSON.stringify({partido_id:pk,polla_num:pn,goles_local:gl,goles_visitante:gv})});
-    const d=await r.json();if(d.ok){ok++;const btn=c.querySelector('.m-guardar');if(btn)btn.textContent='Actualizar';const msg=document.getElementById('mmsg-'+pk);if(msg){msg.className='m-msg ok';msg.innerHTML='✓ Guardado';}}}catch{}
-  }));
-  this.disabled=false;
-  this.innerHTML=ok>0?`<i class="bi bi-check-circle-fill me-1"></i>${ok} guardado${ok!==1?'s':''}`:'<i class="bi bi-cloud-arrow-up-fill me-1"></i> Guardar todos';
-  setTimeout(()=>{if(!this.disabled)this.innerHTML='<i class="bi bi-cloud-arrow-up-fill me-1"></i> Guardar todos';},4000);
-});}
 
 function tick(){const now=Date.now();document.querySelectorAll('[data-cierre]').forEach(c=>{const el=c.querySelector('[id^="mcd-"]');if(!el)return;const diff=parseInt(c.dataset.cierre)*1000-now;if(diff<=0){el.textContent='';return;}const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);el.textContent=h>=48?Math.floor(h/24)+'d':h>=1?h+'h'+m+'m':m+'m';el.classList.toggle('urgent',h<2);});}
 tick();setInterval(tick,60000);
