@@ -200,6 +200,9 @@ body { background:#0f172a !important; }
     {% if tab.pendientes > 0 and tab.key != fase_sel %}<span class="dot">{{ tab.pendientes }}</span>{% endif %}
   </a>
   {% endfor %}
+  <a href="{% url 'polla:campeon' %}" class="m-tab" style="color:#fbbf24;border-color:#fbbf2440;">
+    🏆 Campeón
+  </a>
 </div>
 
 {% if not partidos_por_fecha %}

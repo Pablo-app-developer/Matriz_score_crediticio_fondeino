@@ -93,6 +93,11 @@ body { background: #0d1b2a !important; }
     {% endif %}
   </a>
   {% endfor %}
+  <a href="{% url 'polla:campeon' %}"
+     class="pn-tab"
+     style="border-color:rgba(240,192,64,.5);background:rgba(240,192,64,.08);color:#f0c040;">
+    <i class="bi bi-trophy-fill"></i>Campeón
+  </a>
 </div>
 {% endif %}
 
