@@ -933,7 +933,15 @@ def admin_cargar_afiliados(request):
     if request.method == 'POST' and form.is_valid():
         archivo = request.FILES['archivo']
         try:
-            df = pd.read_excel(archivo)
+            df = pd.read_excel(archivo, dtype=str)
+            # Si la primera columna es numérica (cédula), el archivo no tiene encabezados
+            try:
+                int(str(df.columns[0]).strip())
+                df = pd.read_excel(archivo, header=None, dtype=str)
+                nombres = ['cedula', 'nombre_completo', 'correo', 'telefono', 'area']
+                df.columns = nombres[:len(df.columns)]
+            except (ValueError, TypeError):
+                pass  # El archivo sí tiene encabezados normales
             resultado = _procesar_excel_afiliados(df)
         except Exception as e:
             messages.error(request, f'Error al leer el archivo: {e}')
