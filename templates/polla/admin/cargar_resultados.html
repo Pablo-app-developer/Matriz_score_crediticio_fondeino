@@ -42,7 +42,7 @@
                 {% if partido.bandera_url_visitante %}<img src="{{ partido.bandera_url_visitante }}" style="width:20px;height:14px;object-fit:cover;border-radius:2px;margin-right:4px;">{% endif %}{{ partido.nombre_visitante_display }}
               </td>
               <td class="text-center small d-none d-md-table-cell">{{ partido.get_fase_display }}</td>
-              <td class="text-center small d-none d-md-table-cell">{{ partido.fecha_hora|date:"d/m H:i" }}</td>
+              <td class="text-center small d-none d-md-table-cell">{{ partido.fecha_hora|date:"d/m g:i a" }}</td>
               <td class="text-center">
                 <div class="d-flex justify-content-center align-items-center gap-1">
                   <input type="number" name="goles_local_{{ partido.pk }}"
@@ -107,7 +107,7 @@
                 {% if partido.bandera_url_visitante %}<img src="{{ partido.bandera_url_visitante }}" style="width:20px;height:14px;object-fit:cover;border-radius:2px;margin-right:4px;">{% endif %}{{ partido.nombre_visitante_display }}
               </td>
               <td class="text-center small d-none d-md-table-cell">{{ partido.get_fase_display }}</td>
-              <td class="text-center small d-none d-md-table-cell">{{ partido.fecha_hora|date:"d/m H:i" }}</td>
+              <td class="text-center small d-none d-md-table-cell">{{ partido.fecha_hora|date:"d/m g:i a" }}</td>
               <td class="text-center">
                 <div class="d-flex justify-content-center align-items-center gap-1">
                   <input type="number" name="goles_local_{{ partido.pk }}"

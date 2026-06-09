@@ -53,7 +53,7 @@
                 {% endif %}
                 <span>{{ pron.partido.nombre_visitante_display }}</span>
               </div>
-              <div class="text-muted" style="font-size:0.7rem;">{{ pron.partido.fecha_hora|date:"d/m H:i" }}</div>
+              <div class="text-muted" style="font-size:0.7rem;">{{ pron.partido.fecha_hora|date:"d/m g:i a" }}</div>
             </td>
             <td class="text-center small">{{ pron.partido.get_fase_display }}</td>
             <td class="text-center fw-bold">{{ pron.goles_local }} – {{ pron.goles_visitante }}</td>

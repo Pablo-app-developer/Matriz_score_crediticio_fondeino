@@ -28,7 +28,7 @@
           <label class="form-label fw-semibold small">{{ form.fecha_hora.label }}</label>
           {{ form.fecha_hora }}
           <div class="text-muted mt-1" style="font-size:.75rem;">
-            Actual: <strong>{{ partido.fecha_hora|date:"d/m/Y H:i" }}</strong> (hora Colombia)
+            Actual: <strong>{{ partido.fecha_hora|date:"d/m/Y g:i a" }}</strong> (hora Colombia)
           </div>
           {% if form.fecha_hora.errors %}
             <div class="text-danger small mt-1">{{ form.fecha_hora.errors }}</div>

@@ -47,7 +47,7 @@
             {% for partido in fase_group.list %}
             <tr class="{% if not partido.etiqueta_local and not partido.etiqueta_visitante %}table-success{% endif %}">
               <td class="text-center small text-muted fw-bold">{{ partido.numero }}</td>
-              <td class="small text-muted">{{ partido.fecha_hora|date:"d/m H:i" }}</td>
+              <td class="small text-muted">{{ partido.fecha_hora|date:"d/m g:i a" }}</td>
 
               {# ── Local ── #}
               <td>

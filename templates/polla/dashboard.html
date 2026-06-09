@@ -117,7 +117,7 @@
     </div>
 
     <div class="pk-match-footer">
-      <span><i class="bi bi-clock me-1"></i>{{ partido.fecha_hora|date:"D d/m · H:i" }} COL</span>
+      <span><i class="bi bi-clock me-1"></i>{{ partido.fecha_hora|date:"D d/m · g:i a" }} COL</span>
       <a href="{% url 'polla:pronosticos' %}#partido-{{ partido.pk }}"
          class="btn btn-sm btn-success fw-bold">
         <i class="bi bi-pencil me-1"></i>Pronosticar

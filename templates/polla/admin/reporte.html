@@ -176,7 +176,7 @@
           <span class="fw-bold small">
             Premio {{ forloop.counter }} —
             {{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}
-            <span class="text-muted fw-normal">({{ p.fecha_hora|date:"d/m H:i" }})</span>
+            <span class="text-muted fw-normal">({{ p.fecha_hora|date:"d/m g:i a" }})</span>
           </span>
           {% if p.finalizado %}
             <span class="badge bg-secondary">{{ p.goles_local }}–{{ p.goles_visitante }}</span>

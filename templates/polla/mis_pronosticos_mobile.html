@@ -99,7 +99,7 @@ body { background:#0f172a !important; }
         {% if pron.partido.bandera_url_visitante %}<img class="mp-flag" src="{{ pron.partido.bandera_url_visitante }}" alt="">{% endif %}
         {{ pron.partido.nombre_visitante_display }}
       </div>
-      <div class="mp-fecha">{{ pron.partido.fecha_hora|date:"d/m H:i" }}</div>
+      <div class="mp-fecha">{{ pron.partido.fecha_hora|date:"d/m g:i a" }}</div>
     </div>
     <div class="mp-scores">
       <div class="mp-pron">{{ pron.goles_local }}–{{ pron.goles_visitante }}</div>
