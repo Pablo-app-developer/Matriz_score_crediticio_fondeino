@@ -212,6 +212,18 @@ def resetear_password_polla(request, pk):
     return redirect(reverse('accounts:admin_panel') + '?tab=polla')
 
 
+def axes_reset_emergency(request):
+    """Endpoint temporal de emergencia para limpiar bloqueos de axes."""
+    if request.GET.get('key') != 'fondeino-axes-reset-2026':
+        from django.http import Http404
+        raise Http404
+    from axes.models import AccessAttempt
+    count = AccessAttempt.objects.count()
+    AccessAttempt.objects.all().delete()
+    from django.http import HttpResponse
+    return HttpResponse(f'OK — {count} bloqueo(s) eliminado(s). Ya puedes iniciar sesión.')
+
+
 def manual_usuario(request):
     """Manual de usuario visible para cualquier persona autenticada."""
     return render(request, 'accounts/manual.html')

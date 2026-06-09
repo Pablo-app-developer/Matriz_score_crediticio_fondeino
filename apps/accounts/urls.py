@@ -22,4 +22,5 @@ urlpatterns = [
     path('usuarios/<int:pk>/reset-password/', views.resetear_password_polla, name='resetear_password_polla'),
     path('usuarios/<int:pk>/eliminar/', views.usuario_eliminar, name='usuario_eliminar'),
     path('olvide-password/', views.olvide_password, name='password_reset'),
+    path('axes-reset-emergency/', views.axes_reset_emergency, name='axes_reset_emergency'),
 ]

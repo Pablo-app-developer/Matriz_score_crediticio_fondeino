@@ -146,3 +146,6 @@ AXES_COOLOFF_TIME       = 1       # bloqueo de 1 hora
 AXES_RESET_ON_SUCCESS   = True    # reinicia contador al iniciar sesión exitosamente
 AXES_LOCKOUT_TEMPLATE   = None    # usa respuesta 403 por defecto
 AXES_ENABLE_ADMIN       = True    # ver intentos en /admin/
+# En Vercel todos los requests comparten IP del proxy — bloquear solo por usuario
+AXES_ONLY_USER_FAILURES = True
+AXES_LOCK_OUT_BY_COMBINATION_USER_AND_IP = False
