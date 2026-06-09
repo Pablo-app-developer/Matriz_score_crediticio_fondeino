@@ -1,5 +1,17 @@
 {% extends "polla/base_polla.html" %}
 
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+<style>
+#tablaAfiliados thead th { cursor: pointer; user-select: none; white-space: nowrap; }
+#tablaAfiliados thead th.sorting::after,
+#tablaAfiliados thead th.sorting_asc::after,
+#tablaAfiliados thead th.sorting_desc::after { margin-left: .3rem; opacity: .6; }
+.dataTables_wrapper .dataTables_filter { display: none; } /* usamos el buscador propio */
+</style>
+{% endblock %}
+
 {% block polla_content %}
 <div class="container-fluid px-3">
 
@@ -47,7 +59,7 @@
 
   <div class="card shadow-sm">
     <div class="table-responsive">
-      <table class="table table-sm table-hover mb-0">
+      <table id="tablaAfiliados" class="table table-sm table-hover mb-0">
         <thead class="table-dark">
           <tr>
             <th>Cédula</th>
@@ -55,7 +67,7 @@
             <th class="d-none d-md-table-cell">Área</th>
             <th class="text-center d-none d-sm-table-cell">Cuenta</th>
             <th class="text-center">Estado</th>
-            <th class="text-center">Acciones</th>
+            <th class="text-center" data-orderable="false">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -116,4 +128,30 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block polla_scripts %}
+{{ block.super }}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+<script>
+$(document).ready(function () {
+  const table = $('#tablaAfiliados').DataTable({
+    paging: false,
+    info: false,
+    order: [[1, 'asc']],
+    columnDefs: [{ orderable: false, targets: -1 }],
+    language: {
+      search: 'Buscar:',
+      zeroRecords: 'No se encontraron afiliados.',
+    }
+  });
+
+  // Conectar el buscador existente con DataTables
+  $('input[name="q"]').on('input', function () {
+    table.search(this.value).draw();
+  }).trigger('input');
+});
+</script>
 {% endblock %}
