@@ -449,7 +449,7 @@ if (_modalEl) {
         .then(resp => {
           document.getElementById('modalStatsCuerpo').innerHTML =
             resp.ok ? _renderStats(resp.datos)
-                    : '<p style="color:#3e5e7c;" class="text-center py-2 small">Sin partidos finalizados aún.<br><span style="font-size:.67rem;">Las estadísticas aparecerán una vez se carguen resultados.</span></p>';
+                    : `<p style="color:#3e5e7c;" class="text-center py-2 small">Sin datos disponibles.</p><pre style="font-size:.6rem;color:#4a6a8a;white-space:pre-wrap;">${JSON.stringify(resp,null,2)}</pre>`;
         })
         .catch(() => {
           document.getElementById('modalStatsCuerpo').innerHTML =
