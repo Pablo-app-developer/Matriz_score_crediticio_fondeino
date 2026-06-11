@@ -153,32 +153,13 @@ body { background: #0d1b2a !important; }
 
 {% elif tipo == 'campeon' %}
 {# ════ TAB CAMPEÓN ════════════════════════════════════════════ #}
-{% regroup pronosticos_campeon by equipo as por_equipo %}
-{% if por_equipo %}
-  {% for grupo in por_equipo %}
-  <div class="rk-camp">
-    {% if grupo.grouper.bandera_url %}
-      <img src="{{ grupo.grouper.bandera_url }}" alt="{{ grupo.grouper.nombre }}" class="rk-camp-flag">
-    {% else %}
-      <span style="font-size:1.8rem;flex-shrink:0;">{{ grupo.grouper.bandera_emoji }}</span>
-    {% endif %}
-    <div style="flex:1;min-width:0;">
-      <div class="rk-camp-name">{{ grupo.grouper.nombre }}</div>
-      <div class="rk-camp-people">
-        {% for pc in grupo.list %}
-          {{ pc.inscripcion.afiliado.nombre_completo }}{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-    <div class="rk-camp-votos">
-      <div class="rk-camp-num">{{ grupo.list|length }}</div>
-      <div class="rk-camp-lbl">voto{{ grupo.list|length|pluralize }}</div>
-    </div>
+<div style="text-align:center;padding:3.5rem 1rem;">
+  <i class="bi bi-lock-fill" style="font-size:2.4rem;color:#3e5e7c;display:block;margin-bottom:1rem;"></i>
+  <div style="color:#c0d4e8;font-weight:800;font-size:1rem;margin-bottom:.5rem;">Pronósticos de campeón ocultos</div>
+  <div style="color:#3e6080;font-size:.82rem;max-width:340px;margin:0 auto;line-height:1.6;">
+    Los votos se revelarán una vez se cierren las inscripciones para esta modalidad.
   </div>
-  {% endfor %}
-{% else %}
-  <div class="rk-empty"><i class="bi bi-star"></i>Nadie ha elegido campeón todavía.</div>
-{% endif %}
+</div>
 
 {% else %}
 {# ════ TAB GENERAL / GRUPOS ══════════════════════════════════ #}

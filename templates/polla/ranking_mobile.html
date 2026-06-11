@@ -78,25 +78,12 @@ body { background:#0f172a !important; }
 </div>
 
 {% if tipo == 'campeon' %}
-  {# Lista de pronósticos de campeón agrupados por equipo #}
-  <div class="rc-group">
-    {% regroup pronosticos_campeon by equipo as grupos %}
-    {% for grupo in grupos %}
-    <div class="rc-equipo">
-      <div class="rc-eq-hd">
-        {% if grupo.grouper.bandera_url %}<img class="rc-eq-flag" src="{{ grupo.grouper.bandera_url }}" alt="">{% endif %}
-        <span class="rc-eq-name">{{ grupo.grouper.nombre }}</span>
-        <span class="rc-eq-votos">{{ grupo.list|length }} voto{% if grupo.list|length != 1 %}s{% endif %}</span>
-      </div>
-      {% for pc in grupo.list %}
-      <div class="rc-persona {% if pc.acerto %}acerto{% endif %}">
-        {% if pc.acerto %}🏆 {% endif %}{{ pc.inscripcion.afiliado.nombre_completo }}
-      </div>
-      {% endfor %}
+  <div style="text-align:center;padding:3rem 1rem;">
+    <i class="bi bi-lock-fill" style="font-size:2.2rem;color:#3e5e7c;display:block;margin-bottom:.9rem;"></i>
+    <div style="color:#c0d4e8;font-weight:800;font-size:.95rem;margin-bottom:.45rem;">Pronósticos de campeón ocultos</div>
+    <div style="color:#3e6080;font-size:.78rem;max-width:300px;margin:0 auto;line-height:1.6;">
+      Los votos se revelarán una vez se cierren las inscripciones para esta modalidad.
     </div>
-    {% empty %}
-    <p style="color:#475569;text-align:center;padding:2rem;font-size:.85rem;">Nadie ha pronosticado campeón todavía.</p>
-    {% endfor %}
   </div>
 
 {% else %}
