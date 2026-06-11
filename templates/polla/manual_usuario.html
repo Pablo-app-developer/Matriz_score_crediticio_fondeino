@@ -2,11 +2,16 @@
 {% load static %}
 
 {% block extra_css %}{{ block.super }}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root { --pk-bg: #0d1b2a; }
 body { background:#0d1b2a !important; background-color:#0d1b2a !important; }
 
-.mn-wrap { max-width:780px; margin:0 auto; padding:2rem 1rem 4rem; }
+.mn-wrap {
+  max-width:780px; margin:0 auto; padding:2rem 1rem 4rem;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  min-height:100vh; background:#0d1b2a;
+}
 
 /* ── Encabezado ── */
 .mn-hero {
@@ -14,8 +19,8 @@ body { background:#0d1b2a !important; background-color:#0d1b2a !important; }
   border-bottom:1px solid #1e3050; margin-bottom:2rem;
 }
 .mn-hero-icon { font-size:3rem; display:block; margin-bottom:.75rem; }
-.mn-hero-title { color:#dde8f6; font-size:1.6rem; font-weight:900; margin-bottom:.4rem; }
-.mn-hero-sub { color:#7a9ab8; font-size:.9rem; }
+.mn-hero-title { color:#ffffff; font-size:1.6rem; font-weight:800; margin-bottom:.4rem; letter-spacing:-.02em; }
+.mn-hero-sub { color:#94b4cc; font-size:.9rem; font-weight:500; }
 
 /* ── Índice ── */
 .mn-toc {
@@ -31,12 +36,12 @@ body { background:#0d1b2a !important; background-color:#0d1b2a !important; }
 /* ── Secciones ── */
 .mn-section { margin-bottom:2.5rem; scroll-margin-top:80px; }
 .mn-section-title {
-  color:#dde8f6; font-size:1.1rem; font-weight:800;
+  color:#ffffff; font-size:1.05rem; font-weight:700; letter-spacing:-.01em;
   display:flex; align-items:center; gap:.6rem;
   border-bottom:2px solid #1e3050; padding-bottom:.6rem; margin-bottom:1.2rem;
 }
 .mn-section-title .mn-num {
-  background:#1e3050; color:#4e7090; font-size:.68rem; font-weight:900;
+  background:#1e4060; color:#78b8d8; font-size:.68rem; font-weight:800;
   width:24px; height:24px; border-radius:50%;
   display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
 }
@@ -46,7 +51,7 @@ body { background:#0d1b2a !important; background-color:#0d1b2a !important; }
   background:#111f2e; border:1px solid #1e3050; border-radius:11px;
   padding:1.1rem 1.2rem; margin-bottom:.9rem;
 }
-.mn-card-title { color:#c0d4e8; font-size:.85rem; font-weight:800; margin-bottom:.4rem; display:flex; align-items:center; gap:.4rem; }
+.mn-card-title { color:#e0eaf4; font-size:.85rem; font-weight:700; margin-bottom:.4rem; display:flex; align-items:center; gap:.4rem; }
 .mn-card-body { color:#90aec8; font-size:.82rem; line-height:1.7; }
 
 /* ── Pasos numerados ── */
@@ -61,7 +66,7 @@ body { background:#0d1b2a !important; background-color:#0d1b2a !important; }
   display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:.1rem;
 }
 .mn-step-content { flex:1; }
-.mn-step-title { color:#dde8f6; font-size:.88rem; font-weight:800; margin-bottom:.2rem; }
+.mn-step-title { color:#ffffff; font-size:.88rem; font-weight:700; margin-bottom:.2rem; }
 .mn-step-desc { color:#90aec8; font-size:.8rem; line-height:1.65; }
 
 /* ── Tabla de puntos ── */
@@ -99,7 +104,7 @@ body { background:#0d1b2a !important; background-color:#0d1b2a !important; }
 /* ── FAQ ── */
 .mn-faq { border:1px solid #1e3050; border-radius:11px; overflow:hidden; margin-bottom:.6rem; }
 .mn-faq-q {
-  background:#111f2e; color:#c0d4e8; font-size:.85rem; font-weight:700;
+  background:#111f2e; color:#e0eaf4; font-size:.85rem; font-weight:600;
   padding:.85rem 1rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center;
   user-select:none;
 }
