@@ -192,7 +192,7 @@ body { background:#0f172a !important; }
 
   {# ── Modalidad 1: Puntos por partido ── #}
   <div class="m-mod-group">
-    <span class="m-mod-lbl"><i class="bi bi-list-ol"></i> Puntos por partido</span>
+    <span class="m-mod-lbl"><i class="bi bi-list-ol"></i> Premio 1 &nbsp;·&nbsp; Puntos por partido</span>
     <div class="m-mod-tabs">
       {% for tab in fases_tabs %}{% if not tab.colombia %}
       <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
@@ -211,7 +211,7 @@ body { background:#0f172a !important; }
     <div class="m-mod-group m-mod-especial">
       <span class="m-mod-lbl">
         <img src="https://flagcdn.com/w20/co.png" style="width:13px;height:8px;object-fit:cover;border-radius:2px;">
-        Partidos de Colombia
+        Premio 2 &nbsp;·&nbsp; Colombia
       </span>
       <div class="m-mod-tabs">
         <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
@@ -225,7 +225,7 @@ body { background:#0f172a !important; }
     {% endif %}{% endfor %}
 
     <div class="m-mod-group m-mod-especial">
-      <span class="m-mod-lbl"><i class="bi bi-trophy-fill"></i> Pronostica el campeón</span>
+      <span class="m-mod-lbl"><i class="bi bi-trophy-fill"></i> Premio 3 &nbsp;·&nbsp; Campeón</span>
       <div class="m-mod-tabs">
         <a href="{% url 'polla:campeon' %}" class="m-tab" style="color:#fbbf24;border-color:#fbbf2440;">
           🏆 Campeón
