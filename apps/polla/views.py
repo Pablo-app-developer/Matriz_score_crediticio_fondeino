@@ -249,9 +249,12 @@ def ranking(request):
     tipo = request.GET.get('tipo', 'general')
     config = ConfiguracionPolla.get()
 
-    base_qs = InscripcionPolla.objects.filter(activa=True).select_related(
-        'afiliado'
-    )
+    # Solo participantes reales: afiliados que crearon su cuenta y entraron a la
+    # polla (afiliado.user enlazado). Excluye a los afiliados cargados por Excel
+    # que nunca se registraron, para no mostrar los 236 de FONDEINO en el ranking.
+    base_qs = InscripcionPolla.objects.filter(
+        activa=True, afiliado__user__isnull=False
+    ).select_related('afiliado')
 
     if tipo == 'grupos':
         ranking_qs = base_qs.annotate(
