@@ -19,6 +19,7 @@ _hosts_env = os.environ.get('ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = [h.strip() for h in _hosts_env.split(',') if h.strip()] if _hosts_env else ['localhost', '127.0.0.1']
 ALLOWED_HOSTS += ['.vercel.app', 'fondeino.com', 'www.fondeino.com']
 CSRF_TRUSTED_ORIGINS = ['https://fondeino.com', 'https://www.fondeino.com']
+CSRF_FAILURE_VIEW = 'fondeino_web.csrf_views.csrf_failure'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
