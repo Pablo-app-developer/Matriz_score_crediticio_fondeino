@@ -272,13 +272,32 @@ def ranking(request):
         )
         titulo = 'Ranking — Fase de Grupos'
     elif tipo == 'campeon':
-        pronosticos_campeon = PronosticoCampeon.objects.select_related(
-            'inscripcion__afiliado', 'equipo'
-        ).order_by('equipo__nombre', 'inscripcion__afiliado__nombre_completo')
+        # Los votos solo se revelan cuando cierran las inscripciones de campeón.
+        cerrado = config.campeon_cerrado
+        equipos_votos = []
+        total_votos = 0
+        if cerrado:
+            from collections import OrderedDict
+            pcs = PronosticoCampeon.objects.select_related(
+                'inscripcion__afiliado', 'equipo'
+            ).filter(inscripcion__activa=True).order_by(
+                'equipo__nombre', 'inscripcion__afiliado__nombre_completo'
+            )
+            agrupado = OrderedDict()
+            for pc in pcs:
+                agrupado.setdefault(pc.equipo, []).append(pc)
+            equipos_votos = [
+                {'equipo': eq, 'votos': len(lst), 'personas': lst}
+                for eq, lst in agrupado.items()
+            ]
+            equipos_votos.sort(key=lambda x: (-x['votos'], x['equipo'].nombre))
+            total_votos = sum(x['votos'] for x in equipos_votos)
         tpl = 'polla/ranking_mobile.html' if _is_mobile(request) else 'polla/ranking.html'
         return render(request, tpl, {
             'tipo': tipo,
-            'pronosticos_campeon': pronosticos_campeon,
+            'equipos_votos': equipos_votos,
+            'cerrado': cerrado,
+            'total_votos': total_votos,
             'config': config,
             'titulo': 'Pronósticos de Campeón',
         })

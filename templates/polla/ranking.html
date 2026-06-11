@@ -91,10 +91,10 @@ body { background: #0d1b2a !important; }
 .rk-camp:hover { box-shadow: 0 4px 16px rgba(0,0,0,.5); }
 .rk-camp-flag { width: 54px; height: 36px; object-fit: cover; border-radius: 5px; flex-shrink: 0; }
 .rk-camp-name { font-size: .9rem; font-weight: 800; color: #dde8f6; }
-.rk-camp-people { font-size: .68rem; color: #4e6e8c; margin-top: .15rem; }
+.rk-camp-people { font-size: .68rem; color: #8ab0d0; margin-top: .2rem; line-height: 1.5; }
 .rk-camp-votos { margin-left: auto; text-align: center; flex-shrink: 0; min-width: 44px; }
 .rk-camp-num  { font-size: 1.4rem; font-weight: 900; color: #f0c040; line-height: 1; }
-.rk-camp-lbl  { font-size: .52rem; color: #3e5e7c; text-transform: uppercase; letter-spacing: .6px; }
+.rk-camp-lbl  { font-size: .52rem; color: #6a90b0; text-transform: uppercase; letter-spacing: .6px; }
 
 /* ── Paginación ───────────────────────────────────────────── */
 .rk-pgbtn {
@@ -153,13 +153,40 @@ body { background: #0d1b2a !important; }
 
 {% elif tipo == 'campeon' %}
 {# ════ TAB CAMPEÓN ════════════════════════════════════════════ #}
+{% if not cerrado %}
 <div style="text-align:center;padding:3.5rem 1rem;">
   <i class="bi bi-lock-fill" style="font-size:2.4rem;color:#3e5e7c;display:block;margin-bottom:1rem;"></i>
   <div style="color:#c0d4e8;font-weight:800;font-size:1rem;margin-bottom:.5rem;">Pronósticos de campeón ocultos</div>
-  <div style="color:#3e6080;font-size:.82rem;max-width:340px;margin:0 auto;line-height:1.6;">
+  <div style="color:#8ab0d0;font-size:.82rem;max-width:340px;margin:0 auto;line-height:1.6;">
     Los votos se revelarán una vez se cierren las inscripciones para esta modalidad.
   </div>
 </div>
+{% elif equipos_votos %}
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <span style="color:#f0c040;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;">
+    <i class="bi bi-star-fill me-1"></i>¿Quién será campeón?
+  </span>
+  <span style="color:#8ab0d0;font-size:.68rem;">{{ total_votos }} voto{{ total_votos|pluralize }} en total</span>
+</div>
+{% for item in equipos_votos %}
+<div class="rk-camp">
+  <img src="{{ item.equipo.bandera_url }}" class="rk-camp-flag" alt="{{ item.equipo.nombre }}"
+       onerror="this.style.display='none'">
+  <div style="min-width:0;flex:1;">
+    <div class="rk-camp-name">{{ item.equipo.bandera_emoji }} {{ item.equipo.nombre }}</div>
+    <div class="rk-camp-people">
+      {% for pc in item.personas %}{{ pc.inscripcion.afiliado.nombre_completo }}{% if not forloop.last %} · {% endif %}{% endfor %}
+    </div>
+  </div>
+  <div class="rk-camp-votos">
+    <div class="rk-camp-num">{{ item.votos }}</div>
+    <div class="rk-camp-lbl">voto{{ item.votos|pluralize }}</div>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="rk-empty">Aún no hay pronósticos de campeón registrados.</div>
+{% endif %}
 
 {% else %}
 {# ════ TAB GENERAL / GRUPOS ══════════════════════════════════ #}
@@ -167,9 +194,9 @@ body { background: #0d1b2a !important; }
 
 {# Contador #}
 <div class="d-flex justify-content-between align-items-center mb-2">
-  <span style="color:#3e5e7c;font-size:.68rem;">{{ total }} participante{{ total|pluralize }}</span>
+  <span style="color:#8ab0d0;font-size:.68rem;">{{ total }} participante{{ total|pluralize }}</span>
   {% if total_paginas > 1 %}
-  <span style="color:#2a4060;font-size:.68rem;">Pág. {{ pagina }}/{{ total_paginas }}</span>
+  <span style="color:#6a90b0;font-size:.68rem;">Pág. {{ pagina }}/{{ total_paginas }}</span>
   {% endif %}
 </div>
 
@@ -251,7 +278,7 @@ body { background: #0d1b2a !important; }
     <span class="rk-pgbtn off"><i class="bi bi-chevron-right"></i></span>
   {% endif %}
 </div>
-<div class="text-center mt-2" style="color:#2a4060;font-size:.65rem;">
+<div class="text-center mt-2" style="color:#6a90b0;font-size:.65rem;">
   Pág. {{ pagina }} de {{ total_paginas }} · {{ total }} participante{{ total|pluralize }}
 </div>
 {% endif %}

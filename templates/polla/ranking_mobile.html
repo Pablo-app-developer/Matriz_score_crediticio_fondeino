@@ -58,7 +58,7 @@ body { background:#0f172a !important; }
 .rc-eq-name { font-size:.82rem; font-weight:700; color:#f1f5f9; flex:1; }
 .rc-eq-flag { width:24px; height:16px; object-fit:cover; border-radius:2px; flex-shrink:0; }
 .rc-eq-votos { font-size:.65rem; color:#94a3b8; font-weight:600; background:#0f172a; padding:.15rem .45rem; border-radius:10px; }
-.rc-persona { font-size:.72rem; color:#64748b; padding:.3rem .65rem; border-bottom:1px solid #0f172a15; }
+.rc-persona { font-size:.72rem; color:#94a3b8; padding:.3rem .65rem; border-bottom:1px solid #0f172a15; }
 .rc-persona:last-child { border-bottom:none; }
 .rc-persona.acerto { color:#34d399; }
 </style>
@@ -78,13 +78,40 @@ body { background:#0f172a !important; }
 </div>
 
 {% if tipo == 'campeon' %}
+  {% if not cerrado %}
   <div style="text-align:center;padding:3rem 1rem;">
     <i class="bi bi-lock-fill" style="font-size:2.2rem;color:#3e5e7c;display:block;margin-bottom:.9rem;"></i>
     <div style="color:#c0d4e8;font-weight:800;font-size:.95rem;margin-bottom:.45rem;">Pronósticos de campeón ocultos</div>
-    <div style="color:#3e6080;font-size:.78rem;max-width:300px;margin:0 auto;line-height:1.6;">
+    <div style="color:#8ab0d0;font-size:.78rem;max-width:300px;margin:0 auto;line-height:1.6;">
       Los votos se revelarán una vez se cierren las inscripciones para esta modalidad.
     </div>
   </div>
+  {% elif equipos_votos %}
+  <div class="rc-group">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.2rem .3rem .6rem;">
+      <span style="color:#fbbf24;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;">
+        <i class="bi bi-star-fill"></i> ¿Quién será campeón?
+      </span>
+      <span style="color:#8ab0d0;font-size:.66rem;">{{ total_votos }} voto{{ total_votos|pluralize }}</span>
+    </div>
+    {% for item in equipos_votos %}
+    <div class="rc-equipo">
+      <div class="rc-eq-hd">
+        <img src="{{ item.equipo.bandera_url }}" class="rc-eq-flag" alt="" onerror="this.style.display='none'">
+        <span class="rc-eq-name">{{ item.equipo.bandera_emoji }} {{ item.equipo.nombre }}</span>
+        <span class="rc-eq-votos">{{ item.votos }} voto{{ item.votos|pluralize }}</span>
+      </div>
+      {% for pc in item.personas %}
+      <div class="rc-persona">{{ pc.inscripcion.afiliado.nombre_completo }}</div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center;padding:3rem 1rem;color:#94a3b8;font-size:.82rem;">
+    Aún no hay pronósticos de campeón registrados.
+  </div>
+  {% endif %}
 
 {% else %}
   {# Lista de ranking #}
