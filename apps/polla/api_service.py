@@ -186,6 +186,9 @@ def get_datos_partido(partido):
             datos['h2h'] = h
 
     if datos:
+        # Preservar curiosidades manuales al actualizar caché de API
+        if partido.datos_previos and partido.datos_previos.get('curiosidades'):
+            datos['curiosidades'] = partido.datos_previos['curiosidades']
         partido.datos_previos = datos
         partido.datos_previos_ts = timezone.now()
         partido.save(update_fields=['datos_previos', 'datos_previos_ts'])
