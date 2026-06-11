@@ -136,13 +136,10 @@ SESSION_COOKIE_SECURE         = ON_VERCEL
 CSRF_COOKIE_SECURE            = ON_VERCEL
 CSRF_COOKIE_SAMESITE          = 'Lax'
 SESSION_COOKIE_SAMESITE       = 'Lax'
+CSRF_COOKIE_DOMAIN            = '.fondeino.com'
 SECURE_HSTS_SECONDS           = 31536000 if ON_VERCEL else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = ON_VERCEL
 SECURE_HSTS_PRELOAD           = ON_VERCEL
-# Vercel actúa como proxy HTTPS — sin esto Django ve HTTP internamente
-# y el check de Referer/Origin falla en algunos navegadores móviles
-if ON_VERCEL:
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesStandaloneBackend',
