@@ -123,6 +123,8 @@
           <li><a class="dropdown-item" href="{% url 'accounts:panel_selector' %}">
             <i class="bi bi-grid-1x2 me-2"></i>Cambiar módulo</a></li>
           {% endif %}
+          <li><a class="dropdown-item" href="{% url 'polla:manual_usuario' %}">
+            <i class="bi bi-book me-2"></i>Manual de usuario</a></li>
           <li><hr class="dropdown-divider my-1"></li>
           {% if afiliado_nav %}
           <li><a class="dropdown-item text-warning" href="{% url 'polla:baja_inscripcion' %}">

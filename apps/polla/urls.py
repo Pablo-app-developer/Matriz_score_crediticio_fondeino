@@ -19,6 +19,7 @@ urlpatterns = [
     path('pronosticos/guardar/', views.guardar_pronostico, name='guardar_pronostico'),
     path('campeon/', views.campeon, name='campeon'),
     path('mis-pronosticos/', views.mis_pronosticos, name='mis_pronosticos'),
+    path('manual/', views.manual_usuario, name='manual_usuario'),
     path('baja/', views.baja_inscripcion, name='baja_inscripcion'),
     path('reactivar/', views.reactivar_inscripcion, name='reactivar_inscripcion'),
     path('perfil/<int:afiliado_id>/', views.perfil_afiliado, name='perfil_afiliado'),

@@ -775,6 +775,11 @@ def mis_pronosticos(request):
     })
 
 
+@login_required
+def manual_usuario(request):
+    return render(request, 'polla/manual_usuario.html')
+
+
 @afiliado_activo
 def reactivar_inscripcion(request):
     afiliado = request.user.afiliado

@@ -1,0 +1,693 @@
+{% extends "polla/base_polla.html" %}
+{% load static %}
+
+{% block extra_css %}{{ block.super }}
+<style>
+body { background:#0d1b2a !important; }
+
+.mn-wrap { max-width:780px; margin:0 auto; padding:2rem 1rem 4rem; }
+
+/* ── Encabezado ── */
+.mn-hero {
+  text-align:center; padding:2.5rem 1rem 2rem;
+  border-bottom:1px solid #1e3050; margin-bottom:2rem;
+}
+.mn-hero-icon { font-size:3rem; display:block; margin-bottom:.75rem; }
+.mn-hero-title { color:#dde8f6; font-size:1.6rem; font-weight:900; margin-bottom:.4rem; }
+.mn-hero-sub { color:#4e6e8c; font-size:.9rem; }
+
+/* ── Índice ── */
+.mn-toc {
+  background:#111f2e; border:1px solid #1e3050; border-radius:12px;
+  padding:1.2rem 1.4rem; margin-bottom:2rem;
+}
+.mn-toc-title { color:#4e7090; font-size:.65rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin-bottom:.75rem; }
+.mn-toc-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.35rem; }
+.mn-toc-list a { color:#5a8ab0; font-size:.83rem; text-decoration:none; font-weight:600; }
+.mn-toc-list a:hover { color:#c0d8f0; }
+.mn-toc-list li::before { content:"→ "; color:#2a5070; }
+
+/* ── Secciones ── */
+.mn-section { margin-bottom:2.5rem; scroll-margin-top:80px; }
+.mn-section-title {
+  color:#dde8f6; font-size:1.1rem; font-weight:800;
+  display:flex; align-items:center; gap:.6rem;
+  border-bottom:2px solid #1e3050; padding-bottom:.6rem; margin-bottom:1.2rem;
+}
+.mn-section-title .mn-num {
+  background:#1e3050; color:#4e7090; font-size:.68rem; font-weight:900;
+  width:24px; height:24px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+
+/* ── Tarjetas de info ── */
+.mn-card {
+  background:#111f2e; border:1px solid #1e3050; border-radius:11px;
+  padding:1.1rem 1.2rem; margin-bottom:.9rem;
+}
+.mn-card-title { color:#c0d4e8; font-size:.85rem; font-weight:800; margin-bottom:.4rem; display:flex; align-items:center; gap:.4rem; }
+.mn-card-body { color:#5a7a9a; font-size:.82rem; line-height:1.7; }
+
+/* ── Pasos numerados ── */
+.mn-steps { display:flex; flex-direction:column; gap:.8rem; }
+.mn-step {
+  display:flex; gap:.9rem; align-items:flex-start;
+  background:#111f2e; border:1px solid #1e3050; border-radius:11px; padding:.9rem 1rem;
+}
+.mn-step-num {
+  background:#f0c040; color:#1a1200; font-size:.75rem; font-weight:900;
+  width:26px; height:26px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:.1rem;
+}
+.mn-step-content { flex:1; }
+.mn-step-title { color:#dde8f6; font-size:.88rem; font-weight:800; margin-bottom:.2rem; }
+.mn-step-desc { color:#5a7a9a; font-size:.8rem; line-height:1.65; }
+
+/* ── Tabla de puntos ── */
+.mn-table { width:100%; border-collapse:collapse; font-size:.8rem; margin:.8rem 0; }
+.mn-table th { background:#1a2e42; color:#8ab0d0; font-weight:800; text-transform:uppercase; font-size:.65rem; letter-spacing:.05em; padding:.55rem .8rem; text-align:left; }
+.mn-table td { padding:.5rem .8rem; border-bottom:1px solid #162030; color:#a0c0d8; vertical-align:middle; }
+.mn-table tr:last-child td { border-bottom:none; }
+.mn-table .pts { color:#f0c040; font-weight:900; font-size:.92rem; }
+
+/* ── Modalidades ── */
+.mn-mod {
+  border-radius:11px; padding:1rem 1.2rem; margin-bottom:.8rem;
+  display:flex; gap:1rem; align-items:flex-start;
+}
+.mn-mod-p1 { background:rgba(56,189,248,.1); border:1px solid rgba(56,189,248,.3); }
+.mn-mod-p2 { background:rgba(240,192,64,.1); border:1px solid rgba(240,192,64,.3); }
+.mn-mod-p3 { background:rgba(167,139,250,.1); border:1px solid rgba(167,139,250,.3); }
+.mn-mod-icon { font-size:1.8rem; flex-shrink:0; line-height:1; }
+.mn-mod-title { font-weight:800; font-size:.88rem; margin-bottom:.25rem; }
+.mn-mod-p1 .mn-mod-title { color:#56c8e8; }
+.mn-mod-p2 .mn-mod-title { color:#f0c040; }
+.mn-mod-p3 .mn-mod-title { color:#b89af0; }
+.mn-mod-desc { color:#5a7a9a; font-size:.8rem; line-height:1.65; }
+
+/* ── Alertas ── */
+.mn-alert {
+  border-radius:9px; padding:.8rem 1rem; margin-bottom:.9rem;
+  font-size:.82rem; line-height:1.6; display:flex; gap:.6rem; align-items:flex-start;
+}
+.mn-alert-info  { background:rgba(56,189,248,.1); border:1px solid rgba(56,189,248,.3); color:#78c8e8; }
+.mn-alert-warn  { background:rgba(240,192,64,.1); border:1px solid rgba(240,192,64,.3); color:#d4aa30; }
+.mn-alert-ok    { background:rgba(120,216,96,.1); border:1px solid rgba(120,216,96,.3); color:#78d860; }
+.mn-alert-danger{ background:rgba(224,80,80,.1); border:1px solid rgba(224,80,80,.3); color:#e08080; }
+
+/* ── FAQ ── */
+.mn-faq { border:1px solid #1e3050; border-radius:11px; overflow:hidden; margin-bottom:.6rem; }
+.mn-faq-q {
+  background:#111f2e; color:#c0d4e8; font-size:.85rem; font-weight:700;
+  padding:.85rem 1rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center;
+  user-select:none;
+}
+.mn-faq-q:hover { background:#162030; }
+.mn-faq-q .mn-faq-arrow { transition:transform .2s; color:#3e6080; }
+.mn-faq-q.open .mn-faq-arrow { transform:rotate(180deg); }
+.mn-faq-a { background:#0d1b2a; color:#5a7a9a; font-size:.81rem; line-height:1.7; padding:0 1rem; max-height:0; overflow:hidden; transition:max-height .25s ease, padding .25s ease; }
+.mn-faq-a.open { max-height:600px; padding:.85rem 1rem; }
+
+/* ── Badge de estado ── */
+.mn-badge { display:inline-block; font-size:.65rem; font-weight:800; padding:.15rem .5rem; border-radius:5px; }
+.mn-badge-open    { background:rgba(120,216,96,.15); color:#78d860; border:1px solid rgba(120,216,96,.3); }
+.mn-badge-lock    { background:rgba(240,192,64,.15); color:#f0c040; border:1px solid rgba(240,192,64,.3); }
+.mn-badge-miss    { background:rgba(224,80,80,.15); color:#e05050; border:1px solid rgba(224,80,80,.3); }
+.mn-badge-done    { background:rgba(80,110,140,.15); color:#6090b0; border:1px solid rgba(80,110,140,.3); }
+
+/* ── Ejemplo de partido ── */
+.mn-match-ex {
+  background:#111f2e; border:1px solid #1e3050; border-radius:10px;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.7rem 1rem; margin:.6rem 0; gap:.5rem; flex-wrap:wrap;
+}
+.mn-match-team { color:#c0d4e8; font-size:.82rem; font-weight:700; display:flex; align-items:center; gap:.4rem; }
+.mn-match-score { color:#f0c040; font-size:1.1rem; font-weight:900; letter-spacing:.05em; }
+.mn-match-input {
+  background:#162030; border:1px solid #2a4060; border-radius:6px;
+  color:#dde8f6; font-size:1rem; font-weight:800; width:44px; text-align:center; padding:.3rem 0;
+}
+
+@media(max-width:600px) {
+  .mn-wrap { padding:1.2rem .6rem 3rem; }
+  .mn-hero-title { font-size:1.25rem; }
+  .mn-match-ex { flex-direction:column; text-align:center; }
+}
+</style>
+{% endblock %}
+
+{% block polla_content %}
+<div class="mn-wrap">
+
+  <!-- ══ HÉROE ══════════════════════════════════════════════════ -->
+  <div class="mn-hero">
+    <span class="mn-hero-icon">📖</span>
+    <div class="mn-hero-title">Manual de Usuario — Polla Mundialista FONDEINO 2026</div>
+    <div class="mn-hero-sub">Guía completa para participar, pronosticar y ganar</div>
+  </div>
+
+  <!-- ══ ÍNDICE ═════════════════════════════════════════════════ -->
+  <div class="mn-toc">
+    <div class="mn-toc-title">Contenido</div>
+    <ul class="mn-toc-list">
+      <li><a href="#sec-que-es">1. ¿Qué es la Polla Mundialista?</a></li>
+      <li><a href="#sec-inicio">2. Cómo empezar — registro y activación</a></li>
+      <li><a href="#sec-modalidades">3. Las tres modalidades de juego</a></li>
+      <li><a href="#sec-pronosticos">4. Cómo hacer pronósticos paso a paso</a></li>
+      <li><a href="#sec-puntos">5. Sistema de puntuación</a></li>
+      <li><a href="#sec-campeon">6. Pronóstico del campeón</a></li>
+      <li><a href="#sec-ranking">7. El ranking y tu perfil</a></li>
+      <li><a href="#sec-premios">8. Premios</a></li>
+      <li><a href="#sec-cuenta">9. Gestión de tu cuenta</a></li>
+      <li><a href="#sec-faq">10. Preguntas frecuentes</a></li>
+    </ul>
+  </div>
+
+
+  <!-- ══ 1. QUÉ ES ══════════════════════════════════════════════ -->
+  <div class="mn-section" id="sec-que-es">
+    <div class="mn-section-title"><span class="mn-num">1</span> ¿Qué es la Polla Mundialista?</div>
+
+    <div class="mn-card">
+      <div class="mn-card-body">
+        La <strong style="color:#dde8f6;">Polla Mundialista FONDEINO 2026</strong> es una actividad recreativa exclusiva para los asociados activos del fondo. Durante el torneo, cada participante pronostica los resultados de los partidos y acumula puntos según sus aciertos. Al final compite por premios reales.
+      </div>
+    </div>
+
+    <div class="mn-alert mn-alert-info">
+      <i class="bi bi-info-circle-fill flex-shrink-0"></i>
+      <span>La inscripción tiene un costo de <strong>$5.000</strong>, descontados automáticamente por nómina cuando autorizas tu participación en la plataforma. No se requiere ningún pago adicional.</span>
+    </div>
+
+    <div class="mn-alert mn-alert-warn">
+      <i class="bi bi-shield-check flex-shrink-0"></i>
+      <span>Esta actividad <strong>no constituye juego de azar</strong> con apuesta de dinero. Es un beneficio recreativo interno de FONDEINO, regulado por su propio reglamento.</span>
+    </div>
+  </div>
+
+
+  <!-- ══ 2. CÓMO EMPEZAR ════════════════════════════════════════ -->
+  <div class="mn-section" id="sec-inicio">
+    <div class="mn-section-title"><span class="mn-num">2</span> Cómo empezar</div>
+
+    <div class="mn-steps">
+
+      <div class="mn-step">
+        <span class="mn-step-num">1</span>
+        <div class="mn-step-content">
+          <div class="mn-step-title">Registro — crea tu cuenta</div>
+          <div class="mn-step-desc">
+            Entra a <strong style="color:#c0d4e8;">fondeino.com/polla</strong> y haz clic en <strong style="color:#c0d4e8;">"Regístrate aquí"</strong>. Ingresa tu número de cédula y elige una contraseña. El sistema verifica que tu cédula esté en la lista de afiliados activos de FONDEINO. Si no aparece, contacta a la oficina del fondo antes de continuar.
+          </div>
+        </div>
+      </div>
+
+      <div class="mn-step">
+        <span class="mn-step-num">2</span>
+        <div class="mn-step-content">
+          <div class="mn-step-title">Autorización del descuento por nómina</div>
+          <div class="mn-step-desc">
+            Al ingresar por primera vez, la plataforma te pedirá <strong style="color:#c0d4e8;">autorizar el descuento de $5.000 por nómina</strong>. Lee el texto, marca la casilla de aceptación y haz clic en <strong style="color:#c0d4e8;">"Autorizar"</strong>. Este paso es obligatorio para acceder a la polla. Solo se realiza una vez.
+          </div>
+        </div>
+      </div>
+
+      <div class="mn-step">
+        <span class="mn-step-num">3</span>
+        <div class="mn-step-content">
+          <div class="mn-step-title">¡Listo para jugar!</div>
+          <div class="mn-step-desc">
+            Después de autorizar, serás redirigido automáticamente a la página de <strong style="color:#c0d4e8;">pronósticos</strong>. Tu inscripción queda activa y empiezas a acumular puntos desde el primer partido que pronostiques.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mn-alert mn-alert-info" style="margin-top:1rem;">
+      <i class="bi bi-phone flex-shrink-0"></i>
+      <span>La plataforma funciona perfectamente en celular y computador. No necesitas instalar ninguna app — se accede desde el navegador.</span>
+    </div>
+  </div>
+
+
+  <!-- ══ 3. MODALIDADES ═════════════════════════════════════════ -->
+  <div class="mn-section" id="sec-modalidades">
+    <div class="mn-section-title"><span class="mn-num">3</span> Las tres modalidades de juego</div>
+
+    <div class="mn-card" style="margin-bottom:1rem;">
+      <div class="mn-card-body">
+        La polla tiene <strong style="color:#dde8f6;">tres modalidades independientes</strong>, cada una con su propio premio. Puedes participar en las tres al mismo tiempo.
+      </div>
+    </div>
+
+    <div class="mn-mod mn-mod-p1">
+      <div class="mn-mod-icon">⚽</div>
+      <div>
+        <div class="mn-mod-title">Premio 1 · Puntos por partido</div>
+        <div class="mn-mod-desc">
+          Es la modalidad principal. Pronosticas el marcador de <strong>todos los partidos del Mundial</strong> — fase de grupos, octavos, cuartos, semis y final. Cada acierto suma puntos. El participante con más puntos al terminar el torneo gana el <strong>Premio 1</strong>. En esta sección encontrarás las pestañas: <em>Próximos, Grupos, 32avos, Octavos, Cuartos, Semis, 3er puesto y Final</em>.
+        </div>
+      </div>
+    </div>
+
+    <div class="mn-mod mn-mod-p2">
+      <div class="mn-mod-icon">🇨🇴</div>
+      <div>
+        <div class="mn-mod-title">Premio 2 · Partidos de Colombia</div>
+        <div class="mn-mod-desc">
+          Modalidad especial enfocada en los <strong>tres partidos de Colombia en la fase de grupos</strong>. Para cada partido de Colombia se premia por separado al participante que acumule más puntos en ese partido. Si hay empate, se realiza un sorteo digital. Accede desde la pestaña <em>"Colombia"</em> en la página de pronósticos.
+        </div>
+      </div>
+    </div>
+
+    <div class="mn-mod mn-mod-p3">
+      <div class="mn-mod-icon">🏆</div>
+      <div>
+        <div class="mn-mod-title">Premio 3 · Pronostica el campeón</div>
+        <div class="mn-mod-desc">
+          Antes de que arranque el primer partido, selecciona <strong>qué selección crees que será campeona del mundo</strong>. Si aciertas, entras a un sorteo junto con todos los demás que también acertaron. El ganador del sorteo se lleva el <strong>Premio 3</strong>. Solo tienes una oportunidad — el plazo cierra automáticamente cuando inicia el torneo. Accede desde la pestaña <em>"Campeón"</em>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ 4. CÓMO PRONOSTICAR ════════════════════════════════════ -->
+  <div class="mn-section" id="sec-pronosticos">
+    <div class="mn-section-title"><span class="mn-num">4</span> Cómo hacer pronósticos paso a paso</div>
+
+    <div class="mn-steps">
+
+      <div class="mn-step">
+        <span class="mn-step-num">1</span>
+        <div class="mn-step-content">
+          <div class="mn-step-title">Selecciona la fase o modalidad</div>
+          <div class="mn-step-desc">
+            En la parte superior de la página de pronósticos verás tres cuadros de colores — uno por cada modalidad. Dentro del cuadro azul (<em>Puntos por partido</em>) encontrarás pestañas como <em>Próximos, Grupos, Octavos</em>, etc. La pestaña <strong>"Próximos"</strong> siempre muestra los partidos de las próximas 72 horas, ideal para no perder ninguno.
+          </div>
+        </div>
+      </div>
+
+      <div class="mn-step">
+        <span class="mn-step-num">2</span>
+        <div class="mn-step-content">
+          <div class="mn-step-title">Encuentra el partido y escribe el marcador</div>
+          <div class="mn-step-desc">
+            Los partidos están agrupados por fecha. Haz clic en el encabezado de una fecha para expandirla o colapsarla. Cada tarjeta de partido muestra los dos equipos y dos campos numéricos. Escribe los goles que crees que marcará cada equipo. Puedes usar los botones <strong>+</strong> y <strong>−</strong> o escribir directamente el número.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Ejemplo visual de partido -->
+    <div style="margin:1rem 0;">
+      <div style="color:#3e6080;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">Ejemplo de tarjeta de partido</div>
+      <div class="mn-match-ex">
+        <div class="mn-match-team">🇨🇴 Colombia</div>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <input class="mn-match-input" type="text" value="2" readonly>
+          <span style="color:#4e6e8c;font-weight:700;">–</span>
+          <input class="mn-match-input" type="text" value="1" readonly>
+        </div>
+        <div class="mn-match-team">🇧🇷 Brasil</div>
+      </div>
+      <div style="color:#3e6080;font-size:.73rem;margin-top:.3rem;">← En este ejemplo pronosticas Colombia 2 – Brasil 1</div>
+    </div>
+
+    <div class="mn-steps" style="margin-top:.8rem;">
+
+      <div class="mn-step">
+        <span class="mn-step-num">3</span>
+        <div class="mn-step-content">
+          <div class="mn-step-title">Guarda el pronóstico</div>
+          <div class="mn-step-desc">
+            Haz clic en el botón <strong style="color:#78d860;">"Guardar"</strong> (o <strong>"Actualizar"</strong> si ya lo habías guardado antes). El botón mostrará <em>"Guardando…"</em> y luego <em>"✓ Guardado"</em> en verde cuando el proceso termine correctamente. También puedes presionar <strong>Enter</strong> en el segundo campo de goles para guardar rápidamente.
+          </div>
+        </div>
+      </div>
+
+      <div class="mn-step">
+        <span class="mn-step-num">4</span>
+        <div class="mn-step-content">
+          <div class="mn-step-title">Puedes cambiar tu pronóstico hasta el cierre</div>
+          <div class="mn-step-desc">
+            Mientras el partido no haya cerrado, puedes modificar tu pronóstico todas las veces que quieras. El reloj en cada tarjeta te indica cuánto tiempo falta para el cierre — por ejemplo: <em>"Cierra en 3h 20m"</em> o <em>"Cierra en 45m"</em> (en rojo cuando quedan menos de 2 horas). Los pronósticos se bloquean automáticamente <strong>5 minutos antes</strong> de la hora oficial del partido.
+          </div>
+        </div>
+      </div>
+
+      <div class="mn-step">
+        <span class="mn-step-num">5</span>
+        <div class="mn-step-content">
+          <div class="mn-step-title">Estados de una tarjeta de partido</div>
+          <div class="mn-step-desc" style="display:flex;flex-direction:column;gap:.4rem;margin-top:.3rem;">
+            <span><span class="mn-badge mn-badge-open">Pendiente</span> — El partido aún no cierra. Puedes ingresar o editar tu pronóstico.</span>
+            <span><span class="mn-badge mn-badge-lock">Cerrado</span> — El partido ya cerró o está en curso. Tu pronóstico está guardado (borde amarillo).</span>
+            <span><span class="mn-badge mn-badge-miss">Sin pronóstico</span> — El partido cerró y no registraste ningún pronóstico. No recibirás puntos (borde rojo).</span>
+            <span><span class="mn-badge mn-badge-done">Finalizado</span> — El partido terminó y se cargaron los goles reales. Puedes ver cuántos puntos ganaste.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mn-alert mn-alert-warn" style="margin-top:1rem;">
+      <i class="bi bi-clock-fill flex-shrink-0"></i>
+      <span><strong>Importante:</strong> No esperes al último momento. Si el partido cierra y no has guardado ningún pronóstico, ese partido queda con <strong>0 puntos</strong> y no hay forma de recuperarlo.</span>
+    </div>
+
+    <div class="mn-card" style="margin-top:.8rem;">
+      <div class="mn-card-title"><i class="bi bi-bar-chart-fill" style="color:#5ab0d0;"></i> Ver estadísticas de un partido</div>
+      <div class="mn-card-body">
+        En la parte inferior de cada tarjeta (partidos no iniciados) encontrarás el botón <strong style="color:#c0d4e8;">"Stats"</strong>. Al hacer clic se abre un panel con el historial de enfrentamientos entre los dos equipos (últimos 5 partidos) y la forma reciente de cada selección. Esta información puede ayudarte a decidir tu pronóstico.
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ 5. SISTEMA DE PUNTOS ════════════════════════════════════ -->
+  <div class="mn-section" id="sec-puntos">
+    <div class="mn-section-title"><span class="mn-num">5</span> Sistema de puntuación</div>
+
+    <div class="mn-card">
+      <div class="mn-card-body">
+        Los puntos se calculan automáticamente una vez que el administrador carga el marcador final de cada partido. Hay dos categorías de acierto: <strong style="color:#dde8f6;">resultado</strong> (quién ganó o si hubo empate) y <strong style="color:#dde8f6;">marcador exacto</strong> (los goles precisos de cada equipo).
+      </div>
+    </div>
+
+    <table class="mn-table">
+      <thead>
+        <tr>
+          <th>Acierto</th>
+          <th>Fase de grupos</th>
+          <th>Eliminatorias</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>✅ Acertaste el resultado (G / E / P)</td>
+          <td class="pts">1 pt</td>
+          <td class="pts">2 pts</td>
+        </tr>
+        <tr>
+          <td>🎯 Acertaste el marcador exacto</td>
+          <td class="pts">3 pts <span style="color:#4e6e8c;font-size:.72rem;">(1+2)</span></td>
+          <td class="pts">6 pts <span style="color:#4e6e8c;font-size:.72rem;">(2+4)</span></td>
+        </tr>
+        <tr>
+          <td>❌ No acertaste</td>
+          <td class="pts" style="color:#5a7a9a;">0 pts</td>
+          <td class="pts" style="color:#5a7a9a;">0 pts</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="mn-card">
+      <div class="mn-card-title">💡 Ejemplos prácticos</div>
+      <div class="mn-card-body" style="display:flex;flex-direction:column;gap:.5rem;">
+        <div><strong style="color:#c0d4e8;">Grupos — </strong>Resultado real: Colombia 2–1 Brasil</div>
+        <div style="padding-left:.8rem;">
+          <div>Tu pronóstico <strong style="color:#f0c040;">2–1</strong> → Marcador exacto → <strong style="color:#78d860;">3 pts</strong></div>
+          <div>Tu pronóstico <strong style="color:#f0c040;">3–0</strong> → Solo resultado (Colombia ganó) → <strong style="color:#78d860;">1 pt</strong></div>
+          <div>Tu pronóstico <strong style="color:#f0c040;">0–2</strong> → Error total → <strong style="color:#e05050;">0 pts</strong></div>
+        </div>
+        <div style="margin-top:.4rem;"><strong style="color:#c0d4e8;">Eliminatorias — </strong>Resultado real: Argentina 1–0 Francia</div>
+        <div style="padding-left:.8rem;">
+          <div>Tu pronóstico <strong style="color:#f0c040;">1–0</strong> → Marcador exacto → <strong style="color:#78d860;">6 pts</strong></div>
+          <div>Tu pronóstico <strong style="color:#f0c040;">2–1</strong> → Solo resultado (Argentina ganó) → <strong style="color:#78d860;">2 pts</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mn-alert mn-alert-info">
+      <i class="bi bi-info-circle-fill flex-shrink-0"></i>
+      <span>En eliminatorias, la puntuación se basa en el resultado a <strong>90 minutos reglamentarios</strong>. Los goles en tiempo extra o penales no afectan la puntuación de la polla.</span>
+    </div>
+  </div>
+
+
+  <!-- ══ 6. CAMPEÓN ═════════════════════════════════════════════ -->
+  <div class="mn-section" id="sec-campeon">
+    <div class="mn-section-title"><span class="mn-num">6</span> Pronóstico del campeón</div>
+
+    <div class="mn-card">
+      <div class="mn-card-body">
+        Antes de que inicie el primer partido del Mundial puedes elegir <strong style="color:#dde8f6;">qué selección crees que será la campeona</strong>. Esta predicción es independiente del ranking de puntos — no suma ni resta puntos al marcador general.
+      </div>
+    </div>
+
+    <div class="mn-steps">
+
+      <div class="mn-step">
+        <span class="mn-step-num">1</span>
+        <div class="mn-step-content">
+          <div class="mn-step-title">Cómo ingresar tu pronóstico</div>
+          <div class="mn-step-desc">
+            Ve a la sección <strong style="color:#c0d4e8;">Pronósticos → Premio 3 → Campeón</strong>. Verás un panel con todos los equipos organizados por grupo. Haz clic en la selección que creas que levantará la copa y luego presiona <strong style="color:#f0c040;">"Guardar selección"</strong>. Puedes cambiarlo cuantas veces quieras antes del cierre.
+          </div>
+        </div>
+      </div>
+
+      <div class="mn-step">
+        <span class="mn-step-num">2</span>
+        <div class="mn-step-content">
+          <div class="mn-step-title">Cierre automático</div>
+          <div class="mn-step-desc">
+            El plazo para registrar o cambiar tu pronóstico de campeón <strong>cierra automáticamente</strong> cuando comienza el primer partido del torneo. Pasado ese momento, tu elección queda fija y no puede modificarse.
+          </div>
+        </div>
+      </div>
+
+      <div class="mn-step">
+        <span class="mn-step-num">3</span>
+        <div class="mn-step-content">
+          <div class="mn-step-title">Si aciertas — el sorteo</div>
+          <div class="mn-step-desc">
+            Si tu selección gana el Mundial, entras automáticamente al sorteo del <strong style="color:#b89af0;">Premio 3</strong> junto con todos los demás participantes que también acertaron. El sorteo se realiza de forma digital y se graba para garantizar transparencia. El ganador se anuncia oficialmente por los canales de FONDEINO.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mn-alert mn-alert-warn">
+      <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+      <span>Si no ingresas un pronóstico de campeón antes del cierre, quedas <strong>fuera de esta modalidad</strong>. No hay penalización, pero no podrás ganar el Premio 3.</span>
+    </div>
+  </div>
+
+
+  <!-- ══ 7. RANKING ══════════════════════════════════════════════ -->
+  <div class="mn-section" id="sec-ranking">
+    <div class="mn-section-title"><span class="mn-num">7</span> El ranking y tu perfil</div>
+
+    <div class="mn-card">
+      <div class="mn-card-title"><i class="bi bi-trophy-fill" style="color:#f0c040;"></i> Ranking general</div>
+      <div class="mn-card-body">
+        El ranking (<strong style="color:#c0d4e8;">fondeino.com/polla/ranking</strong>) es público y se actualiza en tiempo real cada vez que el administrador carga un resultado. Muestra a todos los participantes ordenados de mayor a menor puntaje. En caso de empate en puntos, se desempata por: marcadores exactos → resultados acertados → posición → sorteo.
+      </div>
+    </div>
+
+    <div class="mn-card">
+      <div class="mn-card-title"><i class="bi bi-bar-chart-fill" style="color:#5ab0d0;"></i> Gráfica de puntos</div>
+      <div class="mn-card-body">
+        La pestaña <strong style="color:#c0d4e8;">"Gráfica"</strong> muestra el Top 30 del torneo en una barra horizontal. Es una forma visual de ver qué tan cerca estás de los primeros lugares.
+      </div>
+    </div>
+
+    <div class="mn-card">
+      <div class="mn-card-title"><i class="bi bi-person-circle" style="color:#8ab0d0;"></i> Tu perfil y el de otros</div>
+      <div class="mn-card-body">
+        Haz clic en el nombre de cualquier participante en el ranking para ver su perfil. Allí aparecen todos sus pronósticos de partidos ya finalizados, con el resultado real y los puntos obtenidos en cada uno. Es útil para analizar las estrategias de los que van primero.
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ 8. PREMIOS ═════════════════════════════════════════════ -->
+  <div class="mn-section" id="sec-premios">
+    <div class="mn-section-title"><span class="mn-num">8</span> Premios</div>
+
+    <div class="mn-mod mn-mod-p1">
+      <div class="mn-mod-icon">🥇</div>
+      <div>
+        <div class="mn-mod-title">Premio 1 — Campeón general de puntos</div>
+        <div class="mn-mod-desc">
+          El participante con la mayor cantidad de puntos al finalizar el torneo. Si hay empate, se aplica el criterio de desempate descrito en el reglamento. Consulta el valor actual del premio en la sección <a href="{% url 'polla:reglamento' %}" style="color:#56c8e8;">Reglamento</a>.
+        </div>
+      </div>
+    </div>
+
+    <div class="mn-mod mn-mod-p2">
+      <div class="mn-mod-icon">🇨🇴</div>
+      <div>
+        <div class="mn-mod-title">Premio 2 — Partidos de Colombia (x3)</div>
+        <div class="mn-mod-desc">
+          Se otorgan <strong>tres premios</strong>, uno por cada partido de Colombia en grupos. En cada partido gana quien acumule más puntos. Si hay empate, sorteo digital. Los tres premios pueden ser ganados por la misma persona o por personas distintas.
+        </div>
+      </div>
+    </div>
+
+    <div class="mn-mod mn-mod-p3">
+      <div class="mn-mod-icon">🏆</div>
+      <div>
+        <div class="mn-mod-title">Premio 3 — Acierto del campeón</div>
+        <div class="mn-mod-desc">
+          Entre todos los participantes que adivinaron correctamente al campeón del mundo, se realiza un sorteo digital grabado. El ganador del sorteo se lleva el Premio 3.
+        </div>
+      </div>
+    </div>
+
+    <div class="mn-alert mn-alert-ok">
+      <i class="bi bi-info-circle-fill flex-shrink-0"></i>
+      <span>Los valores exactos de cada premio están publicados en la sección <a href="{% url 'polla:reglamento' %}" style="color:#78d860;font-weight:700;">Reglamento</a> de la plataforma.</span>
+    </div>
+  </div>
+
+
+  <!-- ══ 9. GESTIÓN DE CUENTA ════════════════════════════════════ -->
+  <div class="mn-section" id="sec-cuenta">
+    <div class="mn-section-title"><span class="mn-num">9</span> Gestión de tu cuenta</div>
+
+    <div class="mn-card">
+      <div class="mn-card-title"><i class="bi bi-key-fill" style="color:#8ab0d0;"></i> Cambiar contraseña</div>
+      <div class="mn-card-body">
+        En el menú de tu nombre (esquina superior derecha) encontrarás la opción <strong style="color:#c0d4e8;">"Cambiar contraseña"</strong>. Ingresa tu contraseña actual y la nueva dos veces. El cambio es inmediato.
+      </div>
+    </div>
+
+    <div class="mn-card">
+      <div class="mn-card-title"><i class="bi bi-person-dash-fill" style="color:#e0a030;"></i> Darse de baja</div>
+      <div class="mn-card-body">
+        Si deseas retirarte de la polla, ve al menú de tu nombre → <strong style="color:#e0a030;">"Darme de baja"</strong>. Se mostrará una pantalla de confirmación con los efectos de la decisión. Al confirmar, tu inscripción queda <strong>inactiva</strong>: dejas de aparecer en el ranking y no puedes hacer nuevos pronósticos. Tus pronósticos ya guardados <strong>no se eliminan</strong>.
+      </div>
+    </div>
+
+    <div class="mn-card">
+      <div class="mn-card-title"><i class="bi bi-person-check-fill" style="color:#78d860;"></i> Reactivar tu inscripción</div>
+      <div class="mn-card-body">
+        Si te diste de baja y quieres volver a participar, inicia sesión normalmente. La plataforma detectará que tu inscripción está inactiva y te mostrará automáticamente la pantalla de reactivación. Con un solo clic en <strong style="color:#78d860;">"Reactivar mi inscripción"</strong> vuelves a estar activo, manteniendo todos tus pronósticos anteriores.
+      </div>
+    </div>
+
+    <div class="mn-alert mn-alert-info">
+      <i class="bi bi-question-circle-fill flex-shrink-0"></i>
+      <span>Si olvidaste tu contraseña o tienes problemas para acceder, contacta al administrador de FONDEINO. No hay opción de recuperación automática por correo electrónico.</span>
+    </div>
+  </div>
+
+
+  <!-- ══ 10. FAQ ══════════════════════════════════════════════════ -->
+  <div class="mn-section" id="sec-faq">
+    <div class="mn-section-title"><span class="mn-num">10</span> Preguntas frecuentes</div>
+
+    <div class="mn-faq">
+      <div class="mn-faq-q" onclick="toggleFaq(this)">
+        ¿Qué pasa si no pronostico un partido antes de que cierre?
+        <i class="bi bi-chevron-down mn-faq-arrow"></i>
+      </div>
+      <div class="mn-faq-a">
+        Ese partido queda con <strong>0 puntos</strong> para ti. La tarjeta se marcará en rojo con la etiqueta "Sin pronóstico". No hay penalización adicional ni forma de recuperar esos puntos una vez que el partido cierra.
+      </div>
+    </div>
+
+    <div class="mn-faq">
+      <div class="mn-faq-q" onclick="toggleFaq(this)">
+        ¿Cuándo se actualizan los puntos en el ranking?
+        <i class="bi bi-chevron-down mn-faq-arrow"></i>
+      </div>
+      <div class="mn-faq-a">
+        Los puntos se actualizan cuando el administrador carga el marcador final de cada partido. Esto ocurre manualmente después de cada partido, normalmente pocas horas después de finalizado. El ranking se recalcula automáticamente.
+      </div>
+    </div>
+
+    <div class="mn-faq">
+      <div class="mn-faq-q" onclick="toggleFaq(this)">
+        ¿Puedo pronosticar desde el celular?
+        <i class="bi bi-chevron-down mn-faq-arrow"></i>
+      </div>
+      <div class="mn-faq-a">
+        Sí. La plataforma detecta automáticamente si entras desde un celular y muestra una versión optimizada para pantallas pequeñas. No necesitas instalar ninguna aplicación — funciona directamente desde el navegador (Chrome, Safari, etc.).
+      </div>
+    </div>
+
+    <div class="mn-faq">
+      <div class="mn-faq-q" onclick="toggleFaq(this)">
+        ¿Puedo cambiar mi pronóstico después de guardarlo?
+        <i class="bi bi-chevron-down mn-faq-arrow"></i>
+      </div>
+      <div class="mn-faq-a">
+        Sí, puedes modificarlo cuantas veces quieras mientras el partido no haya cerrado. El botón mostrará "Actualizar" en vez de "Guardar" cuando ya existe un pronóstico previo. Una vez que el partido cierra (5 minutos antes del inicio), ya no se puede cambiar.
+      </div>
+    </div>
+
+    <div class="mn-faq">
+      <div class="mn-faq-q" onclick="toggleFaq(this)">
+        ¿Qué significa el reloj que aparece en cada partido?
+        <i class="bi bi-chevron-down mn-faq-arrow"></i>
+      </div>
+      <div class="mn-faq-a">
+        Es un contador regresivo que indica cuánto tiempo falta para que ese partido cierre los pronósticos. Por ejemplo: <em>"Cierra en 2d"</em> significa 2 días, <em>"Cierra en 3h 20m"</em> significa 3 horas y 20 minutos. Cuando queda menos de 2 horas el contador se pone en rojo como aviso de urgencia.
+      </div>
+    </div>
+
+    <div class="mn-faq">
+      <div class="mn-faq-q" onclick="toggleFaq(this)">
+        ¿Los partidos de tiempo extra o penales cuentan diferente?
+        <i class="bi bi-chevron-down mn-faq-arrow"></i>
+      </div>
+      <div class="mn-faq-a">
+        No. La puntuación siempre se basa en el resultado a <strong>90 minutos reglamentarios</strong>. Si un partido de eliminatorias termina 1–1 en el tiempo regular y luego se define en penales, la polla lo toma como empate (1–1). Los goles en tiempo extra o tiros penales no se cuentan.
+      </div>
+    </div>
+
+    <div class="mn-faq">
+      <div class="mn-faq-q" onclick="toggleFaq(this)">
+        ¿Por qué no veo los votos del campeón en el ranking?
+        <i class="bi bi-chevron-down mn-faq-arrow"></i>
+      </div>
+      <div class="mn-faq-a">
+        Los pronósticos de campeón están ocultos hasta que cierren las inscripciones para esa modalidad. Esto evita que los participantes copien las elecciones de otros antes del cierre. Una vez cerrado el plazo, los votos se revelarán en la sección Ranking → Campeón.
+      </div>
+    </div>
+
+    <div class="mn-faq">
+      <div class="mn-faq-q" onclick="toggleFaq(this)">
+        ¿Qué pasa con mis pronósticos si me doy de baja?
+        <i class="bi bi-chevron-down mn-faq-arrow"></i>
+      </div>
+      <div class="mn-faq-a">
+        Tus pronósticos <strong>no se eliminan</strong>. Quedan guardados en el sistema. Sin embargo, mientras estés de baja tu inscripción está inactiva, por lo que no apareces en el ranking y no puedes agregar nuevos pronósticos. Si te reactivas, todo vuelve a la normalidad.
+      </div>
+    </div>
+
+    <div class="mn-faq">
+      <div class="mn-faq-q" onclick="toggleFaq(this)">
+        ¿Quién puede participar?
+        <i class="bi bi-chevron-down mn-faq-arrow"></i>
+      </div>
+      <div class="mn-faq-a">
+        Solo los <strong>asociados activos de FONDEINO</strong> cuya cédula esté en la lista oficial. Si tu cédula no aparece al registrarte, debes contactar a la oficina del fondo para verificar tu estado de afiliación antes de intentar de nuevo.
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ── Pie de página ── -->
+  <div style="text-align:center;color:#2a4060;font-size:.75rem;padding-top:1.5rem;border-top:1px solid #162030;">
+    Polla Mundialista FONDEINO 2026 · Actividad interna exclusiva para asociados<br>
+    <a href="{% url 'polla:reglamento' %}" style="color:#3a6080;">Ver reglamento completo</a>
+  </div>
+
+</div>
+
+<script>
+function toggleFaq(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+</script>
+{% endblock %}
