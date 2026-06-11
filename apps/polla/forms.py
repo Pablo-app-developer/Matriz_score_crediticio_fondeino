@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone as _tz
 from .models import Afiliado, Partido, Pronostico, PronosticoCampeon, Equipo
 
 
@@ -210,9 +211,8 @@ class ConfiguracionPollaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.fecha_cierre_pronostico_campeon:
-            self.initial['fecha_cierre_pronostico_campeon'] = (
-                self.instance.fecha_cierre_pronostico_campeon.strftime('%Y-%m-%dT%H:%M')
-            )
+            local_dt = _tz.localtime(self.instance.fecha_cierre_pronostico_campeon)
+            self.initial['fecha_cierre_pronostico_campeon'] = local_dt.strftime('%Y-%m-%dT%H:%M')
 
 
 class PartidoEditarForm(forms.ModelForm):

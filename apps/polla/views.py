@@ -4,7 +4,7 @@ import json
 import random
 import re
 from collections import defaultdict
-from datetime import timedelta, datetime, timezone as _utc
+from datetime import timedelta
 
 import pandas as pd
 from django.contrib import messages
@@ -723,9 +723,7 @@ def campeon(request):
     except PronosticoCampeon.DoesNotExist:
         pronostico_campeon = None
 
-    # 2:00 PM Colombia (UTC-5) = 19:00 UTC del 11 jun 2026
-    _CIERRE_CAMPEON = datetime(2026, 6, 11, 19, 0, 0, tzinfo=_utc)
-    cerrado = timezone.now() >= _CIERRE_CAMPEON
+    cerrado = config.campeon_cerrado
 
     if request.method == 'POST':
         if cerrado:
