@@ -322,6 +322,7 @@ body { background: #0d1b2a !important; }
     </div>
   </div>
 </div>
+{% endblock %}
 
 {% block polla_scripts %}
 <script>
@@ -513,10 +514,8 @@ function _renderStats(d) {
       html += `<div class="d-flex gap-1 align-items-center">
         <span style="color:#3e5e7c;font-size:.68rem;margin-right:.2rem;">Visit.:</span>${d.forma_visitante.map(bf).join('')}</div>`;
   }
-  html += `<div class="text-end mt-2" style="font-size:.57rem;color:#243855;">api-football.com · caché 6h</div>`;
+  html += `<div class="text-end mt-2" style="font-size:.57rem;color:#243855;">football-data.org · caché 6h</div>`;
   return html || `<p style="color:#3e5e7c;" class="text-center small py-2">Sin datos disponibles.</p>`;
 }
 </script>
-{% endblock %}
-
 {% endblock %}
