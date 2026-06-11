@@ -1,145 +1,95 @@
 """
-Servicio de datos previos al partido usando football-data.org (API gratuita).
+Servicio de estadísticas previas al partido.
 
-Usa el endpoint /competitions/WC/matches (disponible en plan gratuito).
-- Forma: partidos del WC 2026 jugados por cada equipo
-- H2H: partidos WC donde se enfrentaron los dos equipos (2026, 2022, 2018)
+Usa la propia BD de la Polla (modelo Partido con resultados cargados).
+No requiere ninguna API externa ni clave de configuración.
 
-Requiere: settings.FOOTBALL_DATA_KEY y equipo.api_football_id en ambos equipos.
+- Forma: últimos partidos finalizados de cada equipo en este torneo
+- H2H: partidos finalizados donde se enfrentaron ambos equipos
 """
-import requests
-from django.conf import settings
-from django.utils import timezone
-
-BASE_URL = "https://api.football-data.org/v4"
-TTL_SEGUNDOS = 6 * 3600  # 6 horas de caché
-
-_last_error = ''
-
-
-def _api_key():
-    return getattr(settings, 'FOOTBALL_DATA_KEY', '') or ''
-
-
-def _get(endpoint, params=None):
-    global _last_error
-    key = _api_key()
-    if not key:
-        _last_error = 'FOOTBALL_DATA_KEY no configurada'
-        return None
-    try:
-        r = requests.get(
-            f"{BASE_URL}/{endpoint}",
-            headers={"X-Auth-Token": key},
-            params=params or {},
-            timeout=10,
-        )
-        r.raise_for_status()
-        _last_error = ''
-        return r.json()
-    except requests.HTTPError as e:
-        _last_error = f'HTTP {e.response.status_code}: {e.response.text[:300]}'
-        return None
-    except Exception as e:
-        _last_error = str(e)
-        return None
-
-
-def _wc_matches(season):
-    """Devuelve todos los partidos finalizados de un Mundial."""
-    resp = _get('competitions/WC/matches', {'season': season, 'status': 'FINISHED'})
-    return (resp or {}).get('matches', [])
+from django.db.models import Q
 
 
 def get_datos_partido(partido):
     """
-    Devuelve dict con datos previos del partido, usando caché JSONField.
-    Retorna None si la API no está configurada o los equipos no tienen api_football_id.
+    Devuelve dict con forma e H2H calculados desde la BD interna.
+    Retorna None si no hay ningún partido finalizado relevante aún.
     """
-    if not _api_key():
-        return None
+    from .models import Partido  # importación local para evitar circular
 
-    id_local = partido.equipo_local.api_football_id
-    id_vis = partido.equipo_visitante.api_football_id
-    if not id_local or not id_vis:
-        return None
+    local = partido.equipo_local
+    vis   = partido.equipo_visitante
 
-    # Verificar caché
-    if partido.datos_previos and partido.datos_previos_ts:
-        age = (timezone.now() - partido.datos_previos_ts).total_seconds()
-        if age < TTL_SEGUNDOS:
-            return partido.datos_previos
+    qs_finalizados = Partido.objects.filter(
+        goles_local__isnull=False,
+        goles_visitante__isnull=False,
+        finalizado=True,
+    ).exclude(pk=partido.pk).select_related('equipo_local', 'equipo_visitante')
 
     datos = {}
 
-    # ── Forma actual: partidos WC 2026 jugados por cada equipo ──
-    wc26 = _wc_matches(2026)
-    if wc26:
-        local_matches = [m for m in wc26
-                         if m['homeTeam']['id'] == id_local or m['awayTeam']['id'] == id_local]
-        vis_matches   = [m for m in wc26
-                         if m['homeTeam']['id'] == id_vis or m['awayTeam']['id'] == id_vis]
-        if local_matches:
-            datos['forma_local'] = _parse_forma(local_matches, id_local)
-        if vis_matches:
-            datos['forma_visitante'] = _parse_forma(vis_matches, id_vis)
+    # ── Forma local: últimos 5 partidos jugados por el equipo local ──
+    matches_local = list(
+        qs_finalizados.filter(
+            Q(equipo_local=local) | Q(equipo_visitante=local)
+        ).order_by('-fecha_hora')[:5]
+    )
+    if matches_local:
+        datos['forma_local'] = _calcular_forma(matches_local, local)
 
-    # ── H2H: buscar en WC 2026, 2022, 2018 hasta reunir 5 partidos ──
-    h2h_total = {'victorias_local': 0, 'empates': 0, 'victorias_visitante': 0,
-                 'total': 0, 'ultimos': []}
+    # ── Forma visitante: últimos 5 partidos jugados por el equipo visitante ──
+    matches_vis = list(
+        qs_finalizados.filter(
+            Q(equipo_local=vis) | Q(equipo_visitante=vis)
+        ).order_by('-fecha_hora')[:5]
+    )
+    if matches_vis:
+        datos['forma_visitante'] = _calcular_forma(matches_vis, vis)
 
-    for season in [2026, 2022, 2018]:
-        if h2h_total['total'] >= 5:
-            break
-        matches = wc26 if season == 2026 else _wc_matches(season)
-        confrontaciones = [
-            m for m in matches
-            if m['homeTeam']['id'] in (id_local, id_vis)
-            and m['awayTeam']['id'] in (id_local, id_vis)
-            and m['homeTeam']['id'] != m['awayTeam']['id']
-        ]
-        if confrontaciones:
-            parsed = _parse_h2h(confrontaciones, id_local, id_vis)
-            h2h_total['victorias_local']     += parsed['victorias_local']
-            h2h_total['empates']             += parsed['empates']
-            h2h_total['victorias_visitante'] += parsed['victorias_visitante']
-            h2h_total['total']               += parsed['total']
-            h2h_total['ultimos']             += parsed['ultimos']
-
-    if h2h_total['total'] > 0:
-        h2h_total['ultimos'] = h2h_total['ultimos'][:5]
-        datos['h2h'] = h2h_total
-
-    if datos:
-        partido.datos_previos = datos
-        partido.datos_previos_ts = timezone.now()
-        partido.save(update_fields=['datos_previos', 'datos_previos_ts'])
+    # ── H2H: partidos entre estos dos equipos ──
+    h2h_matches = list(
+        qs_finalizados.filter(
+            Q(equipo_local=local, equipo_visitante=vis) |
+            Q(equipo_local=vis,   equipo_visitante=local)
+        ).order_by('-fecha_hora')[:5]
+    )
+    if h2h_matches:
+        datos['h2h'] = _calcular_h2h(h2h_matches, local, vis)
 
     return datos or None
 
 
-def _parse_h2h(matches, id_local, id_vis):
+def _calcular_forma(matches, equipo):
+    forma = []
+    for m in matches:
+        if m.equipo_local == equipo:
+            gl, gv = m.goles_local, m.goles_visitante
+        else:
+            gl, gv = m.goles_visitante, m.goles_local
+        if gl > gv:
+            forma.append('W')
+        elif gl < gv:
+            forma.append('L')
+        else:
+            forma.append('D')
+    return forma
+
+
+def _calcular_h2h(matches, local, vis):
     victorias_local = 0
     empates = 0
     victorias_vis = 0
     ultimos = []
 
     for m in matches:
-        home_id = m['homeTeam']['id']
-        score = m.get('score', {}).get('fullTime', {})
-        hg = score.get('home')
-        ag = score.get('away')
-        if hg is None or ag is None:
-            continue
-
-        if home_id == id_local:
-            gl, gv = hg, ag
-            nombre_l = m['homeTeam']['name']
-            nombre_v = m['awayTeam']['name']
+        if m.equipo_local == local:
+            gl, gv = m.goles_local, m.goles_visitante
+            nombre_l = local.nombre
+            nombre_v = vis.nombre
         else:
-            gl, gv = ag, hg
-            nombre_l = m['awayTeam']['name']
-            nombre_v = m['homeTeam']['name']
+            gl, gv = m.goles_visitante, m.goles_local
+            nombre_l = vis.nombre
+            nombre_v = local.nombre
 
         if gl > gv:
             victorias_local += 1
@@ -149,10 +99,10 @@ def _parse_h2h(matches, id_local, id_vis):
             empates += 1
 
         ultimos.append({
-            'fecha': m['utcDate'][:10],
+            'fecha': m.fecha_hora.strftime('%Y-%m-%d'),
             'local': nombre_l,
             'visitante': nombre_v,
-            'marcador': f'{hg}-{ag}',
+            'marcador': f'{m.goles_local}-{m.goles_visitante}',
         })
 
     return {
@@ -160,28 +110,5 @@ def _parse_h2h(matches, id_local, id_vis):
         'empates': empates,
         'victorias_visitante': victorias_vis,
         'total': victorias_local + empates + victorias_vis,
-        'ultimos': ultimos[:5],
+        'ultimos': ultimos,
     }
-
-
-def _parse_forma(matches, team_id):
-    forma = []
-    for m in matches:
-        home_id = m['homeTeam']['id']
-        score = m.get('score', {}).get('fullTime', {})
-        hg = score.get('home')
-        ag = score.get('away')
-        if hg is None or ag is None:
-            continue
-
-        gl = hg if home_id == team_id else ag
-        gv = ag if home_id == team_id else hg
-
-        if gl > gv:
-            forma.append('W')
-        elif gl < gv:
-            forma.append('L')
-        else:
-            forma.append('D')
-
-    return forma[-5:]

@@ -662,15 +662,11 @@ def pronosticos(request):
 
 @login_required
 def datos_partido_api(request, partido_id):
-    from .api_service import get_datos_partido, _last_error, _api_key
+    from .api_service import get_datos_partido
     partido = get_object_or_404(Partido, pk=partido_id)
     datos = get_datos_partido(partido)
     if datos is None:
-        err = _last_error or 'Sin datos'
-        return JsonResponse({'ok': False, 'error': err,
-                             'key_ok': bool(_api_key()),
-                             'id_local': partido.equipo_local.api_football_id,
-                             'id_vis': partido.equipo_visitante.api_football_id})
+        return JsonResponse({'ok': False, 'error': 'Sin partidos finalizados aún'})
     return JsonResponse({'ok': True, 'datos': datos})
 
 

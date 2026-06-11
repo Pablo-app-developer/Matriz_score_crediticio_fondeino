@@ -449,8 +449,7 @@ if (_modalEl) {
         .then(resp => {
           document.getElementById('modalStatsCuerpo').innerHTML =
             resp.ok ? _renderStats(resp.datos)
-                    : `<p style="color:#3e5e7c;" class="text-center py-2 small">Datos no disponibles aún.</p>
-                       <pre style="font-size:.6rem;color:#4a6a8a;white-space:pre-wrap;">${JSON.stringify(resp,null,2)}</pre>`;
+                    : '<p style="color:#3e5e7c;" class="text-center py-2 small">Sin partidos finalizados aún.<br><span style="font-size:.67rem;">Las estadísticas aparecerán una vez se carguen resultados.</span></p>';
         })
         .catch(() => {
           document.getElementById('modalStatsCuerpo').innerHTML =
@@ -515,7 +514,7 @@ function _renderStats(d) {
       html += `<div class="d-flex gap-1 align-items-center">
         <span style="color:#3e5e7c;font-size:.68rem;margin-right:.2rem;">Visit.:</span>${d.forma_visitante.map(bf).join('')}</div>`;
   }
-  html += `<div class="text-end mt-2" style="font-size:.57rem;color:#243855;">football-data.org · caché 6h</div>`;
+  html += `<div class="text-end mt-2" style="font-size:.57rem;color:#243855;">Datos del torneo · FONDEINO 2026</div>`;
   return html || `<p style="color:#3e5e7c;" class="text-center small py-2">Sin datos disponibles.</p>`;
 }
 </script>
