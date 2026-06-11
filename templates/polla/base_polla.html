@@ -155,4 +155,13 @@
 {{ block.super }}
 <script src="{% static 'polla/js/polla.js' %}"></script>
 {% block polla_scripts %}{% endblock %}
+<script>
+/* Recarga la página si el navegador la sirve desde BFCache (caché
+   de navegación atrás/adelante en Android/iOS). Sin esto, el token
+   CSRF guardado en el HTML queda desincronizado con la cookie actual
+   y produce error 403. */
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted) { window.location.reload(); }
+});
+</script>
 {% endblock %}
