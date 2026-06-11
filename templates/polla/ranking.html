@@ -173,7 +173,7 @@ body { background: #0d1b2a !important; }
   <img src="{{ item.equipo.bandera_url }}" class="rk-camp-flag" alt="{{ item.equipo.nombre }}"
        onerror="this.style.display='none'">
   <div style="min-width:0;flex:1;">
-    <div class="rk-camp-name">{{ item.equipo.bandera_emoji }} {{ item.equipo.nombre }}</div>
+    <div class="rk-camp-name">{{ item.equipo.nombre }}</div>
     <div class="rk-camp-people">
       {% for pc in item.personas %}{{ pc.inscripcion.afiliado.nombre_completo }}{% if not forloop.last %} · {% endif %}{% endfor %}
     </div>

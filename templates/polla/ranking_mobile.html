@@ -98,7 +98,7 @@ body { background:#0f172a !important; }
     <div class="rc-equipo">
       <div class="rc-eq-hd">
         <img src="{{ item.equipo.bandera_url }}" class="rc-eq-flag" alt="" onerror="this.style.display='none'">
-        <span class="rc-eq-name">{{ item.equipo.bandera_emoji }} {{ item.equipo.nombre }}</span>
+        <span class="rc-eq-name">{{ item.equipo.nombre }}</span>
         <span class="rc-eq-votos">{{ item.votos }} voto{{ item.votos|pluralize }}</span>
       </div>
       {% for pc in item.personas %}
