@@ -1305,7 +1305,7 @@ def admin_sync_api_football(request):
     """Ejecuta sync_api_football desde el navegador (Vercel no tiene CLI)."""
     from django.conf import settings as _settings
 
-    tiene_key = bool(getattr(_settings, 'API_FOOTBALL_KEY', ''))
+    tiene_key = bool(getattr(_settings, 'FOOTBALL_DATA_KEY', ''))
     total_equipos = Equipo.objects.count()
     con_id = Equipo.objects.filter(api_football_id__isnull=False).count()
 

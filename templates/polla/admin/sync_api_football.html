@@ -5,7 +5,7 @@
 
   <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
-      <h5 class="mb-0"><i class="bi bi-cloud-arrow-down text-primary me-2"></i>Sincronizar IDs — api-football.com</h5>
+      <h5 class="mb-0"><i class="bi bi-cloud-arrow-down text-primary me-2"></i>Sincronizar IDs — football-data.org</h5>
       <small class="text-muted">
         Descarga los IDs de equipos del Mundial 2026 para activar el botón
         <strong>Stats</strong> (H2H + forma reciente) en la pantalla de pronósticos.
@@ -35,7 +35,7 @@
         <div class="fs-4 fw-bold {% if tiene_key %}text-success{% else %}text-danger{% endif %}">
           {% if tiene_key %}✓ OK{% else %}✗ Sin key{% endif %}
         </div>
-        <div class="small text-muted">API_FOOTBALL_KEY</div>
+        <div class="small text-muted">FOOTBALL_DATA_KEY</div>
       </div>
     </div>
   </div>
@@ -43,12 +43,12 @@
   {# ── Advertencia si no hay key ─────────────────────── #}
   {% if not tiene_key %}
   <div class="alert alert-danger mb-4">
-    <h6 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>API_FOOTBALL_KEY no configurada</h6>
-    <p class="mb-2">Para usar la integración con api-football.com necesitas:</p>
+    <h6 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>FOOTBALL_DATA_KEY no configurada</h6>
+    <p class="mb-2">Para usar la integración con football-data.org necesitas:</p>
     <ol class="mb-0 small">
-      <li>Registrarte en <strong>RapidAPI</strong> y suscribirte a <em>API-Football</em> (plan gratuito disponible).</li>
-      <li>Copiar tu clave desde la pestaña <strong>Security</strong> del endpoint.</li>
-      <li>Agregar en Vercel: <code>Settings → Environment Variables → API_FOOTBALL_KEY = tu_clave</code></li>
+      <li>Registrarte gratis en <strong>football-data.org</strong> (plan gratuito cubre el Mundial).</li>
+      <li>Copiar tu clave API desde el panel de tu cuenta.</li>
+      <li>Agregar en Vercel: <code>Settings → Environment Variables → FOOTBALL_DATA_KEY = tu_clave</code></li>
       <li>Volver a desplegar (<em>Redeploy</em>) en Vercel para que tome la variable.</li>
       <li>Regresar aquí y ejecutar la sincronización.</li>
     </ol>
@@ -90,8 +90,8 @@
       </div>
       <div class="card-body small">
         <ul class="mb-0">
-          <li>Consulta <code>api-football.com</code> buscando los equipos del Mundial 2026 (<code>league=1, season=2026</code>).</li>
-          <li>Empareja por código FIFA (3 letras) → nombre → búsqueda parcial.</li>
+          <li>Consulta <code>football-data.org</code> buscando los equipos del Mundial 2026 (<code>/competitions/WC/teams?season=2026</code>).</li>
+          <li>Empareja por código TLA (3 letras) → nombre corto → búsqueda parcial.</li>
           <li>Guarda el <code>api_football_id</code> en cada equipo que encuentre.</li>
           <li>Una vez sincronizados, aparecerá el botón <strong>Stats</strong> en los partidos de la Polla para ver H2H y forma reciente.</li>
           <li>La API tiene caché de 6 horas por partido para no agotar el plan gratuito.</li>

@@ -1,42 +1,33 @@
 """
-Servicio de datos previos al partido usando api-football.com (RapidAPI).
+Servicio de datos previos al partido usando football-data.org (API gratuita).
 
-Flujo:
-  1. Se llama get_datos_partido(partido)
-  2. Si hay caché válido (< TTL), se devuelve directo
-  3. Si no, se consultan 3 endpoints (H2H + forma local + forma visitante)
-  4. El resultado se serializa en partido.datos_previos (JSONField)
-
-Requiere: settings.API_FOOTBALL_KEY y equipo.api_football_id en ambos equipos.
+Requiere: settings.FOOTBALL_DATA_KEY y equipo.api_football_id en ambos equipos.
 """
 import requests
 from django.conf import settings
 from django.utils import timezone
 
-BASE_URL = "https://api-football-v1.p.rapidapi.com/v3"
+BASE_URL = "https://api.football-data.org/v4"
 TTL_SEGUNDOS = 6 * 3600  # 6 horas de caché
 
 
 def _api_key():
-    return getattr(settings, 'API_FOOTBALL_KEY', '') or ''
+    return getattr(settings, 'FOOTBALL_DATA_KEY', '') or ''
 
 
-def _get(endpoint, params):
+def _get(endpoint, params=None):
     key = _api_key()
     if not key:
         return None
     try:
         r = requests.get(
             f"{BASE_URL}/{endpoint}",
-            headers={
-                "X-RapidAPI-Key": key,
-                "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com",
-            },
-            params=params,
+            headers={"X-Auth-Token": key},
+            params=params or {},
             timeout=10,
         )
         r.raise_for_status()
-        return r.json().get('response', [])
+        return r.json()
     except Exception:
         return None
 
@@ -62,24 +53,26 @@ def get_datos_partido(partido):
 
     datos = {}
 
-    # H2H (últimos 10 partidos oficiales finalizados)
-    h2h_raw = _get('fixtures/headtohead', {
-        'h2h': f'{id_local}-{id_vis}',
-        'last': 10,
-        'status': 'FT',
-    })
-    if h2h_raw is not None:
-        datos['h2h'] = _parse_h2h(h2h_raw, id_local, id_vis)
+    # Últimos 20 partidos del equipo local (para H2H + forma)
+    resp_local = _get(f'teams/{id_local}/matches', {'status': 'FINISHED', 'limit': 20})
+    matches_local = (resp_local or {}).get('matches', [])
 
-    # Forma reciente local (últimos 5 partidos finalizados)
-    forma_l = _get('fixtures', {'team': id_local, 'last': 5, 'status': 'FT'})
-    if forma_l is not None:
-        datos['forma_local'] = _parse_forma(forma_l, id_local)
+    # Últimos 5 partidos del equipo visitante (para forma)
+    resp_vis = _get(f'teams/{id_vis}/matches', {'status': 'FINISHED', 'limit': 5})
+    matches_vis = (resp_vis or {}).get('matches', [])
 
-    # Forma reciente visitante
-    forma_v = _get('fixtures', {'team': id_vis, 'last': 5, 'status': 'FT'})
-    if forma_v is not None:
-        datos['forma_visitante'] = _parse_forma(forma_v, id_vis)
+    if matches_local:
+        h2h_matches = [
+            m for m in matches_local
+            if m['homeTeam']['id'] == id_vis or m['awayTeam']['id'] == id_vis
+        ]
+        if h2h_matches:
+            datos['h2h'] = _parse_h2h(h2h_matches, id_local, id_vis)
+
+        datos['forma_local'] = _parse_forma(matches_local[-5:], id_local)
+
+    if matches_vis:
+        datos['forma_visitante'] = _parse_forma(matches_vis, id_vis)
 
     if datos:
         partido.datos_previos = datos
@@ -89,27 +82,28 @@ def get_datos_partido(partido):
     return datos or None
 
 
-def _parse_h2h(fixtures, id_local, id_vis):
+def _parse_h2h(matches, id_local, id_vis):
     victorias_local = 0
     empates = 0
     victorias_vis = 0
     ultimos = []
 
-    for f in fixtures:
-        home_id = f['teams']['home']['id']
-        hg = f['goals']['home']
-        ag = f['goals']['away']
+    for m in matches:
+        home_id = m['homeTeam']['id']
+        score = m.get('score', {}).get('fullTime', {})
+        hg = score.get('home')
+        ag = score.get('away')
         if hg is None or ag is None:
             continue
 
         if home_id == id_local:
             gl, gv = hg, ag
-            nombre_l = f['teams']['home']['name']
-            nombre_v = f['teams']['away']['name']
+            nombre_l = m['homeTeam']['name']
+            nombre_v = m['awayTeam']['name']
         else:
             gl, gv = ag, hg
-            nombre_l = f['teams']['away']['name']
-            nombre_v = f['teams']['home']['name']
+            nombre_l = m['awayTeam']['name']
+            nombre_v = m['homeTeam']['name']
 
         if gl > gv:
             victorias_local += 1
@@ -119,7 +113,7 @@ def _parse_h2h(fixtures, id_local, id_vis):
             empates += 1
 
         ultimos.append({
-            'fecha': f['fixture']['date'][:10],
+            'fecha': m['utcDate'][:10],
             'local': nombre_l,
             'visitante': nombre_v,
             'marcador': f'{hg}-{ag}',
@@ -134,12 +128,13 @@ def _parse_h2h(fixtures, id_local, id_vis):
     }
 
 
-def _parse_forma(fixtures, team_id):
+def _parse_forma(matches, team_id):
     forma = []
-    for f in fixtures:
-        home_id = f['teams']['home']['id']
-        hg = f['goals']['home']
-        ag = f['goals']['away']
+    for m in matches:
+        home_id = m['homeTeam']['id']
+        score = m.get('score', {}).get('fullTime', {})
+        hg = score.get('home')
+        ag = score.get('away')
         if hg is None or ag is None:
             continue
 

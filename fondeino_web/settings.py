@@ -117,8 +117,9 @@ SESSION_COOKIE_AGE      = 1800   # 30 min server-side (respaldo al JS de inactiv
 SESSION_SAVE_EVERY_REQUEST = True  # resetea el timer en cada request
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # cierra al cerrar el navegador
 
-# ── API Football (api-football.com vía RapidAPI) ──
+# ── API Football ──
 API_FOOTBALL_KEY = os.environ.get('API_FOOTBALL_KEY', '')
+FOOTBALL_DATA_KEY = os.environ.get('FOOTBALL_DATA_KEY', '')
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
