@@ -83,6 +83,22 @@
     </div>
 
   {% else %}
+    {# ── Limpiar caché de stats ────────────────────────── #}
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-dark text-white py-2 small fw-bold">
+        <i class="bi bi-trash me-1"></i>Caché de estadísticas
+      </div>
+      <div class="card-body small">
+        <p class="mb-2">Si actualizaste la fuente de datos o quieres forzar que todos los partidos recarguen sus stats, limpia el caché aquí.</p>
+        <form method="post" action="{% url 'polla:admin_limpiar_cache_stats' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-warning btn-sm">
+            <i class="bi bi-arrow-repeat me-1"></i>Limpiar caché de stats ahora
+          </button>
+        </form>
+      </div>
+    </div>
+
     {# ── Formulario de confirmación ──────────────────── #}
     <div class="card shadow-sm mb-4">
       <div class="card-header bg-dark text-white py-2 small fw-bold">

@@ -1301,6 +1301,17 @@ def admin_asignar_eliminatorias(request):
 
 
 @admin_polla_required
+def admin_limpiar_cache_stats(request):
+    """Borra datos_previos de todos los partidos para forzar reconsulta de stats."""
+    if request.method == 'POST':
+        n = Partido.objects.exclude(datos_previos={}).update(
+            datos_previos=None, datos_previos_ts=None
+        )
+        messages.success(request, f'Caché de estadísticas limpiado ({n} partidos actualizados).')
+    return redirect('polla:admin_sync_api_football')
+
+
+@admin_polla_required
 def admin_sync_api_football(request):
     """Ejecuta sync_api_football desde el navegador (Vercel no tiene CLI)."""
     from django.conf import settings as _settings
