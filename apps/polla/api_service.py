@@ -1,6 +1,10 @@
 """
 Servicio de datos previos al partido usando football-data.org (API gratuita).
 
+Usa el endpoint /competitions/WC/matches (disponible en plan gratuito).
+- Forma: partidos del WC 2026 jugados por cada equipo
+- H2H: partidos WC donde se enfrentaron los dos equipos (2026, 2022, 2018)
+
 Requiere: settings.FOOTBALL_DATA_KEY y equipo.api_football_id en ambos equipos.
 """
 import requests
@@ -10,12 +14,11 @@ from django.utils import timezone
 BASE_URL = "https://api.football-data.org/v4"
 TTL_SEGUNDOS = 6 * 3600  # 6 horas de caché
 
+_last_error = ''
+
 
 def _api_key():
     return getattr(settings, 'FOOTBALL_DATA_KEY', '') or ''
-
-
-_last_error = ''
 
 
 def _get(endpoint, params=None):
@@ -42,6 +45,12 @@ def _get(endpoint, params=None):
         return None
 
 
+def _wc_matches(season):
+    """Devuelve todos los partidos finalizados de un Mundial."""
+    resp = _get('competitions/WC/matches', {'season': season, 'status': 'FINISHED'})
+    return (resp or {}).get('matches', [])
+
+
 def get_datos_partido(partido):
     """
     Devuelve dict con datos previos del partido, usando caché JSONField.
@@ -63,26 +72,43 @@ def get_datos_partido(partido):
 
     datos = {}
 
-    # Últimos 20 partidos del equipo local (para H2H + forma)
-    resp_local = _get(f'teams/{id_local}/matches', {'status': 'FINISHED', 'limit': 20})
-    matches_local = (resp_local or {}).get('matches', [])
+    # ── Forma actual: partidos WC 2026 jugados por cada equipo ──
+    wc26 = _wc_matches(2026)
+    if wc26:
+        local_matches = [m for m in wc26
+                         if m['homeTeam']['id'] == id_local or m['awayTeam']['id'] == id_local]
+        vis_matches   = [m for m in wc26
+                         if m['homeTeam']['id'] == id_vis or m['awayTeam']['id'] == id_vis]
+        if local_matches:
+            datos['forma_local'] = _parse_forma(local_matches, id_local)
+        if vis_matches:
+            datos['forma_visitante'] = _parse_forma(vis_matches, id_vis)
 
-    # Últimos 5 partidos del equipo visitante (para forma)
-    resp_vis = _get(f'teams/{id_vis}/matches', {'status': 'FINISHED', 'limit': 5})
-    matches_vis = (resp_vis or {}).get('matches', [])
+    # ── H2H: buscar en WC 2026, 2022, 2018 hasta reunir 5 partidos ──
+    h2h_total = {'victorias_local': 0, 'empates': 0, 'victorias_visitante': 0,
+                 'total': 0, 'ultimos': []}
 
-    if matches_local:
-        h2h_matches = [
-            m for m in matches_local
-            if m['homeTeam']['id'] == id_vis or m['awayTeam']['id'] == id_vis
+    for season in [2026, 2022, 2018]:
+        if h2h_total['total'] >= 5:
+            break
+        matches = wc26 if season == 2026 else _wc_matches(season)
+        confrontaciones = [
+            m for m in matches
+            if m['homeTeam']['id'] in (id_local, id_vis)
+            and m['awayTeam']['id'] in (id_local, id_vis)
+            and m['homeTeam']['id'] != m['awayTeam']['id']
         ]
-        if h2h_matches:
-            datos['h2h'] = _parse_h2h(h2h_matches, id_local, id_vis)
+        if confrontaciones:
+            parsed = _parse_h2h(confrontaciones, id_local, id_vis)
+            h2h_total['victorias_local']     += parsed['victorias_local']
+            h2h_total['empates']             += parsed['empates']
+            h2h_total['victorias_visitante'] += parsed['victorias_visitante']
+            h2h_total['total']               += parsed['total']
+            h2h_total['ultimos']             += parsed['ultimos']
 
-        datos['forma_local'] = _parse_forma(matches_local[-5:], id_local)
-
-    if matches_vis:
-        datos['forma_visitante'] = _parse_forma(matches_vis, id_vis)
+    if h2h_total['total'] > 0:
+        h2h_total['ultimos'] = h2h_total['ultimos'][:5]
+        datos['h2h'] = h2h_total
 
     if datos:
         partido.datos_previos = datos
