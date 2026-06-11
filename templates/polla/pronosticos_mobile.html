@@ -318,7 +318,8 @@ async function mSave(pk){
 document.querySelectorAll('.m-guardar').forEach(b=>b.addEventListener('click',()=>mSave(parseInt(b.dataset.target))));
 
 
-function tick(){const now=Date.now();document.querySelectorAll('[data-cierre]').forEach(c=>{const el=c.querySelector('[id^="mcd-"]');if(!el)return;const diff=parseInt(c.dataset.cierre)*1000-now;if(diff<=0){el.textContent='';return;}const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);el.textContent=h>=48?Math.floor(h/24)+'d':h>=1?h+'h'+m+'m':m+'m';el.classList.toggle('urgent',h<2);});}
+const MINUTOS_CIERRE={{ config.minutos_cierre_pronosticos }};
+function tick(){const now=Date.now();document.querySelectorAll('[data-cierre]').forEach(c=>{const el=c.querySelector('[id^="mcd-"]');if(!el)return;const diff=parseInt(c.dataset.cierre)*1000-MINUTOS_CIERRE*60000-now;if(diff<=0){el.textContent='';return;}const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);el.textContent=h>=48?Math.floor(h/24)+'d':h>=1?h+'h'+m+'m':m+'m';el.classList.toggle('urgent',h<2);});}
 tick();setInterval(tick,60000);
 
 function mDia(hd){const l=hd.nextElementSibling,b=hd.querySelector('.m-day-btn'),s=l.classList.toggle('cerrado');b.textContent=s?'+':'−';}

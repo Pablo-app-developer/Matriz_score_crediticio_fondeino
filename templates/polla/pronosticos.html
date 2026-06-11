@@ -276,12 +276,13 @@ const CSRF = '{{ csrf_token }}';
 
 
 /* ── Countdown de cierre ────────────────────────────────── */
+const MINUTOS_CIERRE = {{ config.minutos_cierre_pronosticos }};
 function actualizarCountdowns() {
   const ahora = Date.now();
   document.querySelectorAll('[data-cierre]').forEach(card => {
     const el = card.querySelector('.pn-countdown');
     if (!el) return;
-    const diff = parseInt(card.dataset.cierre) * 1000 - ahora;
+    const diff = parseInt(card.dataset.cierre) * 1000 - MINUTOS_CIERRE * 60000 - ahora;
     if (diff <= 0) { el.textContent = ''; return; }
     const h = Math.floor(diff / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
