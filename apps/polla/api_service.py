@@ -15,9 +15,14 @@ def _api_key():
     return getattr(settings, 'FOOTBALL_DATA_KEY', '') or ''
 
 
+_last_error = ''
+
+
 def _get(endpoint, params=None):
+    global _last_error
     key = _api_key()
     if not key:
+        _last_error = 'FOOTBALL_DATA_KEY no configurada'
         return None
     try:
         r = requests.get(
@@ -27,8 +32,13 @@ def _get(endpoint, params=None):
             timeout=10,
         )
         r.raise_for_status()
+        _last_error = ''
         return r.json()
-    except Exception:
+    except requests.HTTPError as e:
+        _last_error = f'HTTP {e.response.status_code}: {e.response.text[:300]}'
+        return None
+    except Exception as e:
+        _last_error = str(e)
         return None
 
 
