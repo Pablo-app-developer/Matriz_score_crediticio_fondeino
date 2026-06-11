@@ -28,13 +28,29 @@ body { background:#0f172a !important; }
 .m-bar-title { color:#94a3b8; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; }
 
 
-/* ── Tabs ── */
-.m-tabs {
-  display:flex; gap:.3rem; padding:.25rem .3rem .45rem;
-  overflow-x:auto; flex-wrap:nowrap;
-  -webkit-overflow-scrolling:touch; scrollbar-width:none;
+/* ── Grupos de modalidades ── */
+.m-mod-container { display:flex; flex-direction:column; gap:.35rem; padding:.25rem .3rem .3rem; }
+.m-mod-group {
+  display:flex; flex-direction:column; gap:.28rem;
+  background:rgba(255,255,255,.022); border:1px solid #1e293b;
+  border-radius:9px; padding:.38rem .45rem .35rem;
 }
-.m-tabs::-webkit-scrollbar { display:none; }
+.m-mod-group.m-mod-especial { border-color:rgba(251,191,36,.25); background:rgba(251,191,36,.04); }
+.m-mod-lbl {
+  font-size:.52rem; font-weight:800; text-transform:uppercase;
+  letter-spacing:.07em; color:#475569; line-height:1;
+  display:flex; align-items:center; gap:.25rem;
+}
+.m-mod-especial .m-mod-lbl { color:#926b0a; }
+.m-mod-tabs {
+  display:flex; gap:.25rem; flex-wrap:nowrap;
+  overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+}
+.m-mod-tabs::-webkit-scrollbar { display:none; }
+.m-mod-row2 { display:flex; gap:.35rem; }
+.m-mod-row2 .m-mod-group { flex:1; }
+
+/* ── Tabs ── */
 .m-tab {
   display:inline-flex; align-items:center; gap:.25rem;
   padding:.35rem .7rem; border-radius:16px; white-space:nowrap; flex-shrink:0;
@@ -171,21 +187,54 @@ body { background:#0f172a !important; }
   </div>
 </div>
 
-{# Tabs #}
-<div class="m-tabs">
-  {% for tab in fases_tabs %}
-  <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
-     class="m-tab {% if tab.key == fase_sel %}activo{% endif %}"
-     {% if tab.colombia and tab.key != fase_sel %}style="color:#fbbf24;border-color:#fbbf2440;"{% endif %}>
-    {% if tab.colombia %}🇨🇴
-    {% else %}<i class="bi {{ tab.icon }}"></i>{% endif %}
-    {{ tab.label }}
-    {% if tab.pendientes > 0 and tab.key != fase_sel %}<span class="dot">{{ tab.pendientes }}</span>{% endif %}
-  </a>
-  {% endfor %}
-  <a href="{% url 'polla:campeon' %}" class="m-tab" style="color:#fbbf24;border-color:#fbbf2440;">
-    🏆 Campeón
-  </a>
+{# Tabs agrupados por modalidad #}
+<div class="m-mod-container">
+
+  {# ── Modalidad 1: Puntos por partido ── #}
+  <div class="m-mod-group">
+    <span class="m-mod-lbl"><i class="bi bi-list-ol"></i> Puntos por partido</span>
+    <div class="m-mod-tabs">
+      {% for tab in fases_tabs %}{% if not tab.colombia %}
+      <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
+         class="m-tab {% if tab.key == fase_sel %}activo{% endif %}">
+        <i class="bi {{ tab.icon }}"></i>{{ tab.label }}
+        {% if tab.pendientes > 0 and tab.key != fase_sel %}<span class="dot">{{ tab.pendientes }}</span>{% endif %}
+      </a>
+      {% endif %}{% endfor %}
+    </div>
+  </div>
+
+  {# ── Modalidades 2 y 3 en una fila ── #}
+  <div class="m-mod-row2">
+
+    {% for tab in fases_tabs %}{% if tab.colombia %}
+    <div class="m-mod-group m-mod-especial">
+      <span class="m-mod-lbl">
+        <img src="https://flagcdn.com/w20/co.png" style="width:13px;height:8px;object-fit:cover;border-radius:2px;">
+        Partidos de Colombia
+      </span>
+      <div class="m-mod-tabs">
+        <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
+           class="m-tab {% if tab.key == fase_sel %}activo{% endif %}"
+           {% if tab.key != fase_sel %}style="color:#fbbf24;border-color:#fbbf2440;"{% endif %}>
+          🇨🇴 {{ tab.label }}
+          {% if tab.pendientes > 0 and tab.key != fase_sel %}<span class="dot">{{ tab.pendientes }}</span>{% endif %}
+        </a>
+      </div>
+    </div>
+    {% endif %}{% endfor %}
+
+    <div class="m-mod-group m-mod-especial">
+      <span class="m-mod-lbl"><i class="bi bi-trophy-fill"></i> Pronostica el campeón</span>
+      <div class="m-mod-tabs">
+        <a href="{% url 'polla:campeon' %}" class="m-tab" style="color:#fbbf24;border-color:#fbbf2440;">
+          🏆 Campeón
+        </a>
+      </div>
+    </div>
+
+  </div>
+
 </div>
 
 {% if not partidos_por_fecha %}

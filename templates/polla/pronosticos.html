@@ -7,6 +7,24 @@
 <style>
 body { background: #0d1b2a !important; }
 
+/* ── Agrupación de modalidades ─────────────────────────────── */
+.pn-mod-container { display: flex; gap: .55rem; flex-wrap: wrap; align-items: flex-start; }
+.pn-mod-group {
+  display: flex; flex-direction: column; gap: .32rem;
+  background: rgba(255,255,255,.022); border: 1px solid #1e3050;
+  border-radius: 10px; padding: .45rem .55rem .42rem;
+}
+.pn-mod-group.pn-mod-especial {
+  border-color: rgba(240,192,64,.25); background: rgba(240,192,64,.04);
+}
+.pn-mod-lbl {
+  font-size: .56rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .07em; color: #3d5f7a; line-height: 1;
+  display: flex; align-items: center; gap: .3rem;
+}
+.pn-mod-especial .pn-mod-lbl { color: #9a7210; }
+.pn-mod-tabs { display: flex; gap: .28rem; flex-wrap: wrap; }
+
 /* ── Tabs de fase ─────────────────────────────────────────── */
 .pn-tab {
   display: inline-flex; align-items: center; gap: .35rem;
@@ -67,22 +85,56 @@ body { background: #0d1b2a !important; }
 
 {# ── Tabs de fase ────────────────────────────────────────── #}
 {% if fases_tabs %}
-<div class="d-flex gap-1 flex-wrap mb-3">
-  {% for tab in fases_tabs %}
-  <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
-     class="pn-tab {% if tab.key == fase_sel %}on{% endif %}"
-     {% if tab.colombia %}style="border-color:rgba(255,220,0,.5);{% if tab.key == fase_sel %}background:#f0c040;color:#1a1200;{% else %}background:rgba(240,192,64,.08);color:#f0c040;{% endif %}"{% endif %}>
-    {% if tab.colombia %}<img src="https://flagcdn.com/w20/co.png" style="width:18px;height:12px;object-fit:cover;border-radius:2px;flex-shrink:0;">{% else %}<i class="bi {{ tab.icon }}"></i>{% endif %}{{ tab.label }}
-    {% if tab.pendientes > 0 and tab.key != fase_sel %}
-      <span class="pn-tab-dot">{{ tab.pendientes }}</span>
-    {% endif %}
-  </a>
-  {% endfor %}
-  <a href="{% url 'polla:campeon' %}"
-     class="pn-tab"
-     style="border-color:rgba(240,192,64,.5);background:rgba(240,192,64,.08);color:#f0c040;">
-    <i class="bi bi-trophy-fill"></i>Campeón
-  </a>
+<div class="pn-mod-container mb-3">
+
+  {# ── Modalidad 1: Puntos por partido ── #}
+  <div class="pn-mod-group">
+    <span class="pn-mod-lbl"><i class="bi bi-list-ol"></i> Puntos por partido</span>
+    <div class="pn-mod-tabs">
+      {% for tab in fases_tabs %}{% if not tab.colombia %}
+      <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
+         class="pn-tab {% if tab.key == fase_sel %}on{% endif %}">
+        <i class="bi {{ tab.icon }}"></i>{{ tab.label }}
+        {% if tab.pendientes > 0 and tab.key != fase_sel %}
+          <span class="pn-tab-dot">{{ tab.pendientes }}</span>
+        {% endif %}
+      </a>
+      {% endif %}{% endfor %}
+    </div>
+  </div>
+
+  {# ── Modalidad 2: Colombia ── #}
+  {% for tab in fases_tabs %}{% if tab.colombia %}
+  <div class="pn-mod-group pn-mod-especial">
+    <span class="pn-mod-lbl">
+      <img src="https://flagcdn.com/w20/co.png" style="width:14px;height:9px;object-fit:cover;border-radius:2px;">
+      Partidos de Colombia
+    </span>
+    <div class="pn-mod-tabs">
+      <a href="?polla={{ polla_sel }}&fase={{ tab.key }}"
+         class="pn-tab {% if tab.key == fase_sel %}on{% endif %}"
+         {% if tab.key != fase_sel %}style="border-color:rgba(255,220,0,.5);background:rgba(240,192,64,.08);color:#f0c040;"{% endif %}>
+        <img src="https://flagcdn.com/w20/co.png" style="width:18px;height:12px;object-fit:cover;border-radius:2px;flex-shrink:0;">{{ tab.label }}
+        {% if tab.pendientes > 0 and tab.key != fase_sel %}
+          <span class="pn-tab-dot">{{ tab.pendientes }}</span>
+        {% endif %}
+      </a>
+    </div>
+  </div>
+  {% endif %}{% endfor %}
+
+  {# ── Modalidad 3: Campeón ── #}
+  <div class="pn-mod-group pn-mod-especial">
+    <span class="pn-mod-lbl"><i class="bi bi-trophy-fill"></i> Pronostica el campeón</span>
+    <div class="pn-mod-tabs">
+      <a href="{% url 'polla:campeon' %}"
+         class="pn-tab"
+         style="border-color:rgba(240,192,64,.5);background:rgba(240,192,64,.08);color:#f0c040;">
+        <i class="bi bi-trophy-fill"></i>Campeón
+      </a>
+    </div>
+  </div>
+
 </div>
 {% endif %}
 
