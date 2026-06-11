@@ -773,6 +773,24 @@ def mis_pronosticos(request):
     })
 
 
+@afiliado_activo
+def baja_inscripcion(request):
+    afiliado = request.user.afiliado
+    inscripcion = afiliado.inscripciones.filter(activa=True).order_by('numero_polla').first()
+    if not inscripcion:
+        messages.info(request, 'No tienes una inscripción activa.')
+        return redirect('polla:index')
+    if request.method == 'POST' and request.POST.get('confirmar') == '1':
+        inscripcion.activa = False
+        inscripcion.save(update_fields=['activa'])
+        messages.success(request, 'Te has dado de baja de la polla exitosamente.')
+        return redirect('polla:index')
+    return render(request, 'polla/baja_inscripcion.html', {
+        'afiliado': afiliado,
+        'inscripcion': inscripcion,
+    })
+
+
 @login_required
 def perfil_afiliado(request, afiliado_id):
     afiliado = get_object_or_404(Afiliado, pk=afiliado_id, activo=True)
