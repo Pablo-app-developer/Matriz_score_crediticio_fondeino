@@ -510,19 +510,27 @@ function _renderStats(d, nLocal, nVisit) {
     const lbl = l==='W' ? 'G' : l==='L' ? 'P' : 'E';
     return `<span style="display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:4px;font-weight:800;font-size:.62rem;background:${bg};color:${col};">${lbl}</span>`;
   };
-  if (d.forma_local?.length || d.forma_visitante?.length) {
-    html += `<div class="fw-bold small mb-1" style="color:#dde8f6;">📈 Forma reciente <span style="font-weight:400;font-size:.68rem;color:#3e5e7c;">(últimos partidos)</span></div>`;
-    if (d.forma_local?.length)
-      html += `<div class="d-flex gap-1 mb-1 align-items-center">
-        <span style="color:#8ab0d0;font-size:.68rem;min-width:78px;flex-shrink:0;">${nLocal}:</span>${d.forma_local.map(bf).join('')}</div>`;
-    if (d.forma_visitante?.length)
-      html += `<div class="d-flex gap-1 align-items-center">
-        <span style="color:#8ab0d0;font-size:.68rem;min-width:78px;flex-shrink:0;">${nVisit}:</span>${d.forma_visitante.map(bf).join('')}</div>`;
-    html += `<div class="mt-2" style="font-size:.62rem;color:#3e6080;">
-      <span style="display:inline-block;width:16px;height:16px;line-height:16px;text-align:center;border-radius:3px;font-weight:800;background:#1c3e10;color:#78d860;vertical-align:middle;font-size:.58rem;">G</span> Ganó &nbsp;
-      <span style="display:inline-block;width:16px;height:16px;line-height:16px;text-align:center;border-radius:3px;font-weight:800;background:#1a2840;color:#4a7ca0;vertical-align:middle;font-size:.58rem;">E</span> Empató &nbsp;
-      <span style="display:inline-block;width:16px;height:16px;line-height:16px;text-align:center;border-radius:3px;font-weight:800;background:#3c1010;color:#e05050;vertical-align:middle;font-size:.58rem;">P</span> Perdió
+  const _resumenForma = (arr, nombre) => {
+    const g = arr.filter(x=>x==='W').length;
+    const e = arr.filter(x=>x==='D').length;
+    const p = arr.filter(x=>x==='L').length;
+    const n = arr.length;
+    const partes = [];
+    if (g) partes.push(`<span style="color:#78d860;font-weight:700;">ganó ${g}</span>`);
+    if (e) partes.push(`<span style="color:#4a7ca0;font-weight:700;">empató ${e}</span>`);
+    if (p) partes.push(`<span style="color:#e05050;font-weight:700;">perdió ${p}</span>`);
+    const resumen = partes.length ? partes.join(' · ') : '—';
+    const ultimos = n === 1 ? 'último partido' : `últimos ${n} partidos`;
+    return `<div class="mb-2" style="background:#0a1520;border-radius:8px;padding:.5rem .75rem;">
+      <div style="font-size:.72rem;color:#6ba4ff;font-weight:700;margin-bottom:.25rem;">${nombre}</div>
+      <div style="font-size:.75rem;color:#dde8f6;">En sus ${ultimos}: ${resumen}.</div>
+      <div style="display:flex;gap:3px;margin-top:.35rem;">${arr.map(bf).join('')}</div>
     </div>`;
+  };
+  if (d.forma_local?.length || d.forma_visitante?.length) {
+    html += `<div class="fw-bold small mb-2" style="color:#dde8f6;">📈 Forma reciente</div>`;
+    if (d.forma_local?.length)   html += _resumenForma(d.forma_local,    nLocal);
+    if (d.forma_visitante?.length) html += _resumenForma(d.forma_visitante, nVisit);
   }
   html += `<div class="text-end mt-2" style="font-size:.57rem;color:#243855;">Datos del torneo · FONDEINO 2026</div>`;
   return html || `<p style="color:#3e5e7c;" class="text-center small py-2">Sin datos disponibles.</p>`;
