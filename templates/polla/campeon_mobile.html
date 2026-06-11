@@ -61,8 +61,8 @@ body { background:#0f172a !important; }
 
   <div class="cm-info">
     Sorteo entre quienes acierten · <strong>{{ config.premio_campeon_sorteo }}</strong>
-    {% if config.fecha_cierre_pronostico_campeon %}
-    <br><span style="font-size:.7rem;">Cierra: {{ config.fecha_cierre_pronostico_campeon|date:"d/m/Y g:i a" }} COL</span>
+    {% if not cerrado %}
+    <br><span style="font-size:.7rem;">Cierra: 11/06/2026 · 2:00 p.m. hora Colombia</span>
     {% endif %}
   </div>
 
