@@ -9,19 +9,19 @@ from apps.polla.models import Partido
 CURIOSIDADES = {
     # México vs Sudáfrica — Partido inaugural del Mundial 2026
     ("México", "Sudáfrica"): [
-        "Partido inaugural del Mundial 2026, jugado en el Estadio Azteca (Ciudad de México)",
+        "México llegó en racha: 6 victorias y 2 empates en 2026, con 15 goles a favor y solo 2 en contra",
+        "Sudáfrica no ganó ningún partido en su preparación para el Mundial (0V-2E-2D en 2026)",
         "Primer gol del torneo: Julián Quiñones (México) al min. 9, asistido por Erik Lira",
-        "Raúl Jiménez cerró el 2-0 al min. 67 con asistencia de Roberto Alvarado",
-        "Sudáfrica terminó con 9 jugadores: Sithole expulsado al 50' y Zwane al 84'",
-        "México es uno de los tres países anfitriones del torneo junto a EE.UU. y Canadá",
+        "Sudáfrica terminó con 9 jugadores: Sithole expulsado al min. 50 y Zwane al min. 84",
+        "México juega en casa: es uno de los tres países anfitriones junto a EE.UU. y Canadá",
     ],
     # Corea del Sur vs República Checa — Jornada 1 Grupo A
     ("Corea del Sur", "República Checa"): [
-        "Primera participación de República Checa en un Mundial desde Alemania 2006 (20 años)",
-        "Corea del Sur no perdió ningún partido en la fase de clasificación AFC",
-        "Primer choque competitivo oficial entre ambas selecciones en un Mundial",
-        "Se disputó en el Estadio Akron (Guadalajara), casa del Chivas de Guadalajara",
-        "República Checa clasificó al Mundial tras superar el repechaje europeo",
+        "Corea del Sur llegó en racha: clasificó invicta a Asia (6V-4E) y ganó sus dos amistosos previos 5-0 y 1-0",
+        "Sin embargo, lleva 16 años sin ganar su partido inaugural en un Mundial (desde 2010)",
+        "República Checa vuelve a un Mundial tras 20 años de ausencia (último fue Alemania 2006)",
+        "Los checos llegaron por el camino difícil: repechaje UEFA, eliminando a Irlanda (4-3 en penales) y a Dinamarca (también en penales tras empatar 1-1)",
+        "Primer enfrentamiento entre ambas selecciones en un Mundial",
     ],
 }
 
