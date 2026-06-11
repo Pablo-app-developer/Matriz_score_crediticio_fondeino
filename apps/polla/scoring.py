@@ -36,9 +36,12 @@ def calcular_puntos(pronostico, partido, config):
 
 def recalcular_inscripcion(inscripcion, config):
     """Recalcula y persiste los puntos de una inscripción. Idempotente."""
+    from apps.polla.models import Pronostico as _P
+
     puntos_total = 0
     aciertos_resultado = 0
     aciertos_marcador = 0
+    pronosticos_a_actualizar = []
 
     for pronostico in inscripcion.pronosticos.select_related('partido').all():
         partido = pronostico.partido
@@ -47,13 +50,20 @@ def recalcular_inscripcion(inscripcion, config):
         pronostico.puntos_obtenidos = resultado['puntos']
         pronostico.acerto_resultado = resultado['acerto_resultado']
         pronostico.acerto_marcador = resultado['acerto_marcador']
-        pronostico.save(update_fields=['puntos_obtenidos', 'acerto_resultado', 'acerto_marcador'])
+        pronosticos_a_actualizar.append(pronostico)
 
         puntos_total += resultado['puntos']
         if resultado['acerto_resultado']:
             aciertos_resultado += 1
         if resultado['acerto_marcador']:
             aciertos_marcador += 1
+
+    # bulk_update bypasa el save() del modelo (evita el bloqueo de partidos cerrados)
+    if pronosticos_a_actualizar:
+        _P.objects.bulk_update(
+            pronosticos_a_actualizar,
+            ['puntos_obtenidos', 'acerto_resultado', 'acerto_marcador'],
+        )
 
     inscripcion.puntos_totales = puntos_total
     inscripcion.aciertos_resultado = aciertos_resultado
