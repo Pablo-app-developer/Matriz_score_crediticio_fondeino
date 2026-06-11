@@ -1,0 +1,44 @@
+{% extends "polla/base_polla.html" %}
+{% block polla_content %}
+
+<div style="max-width:480px;margin:4rem auto;padding:0 1rem;">
+  <div style="background:#1a2a3a;border:1px solid rgba(120,216,96,.35);border-radius:14px;padding:2rem 2rem 1.8rem;text-align:center;">
+
+    <i class="bi bi-person-check-fill" style="font-size:2.6rem;color:#78d860;display:block;margin-bottom:1rem;"></i>
+
+    <h2 style="color:#dde8f6;font-size:1.15rem;font-weight:800;margin-bottom:.5rem;">
+      ¿Quieres volver a participar?
+    </h2>
+    <p style="color:#5a7a9a;font-size:.85rem;line-height:1.6;margin-bottom:1.5rem;">
+      Tu inscripción está inactiva. Puedes <strong style="color:#78d860;">reactivarla ahora</strong>
+      y volver a aparecer en el ranking. Tus pronósticos anteriores se conservan.
+    </p>
+
+    <div style="background:#0d1b2a;border-radius:9px;padding:.9rem 1rem;margin-bottom:1.6rem;text-align:left;">
+      <div style="color:#3e6080;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem;">Tu inscripción</div>
+      <div style="color:#c0d4e8;font-weight:700;">{{ afiliado.nombre_completo }}</div>
+      <div style="color:#4e6e8c;font-size:.8rem;">CC {{ afiliado.cedula }}</div>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+        <a href="{% url 'polla:logout_polla' %}"
+           style="display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.4rem;
+                  background:#162030;border:1px solid #1e3050;border-radius:8px;
+                  color:#8ab0d0;font-weight:700;font-size:.85rem;text-decoration:none;">
+          <i class="bi bi-box-arrow-right"></i> Salir
+        </a>
+        <button type="submit"
+                style="display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.4rem;
+                       background:#1a4a1a;border:1px solid #78d860;border-radius:8px;
+                       color:#78d860;font-weight:800;font-size:.85rem;cursor:pointer;">
+          <i class="bi bi-person-check-fill"></i> Sí, reactivar mi inscripción
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

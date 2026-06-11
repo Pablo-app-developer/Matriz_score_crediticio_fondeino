@@ -389,6 +389,8 @@ def index(request):
     if afiliado and afiliado.activo:
         if not hasattr(afiliado, 'autorizacion_descuento'):
             return redirect('polla:autorizar_descuento')
+        if not afiliado.inscripciones.filter(activa=True).exists():
+            return redirect('polla:reactivar_inscripcion')
         return redirect('polla:pronosticos')
     else:
         # Landing con login integrado
@@ -770,6 +772,26 @@ def mis_pronosticos(request):
         'afiliado': afiliado,
         'inscripcion': inscripcion,
         'pronosticos': pronosticos_qs,
+    })
+
+
+@afiliado_activo
+def reactivar_inscripcion(request):
+    afiliado = request.user.afiliado
+    if afiliado.inscripciones.filter(activa=True).exists():
+        return redirect('polla:pronosticos')
+    inscripcion = afiliado.inscripciones.order_by('numero_polla').first()
+    if not inscripcion:
+        messages.error(request, 'No encontramos una inscripción para reactivar.')
+        return redirect('polla:index')
+    if request.method == 'POST':
+        inscripcion.activa = True
+        inscripcion.save(update_fields=['activa'])
+        messages.success(request, f'¡Bienvenido de vuelta, {afiliado.nombre_completo}! Tu inscripción está activa nuevamente.')
+        return redirect('polla:pronosticos')
+    return render(request, 'polla/reactivar_inscripcion.html', {
+        'afiliado': afiliado,
+        'inscripcion': inscripcion,
     })
 
 
