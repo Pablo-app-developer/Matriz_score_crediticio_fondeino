@@ -1,0 +1,87 @@
+{% extends "polla/base_polla.html" %}
+
+{% block polla_content %}
+<div class="container-fluid px-3" style="max-width:860px;">
+
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h5 class="mb-0"><i class="bi bi-lightbulb-fill text-warning me-2"></i>Datos curiosos por partido</h5>
+      <small class="text-muted">Escribe un dato por línea. Se muestran en el modal de estadísticas al lado de cada partido.</small>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+    <div class="alert alert-success alert-dismissible fade show py-2 small" role="alert">
+      {{ msg }}
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  {% for item in partidos_data %}
+  {% with p=item.partido %}
+  <div class="card shadow-sm mb-3" id="partido-{{ p.id }}">
+    <div class="card-header py-2 d-flex justify-content-between align-items-center"
+         style="background:#0d1b2a;border-bottom:1px solid #1e3050;cursor:pointer;"
+         data-bs-toggle="collapse" data-bs-target="#collapse-{{ p.id }}">
+      <div class="d-flex align-items-center gap-2">
+        <span style="font-size:.7rem;color:#3e5e7c;min-width:2rem;">#{{ p.numero }}</span>
+        <span class="fw-semibold" style="font-size:.85rem;">
+          {{ p.equipo_local.bandera_emoji }} {{ p.equipo_local.nombre }}
+          <span style="color:#3e5e7c;">vs</span>
+          {{ p.equipo_visitante.nombre }} {{ p.equipo_visitante.bandera_emoji }}
+        </span>
+        <span style="font-size:.68rem;color:#3e5e7c;">· {{ p.fecha_hora|date:"d/m" }}</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        {% if item.tiene %}
+          <span class="badge" style="background:#1c3e10;color:#78d860;font-size:.62rem;">
+            {{ item.curiosidades_texto|linebreaksbr|wordcount }} líneas
+          </span>
+        {% else %}
+          <span class="badge" style="background:#1a2840;color:#3e5e7c;font-size:.62rem;">Sin datos</span>
+        {% endif %}
+        <i class="bi bi-chevron-down" style="color:#3e5e7c;font-size:.75rem;"></i>
+      </div>
+    </div>
+
+    <div class="collapse {% if item.tiene %}show{% endif %}" id="collapse-{{ p.id }}">
+      <div class="card-body p-3">
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="partido_id" value="{{ p.id }}">
+          <div class="mb-2">
+            <label class="form-label small text-muted mb-1">
+              Un dato por línea. Vacío = sin sección de datos curiosos.
+            </label>
+            <textarea
+              name="curiosidades"
+              rows="5"
+              class="form-control form-control-sm"
+              style="background:#0a1520;color:#dde8f6;border-color:#1e3050;font-size:.78rem;line-height:1.6;resize:vertical;"
+              placeholder="Ej: México llega invicto en 2026 con 15 goles a favor&#10;Ej: Sudáfrica no ganó ningún amistoso de preparación"
+            >{{ item.curiosidades_texto }}</textarea>
+          </div>
+          <div class="d-flex gap-2 justify-content-end">
+            {% if item.tiene %}
+            <button type="submit" name="curiosidades" value="" class="btn btn-sm btn-outline-danger"
+                    onclick="this.form.querySelector('[name=curiosidades]').value=''; return true;">
+              <i class="bi bi-trash me-1"></i>Borrar
+            </button>
+            {% endif %}
+            <button type="submit" class="btn btn-sm btn-primary">
+              <i class="bi bi-save me-1"></i>Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endwith %}
+  {% empty %}
+  <p class="text-muted">No hay partidos de grupos cargados.</p>
+  {% endfor %}
+
+</div>
+{% endblock %}
