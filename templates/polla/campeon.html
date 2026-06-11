@@ -103,12 +103,24 @@
           </div>
         </form>
 
-        {% if config.fecha_cierre_pronostico_campeon %}
-        <div class="text-center text-muted small mt-2">
-          <i class="bi bi-clock me-1"></i>
-          Cierra el {{ config.fecha_cierre_pronostico_campeon|date:"d/m/Y g:i a" }} (hora Colombia)
+        {# Cierre: 11 jun 2026 2:00 PM Colombia (19:00 UTC) #}
+        <div class="cc-cierre mt-3">
+          <div id="cc-cd-wrap" class="cc-cd-wrap">
+            <div class="cc-cd-eyebrow">
+              <i class="bi bi-hourglass-split me-1"></i>Cierra para pronósticos en
+            </div>
+            <div class="cc-cd-row">
+              <div class="cc-cd-box"><span class="cc-cd-num" id="cc-dias">--</span><span class="cc-cd-lbl">Días</span></div>
+              <div class="cc-cd-sep">:</div>
+              <div class="cc-cd-box"><span class="cc-cd-num" id="cc-horas">--</span><span class="cc-cd-lbl">Horas</span></div>
+              <div class="cc-cd-sep">:</div>
+              <div class="cc-cd-box"><span class="cc-cd-num" id="cc-mins">--</span><span class="cc-cd-lbl">Min</span></div>
+              <div class="cc-cd-sep">:</div>
+              <div class="cc-cd-box"><span class="cc-cd-num" id="cc-segs">--</span><span class="cc-cd-lbl">Seg</span></div>
+            </div>
+            <div class="cc-cd-fecha">11/06/2026 · 2:00 p.m. hora Colombia</div>
+          </div>
         </div>
-        {% endif %}
       {% endif %}
 
     </div>
@@ -119,6 +131,28 @@
 {% block extra_css %}
 {{ block.super }}
 <style>
+/* ── Countdown cierre campeón ───────────────────────────── */
+.cc-cierre { max-width: 420px; margin: 0 auto; }
+.cc-cd-wrap {
+  background: linear-gradient(135deg, #0b1623 0%, #14263a 60%, #091320 100%);
+  border: 1px solid #1e3a5f;
+  border-radius: 14px;
+  padding: 1rem 1rem .8rem;
+  text-align: center;
+}
+.cc-cd-eyebrow { font-size: .72rem; color: #4a7ca0; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: .6rem; }
+.cc-cd-row { display: flex; justify-content: center; align-items: center; gap: .4rem; }
+.cc-cd-box { display: flex; flex-direction: column; align-items: center; min-width: 52px; }
+.cc-cd-num { font-size: 1.9rem; font-weight: 900; color: #f0c040;
+  line-height: 1; font-variant-numeric: tabular-nums; }
+.cc-cd-lbl { font-size: .58rem; color: #3e6080; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em; margin-top: .15rem; }
+.cc-cd-sep { font-size: 1.6rem; font-weight: 900; color: #2a4a6a;
+  margin-bottom: .6rem; }
+.cc-cd-fecha { font-size: .65rem; color: #2a4a6a; margin-top: .5rem; }
+.cc-cd-acabado { font-size: .9rem; color: #78d860; font-weight: 700; }
+
 .grupo-header {
   font-size: .8rem;
   font-weight: 800;
@@ -176,18 +210,42 @@ document.getElementById('btn-guardar').disabled = false;
 {% endif %}
 
 function elegirEquipo(pk, card) {
-  // Deseleccionar todos
   document.querySelectorAll('.campeon-card').forEach(c => c.classList.remove('selected'));
-  // Seleccionar el clicado
   card.classList.add('selected');
-  // Actualizar el select oculto
   document.getElementById('equipo-hidden').value = pk;
-  // Mostrar nombre seleccionado
   const nombre = card.querySelector('span').textContent.trim();
   document.getElementById('seleccion-nombre').textContent = nombre;
   document.getElementById('seleccion-actual').style.display = 'block';
-  // Habilitar botón
   document.getElementById('btn-guardar').disabled = false;
 }
+
+/* ── Countdown cierre campeón ── */
+(function () {
+  const TARGET = new Date('2026-06-11T19:00:00Z'); /* 2:00 PM Colombia */
+  const wrap = document.getElementById('cc-cd-wrap');
+  if (!wrap) return;
+  const elD = document.getElementById('cc-dias');
+  const elH = document.getElementById('cc-horas');
+  const elM = document.getElementById('cc-mins');
+  const elS = document.getElementById('cc-segs');
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function tick() {
+    const diff = TARGET - Date.now();
+    if (diff <= 0) {
+      wrap.innerHTML = '<div class="cc-cd-acabado py-2">🔒 Pronósticos de campeón cerrados</div>';
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    elD.textContent = pad(d);
+    elH.textContent = pad(h);
+    elM.textContent = pad(m);
+    elS.textContent = pad(s);
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
 </script>
 {% endblock %}
