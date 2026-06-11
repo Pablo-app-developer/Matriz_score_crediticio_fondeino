@@ -32,16 +32,19 @@ body { background:#0f172a !important; }
 .m-mod-container { display:flex; flex-direction:column; gap:.35rem; padding:.25rem .3rem .3rem; }
 .m-mod-group {
   display:flex; flex-direction:column; gap:.28rem;
-  background:rgba(255,255,255,.022); border:1px solid #1e293b;
   border-radius:9px; padding:.38rem .45rem .35rem;
 }
-.m-mod-group.m-mod-especial { border-color:rgba(251,191,36,.25); background:rgba(251,191,36,.04); }
+.m-mod-p1 { background:rgba(56,189,248,.06);  border:1px solid rgba(56,189,248,.28);  padding:.55rem .45rem .5rem; }
+.m-mod-p2 { background:rgba(240,192,64,.06);  border:1px solid rgba(240,192,64,.28); }
+.m-mod-p3 { background:rgba(167,139,250,.06); border:1px solid rgba(167,139,250,.28); }
 .m-mod-lbl {
   font-size:.52rem; font-weight:800; text-transform:uppercase;
-  letter-spacing:.07em; color:#475569; line-height:1;
+  letter-spacing:.07em; line-height:1;
   display:flex; align-items:center; gap:.25rem;
 }
-.m-mod-especial .m-mod-lbl { color:#926b0a; }
+.m-mod-p1 .m-mod-lbl { color:#1e90b8; }
+.m-mod-p2 .m-mod-lbl { color:#926b0a; }
+.m-mod-p3 .m-mod-lbl { color:#7c5cbf; }
 .m-mod-tabs {
   display:flex; gap:.25rem; flex-wrap:nowrap;
   overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
@@ -191,7 +194,7 @@ body { background:#0f172a !important; }
 <div class="m-mod-container">
 
   {# ── Modalidad 1: Puntos por partido ── #}
-  <div class="m-mod-group">
+  <div class="m-mod-group m-mod-p1">
     <span class="m-mod-lbl"><i class="bi bi-list-ol"></i> Premio 1 &nbsp;·&nbsp; Puntos por partido</span>
     <div class="m-mod-tabs">
       {% for tab in fases_tabs %}{% if not tab.colombia %}
@@ -208,7 +211,7 @@ body { background:#0f172a !important; }
   <div class="m-mod-row2">
 
     {% for tab in fases_tabs %}{% if tab.colombia %}
-    <div class="m-mod-group m-mod-especial">
+    <div class="m-mod-group m-mod-p2">
       <span class="m-mod-lbl">
         <img src="https://flagcdn.com/w20/co.png" style="width:13px;height:8px;object-fit:cover;border-radius:2px;">
         Premio 2 &nbsp;·&nbsp; Colombia
@@ -224,7 +227,7 @@ body { background:#0f172a !important; }
     </div>
     {% endif %}{% endfor %}
 
-    <div class="m-mod-group m-mod-especial">
+    <div class="m-mod-group m-mod-p3">
       <span class="m-mod-lbl"><i class="bi bi-trophy-fill"></i> Premio 3 &nbsp;·&nbsp; Campeón</span>
       <div class="m-mod-tabs">
         <a href="{% url 'polla:campeon' %}" class="m-tab" style="color:#fbbf24;border-color:#fbbf2440;">

@@ -11,18 +11,19 @@ body { background: #0d1b2a !important; }
 .pn-mod-container { display: flex; gap: .55rem; flex-wrap: wrap; align-items: flex-start; }
 .pn-mod-group {
   display: flex; flex-direction: column; gap: .32rem;
-  background: rgba(255,255,255,.022); border: 1px solid #1e3050;
   border-radius: 10px; padding: .45rem .55rem .42rem;
 }
-.pn-mod-group.pn-mod-especial {
-  border-color: rgba(240,192,64,.25); background: rgba(240,192,64,.04);
-}
+.pn-mod-p1 { background: rgba(56,189,248,.06);  border: 1px solid rgba(56,189,248,.28); }
+.pn-mod-p2 { background: rgba(240,192,64,.06);  border: 1px solid rgba(240,192,64,.28); }
+.pn-mod-p3 { background: rgba(167,139,250,.06); border: 1px solid rgba(167,139,250,.28); }
 .pn-mod-lbl {
   font-size: .56rem; font-weight: 800; text-transform: uppercase;
-  letter-spacing: .07em; color: #3d5f7a; line-height: 1;
+  letter-spacing: .07em; line-height: 1;
   display: flex; align-items: center; gap: .3rem;
 }
-.pn-mod-especial .pn-mod-lbl { color: #9a7210; }
+.pn-mod-p1 .pn-mod-lbl { color: #1e90b8; }
+.pn-mod-p2 .pn-mod-lbl { color: #9a7210; }
+.pn-mod-p3 .pn-mod-lbl { color: #7c5cbf; }
 .pn-mod-tabs { display: flex; gap: .28rem; flex-wrap: wrap; }
 
 /* ── Tabs de fase ─────────────────────────────────────────── */
@@ -88,7 +89,7 @@ body { background: #0d1b2a !important; }
 <div class="pn-mod-container mb-3">
 
   {# ── Modalidad 1: Puntos por partido ── #}
-  <div class="pn-mod-group">
+  <div class="pn-mod-group pn-mod-p1">
     <span class="pn-mod-lbl"><i class="bi bi-list-ol"></i> Premio 1 &nbsp;·&nbsp; Puntos por partido</span>
     <div class="pn-mod-tabs">
       {% for tab in fases_tabs %}{% if not tab.colombia %}
@@ -105,7 +106,7 @@ body { background: #0d1b2a !important; }
 
   {# ── Modalidad 2: Colombia ── #}
   {% for tab in fases_tabs %}{% if tab.colombia %}
-  <div class="pn-mod-group pn-mod-especial">
+  <div class="pn-mod-group pn-mod-p2">
     <span class="pn-mod-lbl">
       <img src="https://flagcdn.com/w20/co.png" style="width:14px;height:9px;object-fit:cover;border-radius:2px;">
       Premio 2 &nbsp;·&nbsp; Partidos de Colombia
@@ -124,7 +125,7 @@ body { background: #0d1b2a !important; }
   {% endif %}{% endfor %}
 
   {# ── Modalidad 3: Campeón ── #}
-  <div class="pn-mod-group pn-mod-especial">
+  <div class="pn-mod-group pn-mod-p3">
     <span class="pn-mod-lbl"><i class="bi bi-trophy-fill"></i> Premio 3 &nbsp;·&nbsp; Pronostica el campeón</span>
     <div class="pn-mod-tabs">
       <a href="{% url 'polla:campeon' %}"
