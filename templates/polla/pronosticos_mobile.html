@@ -172,6 +172,18 @@ body { background:#0f172a !important; }
 }
 .m-btn-save:disabled { background:#1e293b; color:#475569; }
 
+/* Botón estadísticas */
+.m-foot-btns { display:flex; align-items:center; gap:.35rem; flex-shrink:0; }
+.m-btn-stats {
+  padding:.42rem .7rem; border-radius:7px;
+  background:#0f172a; border:1px solid #334155; color:#94a3b8;
+  font-weight:700; font-size:.72rem; cursor:pointer;
+  display:inline-flex; align-items:center; gap:.3rem;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  white-space:nowrap;
+}
+.m-btn-stats:active { background:#1e293b; color:#fbbf24; }
+
 .m-empty { text-align:center; padding:2.5rem 1rem; color:#334155; font-size:.85rem; }
 </style>
 {% endblock %}
@@ -320,11 +332,20 @@ body { background:#0f172a !important; }
         {% elif pr %}<span class="ok">✓ Guardado</span>
         {% endif %}
       </div>
-      {% if not item.cerrado and not p.finalizado %}
-      <button class="m-btn-save m-guardar" data-target="{{ p.pk }}">
-        {% if pr %}Actualizar{% else %}Guardar{% endif %}
-      </button>
-      {% endif %}
+      <div class="m-foot-btns">
+        {% if p.equipo_local.api_football_id and p.equipo_visitante.api_football_id %}
+        <button class="m-btn-stats"
+                data-partido-pk="{{ p.pk }}"
+                data-titulo="{{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}">
+          <i class="bi bi-bar-chart-line-fill"></i>Stats
+        </button>
+        {% endif %}
+        {% if not item.cerrado and not p.finalizado %}
+        <button class="m-btn-save m-guardar" data-target="{{ p.pk }}">
+          {% if pr %}Actualizar{% else %}Guardar{% endif %}
+        </button>
+        {% endif %}
+      </div>
     </div>
 
   </div>
@@ -332,6 +353,24 @@ body { background:#0f172a !important; }
   </div>
 </div>
 {% endfor %}
+
+{# ── Modal estadísticas ───────────────────────────────────── #}
+<div class="modal fade" id="modalStats" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
+    <div class="modal-content" style="background:#162030;border-color:#1e3050;color:#dde8f6;">
+      <div class="modal-header py-2" style="background:#0d1b2a;border-color:#1e3050;">
+        <h6 class="modal-title small fw-bold" id="modalStatsTitulo" style="color:#dde8f6;"></h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3" id="modalStatsCuerpo">
+        <div class="text-center py-3">
+          <div class="spinner-border spinner-border-sm" style="color:#f0c040;" role="status"></div>
+          <div class="small mt-2" style="color:#3e5e7c;">Cargando estadísticas...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
 
@@ -375,5 +414,54 @@ function tick(){const now=Date.now();document.querySelectorAll('[data-cierre]').
 tick();setInterval(tick,60000);
 
 function mDia(hd){const l=hd.nextElementSibling,b=hd.querySelector('.m-day-btn'),s=l.classList.toggle('cerrado');b.textContent=s?'+':'−';}
+
+
+/* ── Modal estadísticas ─────────────────────────────────── */
+const _modalEl = document.getElementById('modalStats');
+if (_modalEl) {
+  const _modal   = new bootstrap.Modal(_modalEl);
+  const _spinner = `<div class="text-center py-3">
+    <div class="spinner-border spinner-border-sm" style="color:#f0c040;" role="status"></div>
+    <div class="small mt-2" style="color:#3e5e7c;">Cargando...</div></div>`;
+
+  document.querySelectorAll('.m-btn-stats').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('modalStatsTitulo').textContent = btn.dataset.titulo;
+      document.getElementById('modalStatsCuerpo').innerHTML  = _spinner;
+      _modal.show();
+      const _partes = btn.dataset.titulo.split(' vs ');
+      const _nL = _partes[0] || 'Local';
+      const _nV = _partes[1] || 'Visitante';
+      fetch(`/polla/api/partido/${btn.dataset.partidoPk}/datos/`)
+        .then(r => r.json())
+        .then(resp => {
+          document.getElementById('modalStatsCuerpo').innerHTML =
+            resp.ok ? _renderStats(resp.datos, _nL, _nV)
+                    : `<p style="color:#3e5e7c;" class="text-center py-2 small">Sin datos disponibles.</p>`;
+        })
+        .catch(() => {
+          document.getElementById('modalStatsCuerpo').innerHTML =
+            '<p style="color:#e05050;" class="text-center small">Error al cargar.</p>';
+        });
+    });
+  });
+}
+
+function _renderStats(d, nLocal, nVisit) {
+  nLocal = nLocal || 'Local';
+  nVisit = nVisit || 'Visitante';
+  let html = '';
+  if (d.curiosidades?.length) {
+    html += `<div class="mt-3 mb-2">
+      <div class="fw-bold small mb-2" style="color:#dde8f6;">💡 Datos curiosos</div>
+      <ul class="list-unstyled mb-0" style="font-size:.74rem;color:#b0cce8;">`;
+    d.curiosidades.forEach(c => {
+      html += `<li style="padding:.28rem 0;border-bottom:1px solid #1a2840;">· ${c}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+  html += `<div class="text-end mt-2" style="font-size:.57rem;color:#243855;">Datos del torneo · FONDEINO 2026</div>`;
+  return html || `<p style="color:#3e5e7c;" class="text-center small py-2">Sin datos disponibles.</p>`;
+}
 </script>
 {% endblock %}
