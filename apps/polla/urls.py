@@ -46,6 +46,7 @@ urlpatterns = [
     path('admin/autorizaciones/export/', views.admin_export_autorizaciones, name='admin_export_autorizaciones'),
     path('admin/resultado-colombia/', views.admin_resultado_colombia, name='admin_resultado_colombia'),
     path('admin/partido/<int:partido_id>/editar/', views.admin_editar_partido, name='admin_editar_partido'),
+    path('admin/horarios/', views.admin_editar_horarios, name='admin_editar_horarios'),
     path('admin/configuracion/', views.admin_configuracion, name='admin_configuracion'),
     path('admin/curiosidades/', views.admin_curiosidades, name='admin_curiosidades'),
 ]

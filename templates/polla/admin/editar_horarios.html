@@ -1,0 +1,77 @@
+{% extends "polla/base_polla.html" %}
+
+{% block polla_content %}
+<div class="container-fluid px-2 px-md-3" style="max-width:920px;">
+
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+      <h5 class="mb-0"><i class="bi bi-clock-history text-warning me-2"></i>Editar horarios de partidos</h5>
+      <small class="text-muted">Fecha y hora en <b>hora Colombia (UTC-5)</b>. Cambia los que necesites y guarda. Solo se actualizan los modificados.</small>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+    <div class="alert {% if msg.tags == 'error' %}alert-danger{% elif msg.tags == 'success' %}alert-success{% else %}alert-info{% endif %} alert-dismissible fade show py-2 small" role="alert">
+      {{ msg }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" id="formHorarios">
+    {% csrf_token %}
+
+    <div class="card shadow-sm" style="background:#0d1218;border-color:#1e3050;">
+      <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0" style="color:#dde8f6;">
+          <thead style="position:sticky;top:0;z-index:2;">
+            <tr style="background:#0d1b2a;">
+              <th style="color:#8ab0d0;font-size:.7rem;width:3rem;">#</th>
+              <th style="color:#8ab0d0;font-size:.7rem;">Partido</th>
+              <th style="color:#8ab0d0;font-size:.7rem;" class="d-none d-md-table-cell">Fase / Sede</th>
+              <th style="color:#8ab0d0;font-size:.7rem;width:14rem;">Fecha y hora (COL)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in partidos_data %}
+            {% with p=item.partido %}
+            <tr style="border-color:#1a2840;">
+              <td style="color:#6ba4ff;font-size:.78rem;">{{ p.numero }}</td>
+              <td style="font-size:.82rem;">
+                {{ p.equipo_local.bandera_emoji }} {{ p.equipo_local.nombre }}
+                <span style="color:#6ba4ff;">vs</span>
+                {{ p.equipo_visitante.nombre }} {{ p.equipo_visitante.bandera_emoji }}
+                {% if p.finalizado %}<span class="badge ms-1" style="background:#1c3e10;color:#78d860;font-size:.55rem;">Finalizado</span>{% endif %}
+              </td>
+              <td class="d-none d-md-table-cell" style="font-size:.7rem;color:#8ab0d0;">
+                {{ p.get_fase_display }}{% if p.ciudad %} · {{ p.ciudad }}{% endif %}
+              </td>
+              <td>
+                <input type="datetime-local" name="fh_{{ p.id }}" value="{{ item.valor }}"
+                       class="form-control form-control-sm"
+                       style="background:#0a1520;color:#dde8f6;border-color:#1e3050;font-size:.78rem;">
+              </td>
+            </tr>
+            {% endwith %}
+            {% empty %}
+            <tr><td colspan="4" class="text-center text-muted py-3">No hay partidos cargados.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {% if partidos_data %}
+    <div style="position:sticky;bottom:0;z-index:3;background:#0d1218;border-top:1px solid #1e3050;"
+         class="py-2 mt-0 d-flex justify-content-end gap-2 px-2">
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-save me-1"></i>Guardar cambios
+      </button>
+    </div>
+    {% endif %}
+
+  </form>
+
+</div>
+{% endblock %}

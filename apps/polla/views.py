@@ -1476,3 +1476,52 @@ def admin_curiosidades(request):
     return render(request, 'polla/admin/curiosidades.html', {
         'partidos_data': partidos_data,
     })
+
+
+@admin_polla_required
+def admin_editar_horarios(request):
+    """Panel para corregir fecha y hora (hora Colombia) de cada partido."""
+    from datetime import datetime as _datetime
+    from zoneinfo import ZoneInfo
+    BOG = ZoneInfo('America/Bogota')
+
+    partidos = Partido.objects.select_related(
+        'equipo_local', 'equipo_visitante'
+    ).order_by('fecha_hora', 'numero')
+
+    if request.method == 'POST':
+        cambios = 0
+        errores = 0
+        for p in partidos:
+            val = (request.POST.get(f'fh_{p.id}') or '').strip()
+            if not val:
+                continue
+            try:
+                naive = _datetime.strptime(val, '%Y-%m-%dT%H:%M')
+            except ValueError:
+                errores += 1
+                continue
+            nueva = timezone.make_aware(naive, BOG)
+            if p.fecha_hora != nueva:
+                p.fecha_hora = nueva
+                p.save(update_fields=['fecha_hora'])
+                cambios += 1
+        if cambios:
+            messages.success(request, f'{cambios} partido(s) actualizado(s) correctamente.')
+        if errores:
+            messages.error(request, f'{errores} fecha(s) con formato inválido se omitieron.')
+        if not cambios and not errores:
+            messages.info(request, 'No hubo cambios para guardar.')
+        return redirect('polla:admin_editar_horarios')
+
+    partidos_data = []
+    for p in partidos:
+        loc = timezone.localtime(p.fecha_hora)
+        partidos_data.append({
+            'partido': p,
+            'valor': loc.strftime('%Y-%m-%dT%H:%M'),
+        })
+
+    return render(request, 'polla/admin/editar_horarios.html', {
+        'partidos_data': partidos_data,
+    })
