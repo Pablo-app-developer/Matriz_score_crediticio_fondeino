@@ -1,5 +1,17 @@
 {% extends "polla/base_polla.html" %}
 
+{% block extra_css %}{{ block.super }}
+<style>
+  .eh-flag {
+    width: 22px; height: 15px; object-fit: cover;
+    border-radius: 2px; vertical-align: middle; margin: 0 1px;
+  }
+  /* color-scheme:dark hace visible el ícono del calendario sobre fondo oscuro */
+  #formHorarios input[type="datetime-local"] { color-scheme: dark; }
+  #formHorarios input[type="datetime-local"]::-webkit-calendar-picker-indicator { cursor: pointer; }
+</style>
+{% endblock %}
+
 {% block polla_content %}
 <div class="container-fluid px-2 px-md-3" style="max-width:920px;">
 
@@ -39,9 +51,11 @@
             <tr style="border-color:#1a2840;">
               <td style="color:#6ba4ff;font-size:.78rem;">{{ p.numero }}</td>
               <td style="font-size:.82rem;">
-                {{ p.equipo_local.bandera_emoji }} {{ p.equipo_local.nombre }}
+                {% if p.bandera_url_local %}<img src="{{ p.bandera_url_local }}" alt="" class="eh-flag" loading="lazy">{% endif %}
+                {{ p.nombre_local_display }}
                 <span style="color:#6ba4ff;">vs</span>
-                {{ p.equipo_visitante.nombre }} {{ p.equipo_visitante.bandera_emoji }}
+                {{ p.nombre_visitante_display }}
+                {% if p.bandera_url_visitante %}<img src="{{ p.bandera_url_visitante }}" alt="" class="eh-flag" loading="lazy">{% endif %}
                 {% if p.finalizado %}<span class="badge ms-1" style="background:#1c3e10;color:#78d860;font-size:.55rem;">Finalizado</span>{% endif %}
               </td>
               <td class="d-none d-md-table-cell" style="font-size:.7rem;color:#8ab0d0;">
