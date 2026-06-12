@@ -57,30 +57,39 @@
             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
               <i class="bi bi-gear-fill me-1"></i>Admin
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu pk-admin-menu">
+              <li><h6 class="dropdown-header">Afiliados</h6></li>
               <li><a class="dropdown-item" href="{% url 'polla:admin_afiliados' %}">
-                <i class="bi bi-people me-2"></i>Afiliados</a></li>
+                <i class="bi bi-people"></i>Afiliados</a></li>
               <li><a class="dropdown-item" href="{% url 'polla:admin_cargar_afiliados' %}">
-                <i class="bi bi-file-earmark-excel me-2"></i>Cargar Excel</a></li>
+                <i class="bi bi-file-earmark-excel"></i>Cargar Excel</a></li>
+
+              <li><hr class="dropdown-divider"></li>
+              <li><h6 class="dropdown-header">Partidos</h6></li>
               <li><a class="dropdown-item" href="{% url 'polla:admin_cargar_resultados' %}">
-                <i class="bi bi-check2-circle me-2"></i>Resultados</a></li>
+                <i class="bi bi-check2-circle"></i>Resultados</a></li>
+              <li><a class="dropdown-item" href="{% url 'polla:admin_editar_horarios' %}">
+                <i class="bi bi-clock-history"></i>Editar horarios</a></li>
+              <li><a class="dropdown-item" href="{% url 'polla:admin_actualizar_fixture' %}">
+                <i class="bi bi-calendar2-week"></i>Actualizar fixture</a></li>
+              <li><a class="dropdown-item" href="{% url 'polla:admin_asignar_eliminatorias' %}">
+                <i class="bi bi-diagram-3"></i>Equipos eliminatorias</a></li>
+
+              <li><hr class="dropdown-divider"></li>
+              <li><h6 class="dropdown-header">Contenido y datos</h6></li>
+              <li><a class="dropdown-item" href="{% url 'polla:admin_curiosidades' %}">
+                <i class="bi bi-lightbulb"></i>Datos curiosos</a></li>
+              <li><a class="dropdown-item" href="{% url 'polla:admin_sync_api_football' %}">
+                <i class="bi bi-cloud-arrow-down"></i>Sync API Stats</a></li>
+
+              <li><hr class="dropdown-divider"></li>
+              <li><h6 class="dropdown-header">Reportes y ajustes</h6></li>
               <li><a class="dropdown-item" href="{% url 'polla:admin_reporte' %}">
-                <i class="bi bi-graph-up me-2"></i>Reporte</a></li>
-              <li><a class="dropdown-item text-success fw-semibold" href="{% url 'polla:admin_export_autorizaciones' %}">
-                <i class="bi bi-download me-2"></i>Descargar autorizaciones CSV</a></li>
-              <li><a class="dropdown-item text-warning fw-semibold" href="{% url 'polla:admin_configuracion' %}">
-                <i class="bi bi-sliders me-2"></i>Configuración</a></li>
-              <li><hr class="dropdown-divider my-1"></li>
-              <li><a class="dropdown-item text-info fw-semibold" href="{% url 'polla:admin_asignar_eliminatorias' %}">
-                <i class="bi bi-diagram-3 me-2"></i>Equipos Eliminatorias</a></li>
-              <li><a class="dropdown-item text-warning fw-semibold" href="{% url 'polla:admin_actualizar_fixture' %}">
-                <i class="bi bi-calendar2-week me-2"></i>Actualizar Fixture</a></li>
-              <li><a class="dropdown-item text-warning fw-semibold" href="{% url 'polla:admin_editar_horarios' %}">
-                <i class="bi bi-clock-history me-2"></i>Editar horarios</a></li>
-              <li><a class="dropdown-item text-primary fw-semibold" href="{% url 'polla:admin_sync_api_football' %}">
-                <i class="bi bi-cloud-arrow-down me-2"></i>Sync API Stats</a></li>
-              <li><a class="dropdown-item text-warning fw-semibold" href="{% url 'polla:admin_curiosidades' %}">
-                <i class="bi bi-lightbulb me-2"></i>Datos curiosos</a></li>
+                <i class="bi bi-graph-up"></i>Reporte</a></li>
+              <li><a class="dropdown-item" href="{% url 'polla:admin_export_autorizaciones' %}">
+                <i class="bi bi-download"></i>Descargar autorizaciones CSV</a></li>
+              <li><a class="dropdown-item" href="{% url 'polla:admin_configuracion' %}">
+                <i class="bi bi-sliders"></i>Configuración</a></li>
             </ul>
           </li>
         {% endif %}
