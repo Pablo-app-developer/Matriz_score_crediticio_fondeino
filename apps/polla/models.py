@@ -272,6 +272,12 @@ class ConfiguracionPolla(models.Model):
     fecha_inicio_inscripciones = models.DateTimeField(null=True, blank=True)
     fecha_cierre_inscripciones = models.DateTimeField(null=True, blank=True)
     fecha_cierre_pronostico_campeon = models.DateTimeField(null=True, blank=True)
+    campeon_habilitado = models.BooleanField(
+        default=True,
+        verbose_name='Admitir pronóstico de campeón',
+        help_text='Si está desactivado, nadie puede ingresar ni cambiar el campeón, '
+                  'sin importar la fecha de cierre.',
+    )
 
     mensaje_no_afiliado = models.TextField(
         default='¡Afíliate a FONDEINO y participa en la Polla Mundialista! '
@@ -305,6 +311,10 @@ class ConfiguracionPolla(models.Model):
 
     @property
     def campeon_cerrado(self):
+        # Interruptor manual: si está desactivado, cerrado siempre.
+        if not self.campeon_habilitado:
+            return True
+        # Si no hay fecha límite, permanece abierto.
         if self.fecha_cierre_pronostico_campeon is None:
             return False
         return timezone.now() >= self.fecha_cierre_pronostico_campeon

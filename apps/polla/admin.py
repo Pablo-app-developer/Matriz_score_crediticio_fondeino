@@ -68,7 +68,7 @@ class ConfiguracionPollaAdmin(admin.ModelAdmin):
         ('Puntos eliminatorias', {'fields': ('pts_resultado_eliminatoria', 'pts_marcador_eliminatoria')}),
         ('Premios', {'fields': ('premio_campeon_sorteo', 'premios_top5_grupos', 'premios_top5_general')}),
         ('Fechas', {'fields': ('fecha_inicio_inscripciones', 'fecha_cierre_inscripciones',
-                               'fecha_cierre_pronostico_campeon')}),
+                               'campeon_habilitado', 'fecha_cierre_pronostico_campeon')}),
         ('Captación', {'fields': ('mensaje_no_afiliado', 'enlace_afiliacion')}),
     )
 

@@ -78,9 +78,28 @@
           <div class="col-6">
             <label class="form-label small fw-semibold">{{ form.fecha_cierre_pronostico_campeon.label }}</label>
             {{ form.fecha_cierre_pronostico_campeon }}
-            <div class="text-muted" style="font-size:.72rem;">Hora Colombia (UTC-5)</div>
+            <div class="text-muted" style="font-size:.72rem;">Hora Colombia (UTC-5). Después de esta fecha se bloquea el campeón.</div>
             {% if form.fecha_cierre_pronostico_campeon.errors %}<div class="text-danger small mt-1">{{ form.fecha_cierre_pronostico_campeon.errors }}</div>{% endif %}
           </div>
+        </div>
+
+        <hr class="my-3">
+
+        <div class="form-check">
+          {{ form.campeon_habilitado }}
+          <label class="form-check-label small fw-semibold" for="{{ form.campeon_habilitado.id_for_label }}">
+            {{ form.campeon_habilitado.label }}
+          </label>
+        </div>
+        <div class="text-muted" style="font-size:.72rem;">
+          Interruptor manual. Si lo desactivas, <b>nadie</b> puede ingresar ni cambiar el campeón
+          aunque no haya pasado la fecha de cierre.
+          Estado actual:
+          {% if config.campeon_cerrado %}
+            <span class="text-danger fw-semibold">cerrado</span>
+          {% else %}
+            <span class="text-success fw-semibold">abierto</span>
+          {% endif %}.
         </div>
       </div>
     </div>

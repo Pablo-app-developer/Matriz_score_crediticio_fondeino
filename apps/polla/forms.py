@@ -170,7 +170,7 @@ class ConfiguracionPollaForm(forms.ModelForm):
             'pts_resultado_eliminatoria', 'pts_marcador_eliminatoria',
             'minutos_cierre_pronosticos',
             'premios_top5_general', 'premio_campeon_sorteo', 'premios_top5_grupos',
-            'fecha_cierre_pronostico_campeon',
+            'campeon_habilitado', 'fecha_cierre_pronostico_campeon',
             'mensaje_no_afiliado', 'enlace_afiliacion',
             'polla_cerrada',
         ]
@@ -191,6 +191,7 @@ class ConfiguracionPollaForm(forms.ModelForm):
             'mensaje_no_afiliado': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'enlace_afiliacion': forms.URLInput(attrs={'class': 'form-control'}),
             'polla_cerrada': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'campeon_habilitado': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
         labels = {
             'nombre_torneo': 'Nombre del torneo',
@@ -202,6 +203,7 @@ class ConfiguracionPollaForm(forms.ModelForm):
             'premios_top5_general': 'Premio 1 — Campeón general',
             'premio_campeon_sorteo': 'Premio 2 — Acierto al campeón',
             'premios_top5_grupos': 'Premios 3-5 — Partidos Colombia (fase de grupos)',
+            'campeon_habilitado': 'Admitir pronóstico de campeón',
             'fecha_cierre_pronostico_campeon': 'Cierre pronóstico de campeón',
             'mensaje_no_afiliado': 'Mensaje para no afiliados',
             'enlace_afiliacion': 'Enlace de afiliación',
