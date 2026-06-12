@@ -10,6 +10,7 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.views.decorators.cache import cache_control
+from django.db.models import Q
 
 from .models import Usuario
 from .forms import LoginForm, UsuarioCrearForm, UsuarioEditarForm, CambiarPasswordForm
@@ -100,8 +101,19 @@ def dashboard(request):
 def usuarios_lista(request):
     if not request.user.es_admin:
         return HttpResponseForbidden()
+    q = request.GET.get('q', '').strip()
     usuarios = Usuario.objects.all().order_by('username')
-    return render(request, 'accounts/usuarios_lista.html', {'usuarios': usuarios})
+    if q:
+        usuarios = usuarios.filter(
+            Q(username__icontains=q) |
+            Q(first_name__icontains=q) |
+            Q(last_name__icontains=q) |
+            Q(email__icontains=q)
+        )
+    return render(request, 'accounts/usuarios_lista.html', {
+        'usuarios': usuarios,
+        'q': q,
+    })
 
 
 @login_required
