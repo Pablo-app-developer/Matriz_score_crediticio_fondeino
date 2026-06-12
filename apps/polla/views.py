@@ -832,6 +832,9 @@ def baja_inscripcion(request):
     if request.method == 'POST' and request.POST.get('confirmar') == '1':
         inscripcion.activa = False
         inscripcion.save(update_fields=['activa'])
+        # Al darse de baja se retira la autorización del descuento por nómina:
+        # ya no debe figurar en el reporte/CSV de los $5.000.
+        AutorizacionDescuento.objects.filter(afiliado=afiliado).delete()
         messages.success(request, 'Te has dado de baja de la polla exitosamente.')
         return redirect('polla:index')
     return render(request, 'polla/baja_inscripcion.html', {
