@@ -9,12 +9,6 @@
     </div>
     <div class="card-body">
 
-      <div class="alert alert-danger border mb-2 py-2 small">
-        <i class="bi bi-clock-fill me-1"></i>
-        <strong>Solo disponible antes del primer partido del Mundial.</strong>
-        Una vez iniciado el torneo, esta opción se cerrará definitivamente.
-      </div>
-
       <div class="alert alert-light border mb-3">
         <p class="mb-1 small">
           <i class="bi bi-info-circle me-1 text-primary"></i>
@@ -24,10 +18,10 @@
         <p class="mb-0 fw-bold text-success text-center">🎽 {{ config.premio_campeon_sorteo }}</p>
       </div>
 
-      {% if not cerrado %}
-        {# Cierre: 11 jun 2026 2:00 PM Colombia (19:00 UTC) #}
+      {% if not cerrado and config.fecha_cierre_pronostico_campeon %}
         <div class="cc-cierre mb-3">
-          <div id="cc-cd-wrap" class="cc-cd-wrap">
+          <div id="cc-cd-wrap" class="cc-cd-wrap"
+               data-target="{{ config.fecha_cierre_pronostico_campeon|date:'c' }}">
             <div class="cc-cd-eyebrow">
               <i class="bi bi-hourglass-split me-1"></i>Cierra para pronósticos en
             </div>
@@ -40,7 +34,7 @@
               <div class="cc-cd-sep">:</div>
               <div class="cc-cd-box"><span class="cc-cd-num" id="cc-segs">--</span><span class="cc-cd-lbl">Seg</span></div>
             </div>
-            <div class="cc-cd-fecha">11/06/2026 · 2:00 p.m. hora Colombia</div>
+            <div class="cc-cd-fecha">{{ config.fecha_cierre_pronostico_campeon|date:'d/m/Y · g:i a' }} hora Colombia</div>
           </div>
         </div>
       {% endif %}
@@ -224,9 +218,9 @@ function elegirEquipo(pk, card) {
 
 /* ── Countdown cierre campeón ── */
 (function () {
-  const TARGET = new Date('2026-06-11T19:00:00Z'); /* 2:00 PM Colombia */
   const wrap = document.getElementById('cc-cd-wrap');
-  if (!wrap) return;
+  if (!wrap || !wrap.dataset.target) return;
+  const TARGET = new Date(wrap.dataset.target);
   const elD = document.getElementById('cc-dias');
   const elH = document.getElementById('cc-horas');
   const elM = document.getElementById('cc-mins');
@@ -235,7 +229,7 @@ function elegirEquipo(pk, card) {
   function tick() {
     const diff = TARGET - Date.now();
     if (diff <= 0) {
-      wrap.innerHTML = '<div class="cc-cd-acabado py-2">🔒 Pronósticos de campeón cerrados</div>';
+      wrap.style.display = 'none';
       return;
     }
     const d = Math.floor(diff / 86400000);
