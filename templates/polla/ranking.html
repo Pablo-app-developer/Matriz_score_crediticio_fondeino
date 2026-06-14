@@ -25,11 +25,11 @@ body { background: #0d1b2a !important; }
   text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: .5rem;
 }
 
-/* ── Fila de ranking ──────────────────────────────────────── */
+/* ── Fila de ranking — todo en una línea ──────────────────── */
 .rk-row {
-  display: flex; align-items: center; gap: .5rem;
+  display: flex; align-items: center; gap: .55rem;
   background: #182438; border: 1px solid #1e3050; border-left: 3px solid #1e3050;
-  border-radius: 6px; padding: .22rem .75rem; margin-bottom: .18rem;
+  border-radius: 6px; padding: .32rem .8rem; margin-bottom: .22rem;
   transition: background .12s;
 }
 .rk-row:hover { background: #1c2d42; }
@@ -39,59 +39,59 @@ body { background: #0d1b2a !important; }
 .rk-row.pos-3 { border-left-color: #cd8040; background: linear-gradient(90deg,#201a10 0%,#182438 55%); }
 .rk-row.me    { border-left-color: #3cba6a; box-shadow: 0 0 0 1px rgba(60,186,106,.2); }
 
-/* posición */
-.rk-pos {
-  font-size: .85rem; font-weight: 900; text-align: center;
-  min-width: 28px; flex-shrink: 0; line-height: 1;
-}
-.rk-row.pos-1 .rk-pos { font-size: 1.15rem; }
-.rk-row.pos-2 .rk-pos { font-size: 1rem; }
-.rk-row.pos-3 .rk-pos { font-size: .95rem; }
-.rk-pos-num { color: #6ba4ff; font-size: .78rem; font-weight: 800; }
+/* Posición + delta */
+.rk-pos-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 46px; flex-shrink: 0; gap: .15rem; line-height: 1; }
+.rk-pos { font-size: .92rem; font-weight: 900; text-align: center; line-height: 1; }
+.rk-row.pos-1 .rk-pos { font-size: 1.18rem; }
+.rk-row.pos-2 .rk-pos { font-size: 1.08rem; }
+.rk-row.pos-3 .rk-pos { font-size: 1rem; }
+.rk-pos-num { color: #6ba4ff; font-size: .85rem; font-weight: 800; }
 
-/* nombre + área — una sola línea */
-.rk-info { flex: 1; min-width: 0; display: flex; align-items: center; gap: .35rem; overflow: hidden; }
-.rk-name {
-  font-size: .8rem; font-weight: 700; color: #b8d0e8;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 1;
-}
-.rk-row.pos-1 .rk-name { color: #f0c040; font-size: .85rem; }
-.rk-row.pos-2 .rk-name { color: #dce8f8; }
-.rk-row.pos-3 .rk-name { color: #ddb870; }
-.rk-area {
-  font-size: .6rem; color: #6a90b0; font-weight: 500;
-  white-space: nowrap; flex-shrink: 0;
-}
-
-.rk-badge {
-  display: inline-block; font-size: .5rem; font-weight: 800;
-  padding: .08rem .3rem; border-radius: 3px; vertical-align: middle; flex-shrink: 0;
-}
-.rk-badge-me  { background: #3cba6a; color: #fff; }
-.rk-badge-dbl { background: #f0c040; color: #1a1200; }
-
-/* stats */
-.rk-stats { display: flex; align-items: center; gap: .4rem; flex-shrink: 0; }
-.rk-stat { text-align: center; min-width: 32px; }
-.rk-stat-val { font-size: .75rem; font-weight: 700; color: #8ab0d0; }
-.rk-stat-lbl { font-size: .48rem; color: #6a90b0; text-transform: uppercase; letter-spacing: .5px; }
-
-.rk-pts { text-align: right; min-width: 52px; flex-shrink: 0; }
-.rk-pts-val { font-size: 1rem; font-weight: 900; color: #f0c040; line-height: 1; }
-.rk-row.pos-1 .rk-pts-val { font-size: 1.2rem; }
-.rk-row.pos-2 .rk-pts-val { font-size: 1.1rem; }
-.rk-pts-lbl { font-size: .48rem; color: #6a90b0; text-transform: uppercase; letter-spacing: .7px; }
-.rk-pts-ult { font-size: .58rem; color: #3cba6a; font-weight: 800; margin-top: .12rem; }
-
-/* Delta de posición */
-.rk-pos-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 40px; flex-shrink: 0; gap: .15rem; line-height: 1; }
-.rk-delta { font-size: .52rem; font-weight: 800; padding: .08rem .3rem; border-radius: 4px; line-height: 1; letter-spacing: .2px; }
+.rk-delta { font-size: .54rem; font-weight: 800; padding: .08rem .3rem; border-radius: 4px; line-height: 1; letter-spacing: .2px; }
 .rk-delta.up   { background: rgba(60,186,106,.18);  color: #3cba6a; }
 .rk-delta.down { background: rgba(224,80,80,.18);   color: #e07070; }
 .rk-delta.same { background: rgba(106,144,176,.15); color: #6a90b0; }
 
-/* Racha */
-.rk-racha { font-size: .56rem; background: rgba(240,140,60,.18); color: #f08c3c; padding: .08rem .32rem; border-radius: 4px; font-weight: 800; flex-shrink: 0; line-height: 1.2; vertical-align: middle; }
+/* Nombre + área + badges en una línea */
+.rk-info { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: .4rem; overflow: hidden; }
+.rk-name {
+  font-size: .86rem; font-weight: 700; color: #b8d0e8;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 1; min-width: 0;
+}
+.rk-name a { color: inherit; text-decoration: none; }
+.rk-row.pos-1 .rk-name { color: #f0c040; font-size: .9rem; }
+.rk-row.pos-2 .rk-name { color: #dce8f8; }
+.rk-row.pos-3 .rk-name { color: #ddb870; }
+.rk-area { font-size: .62rem; color: #6a90b0; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
+
+.rk-badge { display: inline-flex; align-items: center; font-size: .54rem; font-weight: 800; padding: .12rem .38rem; border-radius: 3px; flex-shrink: 0; line-height: 1.1; }
+.rk-badge-me { background: #3cba6a; color: #fff; }
+
+.rk-racha { display: inline-flex; align-items: center; font-size: .58rem; background: rgba(240,140,60,.18); color: #f08c3c; padding: .12rem .38rem; border-radius: 4px; font-weight: 800; flex-shrink: 0; line-height: 1.1; }
+
+/* Stats como pills inline (siempre visibles) */
+.rk-stats { display: flex; align-items: center; gap: .3rem; flex-shrink: 0; }
+.rk-stat-pill {
+  background: #0f1c2e; border: 1px solid #243855;
+  padding: .15rem .55rem; border-radius: 11px;
+  font-size: .66rem; color: #b8d0e8; font-weight: 600;
+  white-space: nowrap; display: inline-flex; align-items: center; gap: .28rem;
+  line-height: 1.25;
+}
+.rk-stat-pill b { color: #f0c040; font-weight: 800; }
+.rk-stat-pill .ic { color: #6a90b0; font-size: .6rem; }
+
+/* Puntos inline (val + pts + últ.) */
+.rk-pts {
+  display: flex; align-items: center; gap: .35rem;
+  flex-shrink: 0; min-width: 96px; justify-content: flex-end;
+}
+.rk-pts-val { font-size: 1.08rem; font-weight: 900; color: #f0c040; line-height: 1; }
+.rk-row.pos-1 .rk-pts-val { font-size: 1.3rem; }
+.rk-row.pos-2 .rk-pts-val { font-size: 1.18rem; }
+.rk-row.pos-3 .rk-pts-val { font-size: 1.1rem; }
+.rk-pts-lbl { font-size: .55rem; color: #6a90b0; text-transform: uppercase; letter-spacing: .5px; font-weight: 700; }
+.rk-pts-ult { font-size: .56rem; background: rgba(60,186,106,.2); color: #3cba6a; padding: .14rem .38rem; border-radius: 4px; font-weight: 800; white-space: nowrap; line-height: 1.1; }
 
 /* Panel datos curiosos */
 .rk-panel {
@@ -145,17 +145,24 @@ body { background: #0d1b2a !important; }
 .rk-empty { color: #2a4060; text-align: center; padding: 3.5rem 1rem; }
 .rk-empty i { font-size: 2.5rem; display: block; margin-bottom: .75rem; opacity: .3; }
 
+@media (max-width: 768px) {
+  .rk-stat-pill { font-size: .6rem; padding: .12rem .42rem; }
+  .rk-pts { min-width: 80px; }
+}
 @media (max-width: 575px) {
-  .rk-row     { padding: .18rem .55rem; gap: .35rem; }
-  .rk-pts-val { font-size: .9rem; }
-  .rk-row.pos-1 .rk-pts-val { font-size: 1.05rem; }
+  .rk-row       { padding: .22rem .55rem; gap: .35rem; }
+  .rk-pts-val   { font-size: .95rem; }
+  .rk-row.pos-1 .rk-pts-val { font-size: 1.1rem; }
+  .rk-area      { display: none; }
+  .rk-stats     { display: none; }
+  .rk-pts-ult   { display: none; }
   .rk-camp-flag { width: 42px; height: 28px; }
 }
 </style>
 {% endblock %}
 
 {% block polla_content %}
-<div style="max-width:860px;margin:0 auto;">
+<div style="max-width:1080px;margin:0 auto;">
 
 {# ── Header + tabs ─────────────────────────────────────────── #}
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
@@ -284,8 +291,7 @@ body { background: #0d1b2a !important; }
 
   <div class="rk-info">
     <div class="rk-name">
-      <a href="{% url 'polla:perfil_afiliado' insc.afiliado.pk %}"
-         style="color:inherit;text-decoration:none;">{{ insc.afiliado.nombre_completo }}</a>
+      <a href="{% url 'polla:perfil_afiliado' insc.afiliado.pk %}">{{ insc.afiliado.nombre_completo }}</a>
     </div>
     {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}
       <span class="rk-badge rk-badge-me">TÚ</span>
@@ -294,26 +300,26 @@ body { background: #0d1b2a !important; }
       <span class="rk-racha">🔥{{ insc.racha }}</span>
     {% endif %}
     {% if insc.afiliado.area %}
-      <span class="rk-area d-none d-sm-inline">· {{ insc.afiliado.area }}</span>
+      <span class="rk-area">· {{ insc.afiliado.area }}</span>
     {% endif %}
   </div>
 
+  {% if tipo == 'grupos' %}
   <div class="rk-stats">
-    <div class="rk-stat d-none d-sm-flex flex-column">
-      <div class="rk-stat-val">{{ insc.aciertos_marcador }}</div>
-      <div class="rk-stat-lbl">Exactos</div>
-    </div>
-    <div class="rk-stat d-none d-md-flex flex-column">
-      <div class="rk-stat-val">{{ insc.aciertos_resultado }}</div>
-      <div class="rk-stat-lbl">Result.</div>
-    </div>
-    <div class="rk-pts">
-      <div class="rk-pts-val">
-        {% if tipo == 'grupos' %}{{ insc.puntos_fase|default:0 }}{% else %}{{ insc.puntos_totales }}{% endif %}
-      </div>
-      <div class="rk-pts-lbl">pts</div>
-      {% if insc.puntos_ultimo > 0 %}<div class="rk-pts-ult" title="Puntos en el último partido finalizado">+{{ insc.puntos_ultimo }} últ.</div>{% endif %}
-    </div>
+    <span class="rk-stat-pill" title="Marcadores exactos en fase de grupos">🎯 <b>{{ insc.marcadores_fase }}</b></span>
+    <span class="rk-stat-pill" title="Resultados acertados en fase de grupos">✅ <b>{{ insc.resultados_fase }}</b></span>
+  </div>
+  {% else %}
+  <div class="rk-stats">
+    <span class="rk-stat-pill" title="Marcadores exactos"><span class="ic">🎯</span> <b>{{ insc.aciertos_marcador }}</b> <span class="lbl-ext d-none d-lg-inline">exactos</span></span>
+    <span class="rk-stat-pill" title="Resultados acertados"><span class="ic">✅</span> <b>{{ insc.aciertos_resultado }}</b> <span class="lbl-ext d-none d-lg-inline">result.</span></span>
+  </div>
+  {% endif %}
+
+  <div class="rk-pts">
+    <span class="rk-pts-val">{% if tipo == 'grupos' %}{{ insc.puntos_fase|default:0 }}{% else %}{{ insc.puntos_totales }}{% endif %}</span>
+    <span class="rk-pts-lbl">pts</span>
+    {% if insc.puntos_ultimo > 0 %}<span class="rk-pts-ult" title="Puntos en el último partido finalizado">+{{ insc.puntos_ultimo }} últ.</span>{% endif %}
   </div>
 
 </div>
