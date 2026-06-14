@@ -165,6 +165,10 @@ class Partido(models.Model):
         return timezone.now() >= self.fecha_hora - timedelta(minutes=minutos)
 
     @property
+    def tiene_curiosidades(self):
+        return bool((self.datos_previos or {}).get('curiosidades'))
+
+    @property
     def resultado_texto(self):
         if self.goles_local is None or self.goles_visitante is None:
             return None

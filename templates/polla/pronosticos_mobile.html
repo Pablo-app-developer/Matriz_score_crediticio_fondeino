@@ -333,7 +333,7 @@ body { background:#0f172a !important; }
         {% endif %}
       </div>
       <div class="m-foot-btns">
-        {% if p.equipo_local.api_football_id and p.equipo_visitante.api_football_id %}
+        {% if p.equipo_local.api_football_id and p.equipo_visitante.api_football_id or p.tiene_curiosidades %}
         <button class="m-btn-stats"
                 data-partido-pk="{{ p.pk }}"
                 data-titulo="{{ p.nombre_local_display }} vs {{ p.nombre_visitante_display }}">
