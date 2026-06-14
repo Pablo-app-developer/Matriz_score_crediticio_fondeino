@@ -111,6 +111,8 @@ def api_empleado_por_cedula(request):
         return JsonResponse({'encontrado': False})
 
 
+@never_cache
+@ensure_csrf_cookie
 def registro_polla(request):
     """Auto-registro para participantes de la polla que no tienen cuenta Django."""
     if request.user.is_authenticated:
@@ -442,6 +444,8 @@ def logout_polla(request):
     return redirect('accounts:landing')
 
 
+@never_cache
+@ensure_csrf_cookie
 @login_required
 def autorizar_descuento(request):
     """Pantalla de autorización de descuento por nómina. Obligatoria antes de jugar."""
@@ -535,6 +539,8 @@ def activar_cuenta(request):
 # Vistas de afiliado
 # ─────────────────────────────────────────────
 
+@never_cache
+@ensure_csrf_cookie
 @afiliado_activo
 def pronosticos(request):
     afiliado = request.user.afiliado
@@ -734,6 +740,8 @@ def guardar_pronostico(request):
     })
 
 
+@never_cache
+@ensure_csrf_cookie
 @afiliado_activo
 def campeon(request):
     afiliado = request.user.afiliado
@@ -802,6 +810,8 @@ def manual_usuario(request):
     return render(request, 'polla/manual_usuario.html')
 
 
+@never_cache
+@ensure_csrf_cookie
 @afiliado_activo
 def reactivar_inscripcion(request):
     afiliado = request.user.afiliado
@@ -822,6 +832,8 @@ def reactivar_inscripcion(request):
     })
 
 
+@never_cache
+@ensure_csrf_cookie
 @afiliado_activo
 def baja_inscripcion(request):
     afiliado = request.user.afiliado

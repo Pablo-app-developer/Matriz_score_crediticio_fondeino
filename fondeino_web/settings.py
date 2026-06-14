@@ -40,6 +40,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'apps.accounts.middleware.ClearLegacyCsrfDomainCookieMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'axes.middleware.AxesMiddleware',
@@ -133,12 +134,15 @@ X_FRAME_OPTIONS               = 'DENY'
 SESSION_COOKIE_HTTPONLY       = True
 SESSION_COOKIE_SECURE         = ON_VERCEL
 SESSION_COOKIE_SAMESITE       = 'Lax'
-# CSRF basado en sesión: el token vive en la sesión del servidor, NO en una
-# cookie 'csrftoken' aparte. Esto elimina de raíz el problema de cookies
-# duplicadas (host-only de www vs Domain=.fondeino.com) que causaba el error
-# "CSRF token from POST incorrect" tanto en PC como en móvil.
-# El token se sigue leyendo igual desde {% csrf_token %} y {{ csrf_token }}.
-CSRF_USE_SESSIONS             = True
+# CSRF basado en cookie host-only (sin CSRF_COOKIE_DOMAIN): la cookie y el
+# token en el form viajan juntos en el browser, así que no se desincronizan
+# aunque la sesión rote. La middleware ClearLegacyCsrfDomainCookieMiddleware
+# expira la cookie vieja con Domain=.fondeino.com que quedó en browsers de
+# configuraciones anteriores y causaba "CSRF token from POST incorrect"
+# (Django leía la cookie equivocada según el orden que enviara el browser).
+CSRF_COOKIE_HTTPONLY          = False
+CSRF_COOKIE_SECURE            = ON_VERCEL
+CSRF_COOKIE_SAMESITE          = 'Lax'
 SECURE_HSTS_SECONDS           = 31536000 if ON_VERCEL else 0
 SECURE_HSTS_INCLUDE_SUBDOMAINS = ON_VERCEL
 SECURE_HSTS_PRELOAD           = ON_VERCEL
