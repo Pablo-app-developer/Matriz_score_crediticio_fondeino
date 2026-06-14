@@ -389,15 +389,12 @@ def ranking(request):
         todos = list(ranking_qs.values(
             'pk', 'afiliado__nombre_completo', 'posicion_anterior',
         ))
-        sube = baja = None
+        sube = None
         for idx, t in enumerate(todos, start=1):
             if t['posicion_anterior']:
                 delta = t['posicion_anterior'] - idx
-                nombre = t['afiliado__nombre_completo']
                 if delta > 0 and (sube is None or delta > sube['delta']):
-                    sube = {'nombre': nombre, 'delta': delta}
-                if delta < 0 and (baja is None or delta < baja['delta']):
-                    baja = {'nombre': nombre, 'delta': delta}
+                    sube = {'nombre': t['afiliado__nombre_completo'], 'delta': delta}
 
         # Líder de la jornada: más puntos en el último partido
         lider_pron = Pronostico.objects.filter(
@@ -450,10 +447,9 @@ def ranking(request):
             f'{ultimo_partido.nombre_visitante_display}'
         )
 
-        if sube or baja or lider_jornada or mejor_racha:
+        if sube or lider_jornada or mejor_racha:
             panel_curiosos = {
                 'sube': sube,
-                'baja': baja,
                 'lider_jornada': lider_jornada,
                 'mejor_racha': mejor_racha,
                 'partido_ref': partido_ref,

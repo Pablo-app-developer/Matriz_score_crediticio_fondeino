@@ -159,12 +159,6 @@ body { background:#0f172a !important; }
         <div class="val">{{ panel_curiosos.sube.nombre }} <b>▲{{ panel_curiosos.sube.delta }}</b></div>
       </div>
       {% endif %}
-      {% if panel_curiosos.baja %}
-      <div class="rm-cf down">
-        <div class="lbl">📉 Bajó más</div>
-        <div class="val">{{ panel_curiosos.baja.nombre }} <b>▼{{ panel_curiosos.baja.delta|stringformat:"d"|cut:"-" }}</b></div>
-      </div>
-      {% endif %}
       {% if panel_curiosos.lider_jornada %}
       <div class="rm-cf mvp">
         <div class="lbl">🏅 MVP jornada</div>
