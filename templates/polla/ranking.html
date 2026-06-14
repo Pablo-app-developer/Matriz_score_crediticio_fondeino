@@ -312,7 +312,7 @@ body { background: #0d1b2a !important; }
         {% if tipo == 'grupos' %}{{ insc.puntos_fase|default:0 }}{% else %}{{ insc.puntos_totales }}{% endif %}
       </div>
       <div class="rk-pts-lbl">pts</div>
-      {% if insc.puntos_ultimo > 0 %}<div class="rk-pts-ult">+{{ insc.puntos_ultimo }}</div>{% endif %}
+      {% if insc.puntos_ultimo > 0 %}<div class="rk-pts-ult" title="Puntos en el último partido finalizado">+{{ insc.puntos_ultimo }} últ.</div>{% endif %}
     </div>
   </div>
 
