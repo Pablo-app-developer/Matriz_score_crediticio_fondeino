@@ -3,11 +3,18 @@
 {% block nav_admin %}active{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
   <h4 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Panel de Administración</h4>
-  <a href="{% url 'accounts:usuario_crear' %}" class="btn btn-primary btn-sm">
-    <i class="bi bi-person-plus me-1"></i>Nuevo Usuario
-  </a>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="{% url 'accounts:admin_descargar_backup' %}" class="btn btn-outline-secondary btn-sm"
+       title="Descarga un archivo .json.gz con todos los datos del sistema. Guárdalo en un lugar seguro."
+       onclick="this.classList.add('disabled');this.innerHTML='<span class=&quot;spinner-border spinner-border-sm me-1&quot;></span>Generando…';setTimeout(()=>{this.classList.remove('disabled');this.innerHTML='<i class=&quot;bi bi-download me-1&quot;></i>Copia de seguridad';},8000);">
+      <i class="bi bi-download me-1"></i>Copia de seguridad
+    </a>
+    <a href="{% url 'accounts:usuario_crear' %}" class="btn btn-primary btn-sm">
+      <i class="bi bi-person-plus me-1"></i>Nuevo Usuario
+    </a>
+  </div>
 </div>
 
 {% if messages %}

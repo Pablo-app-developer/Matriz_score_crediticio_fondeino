@@ -1,13 +1,17 @@
+import gzip
+import io
 import os
 import secrets
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import HttpResponseForbidden, JsonResponse
+from django.core.management import call_command
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.conf import settings
 from django.core.mail import send_mail
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.decorators.cache import cache_control
 from django.db.models import Q
@@ -294,3 +298,38 @@ def usuario_eliminar(request, pk):
     target.delete()
     messages.success(request, f'Usuario «{nombre}» eliminado correctamente.')
     return redirect('accounts:admin_panel')
+
+
+@login_required
+def admin_descargar_backup(request):
+    """Descarga una copia comprimida (gzip) de la base de datos en formato JSON.
+
+    Incluye los datos de negocio: accounts (usuarios), credito (préstamos y
+    evaluaciones), nomina y polla. Excluye sesiones, axes, admin log y
+    contenttypes/permisos (ruido no restaurable o regenerable).
+
+    Restauración: descomprimir el .gz y correr
+    `python manage.py loaddata fondeino_backup_YYYY-MM-DD_HHMM.json`
+    en una BD vacía con las mismas migraciones aplicadas.
+    """
+    if not request.user.es_admin:
+        return HttpResponseForbidden()
+
+    text_buffer = io.StringIO()
+    call_command(
+        'dumpdata',
+        'accounts', 'credito', 'nomina', 'polla',
+        '--natural-foreign',
+        '--natural-primary',
+        '--indent', '2',
+        stdout=text_buffer,
+    )
+    compressed = gzip.compress(text_buffer.getvalue().encode('utf-8'), compresslevel=6)
+
+    timestamp = timezone.localtime().strftime('%Y-%m-%d_%H%M')
+    filename = f'fondeino_backup_{timestamp}.json.gz'
+
+    response = HttpResponse(compressed, content_type='application/gzip')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    response['Content-Length'] = len(compressed)
+    return response
