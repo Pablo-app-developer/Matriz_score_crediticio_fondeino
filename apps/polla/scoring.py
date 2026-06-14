@@ -73,12 +73,18 @@ def recalcular_inscripcion(inscripcion, config):
 
 def snapshot_posiciones():
     """Captura la posición global actual en `posicion_anterior` para cada
-    inscripción activa. Llamar antes de un recálculo para poder mostrar
-    el delta de posición (▲/▼) tras los nuevos resultados.
+    inscripción visible en el ranking. Llamar antes de un recálculo para
+    poder mostrar el delta de posición (▲/▼) tras los nuevos resultados.
+
+    Filtra por `afiliado__user__isnull=False` para coincidir con la vista
+    de ranking — si no, las posiciones se inflan por inscripciones sin
+    cuenta enlazada y los deltas saldrían erróneos.
     """
     from apps.polla.models import InscripcionPolla
 
-    qs = InscripcionPolla.objects.filter(activa=True).order_by(
+    qs = InscripcionPolla.objects.filter(
+        activa=True, afiliado__user__isnull=False,
+    ).order_by(
         '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado',
         'afiliado__nombre_completo',
     )
