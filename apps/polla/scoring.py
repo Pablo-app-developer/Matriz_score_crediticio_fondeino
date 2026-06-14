@@ -71,12 +71,39 @@ def recalcular_inscripcion(inscripcion, config):
     inscripcion.save(update_fields=['puntos_totales', 'aciertos_resultado', 'aciertos_marcador'])
 
 
+def snapshot_posiciones():
+    """Captura la posición global actual en `posicion_anterior` para cada
+    inscripción activa. Llamar antes de un recálculo para poder mostrar
+    el delta de posición (▲/▼) tras los nuevos resultados.
+    """
+    from apps.polla.models import InscripcionPolla
+
+    qs = InscripcionPolla.objects.filter(activa=True).order_by(
+        '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado',
+        'afiliado__nombre_completo',
+    )
+    a_actualizar = []
+    for pos, insc in enumerate(qs, start=1):
+        if insc.posicion_anterior != pos:
+            insc.posicion_anterior = pos
+            a_actualizar.append(insc)
+    if a_actualizar:
+        InscripcionPolla.objects.bulk_update(a_actualizar, ['posicion_anterior'])
+
+
 def recalcular_todo(config=None):
-    """Recalcula puntos de todas las inscripciones activas. Idempotente."""
+    """Recalcula puntos de todas las inscripciones activas. Idempotente.
+
+    Antes del recálculo guarda la posición global actual de cada inscripción
+    en `posicion_anterior` para poder mostrar el delta tras los nuevos
+    resultados.
+    """
     from apps.polla.models import ConfiguracionPolla, InscripcionPolla
 
     if config is None:
         config = ConfiguracionPolla.get()
+
+    snapshot_posiciones()
 
     inscripciones = InscripcionPolla.objects.filter(activa=True).prefetch_related(
         'pronosticos__partido'

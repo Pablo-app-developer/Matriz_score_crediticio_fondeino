@@ -190,6 +190,10 @@ class InscripcionPolla(models.Model):
     puntos_totales = models.IntegerField(default=0, db_index=True)
     aciertos_resultado = models.IntegerField(default=0)
     aciertos_marcador = models.IntegerField(default=0)
+    posicion_anterior = models.IntegerField(
+        null=True, blank=True,
+        help_text='Posición global antes del último recálculo (para delta gamificado).',
+    )
     fecha_inscripcion = models.DateTimeField(auto_now_add=True)
 
     class Meta:

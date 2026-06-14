@@ -346,7 +346,118 @@ def ranking(request):
     total_paginas = max(1, (total + por_pagina - 1) // por_pagina)
     pagina = max(1, min(pagina, total_paginas))
     inicio = (pagina - 1) * por_pagina
-    ranking_pagina = ranking_qs[inicio: inicio + por_pagina]
+    ranking_pagina = list(ranking_qs[inicio: inicio + por_pagina])
+
+    # ── Gamificación: delta de posición, racha y puntos del último partido ──
+    ultimo_partido = Partido.objects.filter(finalizado=True).order_by('-fecha_hora').first()
+    ultimos_finalizados = list(
+        Partido.objects.filter(finalizado=True).order_by('-fecha_hora')[:15]
+    )
+
+    prono_map_pagina = {}
+    if ultimos_finalizados and ranking_pagina:
+        ids_pagina = [i.pk for i in ranking_pagina]
+        ids_partidos = [p.pk for p in ultimos_finalizados]
+        for p in Pronostico.objects.filter(
+            inscripcion_id__in=ids_pagina, partido_id__in=ids_partidos,
+        ).values('inscripcion_id', 'partido_id', 'puntos_obtenidos'):
+            prono_map_pagina.setdefault(p['inscripcion_id'], {})[
+                p['partido_id']
+            ] = p['puntos_obtenidos']
+
+    for idx, insc in enumerate(ranking_pagina):
+        pos_actual = inicio + idx + 1
+        # Delta solo en general (posicion_anterior es global)
+        if tipo == 'general' and insc.posicion_anterior:
+            insc.delta_pos = insc.posicion_anterior - pos_actual
+        else:
+            insc.delta_pos = None
+
+        user_map = prono_map_pagina.get(insc.pk, {})
+        racha = 0
+        for p in ultimos_finalizados:
+            if user_map.get(p.pk, 0) > 0:
+                racha += 1
+            else:
+                break
+        insc.racha = racha
+        insc.puntos_ultimo = user_map.get(ultimo_partido.pk, 0) if ultimo_partido else 0
+
+    # ── Panel "Datos curiosos del ranking" (solo general, página 1) ──
+    panel_curiosos = None
+    if tipo == 'general' and pagina == 1 and ultimo_partido:
+        todos = list(ranking_qs.values(
+            'pk', 'afiliado__nombre_completo', 'posicion_anterior',
+        ))
+        sube = baja = None
+        for idx, t in enumerate(todos, start=1):
+            if t['posicion_anterior']:
+                delta = t['posicion_anterior'] - idx
+                nombre = t['afiliado__nombre_completo']
+                if delta > 0 and (sube is None or delta > sube['delta']):
+                    sube = {'nombre': nombre, 'delta': delta}
+                if delta < 0 and (baja is None or delta < baja['delta']):
+                    baja = {'nombre': nombre, 'delta': delta}
+
+        # Líder de la jornada: más puntos en el último partido
+        lider_pron = Pronostico.objects.filter(
+            partido=ultimo_partido,
+            inscripcion__activa=True,
+            inscripcion__afiliado__user__isnull=False,
+            puntos_obtenidos__gt=0,
+        ).select_related('inscripcion__afiliado').order_by(
+            '-puntos_obtenidos', 'inscripcion__afiliado__nombre_completo',
+        ).first()
+        lider_jornada = None
+        if lider_pron:
+            lider_jornada = {
+                'nombre': lider_pron.inscripcion.afiliado.nombre_completo,
+                'puntos': lider_pron.puntos_obtenidos,
+            }
+
+        # Mejor racha activa entre todos
+        mejor_racha = None
+        if ultimos_finalizados:
+            nombres = {t['pk']: t['afiliado__nombre_completo'] for t in todos}
+            all_pron_map = {}
+            for p in Pronostico.objects.filter(
+                partido_id__in=[x.pk for x in ultimos_finalizados],
+                inscripcion__activa=True,
+                inscripcion__afiliado__user__isnull=False,
+            ).values('inscripcion_id', 'partido_id', 'puntos_obtenidos'):
+                all_pron_map.setdefault(p['inscripcion_id'], {})[
+                    p['partido_id']
+                ] = p['puntos_obtenidos']
+            best = 0
+            best_name = None
+            for insc_id, m in all_pron_map.items():
+                r = 0
+                for p in ultimos_finalizados:
+                    if m.get(p.pk, 0) > 0:
+                        r += 1
+                    else:
+                        break
+                if r > best:
+                    best = r
+                    best_name = nombres.get(insc_id)
+            if best >= 2:
+                mejor_racha = {'nombre': best_name, 'racha': best}
+
+        partido_ref = (
+            f'{ultimo_partido.nombre_local_display} '
+            f'{ultimo_partido.goles_local or 0}–'
+            f'{ultimo_partido.goles_visitante or 0} '
+            f'{ultimo_partido.nombre_visitante_display}'
+        )
+
+        if sube or baja or lider_jornada or mejor_racha:
+            panel_curiosos = {
+                'sube': sube,
+                'baja': baja,
+                'lider_jornada': lider_jornada,
+                'mejor_racha': mejor_racha,
+                'partido_ref': partido_ref,
+            }
 
     # Rango de páginas cercanas para mostrar en la UI (máx 5 botones)
     radio = 2
@@ -386,6 +497,7 @@ def ranking(request):
         'afiliado_user': afiliado_user,
         'chart_labels_json': chart_labels_json,
         'chart_values_json': chart_values_json,
+        'panel_curiosos': panel_curiosos,
     })
 
 

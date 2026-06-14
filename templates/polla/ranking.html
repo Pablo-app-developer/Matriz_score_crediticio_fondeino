@@ -76,11 +76,45 @@ body { background: #0d1b2a !important; }
 .rk-stat-val { font-size: .75rem; font-weight: 700; color: #8ab0d0; }
 .rk-stat-lbl { font-size: .48rem; color: #6a90b0; text-transform: uppercase; letter-spacing: .5px; }
 
-.rk-pts { text-align: right; min-width: 42px; flex-shrink: 0; }
+.rk-pts { text-align: right; min-width: 52px; flex-shrink: 0; }
 .rk-pts-val { font-size: 1rem; font-weight: 900; color: #f0c040; line-height: 1; }
 .rk-row.pos-1 .rk-pts-val { font-size: 1.2rem; }
 .rk-row.pos-2 .rk-pts-val { font-size: 1.1rem; }
 .rk-pts-lbl { font-size: .48rem; color: #6a90b0; text-transform: uppercase; letter-spacing: .7px; }
+.rk-pts-ult { font-size: .58rem; color: #3cba6a; font-weight: 800; margin-top: .12rem; }
+
+/* Delta de posición */
+.rk-pos-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 40px; flex-shrink: 0; gap: .15rem; line-height: 1; }
+.rk-delta { font-size: .52rem; font-weight: 800; padding: .08rem .3rem; border-radius: 4px; line-height: 1; letter-spacing: .2px; }
+.rk-delta.up   { background: rgba(60,186,106,.18);  color: #3cba6a; }
+.rk-delta.down { background: rgba(224,80,80,.18);   color: #e07070; }
+.rk-delta.same { background: rgba(106,144,176,.15); color: #6a90b0; }
+
+/* Racha */
+.rk-racha { font-size: .56rem; background: rgba(240,140,60,.18); color: #f08c3c; padding: .08rem .32rem; border-radius: 4px; font-weight: 800; flex-shrink: 0; line-height: 1.2; vertical-align: middle; }
+
+/* Panel datos curiosos */
+.rk-panel {
+  background: linear-gradient(135deg,#162030 0%,#1a2a3e 100%);
+  border: 1px solid #243855; border-radius: 10px;
+  padding: .7rem .85rem .8rem; margin-bottom: 1rem;
+}
+.rk-panel-hd { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .55rem; flex-wrap: wrap; }
+.rk-panel-ttl { color: #f0c040; font-size: .66rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; gap: .35rem; }
+.rk-panel-ref { color: #6a90b0; font-size: .65rem; font-weight: 600; }
+.rk-panel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .45rem; }
+.rk-cf { background: rgba(13,27,42,.55); border: 1px solid #243855; border-radius: 8px; padding: .45rem .6rem; display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+.rk-cf .lbl { font-size: .55rem; color: #8ab0d0; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; display: flex; align-items: center; gap: .3rem; }
+.rk-cf .val { font-size: .82rem; font-weight: 800; color: #dde8f6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rk-cf .val b { font-weight: 800; }
+.rk-cf.up   { border-color: rgba(60,186,106,.35); }
+.rk-cf.up   .val b { color: #3cba6a; }
+.rk-cf.down { border-color: rgba(224,80,80,.35); }
+.rk-cf.down .val b { color: #e07070; }
+.rk-cf.fire { border-color: rgba(240,140,60,.35); }
+.rk-cf.fire .val b { color: #f08c3c; }
+.rk-cf.mvp  { border-color: rgba(240,192,64,.35); }
+.rk-cf.mvp  .val b { color: #f0c040; }
 
 /* ── Tab campeón ──────────────────────────────────────────── */
 .rk-camp {
@@ -200,6 +234,41 @@ body { background: #0d1b2a !important; }
   {% endif %}
 </div>
 
+{% if panel_curiosos %}
+<div class="rk-panel">
+  <div class="rk-panel-hd">
+    <span class="rk-panel-ttl"><i class="bi bi-stars"></i> Datos curiosos del ranking</span>
+    <span class="rk-panel-ref">{{ panel_curiosos.partido_ref }}</span>
+  </div>
+  <div class="rk-panel-grid">
+    {% if panel_curiosos.sube %}
+    <div class="rk-cf up">
+      <div class="lbl">🚀 Subió más</div>
+      <div class="val">{{ panel_curiosos.sube.nombre }} <b>▲{{ panel_curiosos.sube.delta }}</b></div>
+    </div>
+    {% endif %}
+    {% if panel_curiosos.baja %}
+    <div class="rk-cf down">
+      <div class="lbl">📉 Bajó más</div>
+      <div class="val">{{ panel_curiosos.baja.nombre }} <b>▼{{ panel_curiosos.baja.delta|stringformat:"d"|cut:"-" }}</b></div>
+    </div>
+    {% endif %}
+    {% if panel_curiosos.lider_jornada %}
+    <div class="rk-cf mvp">
+      <div class="lbl">🏅 MVP de la jornada</div>
+      <div class="val">{{ panel_curiosos.lider_jornada.nombre }} <b>+{{ panel_curiosos.lider_jornada.puntos }} pts</b></div>
+    </div>
+    {% endif %}
+    {% if panel_curiosos.mejor_racha %}
+    <div class="rk-cf fire">
+      <div class="lbl">🔥 Mejor racha activa</div>
+      <div class="val">{{ panel_curiosos.mejor_racha.nombre }} <b>{{ panel_curiosos.mejor_racha.racha }} seguidos</b></div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
 {# ── Filas ────────────────────────────────────────────────── #}
 {% for insc in ranking %}
 {% with pos=forloop.counter|add:offset %}
@@ -207,9 +276,16 @@ body { background: #0d1b2a !important; }
   {% if pos == 1 %}pos-1{% elif pos == 2 %}pos-2{% elif pos == 3 %}pos-3{% endif %}
   {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}me{% endif %}">
 
-  <div class="rk-pos">
-    {% if pos == 1 %}🥇{% elif pos == 2 %}🥈{% elif pos == 3 %}🥉
-    {% else %}<span class="rk-pos-num">{{ pos }}</span>{% endif %}
+  <div class="rk-pos-wrap">
+    <div class="rk-pos">
+      {% if pos == 1 %}🥇{% elif pos == 2 %}🥈{% elif pos == 3 %}🥉
+      {% else %}<span class="rk-pos-num">{{ pos }}</span>{% endif %}
+    </div>
+    {% if insc.delta_pos is not None %}
+      {% if insc.delta_pos > 0 %}<span class="rk-delta up">▲{{ insc.delta_pos }}</span>
+      {% elif insc.delta_pos < 0 %}<span class="rk-delta down">▼{{ insc.delta_pos|stringformat:"d"|cut:"-" }}</span>
+      {% else %}<span class="rk-delta same">▬</span>{% endif %}
+    {% endif %}
   </div>
 
   <div class="rk-info">
@@ -219,6 +295,9 @@ body { background: #0d1b2a !important; }
     </div>
     {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}
       <span class="rk-badge rk-badge-me">TÚ</span>
+    {% endif %}
+    {% if insc.racha >= 2 %}
+      <span class="rk-racha">🔥{{ insc.racha }}</span>
     {% endif %}
     {% if insc.afiliado.area %}
       <span class="rk-area d-none d-sm-inline">· {{ insc.afiliado.area }}</span>
@@ -239,6 +318,7 @@ body { background: #0d1b2a !important; }
         {% if tipo == 'grupos' %}{{ insc.puntos_fase|default:0 }}{% else %}{{ insc.puntos_totales }}{% endif %}
       </div>
       <div class="rk-pts-lbl">pts</div>
+      {% if insc.puntos_ultimo > 0 %}<div class="rk-pts-ult">+{{ insc.puntos_ultimo }}</div>{% endif %}
     </div>
   </div>
 

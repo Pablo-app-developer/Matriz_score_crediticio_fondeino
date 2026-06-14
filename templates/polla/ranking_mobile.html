@@ -16,10 +16,29 @@ body { background:#0f172a !important; }
 .rm-tab { display:inline-flex; align-items:center; gap:.25rem; padding:.4rem .85rem; border-radius:16px; white-space:nowrap; flex-shrink:0; font-size:.72rem; font-weight:700; text-decoration:none; border:1px solid #334155; color:#cbd5e1; background:#243349; -webkit-tap-highlight-color:transparent; }
 .rm-tab.activo { background:#fbbf24; color:#111827; border-color:#fbbf24; }
 
+/* Panel datos curiosos */
+.rm-panel { margin:.15rem .2rem .55rem; background:linear-gradient(135deg,#1e2d4a 0%,#243349 100%); border:1px solid #334155; border-radius:10px; padding:.55rem .65rem .6rem; }
+.rm-panel-hd { display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-bottom:.35rem; }
+.rm-panel-hd .ttl { color:#fbbf24; font-size:.66rem; font-weight:800; text-transform:uppercase; letter-spacing:.8px; display:inline-flex; align-items:center; gap:.3rem; }
+.rm-panel-hd .ref { color:#94a3b8; font-size:.58rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:60%; text-align:right; }
+.rm-panel-grid { display:grid; grid-template-columns:1fr 1fr; gap:.3rem; }
+.rm-cf { background:rgba(15,23,42,.55); border:1px solid #334155; border-radius:7px; padding:.35rem .45rem; display:flex; flex-direction:column; gap:.1rem; min-width:0; }
+.rm-cf .lbl { font-size:.55rem; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:.5px; display:flex; align-items:center; gap:.2rem; }
+.rm-cf .val { font-size:.7rem; font-weight:800; color:#f1f5f9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rm-cf .val b { font-weight:800; }
+.rm-cf.up { border-color:rgba(52,211,153,.35); }
+.rm-cf.up .val b { color:#34d399; }
+.rm-cf.down { border-color:rgba(248,113,113,.35); }
+.rm-cf.down .val b { color:#f87171; }
+.rm-cf.fire { border-color:rgba(251,146,60,.35); }
+.rm-cf.fire .val b { color:#fb923c; }
+.rm-cf.mvp { border-color:rgba(251,191,36,.35); }
+.rm-cf.mvp .val b { color:#fbbf24; }
+
 /* Fila de ranking */
 .rm-list { display:flex; flex-direction:column; padding:0 .2rem; gap:.3rem; }
 .rm-row {
-  display:grid; grid-template-columns:34px 1fr auto;
+  display:grid; grid-template-columns:40px 1fr auto;
   align-items:center; gap:.5rem;
   background:#243349; border-radius:8px;
   padding:.55rem .7rem; border-left:3px solid #475569;
@@ -30,20 +49,29 @@ body { background:#0f172a !important; }
 .rm-row.top2 { border-left-color:#cbd5e1; }
 .rm-row.top3 { border-left-color:#d4a373; }
 
-.rm-pos { font-size:.85rem; font-weight:800; color:#cbd5e1; text-align:center; }
-.rm-pos.m1 { color:#fbbf24; font-size:1rem; }
-.rm-pos.m2 { color:#e2e8f0; font-size:1rem; }
-.rm-pos.m3 { color:#d4a373; font-size:1rem; }
+.rm-pos-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1; gap:.12rem; }
+.rm-pos { font-size:.92rem; font-weight:800; color:#cbd5e1; text-align:center; line-height:1; }
+.rm-pos.m1 { color:#fbbf24; font-size:1.05rem; }
+.rm-pos.m2 { color:#e2e8f0; font-size:1.05rem; }
+.rm-pos.m3 { color:#d4a373; font-size:1.05rem; }
+.rm-delta { font-size:.54rem; font-weight:800; line-height:1; padding:.08rem .25rem; border-radius:4px; letter-spacing:.2px; }
+.rm-delta.up { background:rgba(52,211,153,.18); color:#34d399; }
+.rm-delta.down { background:rgba(248,113,113,.18); color:#f87171; }
+.rm-delta.same { background:rgba(148,163,184,.15); color:#94a3b8; }
+.rm-delta.new { background:rgba(96,165,250,.18); color:#60a5fa; }
 
-.rm-name { font-size:.84rem; font-weight:700; color:#f1f5f9; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.rm-name .yo-tag { font-size:.58rem; background:#fbbf24; color:#111827; padding:.1rem .35rem; border-radius:3px; font-weight:800; margin-left:.35rem; vertical-align:middle; }
+.rm-name { font-size:.84rem; font-weight:700; color:#f1f5f9; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:.3rem; flex-wrap:nowrap; }
+.rm-name .nm { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:0 1 auto; min-width:0; }
+.rm-name .yo-tag { font-size:.58rem; background:#fbbf24; color:#111827; padding:.1rem .35rem; border-radius:3px; font-weight:800; vertical-align:middle; flex-shrink:0; }
+.rm-name .rm-racha { font-size:.58rem; background:rgba(251,146,60,.18); color:#fb923c; padding:.1rem .3rem; border-radius:4px; font-weight:800; flex-shrink:0; line-height:1.1; }
 .rm-sub { font-size:.66rem; color:#cbd5e1; margin-top:.18rem; font-weight:600; display:flex; align-items:center; gap:.35rem; flex-wrap:wrap; }
 .rm-sub .rm-stat { background:#0f172a; padding:.08rem .4rem; border-radius:10px; color:#e2e8f0; font-weight:700; }
 .rm-sub .rm-stat b { color:#fbbf24; font-weight:800; }
 .rm-sub .rm-area { color:#94a3b8; font-weight:500; font-size:.62rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
 
-.rm-pts { font-size:.95rem; font-weight:800; color:#fbbf24; white-space:nowrap; text-align:right; }
-.rm-pts span { display:block; font-size:.6rem; color:#94a3b8; font-weight:700; text-align:right; margin-top:.05rem; text-transform:uppercase; letter-spacing:.5px; }
+.rm-pts { font-size:.95rem; font-weight:800; color:#fbbf24; white-space:nowrap; text-align:right; display:flex; flex-direction:column; align-items:flex-end; line-height:1.1; }
+.rm-pts .lbl { font-size:.6rem; color:#94a3b8; font-weight:700; text-align:right; margin-top:.05rem; text-transform:uppercase; letter-spacing:.5px; }
+.rm-pts .ult { font-size:.58rem; color:#34d399; font-weight:800; margin-top:.1rem; }
 
 /* Paginación */
 .rm-pag { display:flex; align-items:center; justify-content:center; gap:.25rem; padding:.75rem .5rem; flex-wrap:wrap; }
@@ -118,18 +146,61 @@ body { background:#0f172a !important; }
   {% endif %}
 
 {% else %}
+  {% if panel_curiosos %}
+  <div class="rm-panel">
+    <div class="rm-panel-hd">
+      <span class="ttl"><i class="bi bi-stars"></i> Datos curiosos</span>
+      <span class="ref">{{ panel_curiosos.partido_ref }}</span>
+    </div>
+    <div class="rm-panel-grid">
+      {% if panel_curiosos.sube %}
+      <div class="rm-cf up">
+        <div class="lbl">🚀 Subió más</div>
+        <div class="val">{{ panel_curiosos.sube.nombre }} <b>▲{{ panel_curiosos.sube.delta }}</b></div>
+      </div>
+      {% endif %}
+      {% if panel_curiosos.baja %}
+      <div class="rm-cf down">
+        <div class="lbl">📉 Bajó más</div>
+        <div class="val">{{ panel_curiosos.baja.nombre }} <b>▼{{ panel_curiosos.baja.delta|stringformat:"d"|cut:"-" }}</b></div>
+      </div>
+      {% endif %}
+      {% if panel_curiosos.lider_jornada %}
+      <div class="rm-cf mvp">
+        <div class="lbl">🏅 MVP jornada</div>
+        <div class="val">{{ panel_curiosos.lider_jornada.nombre }} <b>+{{ panel_curiosos.lider_jornada.puntos }} pts</b></div>
+      </div>
+      {% endif %}
+      {% if panel_curiosos.mejor_racha %}
+      <div class="rm-cf fire">
+        <div class="lbl">🔥 Mejor racha</div>
+        <div class="val">{{ panel_curiosos.mejor_racha.nombre }} <b>{{ panel_curiosos.mejor_racha.racha }} seguidos</b></div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
   {# Lista de ranking #}
   <div class="rm-list">
     {% for insc in ranking %}
     {% with pos=offset|add:forloop.counter %}
     <div class="rm-row {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}yo{% elif pos == 1 %}top1{% elif pos == 2 %}top2{% elif pos == 3 %}top3{% endif %}">
-      <div class="rm-pos {% if pos == 1 %}m1{% elif pos == 2 %}m2{% elif pos == 3 %}m3{% endif %}">
-        {% if pos == 1 %}🥇{% elif pos == 2 %}🥈{% elif pos == 3 %}🥉{% else %}{{ pos }}{% endif %}
+      <div class="rm-pos-wrap">
+        <div class="rm-pos {% if pos == 1 %}m1{% elif pos == 2 %}m2{% elif pos == 3 %}m3{% endif %}">
+          {% if pos == 1 %}🥇{% elif pos == 2 %}🥈{% elif pos == 3 %}🥉{% else %}{{ pos }}{% endif %}
+        </div>
+        {% if insc.delta_pos is not None %}
+          {% if insc.delta_pos > 0 %}<span class="rm-delta up">▲{{ insc.delta_pos }}</span>
+          {% elif insc.delta_pos < 0 %}<span class="rm-delta down">▼{{ insc.delta_pos|stringformat:"d"|cut:"-" }}</span>
+          {% else %}<span class="rm-delta same">▬</span>{% endif %}
+        {% endif %}
       </div>
       <div style="min-width:0;">
         <div class="rm-name">
-          {{ insc.afiliado.nombre_completo }}
+          <span class="nm">{{ insc.afiliado.nombre_completo }}</span>
           {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}<span class="yo-tag">TÚ</span>{% endif %}
+          {% if insc.racha >= 2 %}<span class="rm-racha">🔥{{ insc.racha }}</span>{% endif %}
         </div>
         <div class="rm-sub">
           {% if tipo == 'grupos' %}
@@ -143,8 +214,9 @@ body { background:#0f172a !important; }
         </div>
       </div>
       <div class="rm-pts">
-        {% if tipo == 'grupos' %}{{ insc.puntos_fase }}{% else %}{{ insc.puntos_totales }}{% endif %}
-        <span>pts</span>
+        <span>{% if tipo == 'grupos' %}{{ insc.puntos_fase }}{% else %}{{ insc.puntos_totales }}{% endif %}</span>
+        <span class="lbl">pts</span>
+        {% if insc.puntos_ultimo > 0 %}<span class="ult">+{{ insc.puntos_ultimo }}</span>{% endif %}
       </div>
     </div>
     {% endwith %}
