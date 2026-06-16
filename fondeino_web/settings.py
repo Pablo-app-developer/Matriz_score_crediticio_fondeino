@@ -134,12 +134,12 @@ X_FRAME_OPTIONS               = 'DENY'
 SESSION_COOKIE_HTTPONLY       = True
 SESSION_COOKIE_SECURE         = ON_VERCEL
 SESSION_COOKIE_SAMESITE       = 'Lax'
-# CSRF basado en cookie host-only (sin CSRF_COOKIE_DOMAIN): la cookie y el
-# token en el form viajan juntos en el browser, así que no se desincronizan
-# aunque la sesión rote. La middleware ClearLegacyCsrfDomainCookieMiddleware
-# expira la cookie vieja con Domain=.fondeino.com que quedó en browsers de
-# configuraciones anteriores y causaba "CSRF token from POST incorrect"
-# (Django leía la cookie equivocada según el orden que enviara el browser).
+# CSRF con cookie renombrada (host-only, sin CSRF_COOKIE_DOMAIN):
+# - 'fondeino_csrftoken' no colisiona con la legacy 'csrftoken' (Domain=.fondeino.com)
+#   que quedó en browsers de versiones previas y causaba "CSRF token from POST incorrect".
+# - ClearLegacyCsrfDomainCookieMiddleware expira activamente esa cookie legacy.
+# - La cookie dura 1 año → sobrevive cierres del navegador y expiración de sesión en móvil.
+CSRF_COOKIE_NAME              = 'fondeino_csrftoken'
 CSRF_COOKIE_HTTPONLY          = False
 CSRF_COOKIE_SECURE            = ON_VERCEL
 CSRF_COOKIE_SAMESITE          = 'Lax'

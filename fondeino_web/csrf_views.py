@@ -1,23 +1,16 @@
+from django.conf import settings
 from django.http import HttpResponseForbidden
 
 
 def csrf_failure(request, reason=""):
-    cookie_csrf = bool(request.COOKIES.get('csrftoken'))
-    cookie_session = bool(request.COOKIES.get('sessionid'))
-    origin = request.META.get('HTTP_ORIGIN', '—')
+    cookie_presente = bool(request.COOKIES.get(settings.CSRF_COOKIE_NAME))
+    cookie_legacy   = bool(request.COOKIES.get('csrftoken'))
+    origin  = request.META.get('HTTP_ORIGIN',  '—')
     referer = request.META.get('HTTP_REFERER', '—')
-    secure = request.is_secure()
-
-    raw_cookie = request.META.get('HTTP_COOKIE', '')
-    csrftoken_count = raw_cookie.count('csrftoken=')
-    duplicada = csrftoken_count > 1
+    secure  = request.is_secure()
 
     ok = '✅ Sí'
     no = '❌ No'
-    fila_dup = (
-        f'<tr><td>Cookies csrftoken duplicadas</td>'
-        f'<td style="color:#e0a050;">⚠️ Sí ({csrftoken_count})</td></tr>'
-    ) if duplicada else ''
 
     html = f"""<!DOCTYPE html>
 <html lang="es">
@@ -35,20 +28,20 @@ def csrf_failure(request, reason=""):
             box-shadow: 0 8px 32px rgba(0,0,0,.4); }}
     .icon {{ font-size: 3rem; margin-bottom: .6rem; line-height: 1; }}
     h2 {{ margin: 0 0 .7rem; font-size: 1.25rem; font-weight: 700; color: #f0c040; }}
-    p {{ color: #b0cce8; font-size: .95rem; line-height: 1.5; margin: 0 0 1.5rem; }}
+    p  {{ color: #b0cce8; font-size: .95rem; line-height: 1.5; margin: 0 0 1.5rem; }}
     .btn-primary {{
       display: block; background: #f0c040; color: #0d1218; text-decoration: none;
       border-radius: 10px; padding: .85rem; font-size: 1rem; font-weight: 700;
       box-shadow: 0 4px 16px rgba(240,192,64,.3);
-      transition: transform .15s, box-shadow .15s;
+      transition: transform .15s, box-shadow .15s; cursor: pointer; border: none; width: 100%;
     }}
     .btn-primary:hover {{ transform: translateY(-1px); box-shadow: 0 6px 20px rgba(240,192,64,.45); }}
-    .details {{
+    .toggle {{
       margin-top: 1.4rem; font-size: .72rem; color: #6ba4ff;
       cursor: pointer; opacity: .45; display: inline-block;
-      padding: .35rem .6rem; border-radius: 6px;
+      padding: .35rem .6rem; border-radius: 6px; background: none; border: none;
     }}
-    .details:hover {{ opacity: .85; }}
+    .toggle:hover {{ opacity: .85; }}
     #det {{ display: none; margin-top: .8rem; text-align: left;
             background: #0d1218; border: 1px solid #1e3050; border-radius: 8px;
             padding: .7rem .85rem; font-size: .72rem; }}
@@ -66,20 +59,17 @@ def csrf_failure(request, reason=""):
     Actualizamos tu acceso por seguridad. Toca el botón y sigues jugando — esto
     solo pasa una vez y no se vuelve a repetir.
   </p>
-  <a class="btn-primary" href="javascript:continuar()">Continuar →</a>
-
-  <div class="details" onclick="
-    var d = document.getElementById('det');
-    d.style.display = d.style.display === 'block' ? 'none' : 'block';
-    this.innerText = d.style.display === 'block' ? 'Ocultar detalles' : 'Ver detalles técnicos';
-  ">Ver detalles técnicos</div>
-
+  <button class="btn-primary" onclick="continuar()">Continuar →</button>
+  <button class="toggle" onclick="
+    var d=document.getElementById('det');
+    d.style.display=d.style.display==='block'?'none':'block';
+    this.innerText=d.style.display==='block'?'Ocultar detalles':'Ver detalles técnicos';
+  ">Ver detalles técnicos</button>
   <div id="det">
     <table>
       <tr><td>Razón</td><td>{reason or 'desconocido'}</td></tr>
-      <tr><td>Cookie csrftoken</td><td>{ok if cookie_csrf else no}</td></tr>
-      <tr><td>Sesión</td><td>{ok if cookie_session else no}</td></tr>
-      {fila_dup}
+      <tr><td>Cookie CSRF ({settings.CSRF_COOKIE_NAME})</td><td>{ok if cookie_presente else no}</td></tr>
+      <tr><td>Cookie legacy (csrftoken)</td><td>{'⚠️ Sí' if cookie_legacy else '— No'}</td></tr>
       <tr><td>HTTPS</td><td>{ok if secure else no}</td></tr>
       <tr><td>Origin</td><td>{origin}</td></tr>
       <tr><td>Referer</td><td>{referer}</td></tr>
@@ -92,8 +82,7 @@ function continuar() {{
   document.cookie = 'csrftoken=' + expira;
   document.cookie = 'csrftoken=' + expira + '; domain=.fondeino.com';
   document.cookie = 'csrftoken=' + expira + '; domain=fondeino.com';
-  var dest = document.referrer || '/polla/';
-  window.location.href = dest;
+  window.location.href = document.referrer || '/polla/';
 }}
 </script>
 </body>
