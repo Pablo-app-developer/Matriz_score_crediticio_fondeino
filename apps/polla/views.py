@@ -250,15 +250,21 @@ def _procesar_excel_afiliados(df):
 # ─────────────────────────────────────────────
 
 # Caché en memoria de la función (locmem por defecto en Vercel = warm starts).
-# TTL corto: el ranking solo cambia al guardar resultados de partidos.
-_RANKING_CACHE_TTL = 60
+# Ranking: invalidación explícita al recalcular puntajes, así que el TTL solo
+# protege contra instancias warm desincronizadas. 5 min es suficiente y maximiza
+# el hit rate en períodos sin partidos.
+_RANKING_CACHE_TTL = 300
 
 
 def _invalidate_ranking_cache():
     """Borra los caches del ranking. Se llama tras recalcular puntajes para
     que los cambios se reflejen al instante en esta instancia. Otras instancias
     warm verán los cambios al expirar el TTL (≤ _RANKING_CACHE_TTL segundos)."""
-    keys = ['polla:ranking:campeon:v1', 'polla:ranking:grafica:v1']
+    keys = [
+        'polla:ranking:campeon:v1',
+        'polla:ranking:grafica:v1',
+        'polla:index:ranking_preview:v1',
+    ]
     # Cubre hasta 1000 participantes (20 por página); en producción son <300.
     for tipo in ('general', 'grupos'):
         for p in range(1, 51):
@@ -631,12 +637,31 @@ def index(request):
                 else:
                     auth_login(request, user)
                     return redirect('polla:index')
+
+        def _build_ranking_preview():
+            qs = InscripcionPolla.objects.filter(activa=True).select_related(
+                'afiliado'
+            ).order_by('-puntos_totales')[:10]
+            return [
+                SimpleNamespace(
+                    afiliado=SimpleNamespace(
+                        nombre_completo=i.afiliado.nombre_completo,
+                    ),
+                    puntos_totales=i.puntos_totales,
+                    aciertos_marcador=i.aciertos_marcador,
+                )
+                for i in qs
+            ]
+
+        ranking_preview = cache.get_or_set(
+            'polla:index:ranking_preview:v1',
+            _build_ranking_preview,
+            _RANKING_CACHE_TTL,
+        )
         return render(request, 'polla/landing.html', {
             'config': config,
             'login_form': login_form,
-            'ranking_preview': InscripcionPolla.objects.filter(activa=True).select_related(
-                'afiliado'
-            ).order_by('-puntos_totales')[:10],
+            'ranking_preview': ranking_preview,
         })
 
 
@@ -775,13 +800,12 @@ def pronosticos(request):
     if inscripcion_activa:
         pronosticos_ids = set(inscripcion_activa.pronosticos.values_list('partido_id', flat=True))
 
-    # Pendientes por fase: partidos futuros sin pronóstico
-    pend_por_fase = {}
-    for f in ORDEN_FASES:
-        if f in fases_con_partidos:
-            pend_por_fase[f] = Partido.objects.filter(
-                fase=f, fecha_hora__gt=ahora, finalizado=False,
-            ).exclude(pk__in=pronosticos_ids).count()
+    # Pendientes por fase: partidos futuros sin pronóstico (1 query agrupada
+    # en vez de 7 queries de count individuales).
+    pend_rows = Partido.objects.filter(
+        fecha_hora__gt=ahora, finalizado=False,
+    ).exclude(pk__in=pronosticos_ids).values('fase').annotate(c=Count('pk'))
+    pend_por_fase = {row['fase']: row['c'] for row in pend_rows}
 
     fases_tabs = [
         {'key': f, 'label': SHORT_LABEL[f], 'pendientes': pend_por_fase.get(f, 0), 'icon': FASE_ICON[f]}
