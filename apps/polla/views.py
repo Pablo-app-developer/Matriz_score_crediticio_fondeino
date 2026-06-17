@@ -5,11 +5,13 @@ import random
 import re
 from collections import defaultdict
 from datetime import timedelta
+from types import SimpleNamespace
 
 import pandas as pd
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login as auth_login
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.db.models import Count, Q, Sum
@@ -247,10 +249,49 @@ def _procesar_excel_afiliados(df):
 # Vistas públicas
 # ─────────────────────────────────────────────
 
-def ranking(request):
-    tipo = request.GET.get('tipo', 'general')
-    config = ConfiguracionPolla.get()
+# Caché en memoria de la función (locmem por defecto en Vercel = warm starts).
+# TTL corto: el ranking solo cambia al guardar resultados de partidos.
+_RANKING_CACHE_TTL = 60
 
+
+def _invalidate_ranking_cache():
+    """Borra los caches del ranking. Se llama tras recalcular puntajes para
+    que los cambios se reflejen al instante en esta instancia. Otras instancias
+    warm verán los cambios al expirar el TTL (≤ _RANKING_CACHE_TTL segundos)."""
+    keys = ['polla:ranking:campeon:v1', 'polla:ranking:grafica:v1']
+    # Cubre hasta 1000 participantes (20 por página); en producción son <300.
+    for tipo in ('general', 'grupos'):
+        for p in range(1, 51):
+            keys.append(f'polla:ranking:{tipo}:p{p}:v1')
+    cache.delete_many(keys)
+
+
+def _insc_to_namespace(insc, *, delta_pos, racha, puntos_ultimo):
+    """Convierte una Inscripcion + datos derivados a un objeto picklable seguro
+    para cachear. Evita persistir Model instances con relaciones lazy en cache.
+    """
+    return SimpleNamespace(
+        pk=insc.pk,
+        afiliado=SimpleNamespace(
+            pk=insc.afiliado.pk,
+            nombre_completo=insc.afiliado.nombre_completo,
+            area=insc.afiliado.area,
+        ),
+        delta_pos=delta_pos,
+        racha=racha,
+        puntos_ultimo=puntos_ultimo,
+        puntos_totales=insc.puntos_totales,
+        aciertos_marcador=insc.aciertos_marcador,
+        aciertos_resultado=insc.aciertos_resultado,
+        puntos_fase=getattr(insc, 'puntos_fase', 0),
+        marcadores_fase=getattr(insc, 'marcadores_fase', 0),
+        resultados_fase=getattr(insc, 'resultados_fase', 0),
+    )
+
+
+def _compute_ranking_general_grupos(tipo, pagina):
+    """Cómputo pesado de ranking general/grupos. No depende del request.user
+    → resultado cacheable entre usuarios."""
     # Solo participantes reales: afiliados que crearon su cuenta y entraron a la
     # polla (afiliado.user enlazado). Excluye a los afiliados cargados por Excel
     # que nunca se registraron, para no mostrar los 236 de FONDEINO en el ranking.
@@ -276,87 +317,27 @@ def ranking(request):
             '-puntos_fase', '-marcadores_fase', '-resultados_fase', 'afiliado__nombre_completo'
         )
         titulo = 'Ranking — Fase de Grupos'
-    elif tipo == 'campeon':
-        # Los votos solo se revelan cuando cierran las inscripciones de campeón.
-        cerrado = config.campeon_cerrado
-        equipos_votos = []
-        total_votos = 0
-        if cerrado:
-            from collections import OrderedDict
-            pcs = PronosticoCampeon.objects.select_related(
-                'inscripcion__afiliado', 'equipo'
-            ).filter(inscripcion__activa=True).order_by(
-                'equipo__nombre', 'inscripcion__afiliado__nombre_completo'
-            )
-            agrupado = OrderedDict()
-            for pc in pcs:
-                agrupado.setdefault(pc.equipo, []).append(pc)
-            equipos_votos = [
-                {'equipo': eq, 'votos': len(lst), 'personas': lst}
-                for eq, lst in agrupado.items()
-            ]
-            equipos_votos.sort(key=lambda x: (-x['votos'], x['equipo'].nombre))
-            total_votos = sum(x['votos'] for x in equipos_votos)
-        tpl = 'polla/ranking_mobile.html' if _is_mobile(request) else 'polla/ranking.html'
-        return render(request, tpl, {
-            'tipo': tipo,
-            'equipos_votos': equipos_votos,
-            'cerrado': cerrado,
-            'total_votos': total_votos,
-            'config': config,
-            'titulo': 'Pronósticos de Campeón',
-        })
-    elif tipo == 'grafica':
-        import json as _json
-        qs_gen = base_qs.order_by(
-            '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'afiliado__nombre_completo'
-        )[:30]
-        qs_grp = base_qs.annotate(
-            puntos_fase=Coalesce(Sum(
-                'pronosticos__puntos_obtenidos',
-                filter=Q(pronosticos__partido__fase='GRUPOS'),
-            ), 0),
-        ).order_by('-puntos_fase', 'afiliado__nombre_completo')[:30]
-
-        gen_labels = [i.afiliado.nombre_completo for i in qs_gen]
-        gen_values = [i.puntos_totales for i in qs_gen]
-        grp_labels = [i.afiliado.nombre_completo for i in qs_grp]
-        grp_values = [int(i.puntos_fase) for i in qs_grp]
-
-        tpl = 'polla/ranking_mobile.html' if _is_mobile(request) else 'polla/ranking.html'
-        return render(request, tpl, {
-            'tipo': tipo,
-            'config': config,
-            'titulo': 'Gráfica de puntos',
-            'gen_labels_json': _json.dumps(gen_labels),
-            'gen_values_json': _json.dumps(gen_values),
-            'grp_labels_json': _json.dumps(grp_labels),
-            'grp_values_json': _json.dumps(grp_values),
-        })
     else:
         ranking_qs = base_qs.order_by(
             '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'afiliado__nombre_completo'
         )
         titulo = 'Ranking General'
 
-    # Paginación manual (20 por página)
-    pagina = _int_param(request.GET, 'pagina', 1)
     por_pagina = 20
     total = ranking_qs.count()
     total_paginas = max(1, (total + por_pagina - 1) // por_pagina)
     pagina = max(1, min(pagina, total_paginas))
     inicio = (pagina - 1) * por_pagina
-    ranking_pagina = list(ranking_qs[inicio: inicio + por_pagina])
+    ranking_qs_pagina = list(ranking_qs[inicio: inicio + por_pagina])
 
-    # ── Gamificación: delta de posición, racha y puntos del último partido ──
     ultimo_partido = Partido.objects.filter(finalizado=True).order_by('-fecha_hora').first()
     ultimos_finalizados = list(
         Partido.objects.filter(finalizado=True).order_by('-fecha_hora')[:15]
     )
 
     prono_map_pagina = {}
-    if ultimos_finalizados and ranking_pagina:
-        ids_pagina = [i.pk for i in ranking_pagina]
+    if ultimos_finalizados and ranking_qs_pagina:
+        ids_pagina = [i.pk for i in ranking_qs_pagina]
         ids_partidos = [p.pk for p in ultimos_finalizados]
         for p in Pronostico.objects.filter(
             inscripcion_id__in=ids_pagina, partido_id__in=ids_partidos,
@@ -365,13 +346,13 @@ def ranking(request):
                 p['partido_id']
             ] = p['puntos_obtenidos']
 
-    for idx, insc in enumerate(ranking_pagina):
+    ranking_pagina = []
+    for idx, insc in enumerate(ranking_qs_pagina):
         pos_actual = inicio + idx + 1
-        # Delta solo en general (posicion_anterior es global)
         if tipo == 'general' and insc.posicion_anterior:
-            insc.delta_pos = insc.posicion_anterior - pos_actual
+            delta_pos = insc.posicion_anterior - pos_actual
         else:
-            insc.delta_pos = None
+            delta_pos = None
 
         user_map = prono_map_pagina.get(insc.pk, {})
         racha = 0
@@ -380,10 +361,12 @@ def ranking(request):
                 racha += 1
             else:
                 break
-        insc.racha = racha
-        insc.puntos_ultimo = user_map.get(ultimo_partido.pk, 0) if ultimo_partido else 0
+        puntos_ultimo = user_map.get(ultimo_partido.pk, 0) if ultimo_partido else 0
 
-    # ── Panel "Datos curiosos del ranking" (solo general, página 1) ──
+        ranking_pagina.append(_insc_to_namespace(
+            insc, delta_pos=delta_pos, racha=racha, puntos_ultimo=puntos_ultimo,
+        ))
+
     panel_curiosos = None
     if tipo == 'general' and pagina == 1 and ultimo_partido:
         todos = list(ranking_qs.values(
@@ -396,7 +379,6 @@ def ranking(request):
                 if delta > 0 and (sube is None or delta > sube['delta']):
                     sube = {'nombre': t['afiliado__nombre_completo'], 'delta': delta}
 
-        # Líder de la jornada: más puntos en el último partido
         lider_pron = Pronostico.objects.filter(
             partido=ultimo_partido,
             inscripcion__activa=True,
@@ -412,7 +394,6 @@ def ranking(request):
                 'puntos': lider_pron.puntos_obtenidos,
             }
 
-        # Mejor racha activa entre todos
         mejor_racha = None
         if ultimos_finalizados:
             nombres = {t['pk']: t['afiliado__nombre_completo'] for t in todos}
@@ -455,7 +436,6 @@ def ranking(request):
                 'partido_ref': partido_ref,
             }
 
-    # Rango de páginas cercanas para mostrar en la UI (máx 5 botones)
     radio = 2
     p_inicio = max(1, pagina - radio)
     p_fin = min(total_paginas, pagina + radio)
@@ -464,9 +444,6 @@ def ranking(request):
         p_fin = min(total_paginas, p_inicio + radio * 2)
     paginas_rango = list(range(p_inicio, p_fin + 1))
 
-    afiliado_user = _get_afiliado(request.user) if request.user.is_authenticated else None
-
-    # Top 25 para la gráfica (independiente de la paginación)
     top_chart = list(ranking_qs[:25])
     if tipo == 'grupos':
         chart_labels = [i.afiliado.nombre_completo for i in top_chart]
@@ -475,25 +452,143 @@ def ranking(request):
         chart_labels = [i.afiliado.nombre_completo for i in top_chart]
         chart_values = [i.puntos_totales for i in top_chart]
 
-    import json as _json
-    chart_labels_json = _json.dumps(chart_labels)
-    chart_values_json = _json.dumps(chart_values)
-
-    template = 'polla/ranking_mobile.html' if _is_mobile(request) else 'polla/ranking.html'
-    return render(request, template, {
+    return {
         'tipo': tipo,
-        'ranking': ranking_pagina,
         'titulo': titulo,
-        'config': config,
+        'ranking': ranking_pagina,
         'pagina': pagina,
         'total_paginas': total_paginas,
         'total': total,
         'offset': inicio,
         'paginas_rango': paginas_rango,
-        'afiliado_user': afiliado_user,
-        'chart_labels_json': chart_labels_json,
-        'chart_values_json': chart_values_json,
         'panel_curiosos': panel_curiosos,
+        'chart_labels_json': json.dumps(chart_labels),
+        'chart_values_json': json.dumps(chart_values),
+    }
+
+
+def _compute_ranking_campeon():
+    """Cómputo del tab campeón. No depende del request.user."""
+    config = ConfiguracionPolla.get()
+    cerrado = config.campeon_cerrado
+    equipos_votos = []
+    total_votos = 0
+    if cerrado:
+        from collections import OrderedDict
+        pcs = list(PronosticoCampeon.objects.select_related(
+            'inscripcion__afiliado', 'equipo'
+        ).filter(inscripcion__activa=True).order_by(
+            'equipo__nombre', 'inscripcion__afiliado__nombre_completo'
+        ))
+        agrupado = OrderedDict()
+        for pc in pcs:
+            agrupado.setdefault(pc.equipo, []).append(pc)
+        for eq, lst in agrupado.items():
+            personas = [
+                SimpleNamespace(
+                    inscripcion=SimpleNamespace(
+                        afiliado=SimpleNamespace(
+                            nombre_completo=pc.inscripcion.afiliado.nombre_completo,
+                        ),
+                    ),
+                )
+                for pc in lst
+            ]
+            equipos_votos.append({
+                'equipo': SimpleNamespace(
+                    nombre=eq.nombre,
+                    bandera_url=eq.bandera_url,
+                ),
+                'votos': len(lst),
+                'personas': personas,
+            })
+        equipos_votos.sort(key=lambda x: (-x['votos'], x['equipo'].nombre))
+        total_votos = sum(x['votos'] for x in equipos_votos)
+    return {
+        'cerrado': cerrado,
+        'equipos_votos': equipos_votos,
+        'total_votos': total_votos,
+    }
+
+
+def _compute_ranking_grafica():
+    """Cómputo del tab gráfica (Top 30). No depende del request.user."""
+    base_qs = InscripcionPolla.objects.filter(
+        activa=True, afiliado__user__isnull=False
+    ).select_related('afiliado')
+
+    qs_gen = base_qs.order_by(
+        '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'afiliado__nombre_completo'
+    )[:30]
+    qs_grp = base_qs.annotate(
+        puntos_fase=Coalesce(Sum(
+            'pronosticos__puntos_obtenidos',
+            filter=Q(pronosticos__partido__fase='GRUPOS'),
+        ), 0),
+    ).order_by('-puntos_fase', 'afiliado__nombre_completo')[:30]
+
+    gen_labels = [i.afiliado.nombre_completo for i in qs_gen]
+    gen_values = [i.puntos_totales for i in qs_gen]
+    grp_labels = [i.afiliado.nombre_completo for i in qs_grp]
+    grp_values = [int(i.puntos_fase) for i in qs_grp]
+
+    return {
+        'gen_labels_json': json.dumps(gen_labels),
+        'gen_values_json': json.dumps(gen_values),
+        'grp_labels_json': json.dumps(grp_labels),
+        'grp_values_json': json.dumps(grp_values),
+    }
+
+
+def ranking(request):
+    tipo = request.GET.get('tipo', 'general')
+    if tipo not in ('general', 'grupos', 'campeon', 'grafica'):
+        tipo = 'general'
+
+    config = ConfiguracionPolla.get()
+    afiliado_user = _get_afiliado(request.user) if request.user.is_authenticated else None
+    template = 'polla/ranking_mobile.html' if _is_mobile(request) else 'polla/ranking.html'
+
+    if tipo == 'campeon':
+        data = cache.get_or_set(
+            'polla:ranking:campeon:v1',
+            _compute_ranking_campeon,
+            _RANKING_CACHE_TTL,
+        )
+        return render(request, template, {
+            'tipo': tipo,
+            'config': config,
+            'titulo': 'Pronósticos de Campeón',
+            'afiliado_user': afiliado_user,
+            **data,
+        })
+
+    if tipo == 'grafica':
+        data = cache.get_or_set(
+            'polla:ranking:grafica:v1',
+            _compute_ranking_grafica,
+            _RANKING_CACHE_TTL,
+        )
+        return render(request, template, {
+            'tipo': tipo,
+            'config': config,
+            'titulo': 'Gráfica de puntos',
+            'afiliado_user': afiliado_user,
+            **data,
+        })
+
+    # general / grupos
+    pagina = _int_param(request.GET, 'pagina', 1)
+    cache_key = f'polla:ranking:{tipo}:p{pagina}:v1'
+    data = cache.get_or_set(
+        cache_key,
+        lambda: _compute_ranking_general_grupos(tipo, pagina),
+        _RANKING_CACHE_TTL,
+    )
+    return render(request, template, {
+        'config': config,
+        'afiliado_user': afiliado_user,
+        **data,
     })
 
 
@@ -1192,6 +1287,7 @@ def admin_cargar_resultados(request):
 
         if actualizados:
             total = recalcular_todo(config)
+            _invalidate_ranking_cache()
             messages.success(
                 request,
                 f'Se actualizaron {actualizados} partido(s) y se recalcularon los puntos de {total} inscripciones.'
@@ -1312,6 +1408,7 @@ def admin_cerrar_polla(request):
 
         # Cálculo final
         recalcular_todo(config)
+        _invalidate_ranking_cache()
 
         # Sorteo del campeón
         ganadores_campeon = list(PronosticoCampeon.objects.filter(acerto=True).select_related(
@@ -1519,6 +1616,7 @@ def admin_resultado_colombia(request):
     if finalizado:
         config = ConfiguracionPolla.get()
         recalcular_todo(config)
+        _invalidate_ranking_cache()
 
     return JsonResponse({
         'ok': True,
