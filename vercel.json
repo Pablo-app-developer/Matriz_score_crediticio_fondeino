@@ -8,9 +8,20 @@
       "config": {
         "maxLambdaSize": "15mb"
       }
+    },
+    {
+      "src": "staticfiles/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/staticfiles/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800"
+      }
+    },
     {
       "src": "/(.*)",
       "dest": "fondeino_web/wsgi.py"
