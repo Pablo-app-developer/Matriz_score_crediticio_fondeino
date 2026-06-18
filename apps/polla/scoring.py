@@ -86,7 +86,7 @@ def snapshot_posiciones():
         activa=True, afiliado__user__isnull=False,
     ).order_by(
         '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado',
-        'afiliado__nombre_completo',
+        'pk',
     )
     a_actualizar = []
     for pos, insc in enumerate(qs, start=1):

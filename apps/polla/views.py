@@ -320,12 +320,12 @@ def _compute_ranking_general_grupos(tipo, pagina):
                 filter=Q(pronosticos__partido__fase='GRUPOS', pronosticos__acerto_resultado=True),
             ),
         ).order_by(
-            '-puntos_fase', '-marcadores_fase', '-resultados_fase', 'afiliado__nombre_completo'
+            '-puntos_fase', '-marcadores_fase', '-resultados_fase', 'pk'
         )
         titulo = 'Ranking — Fase de Grupos'
     else:
         ranking_qs = base_qs.order_by(
-            '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'afiliado__nombre_completo'
+            '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'pk'
         )
         titulo = 'Ranking General'
 
@@ -1349,7 +1349,7 @@ def admin_reporte(request):
     top5_general = list(
         InscripcionPolla.objects.filter(activa=True)
         .select_related('afiliado')
-        .order_by('-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'afiliado__nombre_completo')
+        .order_by('-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'pk')
         [:5]
     )
 
@@ -1363,7 +1363,7 @@ def admin_reporte(request):
                 0
             )
         )
-        .order_by('-puntos_grupos', 'afiliado__nombre_completo')
+        .order_by('-puntos_grupos', 'pk')
         [:5]
     )
 
@@ -1398,7 +1398,7 @@ def admin_reporte(request):
                     acerto_marcador=True,
                 )
                 .select_related('inscripcion__afiliado')
-                .order_by('-inscripcion__puntos_totales', '-inscripcion__aciertos_marcador', 'inscripcion__afiliado__nombre_completo')
+                .order_by('-inscripcion__puntos_totales', '-inscripcion__aciertos_marcador', 'pk')
             )
         partidos_colombia_info.append({
             'partido': partido,
@@ -1450,7 +1450,7 @@ def admin_cerrar_polla(request):
         config.save()
 
         top5_general = InscripcionPolla.objects.filter(activa=True).select_related('afiliado').order_by(
-            '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'afiliado__nombre_completo'
+            '-puntos_totales', '-aciertos_marcador', '-aciertos_resultado', 'pk'
         )[:5]
 
         top5_grupos = InscripcionPolla.objects.filter(activa=True).select_related('afiliado').annotate(
