@@ -166,7 +166,8 @@ class Partido(models.Model):
 
     @property
     def tiene_curiosidades(self):
-        return bool((self.datos_previos or {}).get('curiosidades'))
+        d = self.datos_previos or {}
+        return bool(d.get('curiosidades')) or bool(d.get('curiosidades_secciones'))
 
     @property
     def resultado_texto(self):

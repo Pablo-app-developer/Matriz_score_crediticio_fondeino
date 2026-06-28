@@ -1685,34 +1685,49 @@ def admin_curiosidades(request):
     """Lista y edita datos curiosos (uno por línea) para cualquier partido."""
     partidos = Partido.objects.select_related(
         'equipo_local', 'equipo_visitante'
-    ).filter(fase='GRUPOS').order_by('fecha_hora', 'numero')
+    ).order_by('fecha_hora', 'numero')
 
     if request.method == 'POST':
         partido_id = request.POST.get('partido_id')
-        texto = request.POST.get('curiosidades', '')
+        accion = request.POST.get('accion', 'guardar')
         partido = get_object_or_404(Partido, pk=partido_id)
-        lineas = [l.strip() for l in texto.splitlines() if l.strip()]
         datos = partido.datos_previos or {}
-        if lineas:
-            datos['curiosidades'] = lineas
+
+        if accion == 'borrar_secciones':
+            datos.pop('curiosidades_secciones', None)
+            partido.datos_previos = datos
+            partido.save(update_fields=['datos_previos'])
+            messages.success(
+                request,
+                f'Secciones borradas para {partido.equipo_local.nombre} vs {partido.equipo_visitante.nombre}.'
+            )
         else:
-            datos.pop('curiosidades', None)
-        partido.datos_previos = datos
-        partido.save(update_fields=['datos_previos'])
-        messages.success(
-            request,
-            f'Datos curiosos guardados para {partido.equipo_local.nombre} vs {partido.equipo_visitante.nombre}.'
-        )
+            texto = request.POST.get('curiosidades', '')
+            lineas = [l.strip() for l in texto.splitlines() if l.strip()]
+            if lineas:
+                datos['curiosidades'] = lineas
+            else:
+                datos.pop('curiosidades', None)
+            partido.datos_previos = datos
+            partido.save(update_fields=['datos_previos'])
+            messages.success(
+                request,
+                f'Datos curiosos guardados para {partido.equipo_local.nombre} vs {partido.equipo_visitante.nombre}.'
+            )
         return redirect('polla:admin_curiosidades')
 
     # Armar lista con estado actual
     partidos_data = []
     for p in partidos:
-        curiosidades = (p.datos_previos or {}).get('curiosidades', [])
+        d = p.datos_previos or {}
+        curiosidades = d.get('curiosidades', [])
+        secciones = d.get('curiosidades_secciones', [])
         partidos_data.append({
             'partido': p,
             'curiosidades_texto': '\n'.join(curiosidades),
             'tiene': bool(curiosidades),
+            'secciones': secciones,
+            'tiene_secciones': bool(secciones),
         })
 
     return render(request, 'polla/admin/curiosidades.html', {
