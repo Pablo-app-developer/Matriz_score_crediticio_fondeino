@@ -377,7 +377,9 @@ body { background: #0d1b2a !important; }
 {% block polla_scripts %}
 {% if tipo == 'grafica' %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script>
+Chart.register(ChartDataLabels);
 function buildChart(canvasId, labels, values) {
   if (!labels.length) return;
   const colors = labels.map((_, i) =>
@@ -385,6 +387,7 @@ function buildChart(canvasId, labels, values) {
   );
   const ctx = document.getElementById(canvasId);
   ctx.parentNode.style.height = Math.max(260, labels.length * 28) + 'px';
+  const maxVal = Math.max(...values, 1);
   new Chart(ctx, {
     type: 'bar',
     data: {
@@ -401,6 +404,7 @@ function buildChart(canvasId, labels, values) {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { right: 44 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -410,13 +414,26 @@ function buildChart(canvasId, labels, values) {
           borderWidth: 1,
           titleColor: '#8ab0d0',
           bodyColor: '#f0c040',
-        }
+        },
+        datalabels: {
+          anchor: 'end',
+          align: 'end',
+          clamp: true,
+          offset: 4,
+          color: ctxLbl => ctxLbl.dataIndex === 0 ? '#f0c040'
+                         : ctxLbl.dataIndex === 1 ? '#c8d4e0'
+                         : ctxLbl.dataIndex === 2 ? '#e0a070'
+                         : '#8ab0d0',
+          font: { size: 11, weight: '700' },
+          formatter: v => v + ' pts',
+        },
       },
       scales: {
         x: {
           grid: { color: '#1a2a3a' },
           ticks: { color: '#3e5e7c', font: { size: 11 } },
           border: { color: '#1e3050' },
+          suggestedMax: maxVal * 1.08,
         },
         y: {
           grid: { display: false },
