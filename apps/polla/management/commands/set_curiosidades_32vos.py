@@ -395,6 +395,21 @@ class Command(BaseCommand):
         dry = options['dry_run']
         sobre = options['sobrescribir']
 
+        # Diagnostico: imprime que partidos de 32vos hay en DB
+        from django.db.models import Count
+        self.stdout.write('--- Diagnostico fases en DB ---')
+        for row in Partido.objects.values('fase').annotate(c=Count('id')).order_by('fase'):
+            self.stdout.write(f'  fase={row["fase"]}  count={row["c"]}')
+        treinta = Partido.objects.filter(fase='TREINTA_DOS').select_related(
+            'equipo_local', 'equipo_visitante'
+        ).order_by('numero')
+        self.stdout.write(f'--- Partidos TREINTA_DOS en DB ({treinta.count()}) ---')
+        for p in treinta:
+            self.stdout.write(
+                f'  #{p.numero}  local="{p.equipo_local.nombre}"  visita="{p.equipo_visitante.nombre}"'
+            )
+        self.stdout.write('--- Inicio carga ---')
+
         ok, no_encontrado, ya_existian, saltados_invertidos = 0, 0, 0, 0
 
         for item in STATS:
