@@ -105,6 +105,7 @@ a.rm-row:active { background:#2a3d5a; }
   padding:.3rem .6rem; color:#c4e8d4; font-size:.7rem; margin-top:.5rem;
 }
 .rg-banner-dot { width:7px; height:7px; border-radius:50%; background:#50c88c; box-shadow:0 0 6px #50c88c; }
+.rg-chart-box { position:relative; width:100%; overflow:hidden; }
 
 /* Lista campeón */
 .rc-group { padding:0 .2rem .5rem; }
@@ -148,7 +149,7 @@ a.rm-row:active { background:#2a3d5a; }
       <button type="button"          data-modo="grp">Grupos</button>
     </div>
   </div>
-  <canvas id="rgChart"></canvas>
+  <div class="rg-chart-box" id="rgChartBox"><canvas id="rgChart"></canvas></div>
 </div>
 
 {% elif tipo == 'campeon' %}
@@ -317,14 +318,15 @@ function _rgLabelColor(ctxLbl) {
 function buildRgChart(modo) {
   const { labels, values } = RG_DATA[modo];
   const canvas = document.getElementById('rgChart');
+  const box = document.getElementById('rgChartBox');
   if (_rgChart) { _rgChart.destroy(); _rgChart = null; }
   if (!labels.length) {
-    canvas.parentNode.style.height = '120px';
+    box.style.height = '120px';
     canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
     return;
   }
-  canvas.parentNode.style.minHeight = Math.max(220, labels.length * 24) + 'px';
-  canvas.style.height = Math.max(220, labels.length * 24) + 'px';
+  // Altura fija en el wrapper; NO tocar canvas.style.height (causa resize loop).
+  box.style.height = Math.max(220, labels.length * 24) + 'px';
   const maxVal = Math.max(...values, 1);
   const colors = _rgColors(labels);
 
