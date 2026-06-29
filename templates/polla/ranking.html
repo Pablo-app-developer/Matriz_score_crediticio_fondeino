@@ -188,9 +188,42 @@ body { background: #0d1b2a !important; }
 {% if tipo == 'grafica' %}
 {# ════ TAB GRÁFICA ════════════════════════════════════════════ #}
 <div class="rk-chart-wrap">
-  <div class="rk-chart-title"><i class="bi bi-bar-chart-fill me-1"></i>Top 30 — Ranking General</div>
-  <canvas id="rkChartGen"></canvas>
+  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+    <div class="rk-chart-title m-0" id="rkChartTitle"><i class="bi bi-bar-chart-fill me-1"></i>Top 30 — Ranking General</div>
+    <div class="d-flex gap-1" role="group">
+      <button type="button" class="rk-mini-tab on" data-modo="gen">General</button>
+      <button type="button" class="rk-mini-tab"    data-modo="grp">Grupos</button>
+    </div>
+  </div>
+  <canvas id="rkChart"></canvas>
+  {% if user_nombre and user_pos_gen %}
+  <div id="rkUserBanner" class="rk-user-banner mt-2">
+    <span class="rk-user-banner-dot"></span>
+    <span>Tu posición: <b id="rkUserPos">#{{ user_pos_gen }}</b> con <b id="rkUserPts">{{ user_pts_gen }}</b> pts</span>
+  </div>
+  {% endif %}
 </div>
+
+<style>
+.rk-mini-tab {
+  background: #0a1520; color: #8ab0d0; border: 1px solid #1e3050;
+  font-size: .68rem; font-weight: 700; padding: .25rem .65rem;
+  border-radius: 6px; letter-spacing: .5px; text-transform: uppercase;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.rk-mini-tab:hover { background: #112236; color: #dde8f6; }
+.rk-mini-tab.on { background: #f0c040; color: #1a1200; border-color: #f0c040; }
+.rk-user-banner {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: linear-gradient(90deg, rgba(80,200,140,.12), rgba(80,200,140,0));
+  border: 1px solid #2a6a4a; border-radius: 8px;
+  padding: .35rem .7rem; color: #c4e8d4; font-size: .78rem;
+}
+.rk-user-banner-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: #50c88c;
+  box-shadow: 0 0 6px #50c88c;
+}
+</style>
 
 {% elif tipo == 'campeon' %}
 {# ════ TAB CAMPEÓN ════════════════════════════════════════════ #}
@@ -380,15 +413,51 @@ body { background: #0d1b2a !important; }
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script>
 Chart.register(ChartDataLabels);
-function buildChart(canvasId, labels, values) {
-  if (!labels.length) return;
-  const colors = labels.map((_, i) =>
-    i === 0 ? '#f0c040' : i === 1 ? '#a8b8c8' : i === 2 ? '#cd8040' : '#2a5070'
-  );
-  const ctx = document.getElementById(canvasId);
-  ctx.parentNode.style.height = Math.max(260, labels.length * 28) + 'px';
+
+const RK_DATA = {
+  gen: { labels: {{ gen_labels_json|safe }}, values: {{ gen_values_json|safe }} },
+  grp: { labels: {{ grp_labels_json|safe }}, values: {{ grp_values_json|safe }} },
+};
+const RK_USER = {
+  nombre: "{{ user_nombre|default:''|escapejs }}",
+  pos: { gen: {{ user_pos_gen|default_if_none:"null" }}, grp: {{ user_pos_grp|default_if_none:"null" }} },
+  pts: { gen: {{ user_pts_gen|default_if_none:"null" }}, grp: {{ user_pts_grp|default_if_none:"null" }} },
+};
+const RK_MEDALS = ['🥇 ', '🥈 ', '🥉 '];
+let _rkChart = null;
+
+function _rkColors(labels) {
+  return labels.map((name, i) => {
+    if (RK_USER.nombre && name === RK_USER.nombre) return '#50c88c';
+    if (i === 0) return '#f0c040';
+    if (i === 1) return '#a8b8c8';
+    if (i === 2) return '#cd8040';
+    return '#2a5070';
+  });
+}
+function _rkLabelColor(ctxLbl) {
+  const name = ctxLbl.chart.data.labels[ctxLbl.dataIndex];
+  if (RK_USER.nombre && name === RK_USER.nombre) return '#7ce0a8';
+  if (ctxLbl.dataIndex === 0) return '#f0c040';
+  if (ctxLbl.dataIndex === 1) return '#c8d4e0';
+  if (ctxLbl.dataIndex === 2) return '#e0a070';
+  return '#8ab0d0';
+}
+
+function buildChart(modo) {
+  const { labels, values } = RK_DATA[modo];
+  const canvas = document.getElementById('rkChart');
+  if (_rkChart) { _rkChart.destroy(); _rkChart = null; }
+  if (!labels.length) {
+    canvas.parentNode.style.height = '120px';
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+  canvas.parentNode.style.height = Math.max(260, labels.length * 28) + 'px';
   const maxVal = Math.max(...values, 1);
-  new Chart(ctx, {
+  const colors = _rkColors(labels);
+
+  _rkChart = new Chart(canvas, {
     type: 'bar',
     data: {
       labels,
@@ -416,14 +485,8 @@ function buildChart(canvasId, labels, values) {
           bodyColor: '#f0c040',
         },
         datalabels: {
-          anchor: 'end',
-          align: 'end',
-          clamp: true,
-          offset: 4,
-          color: ctxLbl => ctxLbl.dataIndex === 0 ? '#f0c040'
-                         : ctxLbl.dataIndex === 1 ? '#c8d4e0'
-                         : ctxLbl.dataIndex === 2 ? '#e0a070'
-                         : '#8ab0d0',
+          anchor: 'end', align: 'end', clamp: true, offset: 4,
+          color: _rkLabelColor,
           font: { size: 11, weight: '700' },
           formatter: v => v + ' pts',
         },
@@ -438,11 +501,20 @@ function buildChart(canvasId, labels, values) {
         y: {
           grid: { display: false },
           ticks: {
-            color: '#7090b0',
-            font: { size: 12 },
+            color: ctx => {
+              const name = ctx.chart.data.labels[ctx.index];
+              if (RK_USER.nombre && name === RK_USER.nombre) return '#7ce0a8';
+              return '#7090b0';
+            },
+            font: ctx => ({
+              size: 12,
+              weight: (RK_USER.nombre && ctx.chart.data.labels[ctx.index] === RK_USER.nombre) ? '700' : '400',
+            }),
             callback(val) {
-              const n = this.getLabelForValue(val);
-              return n.length > 26 ? n.slice(0, 25) + '…' : n;
+              let n = this.getLabelForValue(val);
+              const medal = RK_MEDALS[val] || '';
+              const display = n.length > 24 ? n.slice(0, 23) + '…' : n;
+              return medal + display;
             }
           },
           border: { color: '#1e3050' },
@@ -450,8 +522,51 @@ function buildChart(canvasId, labels, values) {
       }
     }
   });
+
+  // Scroll automatico a la barra del usuario, si esta en el chart
+  if (RK_USER.nombre) {
+    const idx = labels.indexOf(RK_USER.nombre);
+    if (idx >= 0) {
+      setTimeout(() => {
+        const meta = _rkChart.getDatasetMeta(0);
+        const bar = meta.data[idx];
+        if (!bar) return;
+        const wrapRect = canvas.parentNode.getBoundingClientRect();
+        const targetY = window.scrollY + wrapRect.top + bar.y - 120;
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
+      }, 250);
+    }
+  }
 }
-buildChart('rkChartGen', {{ gen_labels_json|safe }}, {{ gen_values_json|safe }});
+
+function _rkUpdateBanner(modo) {
+  const banner = document.getElementById('rkUserBanner');
+  if (!banner) return;
+  const pos = RK_USER.pos[modo];
+  const pts = RK_USER.pts[modo];
+  if (pos == null) { banner.style.display = 'none'; return; }
+  banner.style.display = '';
+  document.getElementById('rkUserPos').textContent = '#' + pos;
+  document.getElementById('rkUserPts').textContent = pts;
+}
+function _rkUpdateTitle(modo) {
+  const t = document.getElementById('rkChartTitle');
+  if (!t) return;
+  t.innerHTML = '<i class="bi bi-bar-chart-fill me-1"></i>Top 30 — Ranking ' +
+                (modo === 'grp' ? 'por Fase de Grupos' : 'General');
+}
+
+document.querySelectorAll('.rk-mini-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const modo = btn.dataset.modo;
+    document.querySelectorAll('.rk-mini-tab').forEach(b => b.classList.toggle('on', b === btn));
+    _rkUpdateTitle(modo);
+    _rkUpdateBanner(modo);
+    buildChart(modo);
+  });
+});
+_rkUpdateBanner('gen');
+buildChart('gen');
 </script>
 {% endif %}
 {% endblock %}

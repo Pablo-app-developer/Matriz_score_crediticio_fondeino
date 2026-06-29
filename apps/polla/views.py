@@ -575,12 +575,45 @@ def ranking(request):
             _compute_ranking_grafica,
             _RANKING_CACHE_TTL,
         )
+        # Datos del usuario para resaltar su barra y mostrar su posicion
+        user_extra = {
+            'user_nombre': '',
+            'user_pos_gen': None, 'user_pts_gen': None,
+            'user_pos_grp': None, 'user_pts_grp': None,
+        }
+        if afiliado_user:
+            user_insc = InscripcionPolla.objects.filter(
+                afiliado=afiliado_user, activa=True
+            ).first()
+            if user_insc:
+                user_extra['user_nombre'] = afiliado_user.nombre_completo
+                base_qs = InscripcionPolla.objects.filter(
+                    activa=True, afiliado__user__isnull=False,
+                )
+                user_extra['user_pts_gen'] = user_insc.puntos_totales
+                user_extra['user_pos_gen'] = base_qs.filter(
+                    puntos_totales__gt=user_insc.puntos_totales
+                ).count() + 1
+                # Puntos grupos del usuario
+                user_pts_grp = (
+                    user_insc.pronosticos
+                    .filter(partido__fase='GRUPOS')
+                    .aggregate(s=Coalesce(Sum('puntos_obtenidos'), 0))['s']
+                )
+                user_extra['user_pts_grp'] = int(user_pts_grp)
+                user_extra['user_pos_grp'] = base_qs.annotate(
+                    pf=Coalesce(Sum(
+                        'pronosticos__puntos_obtenidos',
+                        filter=Q(pronosticos__partido__fase='GRUPOS'),
+                    ), 0),
+                ).filter(pf__gt=user_pts_grp).count() + 1
         return render(request, template, {
             'tipo': tipo,
             'config': config,
             'titulo': 'Gráfica de puntos',
             'afiliado_user': afiliado_user,
             **data,
+            **user_extra,
         })
 
     # general / grupos
