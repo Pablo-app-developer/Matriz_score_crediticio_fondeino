@@ -83,6 +83,26 @@ body { background:#0f172a !important; }
 }
 .rm-pag .activo { background:#fbbf24; color:#111827; border-color:#fbbf24; }
 
+/* Gráfica (mobile) */
+.rg-wrap { background:#111e2e; border:1px solid #1e3050; border-radius:10px; padding:.55rem .65rem .65rem; margin:.15rem .2rem .55rem; }
+.rg-head { display:flex; justify-content:space-between; align-items:center; gap:.4rem; margin-bottom:.45rem; flex-wrap:wrap; }
+.rg-title { color:#3e5e7c; font-size:.6rem; font-weight:800; text-transform:uppercase; letter-spacing:1.2px; margin:0; }
+.rg-toggle { display:inline-flex; gap:.25rem; }
+.rg-toggle button {
+  background:#0a1520; color:#8ab0d0; border:1px solid #1e3050;
+  font-size:.62rem; font-weight:700; padding:.22rem .55rem;
+  border-radius:6px; letter-spacing:.4px; text-transform:uppercase;
+  -webkit-tap-highlight-color:transparent;
+}
+.rg-toggle button.on { background:#fbbf24; color:#1a1200; border-color:#fbbf24; }
+.rg-banner {
+  display:inline-flex; align-items:center; gap:.4rem;
+  background:linear-gradient(90deg,rgba(80,200,140,.12),rgba(80,200,140,0));
+  border:1px solid #2a6a4a; border-radius:8px;
+  padding:.3rem .6rem; color:#c4e8d4; font-size:.7rem; margin-top:.5rem;
+}
+.rg-banner-dot { width:7px; height:7px; border-radius:50%; background:#50c88c; box-shadow:0 0 6px #50c88c; }
+
 /* Lista campeón */
 .rc-group { padding:0 .2rem .5rem; }
 .rc-equipo { background:#1e293b; border-radius:8px; margin-bottom:.25rem; overflow:hidden; }
@@ -107,9 +127,28 @@ body { background:#0f172a !important; }
 <div class="rm-tabs">
   <a href="?tipo=general"  class="rm-tab {% if tipo == 'general' or not tipo %}activo{% endif %}"><i class="bi bi-trophy-fill"></i> General</a>
   <a href="?tipo=campeon"  class="rm-tab {% if tipo == 'campeon' %}activo{% endif %}"><i class="bi bi-star-fill"></i> Campeón</a>
+  <a href="?tipo=grafica"  class="rm-tab {% if tipo == 'grafica' %}activo{% endif %}"><i class="bi bi-bar-chart-fill"></i> Gráfica</a>
 </div>
 
-{% if tipo == 'campeon' %}
+{% if tipo == 'grafica' %}
+<div class="rg-wrap">
+  {% if user_nombre and user_pos_gen %}
+  <div id="rgBanner" class="rg-banner">
+    <span class="rg-banner-dot"></span>
+    <span>Tu posición: <b id="rgUserPos">#{{ user_pos_gen }}</b> con <b id="rgUserPts">{{ user_pts_gen }}</b> pts</span>
+  </div>
+  {% endif %}
+  <div class="rg-head">
+    <div class="rg-title" id="rgTitle"><i class="bi bi-bar-chart-fill me-1"></i>Top 30 — General</div>
+    <div class="rg-toggle">
+      <button type="button" class="on" data-modo="gen">General</button>
+      <button type="button"          data-modo="grp">Grupos</button>
+    </div>
+  </div>
+  <canvas id="rgChart"></canvas>
+</div>
+
+{% elif tipo == 'campeon' %}
   {% if not cerrado %}
   <div style="text-align:center;padding:3rem 1rem;">
     <i class="bi bi-lock-fill" style="font-size:2.2rem;color:#3e5e7c;display:block;margin-bottom:.9rem;"></i>
@@ -232,4 +271,161 @@ body { background:#0f172a !important; }
   {% endif %}
 {% endif %}
 
+{% endblock %}
+
+{% block polla_scripts %}
+{% if tipo == 'grafica' %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script>
+Chart.register(ChartDataLabels);
+
+const RG_DATA = {
+  gen: { labels: {{ gen_labels_json|safe }}, values: {{ gen_values_json|safe }} },
+  grp: { labels: {{ grp_labels_json|safe }}, values: {{ grp_values_json|safe }} },
+};
+const RG_USER = {
+  nombre: "{{ user_nombre|default:''|escapejs }}",
+  pos: { gen: {{ user_pos_gen|default_if_none:"null" }}, grp: {{ user_pos_grp|default_if_none:"null" }} },
+  pts: { gen: {{ user_pts_gen|default_if_none:"null" }}, grp: {{ user_pts_grp|default_if_none:"null" }} },
+};
+const RG_MEDALS = ['🥇 ', '🥈 ', '🥉 '];
+let _rgChart = null;
+
+function _rgColors(labels) {
+  return labels.map((name, i) => {
+    if (RG_USER.nombre && name === RG_USER.nombre) return '#50c88c';
+    if (i === 0) return '#fbbf24';
+    if (i === 1) return '#cbd5e1';
+    if (i === 2) return '#d4a373';
+    return '#2a5070';
+  });
+}
+function _rgLabelColor(ctxLbl) {
+  const name = ctxLbl.chart.data.labels[ctxLbl.dataIndex];
+  if (RG_USER.nombre && name === RG_USER.nombre) return '#7ce0a8';
+  if (ctxLbl.dataIndex === 0) return '#fbbf24';
+  if (ctxLbl.dataIndex === 1) return '#cbd5e1';
+  if (ctxLbl.dataIndex === 2) return '#e0a070';
+  return '#8ab0d0';
+}
+
+function buildRgChart(modo) {
+  const { labels, values } = RG_DATA[modo];
+  const canvas = document.getElementById('rgChart');
+  if (_rgChart) { _rgChart.destroy(); _rgChart = null; }
+  if (!labels.length) {
+    canvas.parentNode.style.height = '120px';
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+  canvas.parentNode.style.minHeight = Math.max(220, labels.length * 24) + 'px';
+  canvas.style.height = Math.max(220, labels.length * 24) + 'px';
+  const maxVal = Math.max(...values, 1);
+  const colors = _rgColors(labels);
+
+  _rgChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderColor: colors,
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { right: 38, left: 2 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false },
+        datalabels: {
+          anchor: 'end', align: 'end', clamp: true, offset: 3,
+          color: _rgLabelColor,
+          font: { size: 10, weight: '700' },
+          formatter: v => v + ' pts',
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: '#1a2a3a' },
+          ticks: { color: '#3e5e7c', font: { size: 9 } },
+          border: { color: '#1e3050' },
+          suggestedMax: maxVal * 1.1,
+        },
+        y: {
+          grid: { display: false },
+          ticks: {
+            color: ctx => {
+              const name = ctx.chart.data.labels[ctx.index];
+              if (RG_USER.nombre && name === RG_USER.nombre) return '#7ce0a8';
+              return '#7090b0';
+            },
+            font: ctx => ({
+              size: 10,
+              weight: (RG_USER.nombre && ctx.chart.data.labels[ctx.index] === RG_USER.nombre) ? '700' : '400',
+            }),
+            callback(val) {
+              let n = this.getLabelForValue(val);
+              const medal = RG_MEDALS[val] || '';
+              const display = n.length > 18 ? n.slice(0, 17) + '…' : n;
+              return medal + display;
+            }
+          },
+          border: { color: '#1e3050' },
+        }
+      }
+    }
+  });
+
+  // Scroll automatico hasta la barra del usuario, si esta en el chart
+  if (RG_USER.nombre) {
+    const idx = labels.indexOf(RG_USER.nombre);
+    if (idx >= 0) {
+      setTimeout(() => {
+        const meta = _rgChart.getDatasetMeta(0);
+        const bar = meta.data[idx];
+        if (!bar) return;
+        const wrapRect = canvas.parentNode.getBoundingClientRect();
+        const targetY = window.scrollY + wrapRect.top + bar.y - 100;
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
+      }, 250);
+    }
+  }
+}
+
+function _rgUpdateBanner(modo) {
+  const banner = document.getElementById('rgBanner');
+  if (!banner) return;
+  const pos = RG_USER.pos[modo];
+  const pts = RG_USER.pts[modo];
+  if (pos == null) { banner.style.display = 'none'; return; }
+  banner.style.display = '';
+  document.getElementById('rgUserPos').textContent = '#' + pos;
+  document.getElementById('rgUserPts').textContent = pts;
+}
+function _rgUpdateTitle(modo) {
+  const t = document.getElementById('rgTitle');
+  if (!t) return;
+  t.innerHTML = '<i class="bi bi-bar-chart-fill me-1"></i>Top 30 — ' + (modo === 'grp' ? 'Grupos' : 'General');
+}
+
+document.querySelectorAll('.rg-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const modo = btn.dataset.modo;
+    document.querySelectorAll('.rg-toggle button').forEach(b => b.classList.toggle('on', b === btn));
+    _rgUpdateTitle(modo);
+    _rgUpdateBanner(modo);
+    buildRgChart(modo);
+  });
+});
+_rgUpdateBanner('gen');
+buildRgChart('gen');
+</script>
+{% endif %}
 {% endblock %}

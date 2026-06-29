@@ -188,6 +188,12 @@ body { background: #0d1b2a !important; }
 {% if tipo == 'grafica' %}
 {# ════ TAB GRÁFICA ════════════════════════════════════════════ #}
 <div class="rk-chart-wrap">
+  {% if user_nombre and user_pos_gen %}
+  <div id="rkUserBanner" class="rk-user-banner mb-2">
+    <span class="rk-user-banner-dot"></span>
+    <span>Tu posición: <b id="rkUserPos">#{{ user_pos_gen }}</b> con <b id="rkUserPts">{{ user_pts_gen }}</b> pts</span>
+  </div>
+  {% endif %}
   <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
     <div class="rk-chart-title m-0" id="rkChartTitle"><i class="bi bi-bar-chart-fill me-1"></i>Top 30 — Ranking General</div>
     <div class="d-flex gap-1" role="group">
@@ -196,12 +202,6 @@ body { background: #0d1b2a !important; }
     </div>
   </div>
   <canvas id="rkChart"></canvas>
-  {% if user_nombre and user_pos_gen %}
-  <div id="rkUserBanner" class="rk-user-banner mt-2">
-    <span class="rk-user-banner-dot"></span>
-    <span>Tu posición: <b id="rkUserPos">#{{ user_pos_gen }}</b> con <b id="rkUserPts">{{ user_pts_gen }}</b> pts</span>
-  </div>
-  {% endif %}
 </div>
 
 <style>
