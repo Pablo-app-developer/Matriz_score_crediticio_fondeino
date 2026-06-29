@@ -30,9 +30,13 @@ body { background: #0d1b2a !important; }
   display: flex; align-items: center; gap: .55rem;
   background: #182438; border: 1px solid #1e3050; border-left: 3px solid #1e3050;
   border-radius: 6px; padding: .32rem .8rem; margin-bottom: .22rem;
-  transition: background .12s;
+  transition: background .12s, border-color .12s, transform .08s;
+  color: inherit; text-decoration: none;
 }
-.rk-row:hover { background: #1c2d42; }
+.rk-row:hover { background: #1c2d42; border-color: #2a4470; cursor: pointer; }
+a.rk-row:hover .rk-name { text-decoration: underline; text-decoration-color: rgba(108,180,255,.5); text-underline-offset: 3px; }
+a.rk-row:active { transform: scale(.997); }
+a.rk-row:focus-visible { outline: 2px solid #6ba4ff; outline-offset: 2px; }
 
 .rk-row.pos-1 { border-left-color: #f0c040; background: linear-gradient(90deg,#1e2a10 0%,#182438 55%); }
 .rk-row.pos-2 { border-left-color: #a8b8c8; background: linear-gradient(90deg,#1a2235 0%,#182438 55%); }
@@ -306,9 +310,11 @@ body { background: #0d1b2a !important; }
 {# ── Filas ────────────────────────────────────────────────── #}
 {% for insc in ranking %}
 {% with pos=forloop.counter|add:offset %}
-<div class="rk-row
+<a href="{% url 'polla:perfil_afiliado' insc.afiliado.pk %}"
+   class="rk-row
   {% if pos == 1 %}pos-1{% elif pos == 2 %}pos-2{% elif pos == 3 %}pos-3{% endif %}
-  {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}me{% endif %}">
+  {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}me{% endif %}"
+   title="Ver pronósticos de {{ insc.afiliado.nombre_completo }}">
 
   <div class="rk-pos-wrap">
     <div class="rk-pos">
@@ -323,9 +329,7 @@ body { background: #0d1b2a !important; }
   </div>
 
   <div class="rk-info">
-    <div class="rk-name">
-      <a href="{% url 'polla:perfil_afiliado' insc.afiliado.pk %}">{{ insc.afiliado.nombre_completo }}</a>
-    </div>
+    <div class="rk-name">{{ insc.afiliado.nombre_completo }}</div>
     {% if afiliado_user and insc.afiliado.pk == afiliado_user.pk %}
       <span class="rk-badge rk-badge-me">TÚ</span>
     {% endif %}
@@ -355,7 +359,7 @@ body { background: #0d1b2a !important; }
     {% if insc.puntos_ultimo > 0 %}<span class="rk-pts-ult" title="Puntos en el último partido finalizado">+{{ insc.puntos_ultimo }} últ.</span>{% endif %}
   </div>
 
-</div>
+</a>
 {% endwith %}
 {% endfor %}
 
