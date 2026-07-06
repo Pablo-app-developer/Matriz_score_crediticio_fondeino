@@ -1407,12 +1407,14 @@ def admin_reporte(request):
     )
 
     # Todos los partidos de Colombia (grupos + eliminatorias)
+    # En eliminatorias el FK puede ser un placeholder; también buscamos por etiqueta.
     try:
         colombia = Equipo.objects.get(codigo_fifa='COL')
         partidos_colombia = list(
             Partido.objects.filter(
-                Q(equipo_local=colombia) | Q(equipo_visitante=colombia)
-            ).select_related('equipo_local', 'equipo_visitante').order_by('fecha_hora')
+                Q(equipo_local=colombia) | Q(equipo_visitante=colombia) |
+                Q(etiqueta_local__icontains='Colombia') | Q(etiqueta_visitante__icontains='Colombia')
+            ).distinct().select_related('equipo_local', 'equipo_visitante').order_by('fecha_hora')
         )
     except Equipo.DoesNotExist:
         colombia = None
