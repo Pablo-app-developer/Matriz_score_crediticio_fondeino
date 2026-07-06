@@ -1406,13 +1406,11 @@ def admin_reporte(request):
         .order_by('equipo__nombre', 'inscripcion__afiliado__nombre_completo')
     )
 
-    # Partidos de Colombia en fase de grupos con el líder de puntos por partido
+    # Todos los partidos de Colombia (grupos + eliminatorias)
     try:
         colombia = Equipo.objects.get(codigo_fifa='COL')
         partidos_colombia = list(
             Partido.objects.filter(
-                fase='GRUPOS',
-            ).filter(
                 Q(equipo_local=colombia) | Q(equipo_visitante=colombia)
             ).select_related('equipo_local', 'equipo_visitante').order_by('fecha_hora')
         )
