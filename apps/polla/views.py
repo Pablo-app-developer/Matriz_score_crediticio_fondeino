@@ -261,7 +261,7 @@ def _invalidate_ranking_cache():
     que los cambios se reflejen al instante en esta instancia. Otras instancias
     warm verán los cambios al expirar el TTL (≤ _RANKING_CACHE_TTL segundos)."""
     keys = [
-        'polla:ranking:campeon:v1',
+        'polla:ranking:campeon:v2',
         'polla:ranking:grafica:v1',
         'polla:index:ranking_preview:v1',
     ]
@@ -473,6 +473,11 @@ def _compute_ranking_general_grupos(tipo, pagina):
     }
 
 
+# Códigos FIFA de los equipos que siguen vivos en el torneo.
+# Actualizar a medida que se van eliminando selecciones.
+EQUIPOS_VIVOS_CAMPEON = {'FRA', 'ESP', 'COL', 'ENG'}
+
+
 def _compute_ranking_campeon():
     """Cómputo del tab campeón. No depende del request.user."""
     config = ConfiguracionPolla.get()
@@ -507,6 +512,7 @@ def _compute_ranking_campeon():
                 ),
                 'votos': len(lst),
                 'personas': personas,
+                'eliminado': eq.codigo_fifa not in EQUIPOS_VIVOS_CAMPEON,
             })
         equipos_votos.sort(key=lambda x: (-x['votos'], x['equipo'].nombre))
         total_votos = sum(x['votos'] for x in equipos_votos)
@@ -557,7 +563,7 @@ def ranking(request):
 
     if tipo == 'campeon':
         data = cache.get_or_set(
-            'polla:ranking:campeon:v1',
+            'polla:ranking:campeon:v2',
             _compute_ranking_campeon,
             _RANKING_CACHE_TTL,
         )

@@ -117,6 +117,14 @@ a.rm-row:active { background:#2a3d5a; }
 .rc-persona { font-size:.72rem; color:#94a3b8; padding:.3rem .65rem; border-bottom:1px solid #0f172a15; }
 .rc-persona:last-child { border-bottom:none; }
 .rc-persona.acerto { color:#34d399; }
+.rc-equipo.out { opacity:.6; }
+.rc-equipo.out .rc-eq-flag { filter:grayscale(1); }
+.rc-eq-badge {
+  display:inline-flex; align-items:center; gap:.2rem;
+  background:#4a2130; color:#ff9a9a; font-size:.5rem; font-weight:800;
+  text-transform:uppercase; letter-spacing:.4px; padding:.1rem .35rem;
+  border-radius:4px; flex-shrink:0;
+}
 </style>
 {% endblock %}
 
@@ -170,10 +178,11 @@ a.rm-row:active { background:#2a3d5a; }
       <span style="color:#8ab0d0;font-size:.66rem;">{{ total_votos }} voto{{ total_votos|pluralize }}</span>
     </div>
     {% for item in equipos_votos %}
-    <div class="rc-equipo">
+    <div class="rc-equipo{% if item.eliminado %} out{% endif %}">
       <div class="rc-eq-hd">
         <img src="{{ item.equipo.bandera_url }}" class="rc-eq-flag" alt="" onerror="this.style.display='none'">
         <span class="rc-eq-name">{{ item.equipo.nombre }}</span>
+        {% if item.eliminado %}<span class="rc-eq-badge"><i class="bi bi-x-circle-fill"></i>Eliminado</span>{% endif %}
         <span class="rc-eq-votos">{{ item.votos }} voto{{ item.votos|pluralize }}</span>
       </div>
       {% for pc in item.personas %}

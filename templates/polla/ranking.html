@@ -133,6 +133,15 @@ a.rk-row:focus-visible { outline: 2px solid #6ba4ff; outline-offset: 2px; }
 .rk-camp-votos { margin-left: auto; text-align: center; flex-shrink: 0; min-width: 44px; }
 .rk-camp-num  { font-size: 1.4rem; font-weight: 900; color: #f0c040; line-height: 1; }
 .rk-camp-lbl  { font-size: .52rem; color: #6a90b0; text-transform: uppercase; letter-spacing: .6px; }
+.rk-camp.out { opacity: .55; border-color: #3a2530; background: #1c1822; }
+.rk-camp.out .rk-camp-flag { filter: grayscale(1); }
+.rk-camp.out .rk-camp-num  { color: #b06a6a; }
+.rk-camp-badge {
+  display: inline-flex; align-items: center; gap: .25rem;
+  background: #4a2130; color: #ff9a9a; font-size: .56rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .6px; padding: .12rem .4rem;
+  border-radius: 4px; margin-left: .45rem; vertical-align: middle;
+}
 
 /* ── Paginación ───────────────────────────────────────────── */
 .rk-pgbtn {
@@ -247,11 +256,11 @@ a.rk-row:focus-visible { outline: 2px solid #6ba4ff; outline-offset: 2px; }
   <span style="color:#8ab0d0;font-size:.68rem;">{{ total_votos }} voto{{ total_votos|pluralize }} en total</span>
 </div>
 {% for item in equipos_votos %}
-<div class="rk-camp">
+<div class="rk-camp{% if item.eliminado %} out{% endif %}">
   <img src="{{ item.equipo.bandera_url }}" class="rk-camp-flag" alt="{{ item.equipo.nombre }}"
        onerror="this.style.display='none'">
   <div style="min-width:0;flex:1;">
-    <div class="rk-camp-name">{{ item.equipo.nombre }}</div>
+    <div class="rk-camp-name">{{ item.equipo.nombre }}{% if item.eliminado %}<span class="rk-camp-badge"><i class="bi bi-x-circle-fill"></i>Eliminado</span>{% endif %}</div>
     <div class="rk-camp-people">
       {% for pc in item.personas %}{{ pc.inscripcion.afiliado.nombre_completo }}{% if not forloop.last %} · {% endif %}{% endfor %}
     </div>
