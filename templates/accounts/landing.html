@@ -1906,7 +1906,7 @@
     function goTo(i) { index = (i + total) % total; render(); }
     function next() { goTo(index + 1); }
     function prev() { goTo(index - 1); }
-    function startAutoplay() { autoplayTimer = setInterval(next, 5000); }
+    function startAutoplay() { autoplayTimer = setInterval(next, 7000); }
     function resetAutoplay() { clearInterval(autoplayTimer); startAutoplay(); }
 
     document.getElementById('convNext').addEventListener('click', function () { next(); resetAutoplay(); });
