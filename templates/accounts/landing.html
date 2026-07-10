@@ -404,6 +404,49 @@
     }
     .card-btn:hover { color: var(--cyan); gap: 10px; }
 
+    /* ── CONVENIOS SLIDER ── */
+    .conv-section { background: var(--gray-light); }
+    .conv-slider { position: relative; max-width: 1080px; margin: 0 auto; }
+    .conv-viewport { overflow: hidden; border-radius: 20px; box-shadow: 0 8px 32px rgba(52,52,101,.10); }
+    .conv-track { display: flex; transition: transform .55s cubic-bezier(.4,0,.2,1); }
+    .conv-slide {
+      flex: 0 0 100%;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      background: var(--white);
+      border: 1px solid var(--gray-mid);
+      min-height: 340px;
+    }
+    .conv-slide-img {
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      border-right: 1px solid var(--gray-mid);
+    }
+    .conv-slide-img img { max-width: 100%; max-height: 180px; object-fit: contain; }
+    .conv-slide-body { padding: 36px 44px; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+    .conv-cat { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); }
+    .conv-name { font-size: 22px; font-weight: 800; color: var(--text-dark); line-height: 1.25; }
+    .conv-desc { font-size: 15px; line-height: 1.7; color: var(--text-body); }
+    .conv-contact { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--blue); text-decoration: none; margin-top: 6px; }
+    .conv-contact:hover { color: var(--cyan); }
+    .conv-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px; border-radius: 50%; border: none;
+      background: var(--white); color: var(--navy);
+      box-shadow: 0 4px 16px rgba(52,52,101,.18);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 2; transition: background .2s, color .2s;
+    }
+    .conv-arrow:hover { background: var(--cyan); color: var(--white); }
+    .conv-prev { left: -22px; }
+    .conv-next { right: -22px; }
+    .conv-dots { display: flex; justify-content: center; gap: 8px; margin-top: 22px; }
+    .conv-dot { width: 8px; height: 8px; border-radius: 50%; border: none; background: var(--gray-mid); cursor: pointer; padding: 0; transition: background .2s, width .2s; }
+    .conv-dot.active { background: var(--cyan); width: 22px; border-radius: 4px; }
+
     /* ── ZONA BAND ── */
     .zona-band {
       background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
@@ -1093,6 +1136,15 @@
       .card-body { padding: 18px 16px; }
       .card-title { font-size: 16px; }
 
+      /* Convenios */
+      .conv-slide { grid-template-columns: 1fr; min-height: 0; }
+      .conv-slide-img { padding: 20px; border-right: none; border-bottom: 1px solid var(--gray-mid); }
+      .conv-slide-img img { max-height: 120px; }
+      .conv-slide-body { padding: 20px; text-align: center; align-items: center; }
+      .conv-name { font-size: 18px; }
+      .conv-desc { font-size: 13.5px; }
+      .conv-arrow { display: none; }
+
       /* Zona band */
       .zona-band { padding: 28px 18px; flex-direction: column; text-align: center; gap: 16px; }
       .zona-band-text p { max-width: 100%; font-size: 14px; }
@@ -1201,6 +1253,7 @@
     </a>
     <ul class="nav-links">
       <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#convenios">Convenios</a></li>
       <li><a href="#beneficios">Beneficios</a></li>
       <li><a href="#nosotros">Nosotros</a></li>
       <li><a href="#contacto">Contacto</a></li>
@@ -1226,6 +1279,10 @@
       <a href="#servicios" class="mnav-link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         Servicios
+      </a>
+      <a href="#convenios" class="mnav-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24L4 3a1 1 0 0 0-1 1l.24 5.59a2 2 0 0 0 .59 1.41l9.58 9.59a2 2 0 0 0 2.83 0l4.83-4.83a2 2 0 0 0-.08-2.35z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
+        Convenios
       </a>
       <a href="#beneficios" class="mnav-link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -1385,13 +1442,35 @@
           <div class="card-tag">Bienestar</div>
           <h3 class="card-title">Beneficios que van más allá del trabajo.</h3>
           <p class="card-text">Convenios con gimnasios, teatros, almacenes y ópticas, con descuentos y puntos redimibles. Además, programas de recreación, turismo y seguros que cubren a ti y a toda tu familia.</p>
-          <a href="https://wa.me/573167522664" target="_blank" class="card-btn">
+          <a href="#convenios" class="card-btn">
             Conocer convenios disponibles
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
         </div>
       </div>
 
+    </div>
+  </section>
+
+  <!-- CONVENIOS -->
+  <section class="section conv-section" id="convenios">
+    <div class="section-header">
+      <div class="section-tag xl">Credi-Convenios</div>
+      <h2 class="section-title small">Convenios que suman<br />a tu bienestar</h2>
+      <p class="section-sub">Descuentos y beneficios exclusivos para asociados de Fondeino y su grupo familiar, con opción de financiación por descuento de nómina.</p>
+    </div>
+
+    <div class="conv-slider" id="convSlider">
+      <div class="conv-viewport">
+        <div class="conv-track" id="convTrack"></div>
+      </div>
+      <button class="conv-arrow conv-prev" id="convPrev" aria-label="Convenio anterior">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="conv-arrow conv-next" id="convNext" aria-label="Siguiente convenio">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div class="conv-dots" id="convDots"></div>
     </div>
   </section>
 
@@ -1686,7 +1765,7 @@
           <li><a href="#servicios">Calamidad Doméstica</a></li>
           <li><a href="#servicios">Emprendimiento</a></li>
           <li><a href="#servicios">Credi-Prima</a></li>
-          <li><a href="#servicios">Credi-Convenios</a></li>
+          <li><a href="#convenios">Credi-Convenios</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -1761,6 +1840,93 @@
     document.querySelectorAll('.mnav-link').forEach(function (l) {
       l.addEventListener('click', mnavClose);
     });
+  })();
+  </script>
+
+  <script>
+  (function () {
+    var CONV_BASE = "{% static 'img/convenios/' %}";
+    var CONVENIOS = [
+      { img: 'spovisual.png', cat: 'Salud Visual', name: 'SPO Visual', desc: 'Descuento por nómina hasta en 3 cuotas sin interés y opción de financiación a plazos mayores con Fondeino en monturas, lentes y servicios de salud visual.', phone: '318 516 0642', tel: '+573185160642' },
+      { img: 'practicar.png', cat: 'Movilidad y Transporte', name: 'Academia Técnica de Conductores Practicar', desc: 'Tarifas preferenciales y financiación con Fondeino para la formación y trámites de licencia de conducción.', phone: '311 862 2664', tel: '+573118622664' },
+      { img: 'visualycoloroptica.jpg', cat: 'Salud Visual', name: 'Visual y Color Óptica', desc: '15% de descuento en productos y financiación por descuento de nómina, previa validación de cupo con el fondo.', phone: '311 334 3235', tel: '+573113343235' },
+      { img: 'revitec-la-rosita.png', cat: 'Movilidad y Transporte', name: 'CDA Revitec', desc: 'Descuento de $15.000 en la revisión técnico-mecánica, gestión del SOAT y pago mediante descuento de nómina.', phone: '317 635 9037', tel: '+573176359037' },
+      { img: 'elrecreoveterinaria.png', cat: 'Mascotas', name: 'Veterinaria El Recreo', desc: '10% de descuento en cirugías veterinarias, pago hasta en 2 cuotas sin interés y financiación con Fondeino a tasa preferencial.', phone: '312 536 9657', tel: '+573125369657' },
+      { img: 'sanpedro.png', cat: 'Seguros y Exequial', name: 'Servicios Fúnebres San Pedro', desc: 'Planes Tradicional, Integral, Ceremonial y Custodio con condiciones especiales para asociados y su familia.', phone: '317 679 4039', tel: '+573176794039' },
+      { img: 'lacolina.png', cat: 'Seguros y Exequial', name: 'Jardines La Colina', desc: 'Planes exequiales con tarifas preferenciales, opción de financiación con Fondeino y pago por descuento de nómina.', phone: '317 810 8094', tel: '+573178108094' },
+      { img: 'aviatur.png', cat: 'Turismo y Viajes', name: 'Aviatur', desc: 'Descuentos entre el 3% y el 15% en planes turísticos, tiquetes y hoteles, con pago por nómina y financiación con Fondeino.', phone: '321 766 5208', tel: '+573217665208' },
+      { img: 'smart.png', cat: 'Educación', name: 'Smart Academia de Idiomas', desc: '10% de descuento adicional sobre la tarifa vigente en programas de idiomas para todas las edades, extensivo al grupo familiar.', phone: '319 340 1255', tel: '+573193401255' },
+      { img: 'fitnesspeople.jpeg', cat: 'Deportes y Bienestar', name: 'Fitness People', desc: 'Tarifas especiales en membresías, planes de entrenamiento y clases grupales en sus 6 sedes de Bucaramanga y Piedecuesta.', phone: '300 685 9461', tel: '+573006859461' },
+      { img: 'steam.png', cat: 'Educación', name: 'Steam Education — Escuela de Robótica', desc: 'Primera clase gratuita en cursos de robótica y programación, con facilidad de pago mediante descuento de nómina.', phone: '316 415 6957', tel: '+573164156957' },
+      { img: 'alkosto.png', cat: 'Tecnología y Hogar', name: 'Alkosto y K-Tronix', desc: 'Financiación por descuento de nómina en electrodomésticos, tecnología y celulares, con tasas preferenciales y sin cuota de manejo.', phone: '318 707 8026', tel: '+573187078026' },
+      { img: 'emisas.png', cat: 'Salud', name: 'Asistencia Médica S.A.S. — Ambulancia Prepagada', desc: 'Atención médica domiciliaria y servicio de ambulancia prepagada con tarifas preferenciales para el asociado y su familia.', phone: '317 347 1367', tel: '+573173471367' },
+      { img: 'dianarodriguez.png', cat: 'Salud', name: 'IPS Diana Rodríguez — Centro de Orientación', desc: '20% de descuento en servicios de psicología y psiquiatría, con opción de financiación y descuento por nómina.', phone: '317 809 1295', tel: '+573178091295' },
+      { img: 'deportivosc.png', cat: 'Deportes y Bienestar', name: 'Deportivos Carvajal', desc: '10% de descuento en productos deportivos seleccionados, con financiación y pago por descuento de nómina.', phone: '317 452 4835', tel: '+573174524835' },
+      { img: 'multitech.png', cat: 'Tecnología y Educación', name: 'Multicomputo / Multitech', desc: '10% de descuento en servicios de Multicomputo y Multitech, con programas de formación y capacitación tecnológica.', phone: '311 262 0618', tel: '+573112620618' },
+      { img: 'seguros-bolivar.jpg', cat: 'Salud', name: 'Seguros Bolívar — Planes de Salud', desc: 'Acceso directo a especialistas sin autorizaciones, libre elección de clínica y habitación individual en hospitalización.', phone: '300 227 7594', tel: '+573002277594' },
+      { img: 'sanitas.jpg', cat: 'Salud', name: 'Sanitas Plan Premium', desc: 'Citas directas con especialistas, médico general domiciliario y habitación individual en hospitalización.', phone: '312 596 0532', tel: '+573125960532' }
+    ];
+
+    var track = document.getElementById('convTrack');
+    var dotsWrap = document.getElementById('convDots');
+    if (!track) return;
+
+    CONVENIOS.forEach(function (c, i) {
+      var slide = document.createElement('div');
+      slide.className = 'conv-slide';
+      slide.innerHTML =
+        '<div class="conv-slide-img"><img src="' + CONV_BASE + c.img + '" alt="' + c.name + '" loading="lazy" /></div>' +
+        '<div class="conv-slide-body">' +
+          '<div class="conv-cat">' + c.cat + '</div>' +
+          '<h3 class="conv-name">' + c.name + '</h3>' +
+          '<p class="conv-desc">' + c.desc + '</p>' +
+          '<a class="conv-contact" href="tel:' + c.tel + '">' +
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>' +
+            c.phone +
+          '</a>' +
+        '</div>';
+      track.appendChild(slide);
+
+      var dot = document.createElement('button');
+      dot.className = 'conv-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Ir al convenio ' + (i + 1));
+      dot.addEventListener('click', function () { goTo(i); resetAutoplay(); });
+      dotsWrap.appendChild(dot);
+    });
+
+    var dots = dotsWrap.querySelectorAll('.conv-dot');
+    var total = CONVENIOS.length;
+    var index = 0;
+    var autoplayTimer = null;
+
+    function render() {
+      track.style.transform = 'translateX(-' + (index * 100) + '%)';
+      dots.forEach(function (d, i) { d.classList.toggle('active', i === index); });
+    }
+    function goTo(i) { index = (i + total) % total; render(); }
+    function next() { goTo(index + 1); }
+    function prev() { goTo(index - 1); }
+    function startAutoplay() { autoplayTimer = setInterval(next, 5000); }
+    function resetAutoplay() { clearInterval(autoplayTimer); startAutoplay(); }
+
+    document.getElementById('convNext').addEventListener('click', function () { next(); resetAutoplay(); });
+    document.getElementById('convPrev').addEventListener('click', function () { prev(); resetAutoplay(); });
+
+    var slider = document.getElementById('convSlider');
+    slider.addEventListener('mouseenter', function () { clearInterval(autoplayTimer); });
+    slider.addEventListener('mouseleave', startAutoplay);
+
+    var touchStartX = null;
+    slider.addEventListener('touchstart', function (e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+    slider.addEventListener('touchend', function (e) {
+      if (touchStartX === null) return;
+      var diff = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(diff) > 40) { diff < 0 ? next() : prev(); resetAutoplay(); }
+      touchStartX = null;
+    });
+
+    render();
+    startAutoplay();
   })();
   </script>
 
