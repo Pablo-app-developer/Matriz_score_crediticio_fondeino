@@ -261,7 +261,7 @@ def _invalidate_ranking_cache():
     que los cambios se reflejen al instante en esta instancia. Otras instancias
     warm verán los cambios al expirar el TTL (≤ _RANKING_CACHE_TTL segundos)."""
     keys = [
-        'polla:ranking:campeon:v2',
+        'polla:ranking:campeon:v3',
         'polla:ranking:grafica:v1',
         'polla:index:ranking_preview:v1',
     ]
@@ -563,7 +563,7 @@ def ranking(request):
 
     if tipo == 'campeon':
         data = cache.get_or_set(
-            'polla:ranking:campeon:v2',
+            'polla:ranking:campeon:v3',
             _compute_ranking_campeon,
             _RANKING_CACHE_TTL,
         )
