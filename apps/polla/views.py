@@ -475,7 +475,7 @@ def _compute_ranking_general_grupos(tipo, pagina):
 
 # Códigos FIFA de los equipos que siguen vivos en el torneo.
 # Actualizar a medida que se van eliminando selecciones.
-EQUIPOS_VIVOS_CAMPEON = {'FRA', 'ESP', 'COL', 'ENG'}
+EQUIPOS_VIVOS_CAMPEON = {'ESP', 'ENG'}
 
 
 def _compute_ranking_campeon():
