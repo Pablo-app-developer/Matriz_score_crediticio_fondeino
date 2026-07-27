@@ -1212,7 +1212,7 @@
     </a>
   </div>
 
-  <!-- POLLA PROMO BANNER -->
+  {% comment %} POLLA PROMO BANNER — oculto a pedido, ver landing.html en git para restaurar
   <div class="polla-promo-banner">
     <div class="ppb-left">
       <div class="ppb-title-row">
@@ -1245,6 +1245,7 @@
       <div class="ppb-cd-date">11 jun 2026 · FIFA World Cup™</div>
     </div>
   </div>
+  {% endcomment %}
 
   <!-- NAV -->
   <nav>
@@ -1297,6 +1298,7 @@
         Contacto
       </a>
     </nav>
+    {% comment %} Polla Mundialista — oculto a pedido, ver landing.html en git para restaurar
     <div class="mnav-divider-label">Polla Mundialista 2026</div>
     <div class="mnav-actions">
       <a href="{% url 'polla:index' %}" class="mnav-act-polla">
@@ -1309,6 +1311,7 @@
         Ver ranking
       </a>
     </div>
+    {% endcomment %}
     <div class="mnav-bottom">
       <a href="{% url 'accounts:login' %}" class="mnav-act-main">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
