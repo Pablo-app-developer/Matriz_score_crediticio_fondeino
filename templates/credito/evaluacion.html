@@ -93,15 +93,28 @@
             <label class="form-label small fw-semibold">Puntaje DataCrédito (150–950) <span class="text-danger">*</span></label>
             {{ form.puntaje_datacredito }}
           </div>
-          <div class="col-6">
+          <div class="col-12">
             <label class="form-label small fw-semibold">¿Crédito Activo en FONDEINO?</label>
             {{ form.tiene_credito_activo }}
           </div>
-          <div class="col-6">
-            <label class="form-label small fw-semibold">% Capital Pagado</label>
-            {{ form.pct_capital_pagado }}
-            <div class="form-text">Ej: 0 = 0% &nbsp;·&nbsp; <strong>0.50 = 50%</strong> &nbsp;·&nbsp; 1.00 = 100%</div>
+          <div class="col-6" id="grupoValorInicialCredito">
+            <label class="form-label small fw-semibold">Valor Inicial del Préstamo</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              {{ form.valor_inicial_credito_activo }}
+            </div>
           </div>
+          <div class="col-6" id="grupoValorPagadoCredito">
+            <label class="form-label small fw-semibold">Valor Total Pagado</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              {{ form.valor_pagado_credito_activo }}
+            </div>
+          </div>
+          <div class="col-12" id="grupoPctCalculado">
+            <div class="form-text">% Capital pagado (calculado): <strong id="pctCapitalCalculado">0%</strong></div>
+          </div>
+          {{ form.pct_capital_pagado }}
           <!-- TABLA DINÁMICA OTRAS OBLIGACIONES -->
           <div class="col-12">
             <label class="form-label small fw-semibold">Obligaciones con Otras Entidades</label>
@@ -411,6 +424,28 @@ function pmt(monto, tasa, n) {
   return monto * tasa / (1 - Math.pow(1 + tasa, -n));
 }
 
+function calcularPctCapitalPagado() {
+  const inicial = parseFloat(document.getElementById('id_valor_inicial_credito_activo').value) || 0;
+  const pagado = parseFloat(document.getElementById('id_valor_pagado_credito_activo').value) || 0;
+  let pct = inicial > 0 ? pagado / inicial : 0;
+  pct = Math.max(0, Math.min(pct, 1));
+  document.getElementById('id_pct_capital_pagado').value = pct;
+  document.getElementById('pctCapitalCalculado').textContent = (pct * 100).toFixed(1) + '%';
+  return pct;
+}
+
+function toggleCreditoActivoFields() {
+  const tiene = document.getElementById('id_tiene_credito_activo').value === 'SI';
+  document.getElementById('grupoValorInicialCredito').style.display = tiene ? '' : 'none';
+  document.getElementById('grupoValorPagadoCredito').style.display = tiene ? '' : 'none';
+  document.getElementById('grupoPctCalculado').style.display = tiene ? '' : 'none';
+  if (!tiene) {
+    document.getElementById('id_valor_inicial_credito_activo').value = 0;
+    document.getElementById('id_valor_pagado_credito_activo').value = 0;
+  }
+  calcularPctCapitalPagado();
+}
+
 function calcularPreview() {
   const sb = parseFloat(document.getElementById('id_salario_bruto').value) || 0;
   const neto = sb * 0.92; // 92% = 100% - 4% salud - 4% pensión
@@ -441,7 +476,7 @@ function calcularPreview() {
   const ant = parseInt(document.getElementById('id_antiguedad_meses').value) || 0;
   const vinc = document.getElementById('id_tipo_vinculacion').value;
   const tieneCred = document.getElementById('id_tiene_credito_activo').value === 'SI';
-  const pctCap = parseFloat(document.getElementById('id_pct_capital_pagado').value) || 0;
+  const pctCap = calcularPctCapitalPagado();
   const garAp = parseFloat(document.getElementById('id_saldo_aportes').value) || 0;
   const garAh = parseFloat(document.getElementById('id_saldo_ahorros').value) || 0;
   const garTotal = garAp + garAh;
@@ -530,12 +565,16 @@ function eliminarFila(n) {
 
 // Bind all inputs to recalculate
 const inputs = ['id_salario_bruto','id_monto_solicitado','id_n_cuotas','id_puntaje_datacredito',
-  'id_antiguedad_meses','id_tipo_vinculacion','id_tiene_credito_activo','id_pct_capital_pagado',
+  'id_antiguedad_meses','id_tipo_vinculacion','id_tiene_credito_activo',
+  'id_valor_inicial_credito_activo','id_valor_pagado_credito_activo',
   'id_cuota_aporte','id_cuota_ahorro','id_saldo_aportes','id_saldo_ahorros'];
 inputs.forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('input', calcularPreview);
   if (el && el.tagName === 'SELECT') el.addEventListener('change', calcularPreview);
 });
+
+document.getElementById('id_tiene_credito_activo').addEventListener('change', toggleCreditoActivoFields);
+toggleCreditoActivoFields();
 </script>
 {% endblock %}

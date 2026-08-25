@@ -39,12 +39,20 @@ class EvaluacionForm(forms.Form):
     tiene_credito_activo = forms.ChoiceField(choices=SI_NO,
                                              widget=forms.Select(attrs={'class': SELECT,
                                                                         'id': 'id_tiene_credito_activo'}))
-    pct_capital_pagado = forms.DecimalField(max_digits=5, decimal_places=4, min_value=0, max_value=1,
+    valor_inicial_credito_activo = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0,
                                             initial=0, required=False,
                                             widget=forms.NumberInput(
                                                 attrs={'class': INPUT, 'step': 'any',
-                                                       'placeholder': '0.00 a 1.00',
-                                                       'id': 'id_pct_capital_pagado'}))
+                                                       'id': 'id_valor_inicial_credito_activo'}))
+    valor_pagado_credito_activo = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0,
+                                            initial=0, required=False,
+                                            widget=forms.NumberInput(
+                                                attrs={'class': INPUT, 'step': 'any',
+                                                       'id': 'id_valor_pagado_credito_activo'}))
+    # Calculado automáticamente en clean() a partir de valor_inicial_credito_activo y valor_pagado_credito_activo
+    pct_capital_pagado = forms.DecimalField(max_digits=5, decimal_places=4, min_value=0, max_value=1,
+                                            initial=0, required=False,
+                                            widget=forms.HiddenInput(attrs={'id': 'id_pct_capital_pagado'}))
     # cuotas_otras_entidades se calcula en la vista desde las filas dinámicas
 
     # Descuentos FONDEINO
@@ -86,7 +94,18 @@ class EvaluacionForm(forms.Form):
         cd.setdefault('cuota_ahorro', 0)
         cd.setdefault('saldo_aportes', 0)
         cd.setdefault('saldo_ahorros', 0)
-        cd.setdefault('pct_capital_pagado', 0)
+        cd.setdefault('valor_inicial_credito_activo', 0)
+        cd.setdefault('valor_pagado_credito_activo', 0)
+
+        # % capital pagado se calcula siempre en el servidor, nunca se confía en el valor enviado
+        valor_inicial = cd.get('valor_inicial_credito_activo') or 0
+        valor_pagado = cd.get('valor_pagado_credito_activo') or 0
+        if valor_inicial > 0:
+            pct = valor_pagado / valor_inicial
+            pct = max(0, min(pct, 1))
+        else:
+            pct = 0
+        cd['pct_capital_pagado'] = pct
         return cd
 
 
