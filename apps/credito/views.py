@@ -319,10 +319,16 @@ def evaluacion_pdf_lote(request):
     hasta_pk   = request.GET.get('hasta_pk', '').strip()
     fecha_desde = request.GET.get('fecha_desde', '').strip()
     fecha_hasta = request.GET.get('fecha_hasta', '').strip()
+    pks = [p for p in request.GET.getlist('pks') if p.strip()]
 
     qs = EvaluacionCredito.objects.select_related('modalidad', 'evaluado_por').order_by('pk')
 
-    if desde_pk and hasta_pk:
+    if pks:
+        try:
+            qs = qs.filter(pk__in=[int(p) for p in pks])
+        except ValueError:
+            pass
+    elif desde_pk and hasta_pk:
         try:
             qs = qs.filter(pk__gte=int(desde_pk), pk__lte=int(hasta_pk))
         except ValueError:
@@ -420,6 +426,7 @@ def historico(request):
             'modalidad': ev.modalidad.nombre,
             'proceso': ev.area,
             'monto': ev.monto_solicitado,
+            'n_cuotas': ev.n_cuotas,
             'score': ev.score_total,
             'clasificacion': ev.clasificacion,
             'clasificacion_color': ev.clasificacion_color,
@@ -455,6 +462,7 @@ def historico(request):
                 'modalidad': p.concepto_prestamo,
                 'proceso': p.proceso,
                 'monto': p.monto,
+                'n_cuotas': None,
                 'score': None,
                 'clasificacion': None,
                 'clasificacion_color': None,

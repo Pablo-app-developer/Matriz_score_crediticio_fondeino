@@ -72,6 +72,19 @@
           </div>
         </div>
 
+        <!-- Por selección en la tabla -->
+        <div class="col-12">
+          <div class="border rounded p-3 d-flex justify-content-between align-items-center">
+            <p class="fw-semibold small mb-0">
+              <i class="bi bi-check2-square me-1"></i>Por selección en la tabla
+              <span class="text-muted fw-normal">— marca los checkboxes de las filas que quieras y haz clic aquí</span>
+            </p>
+            <button type="button" id="btnImprimirSeleccion" class="btn btn-warning btn-sm" disabled onclick="imprimirSeleccionados()">
+              <i class="bi bi-printer me-1"></i>Imprimir/Ver seleccionados (<span id="contadorSeleccion">0</span>)
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -121,6 +134,9 @@
     <table class="table table-hover table-sm mb-0">
       <thead class="table-dark">
         <tr>
+          <th class="text-center" style="width:30px">
+            <input type="checkbox" id="selAll" class="form-check-input" title="Seleccionar todas" onchange="toggleSelAll(this)">
+          </th>
           <th class="text-center">#</th>
           <th>Fecha</th>
           <th>Cédula</th>
@@ -128,6 +144,7 @@
           <th>Modalidad / Tipo</th>
           <th>Proceso / Área</th>
           <th class="text-end">Monto</th>
+          <th class="text-center">Plazo</th>
           <th class="text-center">Score</th>
           <th class="text-center">Clasificación</th>
           <th class="text-center">Sug. Herramienta</th>
@@ -140,6 +157,11 @@
         {% for fila in filas %}
         <tr {% if fila.anulado %}class="table-danger opacity-75" title="ANULADA — {{ fila.motivo_anulacion }}"
             {% elif fila.es_historico %}class="table-light"{% endif %}>
+          <td class="text-center">
+            {% if fila.pk and not fila.anulado %}
+            <input type="checkbox" class="form-check-input sel-fila" value="{{ fila.pk }}" onchange="actualizarSeleccion()">
+            {% endif %}
+          </td>
           <td class="text-center small fw-bold">
             {% if fila.pk %}
               <span class="{% if fila.anulado %}text-danger text-decoration-line-through{% else %}text-primary{% endif %}">#{{ fila.pk }}</span>
@@ -157,6 +179,9 @@
           <td class="small {% if fila.anulado %}text-muted{% endif %}">{{ fila.modalidad }}</td>
           <td class="small {% if fila.anulado %}text-muted{% endif %}">{{ fila.proceso }}</td>
           <td class="text-end {% if fila.anulado %}text-muted text-decoration-line-through{% endif %}">${{ fila.monto|cop }}</td>
+          <td class="text-center small {% if fila.anulado %}text-muted{% endif %}">
+            {% if fila.n_cuotas %}{{ fila.n_cuotas }} meses{% else %}<span class="text-muted">—</span>{% endif %}
+          </td>
           <td class="text-center fw-bold">
             {% if fila.score is not None %}{{ fila.score }}{% else %}<span class="text-muted">—</span>{% endif %}
           </td>
@@ -218,7 +243,7 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="13" class="text-center text-muted py-4">
+        <tr><td colspan="15" class="text-center text-muted py-4">
           <i class="bi bi-inbox fs-3 d-block mb-2"></i>No hay registros.
         </td></tr>
         {% endfor %}
@@ -230,4 +255,29 @@
   {{ filas|length }} registro(s) mostrados.
   {% if filas %}<span class="ms-2 text-info"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>Fondo gris = cargado masivamente desde Excel</span>{% endif %}
 </div>
+
+<script>
+const URL_PDF_LOTE = "{% url 'credito:pdf_lote' %}";
+
+function actualizarSeleccion() {
+  const marcados = document.querySelectorAll('.sel-fila:checked');
+  document.getElementById('contadorSeleccion').textContent = marcados.length;
+  document.getElementById('btnImprimirSeleccion').disabled = marcados.length === 0;
+
+  const todas = document.querySelectorAll('.sel-fila');
+  document.getElementById('selAll').checked = todas.length > 0 && marcados.length === todas.length;
+}
+
+function toggleSelAll(origen) {
+  document.querySelectorAll('.sel-fila').forEach(el => { el.checked = origen.checked; });
+  actualizarSeleccion();
+}
+
+function imprimirSeleccionados() {
+  const pks = Array.from(document.querySelectorAll('.sel-fila:checked')).map(el => el.value);
+  if (pks.length === 0) return;
+  const params = pks.map(pk => 'pks=' + encodeURIComponent(pk)).join('&');
+  window.open(URL_PDF_LOTE + '?' + params, '_blank');
+}
+</script>
 {% endblock %}
