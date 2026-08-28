@@ -429,7 +429,7 @@ function calcularPctCapitalPagado() {
   const pagado = parseFloat(document.getElementById('id_valor_pagado_credito_activo').value) || 0;
   let pct = inicial > 0 ? pagado / inicial : 0;
   pct = Math.max(0, Math.min(pct, 1));
-  document.getElementById('id_pct_capital_pagado').value = pct;
+  document.getElementById('id_pct_capital_pagado').value = pct.toFixed(2);
   document.getElementById('pctCapitalCalculado').textContent = (pct * 100).toFixed(1) + '%';
   return pct;
 }
