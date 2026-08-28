@@ -105,7 +105,7 @@ class EvaluacionForm(forms.Form):
             pct = max(0, min(pct, 1))
         else:
             pct = 0
-        cd['pct_capital_pagado'] = pct
+        cd['pct_capital_pagado'] = round(pct, 4)
         return cd
 
 
