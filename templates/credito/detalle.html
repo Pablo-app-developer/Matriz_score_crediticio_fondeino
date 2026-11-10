@@ -166,7 +166,7 @@
           <tr class="table-warning">
             <td colspan="2" class="small px-3 py-2">
               <i class="bi bi-arrow-repeat me-1"></i>
-              <strong>Refinanciación:</strong> cuota anterior (${{ ev.cuota_credito_refinanciar|cop }}) excluida del MV — solo cuenta la cuota nueva.
+              <strong>Refinanciación:</strong> cuota anterior (${{ ev.cuota_credito_refinanciar|cop }}) no se suma al MV porque queda saldada con este crédito.
             </td>
           </tr>
           {% endif %}
@@ -216,6 +216,24 @@
           <tr><td class="bg-light">Tasa Nominal Anual</td><td class="text-end fw-semibold">{{ ev.modalidad.tasa_nominal_anual|floatformat:1 }}%</td></tr>
           <tr><td class="bg-light">Fecha Desembolso</td><td class="text-end">{{ ev.fecha_desembolso|date:"d/m/Y" }}</td></tr>
           {% if ev.motivo %}<tr><td class="bg-light">Motivo</td><td class="text-end">{{ ev.motivo }}</td></tr>{% endif %}
+          <tr>
+            <td class="bg-light">Tipo de Operación</td>
+            <td class="text-end">
+              {% if ev.es_refinanciacion %}
+                <span class="badge bg-warning text-dark">
+                  <i class="bi bi-arrow-repeat me-1"></i>Refinanciación
+                </span>
+              {% else %}
+                <span class="badge bg-success">Crédito Nuevo</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% if ev.es_refinanciacion %}
+          <tr class="table-warning">
+            <td class="bg-light">Cuota anterior excluida del MV</td>
+            <td class="text-end fw-bold">${{ ev.cuota_credito_refinanciar|cop }}</td>
+          </tr>
+          {% endif %}
         </table>
       </div>
     </div>
