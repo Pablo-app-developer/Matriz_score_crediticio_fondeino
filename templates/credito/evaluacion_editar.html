@@ -134,18 +134,6 @@
           <div class="col-12" id="grupoPctCalculado">
             <div class="form-text">% Capital pagado (calculado): <strong id="pctCapitalCalculado">0%</strong></div>
           </div>
-          <!-- Refinanciación -->
-          <div class="col-6" id="grupoEsRefinanciacion" style="display:none">
-            <label class="form-label small fw-semibold">¿Es refinanciación?</label>
-            {{ form.es_refinanciacion }}
-          </div>
-          <div class="col-6" id="grupoCuotaRefinanciar" style="display:none">
-            <label class="form-label small fw-semibold">Cuota actual del crédito FONDEINO</label>
-            <div class="input-group">
-              <span class="input-group-text">$</span>
-              {{ form.cuota_credito_refinanciar }}
-            </div>
-          </div>
           {{ form.pct_capital_pagado }}
           <!-- TABLA DINÁMICA OTRAS OBLIGACIONES -->
           <div class="col-12">
@@ -261,6 +249,18 @@
           <div class="col-12">
             <label class="form-label small fw-semibold">Motivo</label>
             {{ form.motivo }}
+          </div>
+          <!-- Refinanciación: propiedad del nuevo crédito, no del crédito anterior -->
+          <div class="col-6">
+            <label class="form-label small fw-semibold">¿Es refinanciación?</label>
+            {{ form.es_refinanciacion }}
+          </div>
+          <div class="col-6" id="grupoCuotaRefinanciar" style="display:none">
+            <label class="form-label small fw-semibold">Cuota actual del crédito FONDEINO</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              {{ form.cuota_credito_refinanciar }}
+            </div>
           </div>
         </div>
       </div>
@@ -528,13 +528,10 @@ function toggleCreditoActivoFields() {
   document.getElementById('grupoValorInicialCredito').style.display = tiene ? '' : 'none';
   document.getElementById('grupoValorPagadoCredito').style.display  = tiene ? '' : 'none';
   document.getElementById('grupoPctCalculado').style.display        = tiene ? '' : 'none';
-  document.getElementById('grupoEsRefinanciacion').style.display    = tiene ? '' : 'none';
   if (!tiene) {
     document.getElementById('id_valor_inicial_credito_activo').value = 0;
     document.getElementById('id_saldo_credito_activo').value = 0;
-    document.getElementById('id_es_refinanciacion').value = 'NO';
   }
-  toggleRefinanciacionField();
   calcularPctCapitalPagado();
 }
 
