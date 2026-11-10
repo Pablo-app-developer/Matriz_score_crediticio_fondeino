@@ -113,10 +113,20 @@
           <tr><td class="bg-light">Cuotas Otras Entidades <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Suma de cuotas mensuales con bancos u otras entidades financieras externas a FONDEINO."></i></td><td class="text-end">${{ ev.cuotas_otras_entidades|cop }}</td></tr>
           {% endif %}
           <tr><td class="bg-light">Cuotas FONDEINO Actuales <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Cuotas de aportes y ahorros que ya paga actualmente con FONDEINO, antes de este crédito."></i></td><td class="text-end">${{ ev.cuota_aporte|cop }}</td></tr>
-          <tr><td class="bg-light">Cuota Nueva Estimada ({{ ev.modalidad.nombre }}) <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Calculada con fórmula de amortización (PMT) según el monto solicitado, el número de cuotas y la tasa mensual de la modalidad. Incluye seguro si aplica."></i></td>
-              <td class="text-end">${{ cuota_nueva|cop }}</td>
+          <tr>
+            <td class="bg-light">
+              Cuota Nueva Estimada ({{ ev.modalidad.nombre }})
+              <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Calculada con fórmula de amortización (PMT) según el monto solicitado, el número de cuotas y la tasa mensual de la modalidad. Incluye seguro si aplica."></i>
+              {% if ev.modalidad.categoria == 'ANTICIPO_PRIMA' %}
+                <span class="badge bg-info text-dark ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Anticipo de Prima: esta cuota se excluye del cálculo del mínimo vital porque se recupera de la prima semestral, no del salario mensual.">excluida del MV</span>
+              {% endif %}
+            </td>
+            <td class="text-end">${{ cuota_nueva|cop }}</td>
           </tr>
-          <tr class="table-warning"><td><strong>Total Cuotas</strong> <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Otras entidades + Cuotas FONDEINO actuales + Cuota nueva estimada. Es el total de obligaciones mensuales que se evalúa contra el Mínimo Vital."></i></td><td class="text-end fw-bold">${{ ev.total_cuotas|cop }}</td></tr>
+          <tr class="table-warning">
+            <td><strong>Total Cuotas</strong> <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Otras entidades + Cuotas FONDEINO actuales + Cuota nueva estimada. Es el total de obligaciones mensuales que se evalúa contra el Mínimo Vital."></i></td>
+            <td class="text-end fw-bold">${{ ev.total_cuotas|cop }}</td>
+          </tr>
         </table>
       </div>
     </div>
@@ -152,6 +162,15 @@
             <td class="bg-light">Estado <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="OK: cumple el mínimo vital, puede continuar. BLOQUEADO: el total de cuotas supera el techo permitido y el crédito no puede aprobarse."></i></td>
             <td class="text-end"><strong>{{ ev.estado_mv }}</strong></td>
           </tr>
+          {% if ev.modalidad.categoria == 'ANTICIPO_PRIMA' or ev.modalidad.categoria == 'CALAMIDAD' %}
+          <tr class="table-info">
+            <td colspan="2" class="small px-3 py-2">
+              <i class="bi bi-info-circle me-1"></i>
+              <strong>Regla del 30%:</strong> no aplica para
+              {% if ev.modalidad.categoria == 'ANTICIPO_PRIMA' %}Anticipo de Prima{% else %}Calamidad{% endif %}.
+            </td>
+          </tr>
+          {% endif %}
         </table>
       </div>
     </div>
@@ -161,7 +180,28 @@
       <div class="card-header bg-dark text-white py-2"><strong>Condiciones del Crédito</strong></div>
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
-          <tr><td class="bg-light">Modalidad</td><td class="text-end">{{ ev.modalidad.nombre }}</td></tr>
+          <tr>
+            <td class="bg-light">Modalidad</td>
+            <td class="text-end">{{ ev.modalidad.nombre }}</td>
+          </tr>
+          <tr>
+            <td class="bg-light">Categoría</td>
+            <td class="text-end">
+              {% with cat=ev.modalidad.categoria %}
+              {% if cat == 'ANTICIPO_PRIMA' %}
+                <span class="badge bg-warning text-dark">Anticipo de Prima</span>
+              {% elif cat == 'CALAMIDAD' %}
+                <span class="badge bg-danger">Calamidad</span>
+              {% elif cat == 'VIVIENDA' %}
+                <span class="badge bg-info text-dark">Vivienda</span>
+              {% elif cat == 'OTRO' %}
+                <span class="badge bg-secondary">Otro</span>
+              {% else %}
+                <span class="badge bg-primary">Libre Inversión</span>
+              {% endif %}
+              {% endwith %}
+            </td>
+          </tr>
           <tr><td class="bg-light">Monto Solicitado</td><td class="text-end fw-bold">${{ ev.monto_solicitado|cop }}</td></tr>
           <tr><td class="bg-light">Número de Cuotas</td><td class="text-end">{{ ev.n_cuotas }}</td></tr>
           <tr><td class="bg-light">Tasa Mensual</td><td class="text-end fw-semibold">{{ ev.modalidad.tasa_mensual|floatformat:4 }}%</td></tr>
@@ -186,9 +226,21 @@
           </thead>
           <tbody>
             <tr>
-              <td>Puntaje DataCrédito ({{ ev.puntaje_datacredito }}) <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Puntaje del buró de crédito (0–1000). Según los umbrales configurados se convierte en un puntaje de 0 a 25 pts. Mayor puntaje DataCrédito = mayor score."></i></td>
+              <td>
+                Puntaje DataCrédito ({{ ev.puntaje_datacredito }})
+                <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="left"
+                  data-bs-title="{% if ev.modalidad.categoria == 'ANTICIPO_PRIMA' %}Anticipo de Prima: puntaje fijo 15 — la recuperación está garantizada por la prima, el score DataCrédito no aplica.{% elif ev.modalidad.categoria == 'CALAMIDAD' %}Calamidad: puntaje real con techo en 20 — peso reducido para créditos internos.{% else %}Puntaje del buró de crédito (0–1000). Mayor puntaje DataCrédito = mayor score.{% endif %}"></i>
+                {% if ev.modalidad.categoria == 'ANTICIPO_PRIMA' %}
+                  <span class="badge bg-info text-dark ms-1">fijo</span>
+                {% elif ev.modalidad.categoria == 'CALAMIDAD' %}
+                  <span class="badge bg-warning text-dark ms-1">techo 20</span>
+                {% endif %}
+              </td>
               <td class="text-center fw-bold">{{ ev.score_datacredito }}</td>
-              <td class="text-center text-muted">25</td>
+              <td class="text-center text-muted">
+                {% if ev.modalidad.categoria == 'CALAMIDAD' %}20
+                {% else %}15{% endif %}
+              </td>
             </tr>
             <tr>
               <td>Antigüedad Empresa ({{ ev.antiguedad_meses }} meses) <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Tiempo trabajado en la empresa actual. Mayor antigüedad refleja mayor estabilidad laboral. Se evalúa por rangos de meses según la configuración. Max 15 pts."></i></td>
@@ -220,7 +272,10 @@
             <tr>
               <th>SCORE TOTAL</th>
               <th class="text-center fs-5">{{ ev.score_total }}</th>
-              <th class="text-center">100</th>
+              <th class="text-center">
+                {% if ev.modalidad.categoria == 'CALAMIDAD' %}95
+                {% else %}90{% endif %}
+              </th>
             </tr>
           </tfoot>
         </table>

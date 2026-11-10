@@ -18,12 +18,15 @@ CATEGORIAS_EXENTAS_MV = frozenset({'ANTICIPO_PRIMA'})
 # No aplica la regla de haber pagado mínimo el 30% del crédito anterior
 CATEGORIAS_EXENTAS_30PCT = frozenset({'ANTICIPO_PRIMA', 'CALAMIDAD'})
 
-# Reglas de DataCrédito por categoría para créditos descontados por nómina:
+# Reglas de DataCrédito por categoría:
 # - 'fijo': puntaje fijo sin importar el score (recuperación 100% garantizada)
 # - 'techo': el score real no puede superar este valor (peso reducido)
 DC_REGLA_CATEGORIA = {
-    'ANTICIPO_PRIMA': {'fijo': 15},   # recuperación garantizada por prima — DC irrelevante
-    'CALAMIDAD':      {'techo': 20},  # DC importa pero con peso máximo reducido
+    'LIBRE_INVERSION': {'techo': 15},  # peso reducido — scoring más equilibrado
+    'VIVIENDA':        {'techo': 15},  # mismo criterio que libre inversión
+    'OTRO':            {'techo': 15},
+    'ANTICIPO_PRIMA':  {'fijo': 15},   # recuperación garantizada por prima — DC irrelevante
+    'CALAMIDAD':       {'techo': 20},  # DC importa pero con peso máximo reducido
 }
 
 
