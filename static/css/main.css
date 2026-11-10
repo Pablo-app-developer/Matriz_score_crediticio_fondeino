@@ -1,67 +1,272 @@
-/* FONDEINO - Matriz de Riesgo Web */
+/* ═══════════════════════════════════════════════════════════
+   FONDEINO — Sistema de Diseño
+   Bootstrap 5.3 + Design Tokens
+   ═══════════════════════════════════════════════════════════ */
 
-body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  font-size: 0.9rem;
+/* ── 1. TOKENS PRIMITIVOS ───────────────────────────────── */
+:root {
+  /* Escala de marca (azul institucional) */
+  --fn-50:  #eff6ff;
+  --fn-100: #dbeafe;
+  --fn-200: #bfdbfe;
+  --fn-400: #60a5fa;
+  --fn-500: #2563eb;
+  --fn-600: #1d4ed8;
+  --fn-700: #1e40af;
+  --fn-800: #1e3a8a;
+  --fn-900: #172554;
+
+  /* Neutrals (slate) */
+  --fn-slate-50:  #f8fafc;
+  --fn-slate-100: #f1f5f9;
+  --fn-slate-200: #e2e8f0;
+  --fn-slate-300: #cbd5e1;
+  --fn-slate-400: #94a3b8;
+  --fn-slate-500: #64748b;
+  --fn-slate-600: #475569;
+  --fn-slate-700: #334155;
+  --fn-slate-800: #1e293b;
+  --fn-slate-900: #0f172a;
+
+  /* ── Tokens semánticos ── */
+  --fn-bg:          var(--fn-slate-50);
+  --fn-surface:     #ffffff;
+  --fn-text:        var(--fn-slate-800);
+  --fn-text-muted:  var(--fn-slate-500);
+  --fn-border:      var(--fn-slate-200);
+  --fn-border-hover: var(--fn-slate-300);
+
+  /* Tipografía */
+  --fn-font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --fn-xs:   0.6875rem;   /* 11px */
+  --fn-sm:   0.8125rem;   /* 13px */
+  --fn-base: 0.875rem;    /* 14px */
+  --fn-md:   0.9375rem;   /* 15px */
+  --fn-lg:   1.0625rem;   /* 17px */
+  --fn-xl:   1.25rem;     /* 20px */
+
+  /* Sombras */
+  --fn-shadow-xs: 0 1px 2px rgb(0 0 0 / .05);
+  --fn-shadow-sm: 0 1px 3px rgb(0 0 0 / .08), 0 1px 2px -1px rgb(0 0 0 / .06);
+  --fn-shadow-md: 0 4px 8px -2px rgb(0 0 0 / .10), 0 2px 4px -2px rgb(0 0 0 / .08);
+  --fn-shadow-lg: 0 10px 24px -4px rgb(0 0 0 / .12), 0 4px 8px -4px rgb(0 0 0 / .08);
+
+  /* Radios */
+  --fn-r-xs: 4px;
+  --fn-r-sm: 6px;
+  --fn-r-md: 10px;
+  --fn-r-lg: 14px;
+
+  /* ── Bootstrap overrides ── */
+  --bs-primary:             #1d4ed8;
+  --bs-primary-rgb:         29, 78, 216;
+  --bs-body-font-family:    var(--fn-font);
+  --bs-body-font-size:      var(--fn-base);
+  --bs-body-color:          var(--fn-text);
+  --bs-body-bg:             var(--fn-bg);
+  --bs-border-color:        var(--fn-border);
+  --bs-border-radius:       var(--fn-r-sm);
+  --bs-border-radius-sm:    var(--fn-r-xs);
+  --bs-border-radius-lg:    var(--fn-r-md);
+  --bs-card-border-radius:  var(--fn-r-md);
+  --bs-card-box-shadow:     var(--fn-shadow-sm);
 }
 
-.navbar-brand {
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
+/* ── 2. BASE ────────────────────────────────────────────── */
+body {
+  font-family: var(--fn-font);
+  font-size: var(--fn-base);
+  color: var(--fn-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── 3. NAVBAR ──────────────────────────────────────────── */
+.navbar.bg-primary {
+  background: linear-gradient(135deg, var(--fn-800) 0%, var(--fn-600) 100%) !important;
+  border-bottom: 1px solid rgba(255 255 255 / .07);
+  padding-top: .55rem;
+  padding-bottom: .55rem;
+}
+
+.navbar .nav-link {
+  font-size: var(--fn-sm);
+  font-weight: 500;
+  padding: .35rem .7rem;
+  border-radius: var(--fn-r-sm);
+  transition: background .15s ease;
+}
+.navbar .nav-link:hover { background: rgba(255 255 255 / .10); }
+.navbar .nav-link.active {
+  background: rgba(255 255 255 / .15);
+  font-weight: 600;
+}
+
+.dropdown-menu {
+  font-size: var(--fn-sm);
+  border: 1px solid var(--fn-border);
+  border-radius: var(--fn-r-md);
+  box-shadow: var(--fn-shadow-md);
+}
+.dropdown-item {
+  border-radius: var(--fn-r-xs);
+  padding: .4rem .9rem;
+  transition: background .12s;
+}
+
+/* ── 4. CARDS ───────────────────────────────────────────── */
+.card {
+  border: 1px solid var(--fn-border);
+  border-radius: var(--fn-r-md);
+  box-shadow: var(--fn-shadow-sm);
+  overflow: hidden;
 }
 
 .card-header {
-  font-size: 0.85rem;
+  font-size: var(--fn-xs);
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: .5rem .9rem;
+  border-bottom: 1px solid rgba(0 0 0 / .08);
 }
 
-.table-sm td, .table-sm th {
-  padding: 0.35rem 0.5rem;
-}
-
-/* Formulario evaluación */
-#formEvaluacion .form-label {
-  margin-bottom: 0.2rem;
-  font-size: 0.8rem;
-}
-
-/* Preview panel */
-#preview .border {
-  background: #f8f9fa;
-}
-
-/* Score grande */
-.display-4 {
-  font-size: 3rem;
-}
-
-/* Barra de score */
-.progress {
-  border-radius: 8px;
-}
-
-/* Tabla plan de pagos */
-.table-striped > tbody > tr:nth-of-type(odd) > * {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-/* Alertas compactas */
-.alert {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.85rem;
-}
-
-/* Footer */
-footer {
-  font-size: 0.75rem;
-  color: #6c757d;
-}
-
-/* Cards más compactas */
 .card-body {
-  padding: 0.75rem;
+  padding: .85rem;
 }
 
-/* Autocomplete dropdown */
+/* Headers con color primario: gradiente suave */
+.card-header.bg-primary {
+  background: linear-gradient(135deg, var(--fn-700) 0%, var(--fn-600) 100%) !important;
+}
+.card-header.bg-dark {
+  background: linear-gradient(135deg, var(--fn-slate-900) 0%, var(--fn-slate-800) 100%) !important;
+}
+
+/* ── 5. TABLES ──────────────────────────────────────────── */
+.table-sm td, .table-sm th {
+  padding: .3rem .6rem;
+}
+
+.table > thead th {
+  font-size: var(--fn-xs);
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.table > tbody > tr > .bg-light {
+  background: var(--fn-slate-50) !important;
+  color: var(--fn-text-muted);
+  font-weight: 500;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+  background: rgba(0 0 0 / .015);
+}
+
+/* ── 6. BADGES ──────────────────────────────────────────── */
+.badge {
+  font-weight: 600;
+  letter-spacing: .02em;
+  border-radius: var(--fn-r-xs);
+}
+
+/* ── 7. FORMULARIOS ─────────────────────────────────────── */
+.form-label {
+  font-size: var(--fn-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--fn-text-muted);
+  margin-bottom: .2rem;
+}
+
+.form-control, .form-select {
+  font-size: var(--fn-base);
+  border-color: var(--fn-border);
+  border-radius: var(--fn-r-sm);
+  transition: border-color .15s, box-shadow .15s;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb) / .15);
+}
+
+.input-group-text {
+  font-size: var(--fn-sm);
+  background: var(--fn-slate-100);
+  border-color: var(--fn-border);
+  color: var(--fn-text-muted);
+}
+
+/* ── 8. BOTONES ─────────────────────────────────────────── */
+.btn {
+  font-weight: 500;
+  letter-spacing: .01em;
+  border-radius: var(--fn-r-sm);
+  font-size: var(--fn-base);
+  transition: filter .15s, box-shadow .15s;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn-sm { font-size: var(--fn-xs); border-radius: var(--fn-r-xs); }
+.btn-lg {
+  font-size: var(--fn-md);
+  border-radius: var(--fn-r-md);
+  padding: .65rem 1.5rem;
+}
+
+/* ── 9. PREVIEW PANEL ───────────────────────────────────── */
+#preview .border {
+  background: var(--fn-slate-50);
+  border-color: var(--fn-border) !important;
+  border-radius: var(--fn-r-sm) !important;
+}
+#preview .text-muted.small { font-size: var(--fn-xs); }
+
+/* ── 10. SCORE DISPLAY (detalle) ────────────────────────── */
+.display-4 {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.03em;
+}
+
+/* ── 11. PROGRESS BAR ───────────────────────────────────── */
+.progress {
+  border-radius: 999px;
+  background: var(--fn-slate-200);
+}
+.progress-bar {
+  border-radius: 999px;
+  font-size: var(--fn-xs);
+  font-weight: 600;
+}
+
+/* ── 12. ALERTAS ────────────────────────────────────────── */
+.alert {
+  padding: .45rem .85rem;
+  font-size: var(--fn-sm);
+  border-radius: var(--fn-r-sm);
+}
+
+/* ── 13. FOOTER ─────────────────────────────────────────── */
+footer {
+  font-size: var(--fn-xs);
+  color: var(--fn-text-muted);
+  border-top: 1px solid var(--fn-border);
+}
+
+/* ── 14. AUTOCOMPLETE ───────────────────────────────────── */
 #autocompleteList {
   z-index: 1050;
+  border-radius: 0 0 var(--fn-r-sm) var(--fn-r-sm);
+  border-top: none;
 }
+
+/* ── 15. ENCABEZADO DE EVALUACIÓN (detalle) ─────────────── */
+.card.border-success { border-color: #16a34a !important; }
+.card.border-danger  { border-color: #dc2626 !important; }
+.card.border-warning { border-color: #d97706 !important; }
+.card.border-secondary { border-color: var(--fn-slate-300) !important; }
+.card.border-primary { border-color: var(--bs-primary) !important; }
