@@ -124,8 +124,15 @@
       </div>
     </div>
     <div class="banner-decision">
-      <div style="font-size:10px;color:#666;margin-bottom:6px">SUGERENCIA SISTEMA</div>
-      <span class="decision-badge bg-{{ ev.decision_color }}">{{ ev.decision }}</span>
+      <div style="font-size:10px;color:#666;margin-bottom:6px">DECISIÓN DEL COMITÉ</div>
+      {% if ev.decision_comite %}
+        <span class="decision-badge bg-{{ ev.decision_comite_color }}">{{ ev.decision_comite }}</span>
+        {% if ev.observaciones %}
+        <div style="font-size:9px;color:#555;margin-top:5px;line-height:1.4">{{ ev.observaciones }}</div>
+        {% endif %}
+      {% else %}
+        <span class="decision-badge bg-secondary" style="font-size:10px">Pendiente</span>
+      {% endif %}
     </div>
   </div>
 
@@ -272,50 +279,6 @@
             </div>
           </div>
         </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- DECISIÓN FINAL DEL COMITÉ -->
-  <div class="card" style="margin-bottom:10px">
-    <div class="card-header hdr-amber" style="display:flex;justify-content:space-between;align-items:center">
-      <span>&#x1F465; Decisión Final del Comité de Crédito</span>
-      {% if ev.fecha_decision_comite %}
-      <span style="font-weight:400;font-size:9.5px">
-        {{ ev.fecha_decision_comite|date:"d/m/Y H:i" }}{% if ev.registrado_por_comite %} &nbsp;·&nbsp; {{ ev.registrado_por_comite.get_full_name }}{% endif %}
-      </span>
-      {% endif %}
-    </div>
-    <div style="display:flex;align-items:center;gap:0;padding:0;">
-
-      <!-- Sugerencia sistema -->
-      <div style="text-align:center;padding:12px 18px;border-right:1px solid #e5e7eb;min-width:140px">
-        <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Sugerencia del sistema</div>
-        <span class="decision-badge bg-{{ ev.decision_color }}" style="font-size:11px">{{ ev.decision }}</span>
-      </div>
-
-      <!-- Flecha -->
-      <div style="padding:0 14px;font-size:20px;color:#bbb">&#x2192;</div>
-
-      <!-- Decisión comité -->
-      <div style="text-align:center;padding:12px 18px;border-right:1px solid #e5e7eb;min-width:160px">
-        <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Decisión del comité</div>
-        {% if ev.decision_comite %}
-          <span class="decision-badge bg-{{ ev.decision_comite_color }}" style="font-size:13px;padding:7px 16px">{{ ev.decision_comite }}</span>
-        {% else %}
-          <span class="decision-badge bg-secondary" style="font-size:11px">Pendiente</span>
-        {% endif %}
-      </div>
-
-      <!-- Observaciones -->
-      <div style="flex:1;padding:12px 16px">
-        <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Observaciones / Condiciones</div>
-        {% if ev.observaciones %}
-          <div style="font-size:10.5px;line-height:1.5">{{ ev.observaciones }}</div>
-        {% else %}
-          <div style="font-size:10px;color:#aaa;font-style:italic">Sin observaciones registradas.</div>
-        {% endif %}
       </div>
 
     </div>
