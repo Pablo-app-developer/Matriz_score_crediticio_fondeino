@@ -183,6 +183,7 @@ def evaluacion(request):
         # Parsear filas dinámicas de obligaciones con otras entidades
         otras_lista, total_otras = _parsear_otras_obligaciones(request.POST)
         datos['cuotas_otras_entidades'] = total_otras
+        datos['categoria'] = modalidad.categoria
 
         resultado = evaluar_credito(datos, cfg)
 
@@ -286,7 +287,11 @@ def get_modalidad_tasa(request):
     pk = request.GET.get('pk')
     try:
         m = Modalidad.objects.get(pk=pk)
-        return JsonResponse({'tasa_mensual': float(m.tasa_mensual), 'tasa_anual': float(m.tasa_mensual) * 12})
+        return JsonResponse({
+            'tasa_mensual': float(m.tasa_mensual),
+            'tasa_anual': float(m.tasa_mensual) * 12,
+            'categoria': m.categoria,
+        })
     except Modalidad.DoesNotExist:
         return JsonResponse({'error': 'not found'}, status=404)
 
@@ -627,6 +632,7 @@ def evaluacion_editar(request, pk):
             'tasa_mensual': float(modalidad.tasa_mensual),
             'pd_base': float(modalidad.pd_base),
             'fecha_desembolso': cd['fecha_desembolso'],
+            'categoria': modalidad.categoria,
         }
         resultado = evaluar_credito(datos, cfg)
 

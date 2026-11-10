@@ -14,6 +14,7 @@
       <thead class="table-dark">
         <tr>
           <th>Modalidad</th>
+          <th class="text-center">Categoría</th>
           <th class="text-center">Tasa Mensual</th>
           <th class="text-center">Tasa Anual</th>
           <th class="text-center">PD Base</th>
@@ -25,6 +26,19 @@
         {% for m in modalidades %}
         <tr>
           <td>{{ m.nombre }}</td>
+          <td class="text-center">
+            {% if m.categoria == 'ANTICIPO_PRIMA' %}
+              <span class="badge bg-warning text-dark">Anticipo Prima</span>
+            {% elif m.categoria == 'CALAMIDAD' %}
+              <span class="badge bg-danger">Calamidad</span>
+            {% elif m.categoria == 'VIVIENDA' %}
+              <span class="badge bg-info text-dark">Vivienda</span>
+            {% elif m.categoria == 'OTRO' %}
+              <span class="badge bg-secondary">Otro</span>
+            {% else %}
+              <span class="badge bg-primary">Libre Inversión</span>
+            {% endif %}
+          </td>
           <td class="text-center">{{ m.tasa_mensual|floatformat:2 }}%</td>
           <td class="text-center">{{ m.tasa_nominal_anual|floatformat:1 }}%</td>
           <td class="text-center">{{ m.pd_base|floatformat:2 }}%</td>
@@ -39,7 +53,7 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="6" class="text-center text-muted">No hay modalidades. <a href="{% url 'credito:modalidad_crear' %}">Crear primera</a></td></tr>
+        <tr><td colspan="7" class="text-center text-muted">No hay modalidades. <a href="{% url 'credito:modalidad_crear' %}">Crear primera</a></td></tr>
         {% endfor %}
       </tbody>
     </table>

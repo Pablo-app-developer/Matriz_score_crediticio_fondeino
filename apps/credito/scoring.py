@@ -9,6 +9,20 @@ import math
 
 
 # ─────────────────────────────────────────────
+# REGLAS POR CATEGORÍA DE MODALIDAD
+# ─────────────────────────────────────────────
+
+# La cuota nueva NO entra en el cálculo del mínimo vital (se recupera de la prima, no del salario mensual)
+CATEGORIAS_EXENTAS_MV = frozenset({'ANTICIPO_PRIMA'})
+
+# No aplica la regla de haber pagado mínimo el 30% del crédito anterior
+CATEGORIAS_EXENTAS_30PCT = frozenset({'ANTICIPO_PRIMA', 'CALAMIDAD'})
+
+# Puntaje mínimo de DataCrédito para créditos internos descontados por nómina
+DC_FLOOR_CATEGORIA = {'ANTICIPO_PRIMA': 15, 'CALAMIDAD': 8}
+
+
+# ─────────────────────────────────────────────
 # BLOQUE 1 – INGRESOS
 # ─────────────────────────────────────────────
 
@@ -41,7 +55,7 @@ def calcular_pmt(monto: float, tasa_mensual: float, n_cuotas: int) -> float:
 
 
 def calcular_seguro(monto: float) -> float:
-    """Seguro mensual = 0.0857‰ del monto."""
+    """Seguro mensual = 0.857‰ del monto."""
     return monto * 0.000857
 
 
@@ -95,19 +109,23 @@ def calcular_cobertura_garantias(aportes: float, ahorros: float, monto: float) -
 # SCORING CREDITICIO (6 factores)
 # ─────────────────────────────────────────────
 
-def score_datacredito(puntaje: int, cfg: dict) -> int:
+def score_datacredito(puntaje: int, cfg: dict, categoria: str = 'LIBRE_INVERSION') -> int:
     """
     cfg keys: s_dc_excelente, s_dc_bueno, s_dc_regular, s_dc_malo,
               t_dc_excelente (700), t_dc_bueno (500), t_dc_regular (300)
+
+    Para créditos internos descontados por nómina (ANTICIPO_PRIMA, CALAMIDAD) se aplica
+    un puntaje mínimo porque el riesgo de impago por DataCrédito es menor.
     """
     if puntaje >= cfg.get('t_dc_excelente', 700):
-        return cfg.get('s_dc_excelente', 25)
+        raw = cfg.get('s_dc_excelente', 25)
     elif puntaje >= cfg.get('t_dc_bueno', 500):
-        return cfg.get('s_dc_bueno', 15)
+        raw = cfg.get('s_dc_bueno', 15)
     elif puntaje >= cfg.get('t_dc_regular', 300):
-        return cfg.get('s_dc_regular', 8)
+        raw = cfg.get('s_dc_regular', 8)
     else:
-        return cfg.get('s_dc_malo', 0)
+        raw = cfg.get('s_dc_malo', 0)
+    return max(raw, DC_FLOOR_CATEGORIA.get(categoria, 0))
 
 
 def score_antiguedad(meses: int, cfg: dict) -> int:
@@ -169,11 +187,18 @@ def score_garantias(total_garantias: float, monto: float, cfg: dict) -> int:
         return cfg.get('s_gar_nula', 0)
 
 
-def score_credito_activo(tiene_credito: bool, pct_capital_pagado: float, cfg: dict) -> int:
+def score_credito_activo(tiene_credito: bool, pct_capital_pagado: float, cfg: dict,
+                         categoria: str = 'LIBRE_INVERSION') -> int:
     """
     cfg keys: s_hist_sin, s_hist_bueno, s_hist_malo, t_hist_bueno (0.30)
+
+    Para ANTICIPO_PRIMA: el saldo siempre se recupera íntegro de la prima —
+    no hay riesgo de capital pendiente, se puntúa igual que sin crédito activo.
     """
     if not tiene_credito:
+        return cfg.get('s_hist_sin', 10)
+    if categoria == 'ANTICIPO_PRIMA':
+        # El anticipo de prima tiene recuperación garantizada; no se penaliza
         return cfg.get('s_hist_sin', 10)
     elif pct_capital_pagado >= cfg.get('t_hist_bueno', 0.30):
         return cfg.get('s_hist_bueno', 7)
@@ -196,13 +221,16 @@ def clasificar_score(score: int, cfg: dict) -> str:
 
 
 def calcular_decision(score: int, estado_mv: str, pct_endeudamiento: float,
-                      tiene_credito: bool, pct_capital: float, cfg: dict) -> str:
+                      tiene_credito: bool, pct_capital: float, cfg: dict,
+                      categoria: str = 'LIBRE_INVERSION') -> str:
     if 'BLOQUEADO' in estado_mv:
         return 'NO APROBADO - CUOTA EXCEDE LÍMITE'
     if pct_endeudamiento > 0.5:
         return 'NO APROBADO - ENDEUDAMIENTO SUPERA EL 50%'
-    if tiene_credito and pct_capital < cfg.get('t_hist_bueno', 0.30):
-        return 'NO APROBADO - PAGO MÍNIMO DEL 30% NO ALCANZADO'
+    # La regla del 30% no aplica para Anticipo de Prima ni Calamidad
+    if categoria not in CATEGORIAS_EXENTAS_30PCT:
+        if tiene_credito and pct_capital < cfg.get('t_hist_bueno', 0.30):
+            return 'NO APROBADO - PAGO MÍNIMO DEL 30% NO ALCANZADO'
     if score >= cfg.get('t_cls_bueno', 60) and estado_mv == 'OK':
         return 'APROBAR'
     elif score >= cfg.get('t_cls_regular', 40):
@@ -312,6 +340,9 @@ def evaluar_credito(datos: dict, cfg: dict) -> dict:
     Recibe todos los datos del formulario y la configuración del sistema.
     Retorna un dict con todos los resultados calculados.
     """
+    categoria = datos.get('categoria', 'LIBRE_INVERSION')
+    exenta_mv = categoria in CATEGORIAS_EXENTAS_MV
+
     sb = float(datos['salario_bruto'])
     ingresos = calcular_salario_neto(sb)
     sn = ingresos['neto']
@@ -329,8 +360,16 @@ def evaluar_credito(datos: dict, cfg: dict) -> dict:
 
     oblig = calcular_obligaciones(cuotas_otras, cuota_aporte, cuota_ahorro,
                                   monto, tasa_mensual, n_cuotas)
+    cuota_nueva = oblig['cuota_nueva_estimada']
 
-    validacion = calcular_validacion(sn, mv, oblig['total_cuotas'])
+    # Para ANTICIPO_PRIMA, la cuota se recupera de la prima y no impacta el flujo mensual.
+    # El mínimo vital se calcula solo sobre las obligaciones de desembolso mensual.
+    if exenta_mv:
+        cuotas_para_mv = cuotas_otras + oblig['cuotas_fondeino_actuales']
+    else:
+        cuotas_para_mv = oblig['total_cuotas']
+
+    validacion = calcular_validacion(sn, mv, cuotas_para_mv)
 
     aportes_ac = float(datos.get('saldo_aportes', 0))
     ahorros_ac = float(datos.get('saldo_ahorros', 0))
@@ -345,18 +384,18 @@ def evaluar_credito(datos: dict, cfg: dict) -> dict:
         tiene_credito = tiene_credito.upper() == 'SI'
     pct_capital = float(datos.get('pct_capital_pagado', 0))
 
-    s_dc = score_datacredito(puntaje_dc, cfg)
+    s_dc = score_datacredito(puntaje_dc, cfg, categoria)
     s_ant = score_antiguedad(meses_ant, cfg)
     s_vinc = score_vinculacion(tipo_vinc, cfg)
     s_cap = score_capacidad_pago(validacion['disponible_final'], validacion['pct_endeudamiento'], cfg)
     s_gar = score_garantias(garantias['total_garantias'], monto, cfg)
-    s_hist = score_credito_activo(tiene_credito, pct_capital, cfg)
+    s_hist = score_credito_activo(tiene_credito, pct_capital, cfg, categoria)
 
     score_total = s_dc + s_ant + s_vinc + s_cap + s_gar + s_hist
     clasificacion = clasificar_score(score_total, cfg)
     decision = calcular_decision(score_total, validacion['estado'],
                                  validacion['pct_endeudamiento'],
-                                 tiene_credito, pct_capital, cfg)
+                                 tiene_credito, pct_capital, cfg, categoria)
 
     # Métricas de riesgo
     pd_base = float(datos.get('pd_base', 0.015))
@@ -381,9 +420,10 @@ def evaluar_credito(datos: dict, cfg: dict) -> dict:
         # Obligaciones
         'cuotas_otras_entidades': cuotas_otras,
         'cuotas_fondeino_actuales': oblig['cuotas_fondeino_actuales'],
-        'cuota_nueva_estimada': oblig['cuota_nueva_estimada'],
+        'cuota_nueva_estimada': cuota_nueva,
         'seguro_mensual': seguro,
-        'total_cuotas': oblig['total_cuotas'],
+        'total_cuotas': oblig['total_cuotas'],          # total real (incluye cuota nueva)
+        'cuotas_para_mv': cuotas_para_mv,              # lo que cuenta contra el MV
         # Validación
         'disponible_final': validacion['disponible_final'],
         'cumple_minimo_vital': validacion['cumple_minimo_vital'],
@@ -410,4 +450,8 @@ def evaluar_credito(datos: dict, cfg: dict) -> dict:
         # Plan
         'plan_pagos': plan,
         'tasa_nominal_anual': tasa_mensual * 12,
+        # Categoría
+        'categoria': categoria,
+        'exenta_mv': exenta_mv,
+        'exenta_30pct': categoria in CATEGORIAS_EXENTAS_30PCT,
     }

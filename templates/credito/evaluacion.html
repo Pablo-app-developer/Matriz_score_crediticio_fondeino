@@ -250,7 +250,7 @@
           </div>
           <div class="col-6">
             <div class="border rounded p-2">
-              <div class="text-muted small">Mínimo Vital (50%)</div>
+              <div class="text-muted small">Mín. Vital (50%)</div>
               <div class="fw-bold" id="prev_mv">—</div>
             </div>
           </div>
@@ -274,11 +274,53 @@
           </div>
           <div class="col-6">
             <div class="border rounded p-2">
-              <div class="text-muted small">Mínimo Vital</div>
+              <div class="text-muted small">Estado MV</div>
               <div class="fw-bold" id="prev_cumple">—</div>
             </div>
           </div>
+          <!-- Nota: solo visible para Anticipo de Prima -->
+          <div class="col-12" id="prev_anticipo_nota" style="display:none">
+            <div class="alert alert-info py-1 mb-0 small">
+              <i class="bi bi-info-circle me-1"></i>
+              <strong>Anticipo de Prima:</strong> la cuota se recupera de la prima semestral — no se descuenta del mínimo vital mensual.
+            </div>
+          </div>
         </div>
+
+        <!-- Crédito activo FONDEINO: visible solo cuando hay crédito activo -->
+        <div id="prev_cred_activo" style="display:none">
+          <hr class="my-2">
+          <div class="text-muted small fw-semibold mb-1">
+            <i class="bi bi-bank me-1"></i>Crédito Activo en FONDEINO
+          </div>
+          <div class="row g-1 text-center">
+            <div class="col-4">
+              <div class="border rounded p-1">
+                <div class="text-muted" style="font-size:.7rem">Valor Inicial</div>
+                <div class="fw-bold small" id="prev_cred_inicial">—</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="border rounded p-1">
+                <div class="text-muted" style="font-size:.7rem">Total Pagado</div>
+                <div class="fw-bold small" id="prev_cred_pagado">—</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="border rounded p-1">
+                <div class="text-muted" style="font-size:.7rem">% Capital</div>
+                <div class="fw-bold small" id="prev_cred_pct">—</div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="border rounded p-1 text-center">
+                <div class="text-muted" style="font-size:.7rem">Regla del 30%</div>
+                <div class="small" id="prev_cred_regla30">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <hr>
         <div class="text-center mt-2">
           <div class="text-muted small mb-1">Score Estimado</div>
@@ -318,6 +360,9 @@ const API_EMPLEADO = "{% url 'credito:api_empleado' %}";
 const API_EMPLEADO_NOMBRE = "{% url 'credito:api_empleado_nombre' %}";
 const API_MODALIDAD = "{% url 'credito:api_modalidad' %}";
 
+// Categoría activa de la modalidad seleccionada (se actualiza al cambiar modalidad)
+let categoriaModalidad = 'LIBRE_INVERSION';
+
 // ── Función reutilizable: rellenar campos con datos del empleado ──
 function llenarEmpleado(d) {
   document.getElementById('id_cedula').value = d.cedula;
@@ -337,7 +382,6 @@ function llenarEmpleado(d) {
   const input = document.getElementById('buscarNombre');
   const list = document.getElementById('autocompleteList');
   let timer;
-
   input.addEventListener('input', function() {
     clearTimeout(timer);
     const q = this.value.trim();
@@ -365,8 +409,6 @@ function llenarEmpleado(d) {
         });
     }, 250);
   });
-
-  // Cerrar lista al hacer clic fuera
   document.addEventListener('click', e => {
     if (!input.contains(e.target) && !list.contains(e.target)) list.style.display = 'none';
   });
@@ -389,7 +431,7 @@ document.getElementById('btnBuscar').addEventListener('click', () => {
     });
 });
 
-// ── Tasa de modalidad ──
+// ── Tasa y categoría de modalidad ──
 document.getElementById('id_modalidad').addEventListener('change', function() {
   const pk = this.value;
   if (!pk) return;
@@ -398,6 +440,7 @@ document.getElementById('id_modalidad').addEventListener('change', function() {
     .then(d => {
       document.getElementById('tasaInfo').textContent =
         `Tasa: ${(d.tasa_mensual * 100).toFixed(4)}% mensual | ${(d.tasa_anual * 100).toFixed(2)}% nominal anual`;
+      categoriaModalidad = d.categoria || 'LIBRE_INVERSION';
       calcularPreview();
     });
 });
@@ -414,7 +457,6 @@ function calcTotalGar() {
 
 // ── Preview en tiempo real ──
 function fmt(n) {
-  // Formato colombiano: separador de miles con punto
   return Math.round(n).toLocaleString('es-CO');
 }
 
@@ -426,7 +468,7 @@ function pmt(monto, tasa, n) {
 
 function calcularPctCapitalPagado() {
   const inicial = parseFloat(document.getElementById('id_valor_inicial_credito_activo').value) || 0;
-  const pagado = parseFloat(document.getElementById('id_valor_pagado_credito_activo').value) || 0;
+  const pagado  = parseFloat(document.getElementById('id_valor_pagado_credito_activo').value)  || 0;
   let pct = inicial > 0 ? pagado / inicial : 0;
   pct = Math.max(0, Math.min(pct, 1));
   document.getElementById('id_pct_capital_pagado').value = pct.toFixed(2);
@@ -437,86 +479,141 @@ function calcularPctCapitalPagado() {
 function toggleCreditoActivoFields() {
   const tiene = document.getElementById('id_tiene_credito_activo').value === 'SI';
   document.getElementById('grupoValorInicialCredito').style.display = tiene ? '' : 'none';
-  document.getElementById('grupoValorPagadoCredito').style.display = tiene ? '' : 'none';
-  document.getElementById('grupoPctCalculado').style.display = tiene ? '' : 'none';
+  document.getElementById('grupoValorPagadoCredito').style.display  = tiene ? '' : 'none';
+  document.getElementById('grupoPctCalculado').style.display        = tiene ? '' : 'none';
   if (!tiene) {
     document.getElementById('id_valor_inicial_credito_activo').value = 0;
-    document.getElementById('id_valor_pagado_credito_activo').value = 0;
+    document.getElementById('id_valor_pagado_credito_activo').value  = 0;
   }
   calcularPctCapitalPagado();
 }
 
 function calcularPreview() {
-  const sb = parseFloat(document.getElementById('id_salario_bruto').value) || 0;
-  const neto = sb * 0.92; // 92% = 100% - 4% salud - 4% pensión
-  const mv = neto * 0.5;
-
-  const monto = parseFloat(document.getElementById('id_monto_solicitado').value) || 0;
+  const sb     = parseFloat(document.getElementById('id_salario_bruto').value) || 0;
+  const neto   = sb * 0.92;
+  const mv     = neto * 0.5;
+  const monto  = parseFloat(document.getElementById('id_monto_solicitado').value) || 0;
   const ncuotas = parseInt(document.getElementById('id_n_cuotas').value) || 0;
 
-  // Obtener tasa del texto de la nota
   const tasaText = document.getElementById('tasaInfo').textContent;
   let tasa = 0;
-  const m = tasaText.match(/([\d.]+)% mensual/);
-  if (m) tasa = parseFloat(m[1]) / 100;
+  const tm = tasaText.match(/([\d.]+)% mensual/);
+  if (tm) tasa = parseFloat(tm[1]) / 100;
 
-  const seguro = monto * 0.0025;
+  const seguro   = monto * 0.000857;
   const cuotaBase = (monto > 0 && ncuotas > 0 && tasa > 0) ? pmt(monto, tasa, ncuotas) + seguro : 0;
 
-  const otras = totalOtrasEntidades();
-  const aporte = parseFloat(document.getElementById('id_cuota_aporte').value) || 0;
-  const ahorro = parseFloat(document.getElementById('id_cuota_ahorro').value) || 0;
-  const totalCuotas = otras + aporte + ahorro + cuotaBase;
+  const otras   = totalOtrasEntidades();
+  const aporte  = parseFloat(document.getElementById('id_cuota_aporte').value) || 0;
+  const ahorro  = parseFloat(document.getElementById('id_cuota_ahorro').value) || 0;
 
-  const disponible = mv - totalCuotas;
-  const pctEnd = neto > 0 ? totalCuotas / neto : 0;
+  // ── Reglas por categoría ──
+  const exentaMV    = categoriaModalidad === 'ANTICIPO_PRIMA';
+  const exenta30pct = categoriaModalidad === 'ANTICIPO_PRIMA' || categoriaModalidad === 'CALAMIDAD';
+  const dcFloor     = categoriaModalidad === 'ANTICIPO_PRIMA' ? 15 : categoriaModalidad === 'CALAMIDAD' ? 8 : 0;
 
-  // Scoring rápido
-  const dc = parseInt(document.getElementById('id_puntaje_datacredito').value) || 0;
-  const ant = parseInt(document.getElementById('id_antiguedad_meses').value) || 0;
-  const vinc = document.getElementById('id_tipo_vinculacion').value;
+  // Para el mínimo vital, el anticipo de prima NO suma al total mensual
+  const cuotasParaMV  = exentaMV ? (otras + aporte + ahorro) : (otras + aporte + ahorro + cuotaBase);
+  const totalCuotas   = otras + aporte + ahorro + cuotaBase; // para mostrar cuota total real
+  const disponible    = mv - cuotasParaMV;
+  const pctEnd        = neto > 0 ? cuotasParaMV / neto : 0;
+
+  // Scoring
+  const dc      = parseInt(document.getElementById('id_puntaje_datacredito').value) || 0;
+  const ant     = parseInt(document.getElementById('id_antiguedad_meses').value)    || 0;
+  const vinc    = document.getElementById('id_tipo_vinculacion').value;
   const tieneCred = document.getElementById('id_tiene_credito_activo').value === 'SI';
-  const pctCap = calcularPctCapitalPagado();
-  const garAp = parseFloat(document.getElementById('id_saldo_aportes').value) || 0;
-  const garAh = parseFloat(document.getElementById('id_saldo_ahorros').value) || 0;
+  const pctCap  = calcularPctCapitalPagado();
+  const garAp   = parseFloat(document.getElementById('id_saldo_aportes').value) || 0;
+  const garAh   = parseFloat(document.getElementById('id_saldo_ahorros').value) || 0;
   const garTotal = garAp + garAh;
 
-  const sDC = dc >= 700 ? 25 : dc >= 500 ? 15 : dc >= 300 ? 8 : 0;
-  const sAnt = ant >= 24 ? 15 : ant >= 12 ? 12 : ant >= 6 ? 8 : ant >= 3 ? 4 : 0;
-  const sVinc = vinc.includes('Indefinido') ? 10 : vinc.includes('fijo') ? 7 : 4;
-  const sCap = disponible < 0 ? 0 : pctEnd > 0.5 ? 5 : pctEnd > 0.3 ? 15 : 25;
-  const cob = monto > 0 ? garTotal / monto : 0;
-  const sGar = cob >= 1 ? 15 : cob >= 0.5 ? 10 : cob >= 0.25 ? 5 : 0;
-  const sHist = !tieneCred ? 10 : pctCap >= 0.3 ? 7 : 3;
+  const sDC_raw = dc >= 700 ? 25 : dc >= 500 ? 15 : dc >= 300 ? 8 : 0;
+  const sDC     = Math.max(sDC_raw, dcFloor);
+  const sAnt    = ant >= 24 ? 15 : ant >= 12 ? 12 : ant >= 6 ? 8 : ant >= 3 ? 4 : 0;
+  const sVinc   = vinc.includes('Indefinido') ? 10 : vinc.includes('fijo') ? 7 : 4;
+  const sCap    = disponible < 0 ? 0 : pctEnd > 0.5 ? 5 : pctEnd > 0.3 ? 15 : 25;
+  const cob     = monto > 0 ? garTotal / monto : 0;
+  const sGar    = cob >= 1 ? 15 : cob >= 0.5 ? 10 : cob >= 0.25 ? 5 : 0;
+
+  // Para ANTICIPO_PRIMA: recuperación garantizada — mismo puntaje que sin crédito activo
+  let sHist;
+  if (!tieneCred || categoriaModalidad === 'ANTICIPO_PRIMA') {
+    sHist = 10;
+  } else {
+    sHist = pctCap >= 0.3 ? 7 : 3;
+  }
 
   const scoreTotal = sDC + sAnt + sVinc + sCap + sGar + sHist;
 
-  // Clasificación y decisión
-  const cls = scoreTotal >= 80 ? 'EXCELENTE' : scoreTotal >= 60 ? 'BUENO' : scoreTotal >= 40 ? 'REGULAR' : 'ALTO RIESGO';
-  const bloqueado = disponible < 0;
+  // Decisión
   let decision, decClass;
-  if (bloqueado) { decision = 'NO APROBADO - CUOTA EXCEDE LÍMITE'; decClass = 'bg-danger'; }
-  else if (pctEnd > 0.5) { decision = 'NO APROBADO - ENDEUDAMIENTO SUPERA EL 50%'; decClass = 'bg-danger'; }
-  else if (tieneCred && pctCap < 0.3) { decision = 'NO APROBADO - PAGO MÍNIMO 30% NO ALCANZADO'; decClass = 'bg-danger'; }
-  else if (scoreTotal >= 60) { decision = 'APROBAR'; decClass = 'bg-success'; }
-  else if (scoreTotal >= 40) { decision = 'REVISAR / CODEUDOR'; decClass = 'bg-warning text-dark'; }
-  else { decision = 'NO APROBADO'; decClass = 'bg-danger'; }
+  if (disponible < 0) {
+    decision = 'NO APROBADO - CUOTA EXCEDE LÍMITE'; decClass = 'bg-danger';
+  } else if (pctEnd > 0.5) {
+    decision = 'NO APROBADO - ENDEUDAMIENTO SUPERA EL 50%'; decClass = 'bg-danger';
+  } else if (!exenta30pct && tieneCred && pctCap < 0.3) {
+    decision = 'NO APROBADO - PAGO MÍNIMO 30% NO ALCANZADO'; decClass = 'bg-danger';
+  } else if (scoreTotal >= 60) {
+    decision = 'APROBAR'; decClass = 'bg-success';
+  } else if (scoreTotal >= 40) {
+    decision = 'REVISAR / CODEUDOR'; decClass = 'bg-warning text-dark';
+  } else {
+    decision = 'NO APROBADO'; decClass = 'bg-danger';
+  }
 
-  // Actualizar UI
+  // ── Actualizar tarjetas de resumen ──
   document.getElementById('prev_neto').textContent = sb ? '$ ' + fmt(neto) : '—';
-  document.getElementById('prev_mv').textContent = sb ? '$ ' + fmt(mv) : '—';
+  document.getElementById('prev_mv').textContent   = sb ? '$ ' + fmt(mv)   : '—';
   document.getElementById('prev_cuota').textContent = cuotaBase ? '$ ' + fmt(cuotaBase) : '—';
+
   const dispEl = document.getElementById('prev_disponible');
   dispEl.textContent = sb ? '$ ' + fmt(disponible) : '—';
-  dispEl.className = 'fw-bold ' + (disponible < 0 ? 'text-danger' : 'text-success');
+  dispEl.className   = 'fw-bold ' + (disponible < 0 ? 'text-danger' : 'text-success');
+
   document.getElementById('prev_pct').textContent = sb ? (pctEnd * 100).toFixed(1) + '%' : '—';
+
   document.getElementById('prev_cumple').innerHTML = sb
-    ? (disponible >= 0 ? '<span class="text-success">✓ Cumple</span>' : '<span class="text-danger">✗ No cumple</span>')
+    ? (disponible >= 0
+        ? '<span class="text-success">✓ Cumple</span>'
+        : '<span class="text-danger">✗ No cumple</span>')
     : '—';
+
+  // ── Nota categoría especial (anticipo prima) ──
+  const notaEl = document.getElementById('prev_anticipo_nota');
+  notaEl.style.display = (exentaMV && sb) ? '' : 'none';
+
+  // ── Sección crédito activo FONDEINO ──
+  const credSection = document.getElementById('prev_cred_activo');
+  if (tieneCred && sb) {
+    credSection.style.display = '';
+    const inicial = parseFloat(document.getElementById('id_valor_inicial_credito_activo').value) || 0;
+    const pagado  = parseFloat(document.getElementById('id_valor_pagado_credito_activo').value)  || 0;
+    document.getElementById('prev_cred_inicial').textContent = inicial ? '$ ' + fmt(inicial) : '—';
+    document.getElementById('prev_cred_pagado').textContent  = pagado  ? '$ ' + fmt(pagado)  : '—';
+
+    const pctCapStr = (pctCap * 100).toFixed(1) + '%';
+    const pctEl = document.getElementById('prev_cred_pct');
+    pctEl.textContent = pctCapStr;
+    pctEl.className   = 'fw-bold small ' + (pctCap >= 0.3 ? 'text-success' : 'text-warning');
+
+    const r30El = document.getElementById('prev_cred_regla30');
+    if (exenta30pct) {
+      r30El.innerHTML = '<span class="text-info"><i class="bi bi-info-circle me-1"></i>No aplica para esta categoría</span>';
+    } else if (pctCap >= 0.3) {
+      r30El.innerHTML = `<span class="text-success"><i class="bi bi-check-circle me-1"></i>Cumple (${pctCapStr} ≥ 30%)</span>`;
+    } else {
+      r30El.innerHTML = `<span class="text-danger"><i class="bi bi-x-circle me-1"></i>No cumple (${pctCapStr} &lt; 30%)</span>`;
+    }
+  } else {
+    credSection.style.display = 'none';
+  }
+
+  // ── Score y decisión ──
   document.getElementById('prev_score').textContent = sb ? scoreTotal : '—';
   const decEl = document.getElementById('prev_decision');
   decEl.textContent = sb ? decision : '—';
-  decEl.className = 'badge fs-6 mt-1 ' + (sb ? decClass : 'bg-secondary');
+  decEl.className   = 'badge fs-6 mt-1 ' + (sb ? decClass : 'bg-secondary');
 }
 
 // ── Tabla dinámica de otras obligaciones ──
@@ -524,9 +621,7 @@ let numFilas = 0;
 
 function totalOtrasEntidades() {
   let t = 0;
-  document.querySelectorAll('.cuota-otra').forEach(el => {
-    t += parseFloat(el.value) || 0;
-  });
+  document.querySelectorAll('.cuota-otra').forEach(el => { t += parseFloat(el.value) || 0; });
   return t;
 }
 
@@ -563,7 +658,6 @@ function eliminarFila(n) {
   actualizarTotalOtras();
 }
 
-// Bind all inputs to recalculate
 const inputs = ['id_salario_bruto','id_monto_solicitado','id_n_cuotas','id_puntaje_datacredito',
   'id_antiguedad_meses','id_tipo_vinculacion','id_tiene_credito_activo',
   'id_valor_inicial_credito_activo','id_valor_pagado_credito_activo',

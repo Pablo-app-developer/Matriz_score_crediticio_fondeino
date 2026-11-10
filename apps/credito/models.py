@@ -3,8 +3,22 @@ from django.conf import settings
 import json
 
 
+CATEGORIA_CHOICES = [
+    ('LIBRE_INVERSION', 'Libre Inversión'),
+    ('ANTICIPO_PRIMA', 'Anticipo de Prima'),
+    ('CALAMIDAD', 'Calamidad'),
+    ('VIVIENDA', 'Vivienda'),
+    ('OTRO', 'Otro'),
+]
+
+
 class Modalidad(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
+    categoria = models.CharField(
+        max_length=30, choices=CATEGORIA_CHOICES, default='LIBRE_INVERSION',
+        verbose_name='Categoría',
+        help_text="Define las reglas de evaluación aplicables a esta modalidad",
+    )
     tasa_mensual = models.DecimalField(max_digits=6, decimal_places=4, help_text="Tasa mensual, e.g. 0.016")
     pd_base = models.DecimalField(max_digits=6, decimal_places=4, help_text="Probabilidad de default base")
     activa = models.BooleanField(default=True)

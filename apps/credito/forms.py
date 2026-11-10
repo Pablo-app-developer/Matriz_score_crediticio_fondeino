@@ -123,7 +123,7 @@ class ConfiguracionForm(forms.ModelForm):
 class ModalidadForm(forms.ModelForm):
     class Meta:
         model = Modalidad
-        fields = ['nombre', 'tasa_mensual', 'pd_base', 'activa']
+        fields = ['nombre', 'categoria', 'tasa_mensual', 'pd_base', 'activa']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
