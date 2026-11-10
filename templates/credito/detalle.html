@@ -47,39 +47,22 @@
         <div class="text-muted small">Score / 100</div>
         <span class="badge bg-{{ ev.clasificacion_color }} fs-6">{{ ev.clasificacion }}</span>
       </div>
-      <div class="col-md-6 border-start">
-        <div class="d-flex align-items-center justify-content-around gap-2">
-
-          <!-- Sugerencia del sistema: secundaria -->
-          <div class="text-center" style="opacity:.65;min-width:100px">
-            <div class="fw-semibold mb-1" style="font-size:.6rem;color:#888;text-transform:uppercase;letter-spacing:.5px">
-              <i class="bi bi-cpu me-1"></i>Sugerencia sistema
-            </div>
-            <span class="badge bg-{{ ev.decision_color }}" style="font-size:.75rem">{{ ev.decision }}</span>
-          </div>
-
-          <i class="bi bi-arrow-right text-muted fs-5"></i>
-
-          <!-- Decisión del comité: protagonista -->
-          <div class="text-center">
-            <div class="fw-semibold mb-1" style="font-size:.7rem;color:#444;text-transform:uppercase;letter-spacing:.5px">
-              <i class="bi bi-people-fill me-1"></i>Decisión del Comité
-            </div>
-            {% if ev.decision_comite %}
-              <div class="badge bg-{{ ev.decision_comite_color }} p-2" style="font-size:1rem">{{ ev.decision_comite }}</div>
-              {% if ev.fecha_decision_comite %}
-              <div class="text-muted" style="font-size:.7rem;margin-top:4px">
-                {{ ev.fecha_decision_comite|date:"d/m/Y H:i" }}
-                {% if ev.registrado_por_comite %}&nbsp;·&nbsp;{{ ev.registrado_por_comite.get_full_name }}{% endif %}
-              </div>
-              {% endif %}
-            {% else %}
-              <span class="badge bg-secondary p-2" style="font-size:.85rem">Pendiente</span>
-              <div class="text-muted" style="font-size:.7rem;margin-top:4px">Sin decisión registrada</div>
-            {% endif %}
-          </div>
-
+      <div class="col-md-6 border-start d-flex flex-column align-items-center justify-content-center text-center">
+        <div class="fw-semibold mb-2" style="font-size:.7rem;color:#666;text-transform:uppercase;letter-spacing:.06em">
+          <i class="bi bi-people-fill me-1"></i>Decisión del Comité
         </div>
+        {% if ev.decision_comite %}
+          <div class="badge bg-{{ ev.decision_comite_color }} px-3 py-2" style="font-size:1.05rem">{{ ev.decision_comite }}</div>
+          {% if ev.fecha_decision_comite %}
+          <div class="text-muted mt-1" style="font-size:.7rem">
+            {{ ev.fecha_decision_comite|date:"d/m/Y H:i" }}
+            {% if ev.registrado_por_comite %}&nbsp;·&nbsp;{{ ev.registrado_por_comite.get_full_name }}{% endif %}
+          </div>
+          {% endif %}
+        {% else %}
+          <span class="badge bg-secondary px-3 py-2" style="font-size:.9rem">Pendiente</span>
+          <div class="text-muted mt-1" style="font-size:.7rem">Sin decisión registrada</div>
+        {% endif %}
       </div>
     </div>
   </div>
