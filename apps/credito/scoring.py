@@ -18,8 +18,13 @@ CATEGORIAS_EXENTAS_MV = frozenset({'ANTICIPO_PRIMA'})
 # No aplica la regla de haber pagado mínimo el 30% del crédito anterior
 CATEGORIAS_EXENTAS_30PCT = frozenset({'ANTICIPO_PRIMA', 'CALAMIDAD'})
 
-# Puntaje mínimo de DataCrédito para créditos internos descontados por nómina
-DC_FLOOR_CATEGORIA = {'ANTICIPO_PRIMA': 15, 'CALAMIDAD': 8}
+# Reglas de DataCrédito por categoría para créditos descontados por nómina:
+# - 'fijo': puntaje fijo sin importar el score (recuperación 100% garantizada)
+# - 'techo': el score real no puede superar este valor (peso reducido)
+DC_REGLA_CATEGORIA = {
+    'ANTICIPO_PRIMA': {'fijo': 15},   # recuperación garantizada por prima — DC irrelevante
+    'CALAMIDAD':      {'techo': 20},  # DC importa pero con peso máximo reducido
+}
 
 
 # ─────────────────────────────────────────────
@@ -114,9 +119,14 @@ def score_datacredito(puntaje: int, cfg: dict, categoria: str = 'LIBRE_INVERSION
     cfg keys: s_dc_excelente, s_dc_bueno, s_dc_regular, s_dc_malo,
               t_dc_excelente (700), t_dc_bueno (500), t_dc_regular (300)
 
-    Para créditos internos descontados por nómina (ANTICIPO_PRIMA, CALAMIDAD) se aplica
-    un puntaje mínimo porque el riesgo de impago por DataCrédito es menor.
+    Para créditos de recuperación por nómina se aplican reglas especiales:
+    - ANTICIPO_PRIMA: puntaje fijo 15 (DC es irrelevante, recuperación garantizada)
+    - CALAMIDAD: puntaje real pero con techo en 20 (peso reducido)
     """
+    regla = DC_REGLA_CATEGORIA.get(categoria, {})
+    if 'fijo' in regla:
+        return regla['fijo']
+
     if puntaje >= cfg.get('t_dc_excelente', 700):
         raw = cfg.get('s_dc_excelente', 25)
     elif puntaje >= cfg.get('t_dc_bueno', 500):
@@ -125,7 +135,10 @@ def score_datacredito(puntaje: int, cfg: dict, categoria: str = 'LIBRE_INVERSION
         raw = cfg.get('s_dc_regular', 8)
     else:
         raw = cfg.get('s_dc_malo', 0)
-    return max(raw, DC_FLOOR_CATEGORIA.get(categoria, 0))
+
+    if 'techo' in regla:
+        return min(raw, regla['techo'])
+    return raw
 
 
 def score_antiguedad(meses: int, cfg: dict) -> int:

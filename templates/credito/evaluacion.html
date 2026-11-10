@@ -510,7 +510,6 @@ function calcularPreview() {
   // ── Reglas por categoría ──
   const exentaMV    = categoriaModalidad === 'ANTICIPO_PRIMA';
   const exenta30pct = categoriaModalidad === 'ANTICIPO_PRIMA' || categoriaModalidad === 'CALAMIDAD';
-  const dcFloor     = categoriaModalidad === 'ANTICIPO_PRIMA' ? 15 : categoriaModalidad === 'CALAMIDAD' ? 8 : 0;
 
   // Para el mínimo vital, el anticipo de prima NO suma al total mensual
   const cuotasParaMV  = exentaMV ? (otras + aporte + ahorro) : (otras + aporte + ahorro + cuotaBase);
@@ -528,8 +527,11 @@ function calcularPreview() {
   const garAh   = parseFloat(document.getElementById('id_saldo_ahorros').value) || 0;
   const garTotal = garAp + garAh;
 
+  // DataCrédito con regla por categoría
   const sDC_raw = dc >= 700 ? 25 : dc >= 500 ? 15 : dc >= 300 ? 8 : 0;
-  const sDC     = Math.max(sDC_raw, dcFloor);
+  const sDC = categoriaModalidad === 'ANTICIPO_PRIMA' ? 15
+            : categoriaModalidad === 'CALAMIDAD'      ? Math.min(sDC_raw, 20)
+            : sDC_raw;
   const sAnt    = ant >= 24 ? 15 : ant >= 12 ? 12 : ant >= 6 ? 8 : ant >= 3 ? 4 : 0;
   const sVinc   = vinc.includes('Indefinido') ? 10 : vinc.includes('fijo') ? 7 : 4;
   const sCap    = disponible < 0 ? 0 : pctEnd > 0.5 ? 5 : pctEnd > 0.3 ? 15 : 25;
