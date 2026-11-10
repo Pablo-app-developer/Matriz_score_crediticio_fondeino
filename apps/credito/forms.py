@@ -49,6 +49,15 @@ class EvaluacionForm(forms.Form):
                                             widget=forms.NumberInput(
                                                 attrs={'class': INPUT, 'step': 'any',
                                                        'id': 'id_saldo_credito_activo'}))
+    es_refinanciacion = forms.ChoiceField(choices=[('NO', 'No'), ('SI', 'Sí — refinanciación')],
+                                          initial='NO', required=False,
+                                          widget=forms.Select(attrs={'class': SELECT,
+                                                                     'id': 'id_es_refinanciacion'}))
+    cuota_credito_refinanciar = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0,
+                                            initial=0, required=False,
+                                            widget=forms.NumberInput(
+                                                attrs={'class': INPUT, 'step': 'any',
+                                                       'id': 'id_cuota_credito_refinanciar'}))
     # Calculado automáticamente en clean() a partir de valor_inicial_credito_activo y saldo_credito_activo
     pct_capital_pagado = forms.DecimalField(max_digits=5, decimal_places=4, min_value=0, max_value=1,
                                             initial=0, required=False,
@@ -96,6 +105,8 @@ class EvaluacionForm(forms.Form):
         cd.setdefault('saldo_ahorros', 0)
         cd.setdefault('valor_inicial_credito_activo', 0)
         cd.setdefault('saldo_credito_activo', 0)
+        cd.setdefault('es_refinanciacion', 'NO')
+        cd.setdefault('cuota_credito_refinanciar', 0)
 
         # % capital pagado = (inicial - saldo_actual) / inicial
         # Se calcula siempre en el servidor, nunca se confía en el valor enviado

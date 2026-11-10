@@ -134,6 +134,18 @@
           <div class="col-12" id="grupoPctCalculado">
             <div class="form-text">% Capital pagado (calculado): <strong id="pctCapitalCalculado">0%</strong></div>
           </div>
+          <!-- Refinanciación -->
+          <div class="col-6" id="grupoEsRefinanciacion" style="display:none">
+            <label class="form-label small fw-semibold">¿Es refinanciación?</label>
+            {{ form.es_refinanciacion }}
+          </div>
+          <div class="col-6" id="grupoCuotaRefinanciar" style="display:none">
+            <label class="form-label small fw-semibold">Cuota actual del crédito FONDEINO</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              {{ form.cuota_credito_refinanciar }}
+            </div>
+          </div>
           {{ form.pct_capital_pagado }}
           <!-- TABLA DINÁMICA OTRAS OBLIGACIONES -->
           <div class="col-12">
@@ -303,6 +315,13 @@
             <div class="alert alert-info py-1 mb-0 small">
               <i class="bi bi-info-circle me-1"></i>
               <strong>Anticipo de Prima:</strong> la cuota se recupera de la prima semestral — no se descuenta del mínimo vital mensual.
+            </div>
+          </div>
+          <!-- Nota: solo visible para refinanciación -->
+          <div class="col-12" id="prev_refinanciacion_nota" style="display:none">
+            <div class="alert alert-warning py-1 mb-0 small">
+              <i class="bi bi-arrow-repeat me-1"></i>
+              <strong>Refinanciación:</strong> la cuota del crédito anterior se cancela con este — solo cuenta la cuota nueva para el mínimo vital.
             </div>
           </div>
         </div>
@@ -509,11 +528,21 @@ function toggleCreditoActivoFields() {
   document.getElementById('grupoValorInicialCredito').style.display = tiene ? '' : 'none';
   document.getElementById('grupoValorPagadoCredito').style.display  = tiene ? '' : 'none';
   document.getElementById('grupoPctCalculado').style.display        = tiene ? '' : 'none';
+  document.getElementById('grupoEsRefinanciacion').style.display    = tiene ? '' : 'none';
   if (!tiene) {
     document.getElementById('id_valor_inicial_credito_activo').value = 0;
     document.getElementById('id_saldo_credito_activo').value = 0;
+    document.getElementById('id_es_refinanciacion').value = 'NO';
   }
+  toggleRefinanciacionField();
   calcularPctCapitalPagado();
+}
+
+function toggleRefinanciacionField() {
+  const esRef = document.getElementById('id_es_refinanciacion').value === 'SI';
+  document.getElementById('grupoCuotaRefinanciar').style.display = esRef ? '' : 'none';
+  if (!esRef) document.getElementById('id_cuota_credito_refinanciar').value = 0;
+  calcularPreview();
 }
 
 function calcularPreview() {
@@ -538,8 +567,17 @@ function calcularPreview() {
   // ── Reglas por categoría ──
   const exentaMV    = categoriaModalidad === 'ANTICIPO_PRIMA';
   const exenta30pct = categoriaModalidad === 'ANTICIPO_PRIMA' || categoriaModalidad === 'CALAMIDAD';
+  const esRefinanciacion = document.getElementById('id_es_refinanciacion').value === 'SI';
+  const cuotaRefinanciar = parseFloat(document.getElementById('id_cuota_credito_refinanciar').value) || 0;
 
-  const cuotasParaMV = exentaMV ? (otras + aporte + ahorro) : (otras + aporte + ahorro + cuotaBase);
+  let cuotasParaMV;
+  if (exentaMV) {
+    cuotasParaMV = otras + aporte + ahorro;
+  } else if (esRefinanciacion) {
+    cuotasParaMV = Math.max(0, otras + aporte + ahorro + cuotaBase - cuotaRefinanciar);
+  } else {
+    cuotasParaMV = otras + aporte + ahorro + cuotaBase;
+  }
   const disponible   = mv - cuotasParaMV;
   const pctEnd       = neto > 0 ? cuotasParaMV / neto : 0;
 
@@ -607,6 +645,7 @@ function calcularPreview() {
     : '—';
 
   document.getElementById('prev_anticipo_nota').style.display = (exentaMV && sb) ? '' : 'none';
+  document.getElementById('prev_refinanciacion_nota').style.display = (esRefinanciacion && sb) ? '' : 'none';
 
   // Sección crédito activo
   const credSection = document.getElementById('prev_cred_activo');
@@ -690,6 +729,7 @@ existentes.forEach(o => agregarFila(o.entidad || '', o.tipo || '', o.cuota || ''
 const inputs = ['id_salario_bruto','id_monto_solicitado','id_n_cuotas','id_puntaje_datacredito',
   'id_antiguedad_meses','id_tipo_vinculacion','id_tiene_credito_activo',
   'id_valor_inicial_credito_activo','id_saldo_credito_activo',
+  'id_es_refinanciacion','id_cuota_credito_refinanciar',
   'id_cuota_aporte','id_cuota_ahorro','id_saldo_aportes','id_saldo_ahorros'];
 inputs.forEach(id => {
   const el = document.getElementById(id);
@@ -698,6 +738,7 @@ inputs.forEach(id => {
 });
 
 document.getElementById('id_tiene_credito_activo').addEventListener('change', toggleCreditoActivoFields);
+document.getElementById('id_es_refinanciacion').addEventListener('change', toggleRefinanciacionField);
 
 // Calcular al abrir con los datos actuales
 toggleCreditoActivoFields();

@@ -184,6 +184,8 @@ def evaluacion(request):
         otras_lista, total_otras = _parsear_otras_obligaciones(request.POST)
         datos['cuotas_otras_entidades'] = total_otras
         datos['categoria'] = modalidad.categoria
+        datos['es_refinanciacion'] = cd.get('es_refinanciacion') == 'SI'
+        datos['cuota_credito_refinanciar'] = float(cd.get('cuota_credito_refinanciar') or 0)
 
         resultado = evaluar_credito(datos, cfg)
 
@@ -202,6 +204,8 @@ def evaluacion(request):
             tiene_credito_activo=(cd['tiene_credito_activo'] == 'SI'),
             valor_inicial_credito_activo=float(cd.get('valor_inicial_credito_activo') or 0),
             saldo_credito_activo=float(cd.get('saldo_credito_activo') or 0),
+            es_refinanciacion=(cd.get('es_refinanciacion') == 'SI'),
+            cuota_credito_refinanciar=float(cd.get('cuota_credito_refinanciar') or 0),
             pct_capital_pagado=float(cd.get('pct_capital_pagado') or 0),
             cuotas_otras_entidades=total_otras,
             otras_obligaciones=otras_lista,
@@ -595,6 +599,8 @@ def evaluacion_editar(request, pk):
         'tiene_credito_activo': 'SI' if ev.tiene_credito_activo else 'NO',
         'valor_inicial_credito_activo': ev.valor_inicial_credito_activo,
         'saldo_credito_activo': ev.saldo_credito_activo,
+        'es_refinanciacion': 'SI' if ev.es_refinanciacion else 'NO',
+        'cuota_credito_refinanciar': ev.cuota_credito_refinanciar,
         'pct_capital_pagado': ev.pct_capital_pagado,
         'cuotas_otras_entidades': ev.cuotas_otras_entidades,
         'cuota_aporte': ev.cuota_aporte,
@@ -633,6 +639,8 @@ def evaluacion_editar(request, pk):
             'pd_base': float(modalidad.pd_base),
             'fecha_desembolso': cd['fecha_desembolso'],
             'categoria': modalidad.categoria,
+            'es_refinanciacion': cd.get('es_refinanciacion') == 'SI',
+            'cuota_credito_refinanciar': float(cd.get('cuota_credito_refinanciar') or 0),
         }
         resultado = evaluar_credito(datos, cfg)
 
@@ -649,6 +657,8 @@ def evaluacion_editar(request, pk):
         ev.tiene_credito_activo = (cd['tiene_credito_activo'] == 'SI')
         ev.valor_inicial_credito_activo = float(cd.get('valor_inicial_credito_activo') or 0)
         ev.saldo_credito_activo = float(cd.get('saldo_credito_activo') or 0)
+        ev.es_refinanciacion = (cd.get('es_refinanciacion') == 'SI')
+        ev.cuota_credito_refinanciar = float(cd.get('cuota_credito_refinanciar') or 0)
         ev.pct_capital_pagado = float(cd.get('pct_capital_pagado') or 0)
         ev.cuotas_otras_entidades = total_otras
         ev.otras_obligaciones = otras_lista

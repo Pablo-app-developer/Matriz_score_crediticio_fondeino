@@ -165,6 +165,8 @@ class EvaluacionCredito(models.Model):
     tiene_credito_activo = models.BooleanField(default=False)
     valor_inicial_credito_activo = models.DecimalField(max_digits=14, decimal_places=2, default=0)
     saldo_credito_activo = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    es_refinanciacion = models.BooleanField(default=False)
+    cuota_credito_refinanciar = models.DecimalField(max_digits=14, decimal_places=2, default=0)
     pct_capital_pagado = models.DecimalField(max_digits=5, decimal_places=4, default=0)
     cuotas_otras_entidades = models.DecimalField(max_digits=14, decimal_places=2, default=0)
     # Desglose de obligaciones con otras entidades [{entidad, tipo, cuota}]

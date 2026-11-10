@@ -162,6 +162,14 @@
             <td class="bg-light">Estado <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="OK: cumple el mínimo vital, puede continuar. BLOQUEADO: el total de cuotas supera el techo permitido y el crédito no puede aprobarse."></i></td>
             <td class="text-end"><strong>{{ ev.estado_mv }}</strong></td>
           </tr>
+          {% if ev.es_refinanciacion %}
+          <tr class="table-warning">
+            <td colspan="2" class="small px-3 py-2">
+              <i class="bi bi-arrow-repeat me-1"></i>
+              <strong>Refinanciación:</strong> cuota anterior (${{ ev.cuota_credito_refinanciar|cop }}) excluida del MV — solo cuenta la cuota nueva.
+            </td>
+          </tr>
+          {% endif %}
           {% if ev.modalidad.categoria == 'ANTICIPO_PRIMA' or ev.modalidad.categoria == 'CALAMIDAD' %}
           <tr class="table-info">
             <td colspan="2" class="small px-3 py-2">

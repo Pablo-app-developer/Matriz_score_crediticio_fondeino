@@ -375,6 +375,8 @@ def evaluar_credito(datos: dict, cfg: dict) -> dict:
     """
     categoria = datos.get('categoria', 'LIBRE_INVERSION')
     exenta_mv = categoria in CATEGORIAS_EXENTAS_MV
+    es_refinanciacion = bool(datos.get('es_refinanciacion', False))
+    cuota_refinanciar = float(datos.get('cuota_credito_refinanciar', 0))
 
     sb = float(datos['salario_bruto'])
     ingresos = calcular_salario_neto(sb)
@@ -395,10 +397,13 @@ def evaluar_credito(datos: dict, cfg: dict) -> dict:
                                   monto, tasa_mensual, n_cuotas)
     cuota_nueva = oblig['cuota_nueva_estimada']
 
-    # Para ANTICIPO_PRIMA, la cuota se recupera de la prima y no impacta el flujo mensual.
-    # El mínimo vital se calcula solo sobre las obligaciones de desembolso mensual.
+    # Anticipo de Prima: cuota excluida del MV (se recupera de la prima semestral).
+    # Refinanciación: la cuota del crédito anterior queda saldada con este nuevo crédito,
+    # por lo que se descuenta del total para evitar contarla dos veces en el MV.
     if exenta_mv:
         cuotas_para_mv = cuotas_otras + oblig['cuotas_fondeino_actuales']
+    elif es_refinanciacion:
+        cuotas_para_mv = max(0.0, oblig['total_cuotas'] - cuota_refinanciar)
     else:
         cuotas_para_mv = oblig['total_cuotas']
 
@@ -489,4 +494,6 @@ def evaluar_credito(datos: dict, cfg: dict) -> dict:
         'categoria': categoria,
         'exenta_mv': exenta_mv,
         'exenta_30pct': categoria in CATEGORIAS_EXENTAS_30PCT,
+        'es_refinanciacion': es_refinanciacion,
+        'cuota_credito_refinanciar': cuota_refinanciar,
     }
