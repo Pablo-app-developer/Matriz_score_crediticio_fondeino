@@ -570,7 +570,10 @@ function calcularPreview() {
     sHist = pctCap >= 0.3 ? 7 : 3;
   }
 
-  const scoreTotal = sDC + sAnt + sVinc + sCap + sGar + sHist;
+  const scoreRaw = sDC + sAnt + sVinc + sCap + sGar + sHist;
+  const maxDC = categoriaModalidad === 'CALAMIDAD' ? 20 : 15;
+  const maxScore = maxDC + 15 + 10 + 25 + 15 + 10;
+  const scoreTotal = maxScore > 0 ? Math.round(scoreRaw * 100 / maxScore) : 0;
 
   let decision, decClass;
   if (disponible < 0) {

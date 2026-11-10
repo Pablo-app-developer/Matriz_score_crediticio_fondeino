@@ -222,6 +222,23 @@ def score_credito_activo(tiene_credito: bool, pct_capital_pagado: float, cfg: di
         return cfg.get('s_hist_malo', 3)
 
 
+def _max_score_total(categoria: str, cfg: dict) -> int:
+    """Puntaje máximo posible según la categoría, para normalizar el total a 100."""
+    regla = DC_REGLA_CATEGORIA.get(categoria, {})
+    if 'fijo' in regla:
+        max_dc = regla['fijo']
+    else:
+        raw_max = int(cfg.get('s_dc_excelente', 25))
+        max_dc = min(raw_max, regla['techo']) if 'techo' in regla else raw_max
+
+    return (max_dc
+            + int(cfg.get('s_ant_1', 15))
+            + int(cfg.get('s_vinc_indefinido', 10))
+            + int(cfg.get('s_cap_excelente', 25))
+            + int(cfg.get('s_gar_alta', 15))
+            + int(cfg.get('s_hist_sin', 10)))
+
+
 def clasificar_score(score: int, cfg: dict) -> str:
     """
     cfg keys: t_cls_excelente (80), t_cls_bueno (60), t_cls_regular (40)
@@ -407,7 +424,9 @@ def evaluar_credito(datos: dict, cfg: dict) -> dict:
     s_gar = score_garantias(garantias['total_garantias'], monto, cfg)
     s_hist = score_credito_activo(tiene_credito, pct_capital, cfg, categoria)
 
-    score_total = s_dc + s_ant + s_vinc + s_cap + s_gar + s_hist
+    score_raw = s_dc + s_ant + s_vinc + s_cap + s_gar + s_hist
+    max_score = _max_score_total(categoria, cfg)
+    score_total = round(score_raw * 100 / max_score) if max_score > 0 else 0
     clasificacion = clasificar_score(score_total, cfg)
     decision = calcular_decision(score_total, validacion['estado'],
                                  validacion['pct_endeudamiento'],
