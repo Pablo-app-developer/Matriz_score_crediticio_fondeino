@@ -105,10 +105,10 @@
             </div>
           </div>
           <div class="col-6" id="grupoValorPagadoCredito">
-            <label class="form-label small fw-semibold">Valor Total Pagado</label>
+            <label class="form-label small fw-semibold">Saldo Actual del Crédito</label>
             <div class="input-group">
               <span class="input-group-text">$</span>
-              {{ form.valor_pagado_credito_activo }}
+              {{ form.saldo_credito_activo }}
             </div>
           </div>
           <div class="col-12" id="grupoPctCalculado">
@@ -302,7 +302,7 @@
             </div>
             <div class="col-4">
               <div class="border rounded p-1">
-                <div class="text-muted" style="font-size:.7rem">Total Pagado</div>
+                <div class="text-muted" style="font-size:.7rem">Saldo Actual</div>
                 <div class="fw-bold small" id="prev_cred_pagado">—</div>
               </div>
             </div>
@@ -468,8 +468,8 @@ function pmt(monto, tasa, n) {
 
 function calcularPctCapitalPagado() {
   const inicial = parseFloat(document.getElementById('id_valor_inicial_credito_activo').value) || 0;
-  const pagado  = parseFloat(document.getElementById('id_valor_pagado_credito_activo').value)  || 0;
-  let pct = inicial > 0 ? pagado / inicial : 0;
+  const saldo   = parseFloat(document.getElementById('id_saldo_credito_activo').value) || 0;
+  let pct = inicial > 0 ? (inicial - saldo) / inicial : 0;
   pct = Math.max(0, Math.min(pct, 1));
   document.getElementById('id_pct_capital_pagado').value = pct.toFixed(2);
   document.getElementById('pctCapitalCalculado').textContent = (pct * 100).toFixed(1) + '%';
@@ -483,7 +483,7 @@ function toggleCreditoActivoFields() {
   document.getElementById('grupoPctCalculado').style.display        = tiene ? '' : 'none';
   if (!tiene) {
     document.getElementById('id_valor_inicial_credito_activo').value = 0;
-    document.getElementById('id_valor_pagado_credito_activo').value  = 0;
+    document.getElementById('id_saldo_credito_activo').value = 0;
   }
   calcularPctCapitalPagado();
 }
@@ -593,9 +593,9 @@ function calcularPreview() {
   if (tieneCred && sb) {
     credSection.style.display = '';
     const inicial = parseFloat(document.getElementById('id_valor_inicial_credito_activo').value) || 0;
-    const pagado  = parseFloat(document.getElementById('id_valor_pagado_credito_activo').value)  || 0;
+    const saldo   = parseFloat(document.getElementById('id_saldo_credito_activo').value) || 0;
     document.getElementById('prev_cred_inicial').textContent = inicial ? '$ ' + fmt(inicial) : '—';
-    document.getElementById('prev_cred_pagado').textContent  = pagado  ? '$ ' + fmt(pagado)  : '—';
+    document.getElementById('prev_cred_pagado').textContent  = inicial ? '$ ' + fmt(saldo)   : '—';
 
     const pctCapStr = (pctCap * 100).toFixed(1) + '%';
     const pctEl = document.getElementById('prev_cred_pct');
@@ -665,7 +665,7 @@ function eliminarFila(n) {
 
 const inputs = ['id_salario_bruto','id_monto_solicitado','id_n_cuotas','id_puntaje_datacredito',
   'id_antiguedad_meses','id_tipo_vinculacion','id_tiene_credito_activo',
-  'id_valor_inicial_credito_activo','id_valor_pagado_credito_activo',
+  'id_valor_inicial_credito_activo','id_saldo_credito_activo',
   'id_cuota_aporte','id_cuota_ahorro','id_saldo_aportes','id_saldo_ahorros'];
 inputs.forEach(id => {
   const el = document.getElementById(id);

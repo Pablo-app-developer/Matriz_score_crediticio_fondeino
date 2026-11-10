@@ -44,12 +44,12 @@ class EvaluacionForm(forms.Form):
                                             widget=forms.NumberInput(
                                                 attrs={'class': INPUT, 'step': 'any',
                                                        'id': 'id_valor_inicial_credito_activo'}))
-    valor_pagado_credito_activo = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0,
+    saldo_credito_activo = forms.DecimalField(max_digits=14, decimal_places=2, min_value=0,
                                             initial=0, required=False,
                                             widget=forms.NumberInput(
                                                 attrs={'class': INPUT, 'step': 'any',
-                                                       'id': 'id_valor_pagado_credito_activo'}))
-    # Calculado automáticamente en clean() a partir de valor_inicial_credito_activo y valor_pagado_credito_activo
+                                                       'id': 'id_saldo_credito_activo'}))
+    # Calculado automáticamente en clean() a partir de valor_inicial_credito_activo y saldo_credito_activo
     pct_capital_pagado = forms.DecimalField(max_digits=5, decimal_places=4, min_value=0, max_value=1,
                                             initial=0, required=False,
                                             widget=forms.HiddenInput(attrs={'id': 'id_pct_capital_pagado'}))
@@ -95,13 +95,14 @@ class EvaluacionForm(forms.Form):
         cd.setdefault('saldo_aportes', 0)
         cd.setdefault('saldo_ahorros', 0)
         cd.setdefault('valor_inicial_credito_activo', 0)
-        cd.setdefault('valor_pagado_credito_activo', 0)
+        cd.setdefault('saldo_credito_activo', 0)
 
-        # % capital pagado se calcula siempre en el servidor, nunca se confía en el valor enviado
+        # % capital pagado = (inicial - saldo_actual) / inicial
+        # Se calcula siempre en el servidor, nunca se confía en el valor enviado
         valor_inicial = cd.get('valor_inicial_credito_activo') or 0
-        valor_pagado = cd.get('valor_pagado_credito_activo') or 0
+        saldo_actual = cd.get('saldo_credito_activo') or 0
         if valor_inicial > 0:
-            pct = valor_pagado / valor_inicial
+            pct = (valor_inicial - saldo_actual) / valor_inicial
             pct = max(0, min(pct, 1))
         else:
             pct = 0
