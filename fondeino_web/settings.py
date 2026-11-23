@@ -8,16 +8,22 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 ON_VERCEL = os.environ.get('VERCEL') == '1'
+ON_RENDER = os.environ.get('RENDER') == 'true'
+IS_PRODUCTION = ON_VERCEL or ON_RENDER
 
 SECRET_KEY = os.environ.get(
     'SECRET_KEY',
     'GQLiIuiwRtI3ycxpd8pW-UDr2fBMcb9vQVrcEmrMaujMKif2XohZA3k92hTtPf2ocew'
 )
-DEBUG = False if ON_VERCEL else (os.environ.get('DEBUG', 'True') == 'True')
+DEBUG = False if IS_PRODUCTION else (os.environ.get('DEBUG', 'True') == 'True')
 
 _hosts_env = os.environ.get('ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = [h.strip() for h in _hosts_env.split(',') if h.strip()] if _hosts_env else ['localhost', '127.0.0.1']
-ALLOWED_HOSTS += ['.vercel.app', 'fondeino.com', 'www.fondeino.com']
+ALLOWED_HOSTS += ['.vercel.app', '.onrender.com', 'fondeino.com', 'www.fondeino.com']
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 CSRF_TRUSTED_ORIGINS = ['https://fondeino.com', 'https://www.fondeino.com']
 CSRF_FAILURE_VIEW = 'fondeino_web.csrf_views.csrf_failure'
 
@@ -75,8 +81,11 @@ DATABASE_URL = os.environ.get('DATABASE_URL', f'sqlite:///{BASE_DIR}/db.sqlite3'
 DATABASES = {
     'default': dj_database_url.parse(
         DATABASE_URL,
-        conn_max_age=0,          # serverless: cerrar conexión al terminar el request
+        # Render corre un proceso persistente (gunicorn) → pool de conexiones.
+        # Vercel es serverless → cerrar al terminar el request.
+        conn_max_age=0 if ON_VERCEL else 600,
         conn_health_checks=True,
+        ssl_require=ON_RENDER,
     )
 }
 
@@ -132,7 +141,7 @@ SECURE_CONTENT_TYPE_NOSNIFF   = True
 SECURE_REFERRER_POLICY        = 'strict-origin-when-cross-origin'
 X_FRAME_OPTIONS               = 'DENY'
 SESSION_COOKIE_HTTPONLY       = True
-SESSION_COOKIE_SECURE         = ON_VERCEL
+SESSION_COOKIE_SECURE         = IS_PRODUCTION
 SESSION_COOKIE_SAMESITE       = 'Lax'
 # CSRF con cookie renombrada (host-only, sin CSRF_COOKIE_DOMAIN):
 # - 'fondeino_csrftoken' no colisiona con la legacy 'csrftoken' (Domain=.fondeino.com)
@@ -141,11 +150,11 @@ SESSION_COOKIE_SAMESITE       = 'Lax'
 # - La cookie dura 1 año → sobrevive cierres del navegador y expiración de sesión en móvil.
 CSRF_COOKIE_NAME              = 'fondeino_csrftoken'
 CSRF_COOKIE_HTTPONLY          = False
-CSRF_COOKIE_SECURE            = ON_VERCEL
+CSRF_COOKIE_SECURE            = IS_PRODUCTION
 CSRF_COOKIE_SAMESITE          = 'Lax'
-SECURE_HSTS_SECONDS           = 31536000 if ON_VERCEL else 0
-SECURE_HSTS_INCLUDE_SUBDOMAINS = ON_VERCEL
-SECURE_HSTS_PRELOAD           = ON_VERCEL
+SECURE_HSTS_SECONDS           = 31536000 if IS_PRODUCTION else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = IS_PRODUCTION
+SECURE_HSTS_PRELOAD           = IS_PRODUCTION
 
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesStandaloneBackend',
