@@ -85,7 +85,6 @@ DATABASES = {
         # Vercel es serverless → cerrar al terminar el request.
         conn_max_age=0 if ON_VERCEL else 600,
         conn_health_checks=True,
-        ssl_require=ON_RENDER,
     )
 }
 
